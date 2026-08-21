@@ -38,13 +38,20 @@ export class Particle extends Entity {
 
   public draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = this.color;
+    
+    // Fake Glow (Much faster than shadowBlur)
+    ctx.globalAlpha = this.alpha * 0.4;
     ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.position.x, this.position.y, this.size.width * 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Core
+    ctx.globalAlpha = this.alpha;
     ctx.beginPath();
     ctx.arc(this.position.x, this.position.y, this.size.width / 2, 0, Math.PI * 2);
     ctx.fill();
+    
     ctx.restore();
   }
 }

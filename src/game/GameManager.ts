@@ -199,8 +199,10 @@ export class GameManager {
       }
 
       // Entities
+      const speedMultiplier = Math.max(1.0, 1.0 + (20 - Math.min(20, this.enemies.length)) * 0.1);
+      
       this.enemies.forEach(enemy => {
-        enemy.update(deltaTime);
+        enemy.update(deltaTime, speedMultiplier, this.bullets);
         const bullet = enemy.fire();
         if (bullet) this.bullets.push(bullet);
         

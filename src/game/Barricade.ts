@@ -50,15 +50,6 @@ export class Barricade extends Entity {
 
   public draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
-    
-    if (this.type === BarricadeType.DESTRUCTIBLE) {
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = this.color;
-    } else {
-      ctx.shadowBlur = 5;
-      ctx.shadowColor = '#000000';
-    }
-    
     ctx.fillStyle = this.color;
     
     const blockWidth = this.size.width / this.cols;

@@ -19,6 +19,8 @@ export class Enemy extends Entity {
   private startY: number;
   
   private fireTimer: number;
+  public canEvade: boolean = false;
+  private evadeCooldown: number = 0;
 
   constructor(x: number, y: number, canvasWidth: number, level: number, type: EnemyType = EnemyType.NORMAL) {
     super(x, y, 40, 30);
@@ -40,22 +42,44 @@ export class Enemy extends Entity {
     } else {
       this.color = '#f97316'; // Orange/Fire
       this.speedX += level * 5;
+      this.canEvade = Math.random() < 0.2; // 20% of normal enemies can evade
     }
     
     this.fireTimer = Math.random() * 3 + 1; // 1 to 4 seconds
   }
 
-  public update(deltaTime: number): void {
-    this.position.y += this.speedY * deltaTime; // Constantly slowly move down
+  public update(deltaTime: number, speedMultiplier: number = 1.0, bullets: Bullet[] = []): void {
+    const currentSpeedX = this.speedX * speedMultiplier;
+    const currentSpeedY = this.speedY * speedMultiplier;
+
+    this.position.y += currentSpeedY * deltaTime; // Constantly slowly move down
+
+    // Evasive maneuver logic
+    if (this.canEvade && this.evadeCooldown <= 0) {
+      // Check for incoming player bullets
+      const incoming = bullets.find(b => 
+        b.isPlayerBullet && 
+        b.position.y > this.position.y && // below the enemy
+        b.position.y - this.position.y < 250 && // within threat range
+        Math.abs(b.position.x - this.position.x) < this.size.width + 10 // directly below
+      );
+      if (incoming) {
+        // Dodge! Swap direction
+        this.direction = (incoming.position.x > this.position.x + this.size.width / 2) ? -1 : 1;
+        this.evadeCooldown = 1.5; // Cooldown before next dodge
+      }
+    }
+    if (this.evadeCooldown > 0) {
+      this.evadeCooldown -= deltaTime;
+    }
 
     if (this.type === EnemyType.ZIGZAG) {
-      // ZIGZAG logic using sine wave based on start X
-      // Since we don't have startX saved properly here, let's just use bouncing with direction but add a slight sine wave to Y
-      this.position.x += this.speedX * this.direction * deltaTime;
-      this.position.y += Math.sin(Date.now() / 200 + this.position.x) * 2;
+      this.position.x += currentSpeedX * this.direction * deltaTime;
+      this.position.y += Math.sin(Date.now() / 200 + this.position.x) * 2 * speedMultiplier;
     } else {
-      // Normal / Boss logic
-      this.position.x += this.speedX * this.direction * deltaTime;
+      // Normal / Boss logic. Evasive enemies move 50% faster while evading
+      const evadeBoost = (this.evadeCooldown > 0.5) ? 1.5 : 1.0;
+      this.position.x += currentSpeedX * evadeBoost * this.direction * deltaTime;
     }
     
     // Bounce off walls
@@ -70,7 +94,8 @@ export class Enemy extends Entity {
       this.position.x = this.canvasWidth - this.size.width;
     }
     
-    this.fireTimer -= deltaTime;
+    // Bosses fire faster as speed multiplier increases
+    this.fireTimer -= deltaTime * speedMultiplier;
   }
 
   public fire(): Bullet | null {
