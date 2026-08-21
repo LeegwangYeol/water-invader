@@ -1,0 +1,1533 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\src\\SpaceInvader\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/stress/"
+    ],
+    "configFile": "C:\\src\\SpaceInvader\\playwright.config.ts",
+    "rootDir": "C:/src/SpaceInvader/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/src/SpaceInvader/test-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/src/SpaceInvader/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "stress\\endless_survival_swarm.spec.ts",
+      "file": "stress/endless_survival_swarm.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Water Invader Endless Survival Swarm Stress Test Suite",
+          "file": "stress/endless_survival_swarm.spec.ts",
+          "line": 13,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SWARM-1: Autonomous Survival Swarm Bot - Deep Wave Combat, Skills & Auto-Upgrades",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 17115,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[SWARM-1] Navigating to /...\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Swarm Bot Active. Monitoring 15s survival session...\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 5/5 | Score: 0 | Currency: 0💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 54.4 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 5/5 | Score: 100 | Currency: 5💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 56.4 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 5/5 | Score: 200 | Currency: 10💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 57.4 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 5/5 | Score: 200 | Currency: 10💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 57.9 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 5/5 | Score: 200 | Currency: 10💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 300 | Currency: 15💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 400 | Currency: 20💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 750 | Currency: 37💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 1350 | Currency: 15💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 1550 | Currency: 25💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 1750 | Currency: 35💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 1950 | Currency: 45💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 2350 | Currency: 15💧 | Upgrades: [FR:1, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 2600 | Currency: 27💧 | Upgrades: [FR:1, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 4/5 | Score: 2600 | Currency: 27💧 | Upgrades: [FR:1, MS:0, P:0] | FPS: 60 | Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "\n[SWARM-1] Run Completed Successfully:\n"
+                        },
+                        {
+                          "text": "  - Survival Duration: 15.97s\n"
+                        },
+                        {
+                          "text": "  - Wave Reached: 1\n"
+                        },
+                        {
+                          "text": "  - Final Score: 2600\n"
+                        },
+                        {
+                          "text": "  - Total Kills: 0\n"
+                        },
+                        {
+                          "text": "  - Accuracy: 26.2%\n"
+                        },
+                        {
+                          "text": "  - Cause of Death: SURVIVED\n"
+                        },
+                        {
+                          "text": "  - Avg FPS: 60\n"
+                        },
+                        {
+                          "text": "  - Total Upgrades Spent: 50💧\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:15:54.283Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3951a406963e50f08610-4fc9df9695eb59131623",
+              "file": "stress/endless_survival_swarm.spec.ts",
+              "line": 18,
+              "column": 7
+            },
+            {
+              "title": "SWARM-2: Multi-Worker Swarm Concurrency Stress Simulation (4 Concurrent Bots)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12111,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[SWARM-2] Launching 4 concurrent Playwright browser contexts for swarm stress...\n"
+                        },
+                        {
+                          "text": "\n=======================================================\n"
+                        },
+                        {
+                          "text": " Swarm Concurrency Summary (4 Workers Completed)\n"
+                        },
+                        {
+                          "text": "  - Mean Survival Time: 10.66s\n"
+                        },
+                        {
+                          "text": "  - Mean Wave: 1 (Max: 1)\n"
+                        },
+                        {
+                          "text": "  - Overall Avg FPS: 59.8\n"
+                        },
+                        {
+                          "text": "  - Peak Heap: 9.5MB\n"
+                        },
+                        {
+                          "text": "  - Crash Free Rate: 100%\n"
+                        },
+                        {
+                          "text": "=======================================================\n\n"
+                        },
+                        {
+                          "text": "[SWARM-2] Saved stress report artifact to C:\\src\\SpaceInvader\\test-artifacts\\stress_results.json\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:11.577Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3951a406963e50f08610-c0fd14bf0b8bf5a3a937",
+              "file": "stress/endless_survival_swarm.spec.ts",
+              "line": 305,
+              "column": 7
+            },
+            {
+              "title": "SWARM-3: High Weapon Saturation & Audio Node Stability Check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7681,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[SWARM-3] High Weapon Saturation Snapshot:\n"
+                        },
+                        {
+                          "text": "  - Total Active Bullets: 121\n"
+                        },
+                        {
+                          "text": "  - Player Bullets: 119\n"
+                        },
+                        {
+                          "text": "  - Active Audio Nodes: 140\n"
+                        },
+                        {
+                          "text": "  - Current FPS: 59.9\n"
+                        },
+                        {
+                          "text": "  - Heap: 9.5MB\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:23.701Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3951a406963e50f08610-0f33107e5aa5b3b3a48e",
+              "file": "stress/endless_survival_swarm.spec.ts",
+              "line": 415,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "stress\\swarm_bot_adversarial.spec.ts",
+      "file": "stress/swarm_bot_adversarial.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Milestone 1: SwarmBotEngine Adversarial Stress & Empirical Challenge Suite",
+          "file": "stress/swarm_bot_adversarial.spec.ts",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "ADV-1: 500 Simultaneous High-Speed Bullets & Dense Curtain Stress Benchmark",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 739,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[ADV-1 Performance Report] 500 Bullets Benchmark:\n"
+                        },
+                        {
+                          "text": "  - Total Iterations: 1000\n"
+                        },
+                        {
+                          "text": "  - Total Time: 728.29ms\n"
+                        },
+                        {
+                          "text": "  - Avg Tick Time: 0.7283ms (Target < 2.0ms)\n"
+                        },
+                        {
+                          "text": "  - P95 Tick Time: 1.1566ms\n"
+                        },
+                        {
+                          "text": "  - P99 Tick Time: 1.4106ms\n"
+                        },
+                        {
+                          "text": "  - Max Tick Time: 2.5348ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:31.420Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c89915599dee1d4e4e9f-d94a2c30bb2f220a2579",
+              "file": "stress/swarm_bot_adversarial.spec.ts",
+              "line": 12,
+              "column": 7
+            },
+            {
+              "title": "ADV-2: Multi-Diver Swarm Intercept (30 Simultaneous Divers)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.170Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c89915599dee1d4e4e9f-d4218c7b8d6157fc2541",
+              "file": "stress/swarm_bot_adversarial.spec.ts",
+              "line": 122,
+              "column": 7
+            },
+            {
+              "title": "ADV-3A: Resilience to Non-Sparse Malformed Perception (NaN, Infinity, Missing Fields)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.182Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c89915599dee1d4e4e9f-2a711f033f1dec53ddf1",
+              "file": "stress/swarm_bot_adversarial.spec.ts",
+              "line": 171,
+              "column": 7
+            },
+            {
+              "title": "ADV-3B: Resilience to Sparse/Null Elements in Entity Arrays (Null-Safety Verified)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.192Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c89915599dee1d4e4e9f-85ef0ef519ead7f1387e",
+              "file": "stress/swarm_bot_adversarial.spec.ts",
+              "line": 214,
+              "column": 7
+            },
+            {
+              "title": "ADV-4: Zero-Health, Dead Entities, and Empty State Non-Interference",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.205Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c89915599dee1d4e4e9f-65e0318de4bd38a2177f",
+              "file": "stress/swarm_bot_adversarial.spec.ts",
+              "line": 252,
+              "column": 7
+            },
+            {
+              "title": "ADV-5: Extreme Currency Overflow & Broken Upgrade Safeguard",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.216Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c89915599dee1d4e4e9f-0155ea1c0f60dfdcd8bc",
+              "file": "stress/swarm_bot_adversarial.spec.ts",
+              "line": 319,
+              "column": 7
+            },
+            {
+              "title": "ADV-6: Continuous In-Page Controller 200 Ticks Endurance with 500 Entities",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 167,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[ADV-6 Telemetry Report]:\n"
+                        },
+                        {
+                          "text": "  - Ticks Executed: 200\n"
+                        },
+                        {
+                          "text": "  - Average Tick Duration: 0.8180ms\n"
+                        },
+                        {
+                          "text": "  - Max Tick Duration: 6.5872ms\n"
+                        },
+                        {
+                          "text": "  - Ultimates Cast: 1\n"
+                        },
+                        {
+                          "text": "  - Upgrades Total Spent: 850\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.229Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c89915599dee1d4e4e9f-6d7956df4c7997ec0f1c",
+              "file": "stress/swarm_bot_adversarial.spec.ts",
+              "line": 359,
+              "column": 7
+            },
+            {
+              "title": "ADV-7: Fuzz Stress Testing 10,000 Random Extreme States",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 73,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[ADV-7 Fuzz Report] Completed 10000 fuzz iterations in 72.00ms (avg 0.0072ms/run). All 10,000 invariants passed.\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.404Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c89915599dee1d4e4e9f-4c924df626118cdd2d93",
+              "file": "stress/swarm_bot_adversarial.spec.ts",
+              "line": 469,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "stress\\swarm_bot_engine_corner_cases.spec.ts",
+      "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Challenger 2 Empirical Verification: Corner Cases & Stress Harness",
+          "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+          "line": 95,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "1. Currency 10,000 Pure Water & Economic Stress",
+              "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+              "line": 100,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "1.1 Exact 10,000 Pure Water: Maxes Fire Rate (0.1), Multi-Shot (5), and buys Piercing (48) without infinite loops",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.498Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-18bbd0d415b20a7be51b",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 102,
+                  "column": 9
+                },
+                {
+                  "title": "1.2 Massive Currency 1,000,000 Pure Water: Caps at max piercing (99) and does not infinite loop",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.510Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-65813fd20dd8ab77144e",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 142,
+                  "column": 9
+                },
+                {
+                  "title": "1.3 Boundary Currency Testing: 0, 49, 50, 99, 100, 199, 200",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 8,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.518Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-c099703e3d51be691f61",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 169,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "2. Rapid Skill Gauge Oscillation & Idempotency Verification",
+              "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+              "line": 221,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "2.1 Burst applyDecision with Ultimate: Zero double-spending within same frame",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 4,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.532Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-f9045b6d0c21c9a5896a",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 223,
+                  "column": 9
+                },
+                {
+                  "title": "2.2 High-frequency gauge oscillation across 500 ticks: Exact cast count tracking",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 52,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.545Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-53434dc4e4e05583c873",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 247,
+                  "column": 9
+                },
+                {
+                  "title": "2.3 Burst Ally Summon double-spend attack: Never overdraws currency",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.602Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-00da36c3985829a84eba",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 276,
+                  "column": 9
+                },
+                {
+                  "title": "2.4 Strategic Skill Boundaries: Strict conditions for Ultimate and Ally",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.611Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-f4d3f24b8a6504b39401",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 297,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "3. Controller Lifecycle Torture & Dynamic Configuration",
+              "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+              "line": 350,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "3.1 500 Rapid start/stop cycles: Zero timer leaks, accurate isRunning state, clean key release",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 301,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.618Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-83dd35f8afaaa199568a",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 352,
+                  "column": 9
+                },
+                {
+                  "title": "3.2 Manual tick interleaved with running controller",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.926Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-4eda90ca40b6e9de00e8",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 369,
+                  "column": 9
+                },
+                {
+                  "title": "3.3 Dynamic setOptions and resetTelemetry on running bot",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.935Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-87536acc5823d54ea4bf",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 386,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "4. Extreme Projectile Barrage & Potential Field Solver Stress",
+              "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+              "line": 416,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "4.1 500-Bullet Dense Barrage Performance: Under 10ms execution per tick",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 7,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.946Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-63dc1c0a2c868cdbd5cd",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 418,
+                  "column": 9
+                },
+                {
+                  "title": "4.2 Multi-Diver Overload: Potential field selects gap between diving columns",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.962Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-d4ece52f1db511fffa8b",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 465,
+                  "column": 9
+                },
+                {
+                  "title": "4.3 Empty Perception Edge Case: No crash, defaults to safe center positioning",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-21T12:16:32.969Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "50bc1ba27e95efcb2c21-484aeeef019409815dea",
+                  "file": "stress/swarm_bot_engine_corner_cases.spec.ts",
+                  "line": 495,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "stress\\swarm_bot_engine.spec.ts",
+      "file": "stress/swarm_bot_engine.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Milestone 1: Swarm Bot Engine Core Unit & Simulation Suite",
+          "file": "stress/swarm_bot_engine.spec.ts",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1. 1D Potential Field Evasion: Dodges incoming high-speed bullet",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.985Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0e58cae294b18b9b5c37-b396182f1e5966e4ed13",
+              "file": "stress/swarm_bot_engine.spec.ts",
+              "line": 12,
+              "column": 7
+            },
+            {
+              "title": "2. Barricade Shadowing: Stone (0.02x) and Ice (0.2x) suppress bullet threat potential",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:32.994Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0e58cae294b18b9b5c37-6a4e8afb1af04e9caeed",
+              "file": "stress/swarm_bot_engine.spec.ts",
+              "line": 72,
+              "column": 7
+            },
+            {
+              "title": "3. Diver Crash Alert: Heavy penalty for diver column intercept",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:33.000Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0e58cae294b18b9b5c37-42aab8a1e29c873b73d5",
+              "file": "stress/swarm_bot_engine.spec.ts",
+              "line": 127,
+              "column": 7
+            },
+            {
+              "title": "4. Strategic Skills: Ultimate (E) triggers at gauge >= 100 with >= 3 enemies or Boss",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:33.011Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0e58cae294b18b9b5c37-0ffd70c92e8ab97703fd",
+              "file": "stress/swarm_bot_engine.spec.ts",
+              "line": 172,
+              "column": 7
+            },
+            {
+              "title": "5. Strategic Skills: Ally Summon (Q) triggers at currency >= 50 with >= 6 enemies or Y > 450",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:33.018Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0e58cae294b18b9b5c37-abdece9a6af8f62e63e5",
+              "file": "stress/swarm_bot_engine.spec.ts",
+              "line": 231,
+              "column": 7
+            },
+            {
+              "title": "6. In-Game Economy Auto-Buyer: Evaluates upgrades in strict priority (FireRate -> MultiShot -> Piercing)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:33.028Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0e58cae294b18b9b5c37-f6e10becb5ea218b043b",
+              "file": "stress/swarm_bot_engine.spec.ts",
+              "line": 286,
+              "column": 7
+            },
+            {
+              "title": "7. Zero-Latency In-Page Injection: injectSwarmBot lifecycle & telemetry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 65,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:33.041Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0e58cae294b18b9b5c37-c39288080985d7b8c9fb",
+              "file": "stress/swarm_bot_engine.spec.ts",
+              "line": 367,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "stress\\telemetry_stress_collector.spec.ts",
+      "file": "stress/telemetry_stress_collector.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Milestone 2: Telemetry Stress Collector Unit & Integration Suite",
+          "file": "stress/telemetry_stress_collector.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1. Statistical Computation Engine: Durations, CI95, Memory, FPS, Upgrades, and Anomalies",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:33.118Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "593ab34daa607e888b57-d33dc6b997b00b38462d",
+              "file": "stress/telemetry_stress_collector.spec.ts",
+              "line": 13,
+              "column": 7
+            },
+            {
+              "title": "2. In-Page Telemetry Hook Lifecycle & Snapshot Extraction in Headless Browser",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 149,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:33.135Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "593ab34daa607e888b57-4d306a558c6065cf8f32",
+              "file": "stress/telemetry_stress_collector.spec.ts",
+              "line": 195,
+              "column": 7
+            },
+            {
+              "title": "3. Anomaly Watchdog Detection: NaN Coordinates, Projectile Overload, and Unhandled Rejections",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 149,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-21T12:16:33.290Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "593ab34daa607e888b57-f9b567f9e880dbb7093c",
+              "file": "stress/telemetry_stress_collector.spec.ts",
+              "line": 303,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-21T12:15:53.795Z",
+    "duration": 39764.74,
+    "expected": 34,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -79,7 +79,7 @@ export class GameManager {
   }
 
   public pause(): void {
-    if (this.state === GameState.PLAYING) {
+    if (this.state === GameState.PLAYING || this.state === GameState.SHOP) {
       this.isPaused = true;
       if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
@@ -128,7 +128,9 @@ export class GameManager {
     this.pendingReinforcement = null;
     
     this.spawnBarricades();
-    this.spawnWave();
+    this.state = GameState.SHOP;
+          if (this.onStateChange) this.onStateChange(GameState.SHOP);
+          this.pause();
     
     if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
     this.updateScoreUI();
@@ -147,7 +149,23 @@ export class GameManager {
     this.barricades.push(new Barricade(startX + padding * 3, y, BarricadeType.DESTRUCTIBLE));
   }
 
-  public start() {
+  
+    public startNextWave() {
+      this.state = GameState.PLAYING;
+      this.isPaused = false;
+      this.level++;
+      this.spawnWave();
+      this.updateScoreUI();
+      if (this.onStateChange) this.onStateChange(GameState.PLAYING);
+      
+      this.lastTime = performance.now();
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+      }
+      this.animationFrameId = requestAnimationFrame(this.loop);
+    }
+
+    public start() {
     this.startGame();
   }
 
@@ -364,12 +382,12 @@ export class GameManager {
     if (this.enemies.length === 0 && this.warningTimer <= 0) {
       if (!this.isResting) {
         this.isResting = true;
-        this.waveRestTimer = 3.0;
+        this.waveRestTimer = 1.5;
       }
       
       this.waveRestTimer -= deltaTime;
       if (this.waveRestTimer <= 0) {
-        this.level++;
+        
         this.spawnWave();
         this.isResting = false;
         this.updateScoreUI();

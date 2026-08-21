@@ -16,6 +16,8 @@ export class Player extends Entity {
   // Dynamic mechanics
   public suppressionLevel: number = 0; // 0 to 100. High = less accuracy
   public stressLevel: number = 0; // 0 to 100. High = faster fire rate
+  public invincibilityTimer: number = 0; // 0 to 1.0s i-frames
+  public hitFlashTimer: number = 0;
   
   private fireTimer: number = 0;
   public isMovingLeft: boolean = false;
@@ -40,6 +42,16 @@ export class Player extends Entity {
 
   public update(deltaTime: number): Bullet[] {
     this.timeAlive += deltaTime;
+
+    if (this.hitFlashTimer > 0) {
+      this.hitFlashTimer -= deltaTime;
+      if (this.hitFlashTimer < 0) this.hitFlashTimer = 0;
+    }
+
+    if (this.invincibilityTimer > 0) {
+      this.invincibilityTimer -= deltaTime;
+      if (this.invincibilityTimer < 0) this.invincibilityTimer = 0;
+    }
     
     if (this.isMovingLeft) {
       this.position.x -= this.speed * deltaTime;
@@ -94,32 +106,62 @@ export class Player extends Entity {
     const getSpread = () => (Math.random() - 0.5) * 2 * spread;
 
     // Multi-shot logic
+    const centerX = this.position.x + this.size.width / 2 - 3;
+    const baseSpeed = 400;
+
     if (this.multiShot === 1) {
-      const b = new Bullet(this.position.x + this.size.width / 2 - 3, this.position.y, -400, 1, true, this.piercing);
+      const b = new Bullet(centerX, this.position.y, -baseSpeed, 1, true, this.piercing);
       b.velocity.x = getSpread();
       bullets.push(b);
     } else if (this.multiShot === 2) {
-      const b1 = new Bullet(this.position.x + 10, this.position.y, -400, 1, true, this.piercing);
+      const b1 = new Bullet(this.position.x + 10, this.position.y, -baseSpeed, 1, true, this.piercing);
       b1.velocity.x = getSpread() - 20;
-      const b2 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -400, 1, true, this.piercing);
+      const b2 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -baseSpeed, 1, true, this.piercing);
       b2.velocity.x = getSpread() + 20;
       bullets.push(b1, b2);
+    } else if (this.multiShot === 3) {
+      const angles = [-10, 0, 10];
+      angles.forEach((angle, index) => {
+        const rad = angle * (Math.PI / 180);
+        const offsetX = (index - 1) * 15;
+        const b = new Bullet(centerX + offsetX, this.position.y - (angle === 0 ? 5 : 0), -baseSpeed * Math.cos(rad), 1, true, this.piercing);
+        b.velocity.x = baseSpeed * Math.sin(rad) + getSpread();
+        bullets.push(b);
+      });
+    } else if (this.multiShot === 4) {
+      const angles = [-15, -5, 5, 15];
+      angles.forEach((angle, index) => {
+        const rad = angle * (Math.PI / 180);
+        const offsetX = (index - 1.5) * 10;
+        const b = new Bullet(centerX + offsetX, this.position.y, -baseSpeed * Math.cos(rad), 1, true, this.piercing);
+        b.velocity.x = baseSpeed * Math.sin(rad) + getSpread();
+        bullets.push(b);
+      });
     } else {
-      const b1 = new Bullet(this.position.x + 10, this.position.y, -400, 1, true, this.piercing);
-      b1.velocity.x = getSpread() - 40;
-      const b2 = new Bullet(this.position.x + this.size.width / 2 - 3, this.position.y - 10, -400, 1, true, this.piercing);
-      b2.velocity.x = getSpread();
-      const b3 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -400, 1, true, this.piercing);
-      b3.velocity.x = getSpread() + 40;
-      bullets.push(b1, b2, b3);
+      // multiShot >= 5
+      const angles = [-20, -10, 0, 10, 20];
+      angles.forEach((angle, index) => {
+        const rad = angle * (Math.PI / 180);
+        const offsetX = (index - 2) * 8;
+        const b = new Bullet(centerX + offsetX, this.position.y - (angle === 0 ? 5 : 0), -baseSpeed * Math.cos(rad), 1, true, this.piercing);
+        b.velocity.x = baseSpeed * Math.sin(rad) + getSpread();
+        bullets.push(b);
+      });
     }
     
     return bullets;
   }
 
-      public draw(ctx: CanvasRenderingContext2D): void {
+  public draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     
+    // i-Frames Flicker
+    if (this.invincibilityTimer > 0) {
+      const isFlicker = Math.floor(this.timeAlive * 30) % 2 === 0;
+      ctx.globalAlpha = isFlicker ? 0.3 : 0.85;
+    }
+    
+    const isFlashing = this.hitFlashTimer > 0;
     const isStressed = this.stressLevel > 50;
     const isSuppressed = this.suppressionLevel > 50;
     
@@ -127,7 +169,11 @@ export class Player extends Entity {
     let jitterX = 0;
     let jitterY = 0;
     
-    if (isSuppressed) {
+    if (isFlashing) {
+      glowColor = '#ffffff';
+      ctx.shadowBlur = 30;
+      ctx.shadowColor = '#ffffff';
+    } else if (isSuppressed) {
       glowColor = '#94a3b8';
       jitterX = (Math.random() - 0.5) * 4;
       jitterY = (Math.random() - 0.5) * 4;
@@ -135,8 +181,10 @@ export class Player extends Entity {
       glowColor = '#ef4444';
     }
     
-    ctx.shadowBlur = isStressed ? 25 : 15;
-    ctx.shadowColor = glowColor;
+    if (!isFlashing) {
+      ctx.shadowBlur = isStressed ? 25 : 15;
+      ctx.shadowColor = glowColor;
+    }
     
     // Breathing/bouncing animation
     const bounce = Math.sin(this.timeAlive * 8) * 3;
@@ -161,7 +209,7 @@ export class Player extends Entity {
     }
     
     // Cute Droplet Shape
-    ctx.fillStyle = grad;
+    ctx.fillStyle = isFlashing ? '#ffffff' : grad;
     ctx.beginPath();
     ctx.moveTo(cx, cy - h - 10); // pointy top
     ctx.bezierCurveTo(cx + w + 5, cy - h/2, cx + w + 5, cy + h, cx, cy + h); // right belly

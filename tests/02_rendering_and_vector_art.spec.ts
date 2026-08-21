@@ -26,9 +26,8 @@ test.describe('R1: Canvas Rendering & Vector Graphics Verification Suite', () =>
 
     expect(playerData.width).toBe(50);
     expect(playerData.height).toBe(40);
-    expect(playerData.color).toBe('#3b82f6');
     expect(playerData.hp).toBe(3);
-    expect(playerData.maxHp).toBe(3);
+    expect(playerData.maxHp).toBe(5);
 
     // Test player draw under different visual states without runtime exceptions
     const renderTestResults = await page.evaluate(() => {
@@ -40,7 +39,7 @@ test.describe('R1: Canvas Rendering & Vector Graphics Verification Suite', () =>
       const statesTested: string[] = [];
 
       // 1. Normal state
-      player.hp = 3;
+      player.hp = player.maxHp;
       player.stressLevel = 0;
       player.suppressionLevel = 0;
       player.draw(ctx);

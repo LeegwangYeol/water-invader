@@ -8,10 +8,11 @@ export default defineConfig({
   },
   fullyParallel: false,
   workers: 1,
+  outputDir: 'test-artifacts',
   reporter: [
     ['list'],
-    ['json', { outputFile: 'test-results/results.json' }],
-    ['html', { outputFolder: 'test-results/html-report', open: 'never' }]
+    ['json', { outputFile: 'test-results.json' }],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }]
   ],
   use: {
     baseURL: process.env.TARGET_URL || 'https://water-invader.vercel.app',

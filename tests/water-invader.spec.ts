@@ -24,9 +24,11 @@ test.describe('Water Invader E2E Master Verification Suite', () => {
     await expect(hudWave).toBeVisible();
 
     // 3. Movement and Firing
-    await page.keyboard.press('ArrowLeft');
-    await page.keyboard.press('Space');
-    await page.waitForTimeout(200);
+    await page.keyboard.down('ArrowLeft');
+    await page.keyboard.down('Space');
+    await page.waitForTimeout(400);
+    await page.keyboard.up('Space');
+    await page.keyboard.up('ArrowLeft');
 
     const hasBullets = await page.evaluate(() => (window as any).gameManager.bullets.length > 0);
     expect(hasBullets).toBe(true);

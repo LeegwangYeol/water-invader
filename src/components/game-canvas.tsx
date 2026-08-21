@@ -361,13 +361,11 @@ export default function GameCanvas() {
         </div>
       )}
 
-      {gameState === GameState.GAME_OVER && (
+      
+      {gameState === GameState.SHOP && (
         <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
-          <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-2">GAME OVER</h1>
-          {gameOverReason && (
-            <p className="text-lg sm:text-xl text-red-300 font-bold mb-4 text-center">{gameOverReason}</p>
-          )}
-          <p className="text-xl sm:text-2xl text-white mb-8">Final {t('점수:', 'Score:')} {score}</p>
+          <h1 className="text-4xl sm:text-5xl font-black text-blue-400 mb-2">WAVE CLEARED</h1>
+          <p className="text-xl sm:text-2xl text-white mb-8">Prepare for next wave!</p>
           
           {/* Shop */}
           <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-8 text-white w-full max-w-sm">
@@ -409,6 +407,25 @@ export default function GameCanvas() {
               >{upgrades.piercing >= 5 ? "MAX" : "200 💧"}</button>
             </div>
           </div>
+          
+          <button 
+            onClick={() => gameManagerRef.current?.startNextWave()}
+            className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-4"
+          >
+            NEXT WAVE
+          </button>
+        </div>
+      )}
+
+      {gameState === GameState.GAME_OVER && (
+        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
+          <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-2">GAME OVER</h1>
+          {gameOverReason && (
+            <p className="text-lg sm:text-xl text-red-300 font-bold mb-4 text-center">{gameOverReason}</p>
+          )}
+          <p className="text-xl sm:text-2xl text-white mb-8">Final {t('점수:', 'Score:')} {score}</p>
+          
+          
 
           <button 
             onClick={startGame}

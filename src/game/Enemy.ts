@@ -14,9 +14,11 @@ export enum EnemyType {
 
 export class Enemy extends Entity {
   public hp: number;
+  public maxHp: number;
   private canvasWidth: number;
   public type: EnemyType = EnemyType.NORMAL;
-    public isGnawing: boolean = false;
+  public isGnawing: boolean = false;
+  public hitFlashTimer: number = 0;
   
   // Movement pattern
   private direction: number = 1; // 1 for right, -1 for left
@@ -30,12 +32,14 @@ export class Enemy extends Entity {
   
   public isDiving: boolean = false;
   public shieldHp: number = 0;
-  private shieldRegenTimer: number = 0;
+  public shieldRegenTimer: number = 0;
+  public level: number = 1;
 
   constructor(x: number, y: number, canvasWidth: number, level: number, type: EnemyType = EnemyType.NORMAL) {
     super(x, y, 40, 30);
     this.canvasWidth = canvasWidth;
     this.startY = y;
+    this.level = level;
     this.type = type;
     this.hp = 1 + Math.floor(level / 3);
     
@@ -68,10 +72,16 @@ export class Enemy extends Entity {
       this.canEvade = false; // 20% of normal enemies can evade
     }
     
+    this.maxHp = this.hp;
     this.fireTimer = Math.random() * 3 + 1; // 1 to 4 seconds
   }
 
   public update(deltaTime: number, speedMultiplier: number = 1.0, bullets: Bullet[] = [], playerPos?: Vector2D): void {
+    if (this.hitFlashTimer > 0) {
+      this.hitFlashTimer -= deltaTime;
+      if (this.hitFlashTimer < 0) this.hitFlashTimer = 0;
+    }
+
     const currentSpeedX = this.speedX * speedMultiplier;
     const currentSpeedY = this.speedY * speedMultiplier;
 
@@ -95,6 +105,7 @@ export class Enemy extends Entity {
       this.shieldRegenTimer -= deltaTime;
       if (this.shieldRegenTimer <= 0) {
         this.shieldHp = 3; // Regenerate shield
+        this.shieldRegenTimer = 0;
       }
     }
 
@@ -186,7 +197,14 @@ export class Enemy extends Entity {
       ctx.stroke();
     }
     
-    ctx.fillStyle = this.color;
+    const isFlashing = this.hitFlashTimer > 0;
+    if (isFlashing) {
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 20;
+    } else {
+      ctx.fillStyle = this.color;
+    }
     
     if (this.type === EnemyType.BOSS) {
       // Menacing Boss Skull/Machine
