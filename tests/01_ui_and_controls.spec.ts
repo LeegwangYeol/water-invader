@@ -24,8 +24,8 @@ test.describe('R1: UI & Controls Verification Suite', () => {
     expect(canvasWidth).toBe(600);
     expect(canvasHeight).toBe(800);
 
-    // 3. Menu elements
-    const menuTitle = page.locator('h1', { hasText: 'Water Invader' });
+    // 3. Menu elements (using first() to account for layout header + canvas overlay)
+    const menuTitle = page.locator('h1', { hasText: 'Water Invader' }).first();
     await expect(menuTitle).toBeVisible();
 
     const startBtn = page.locator('button', { hasText: 'START GAME' });
@@ -70,7 +70,7 @@ test.describe('R1: UI & Controls Verification Suite', () => {
     expect(hasGameManager).toBe(true);
 
     const gameState = await page.evaluate(() => (window as any).gameManager.state);
-    expect(gameState).toBe(1); // GameState.PLAYING = 1
+    expect(gameState).toBe('PLAYING'); // GameState.PLAYING = 'PLAYING'
 
     // HUD element verification
     const scoreText = page.locator('h2', { hasText: /Score:|점수:/i });

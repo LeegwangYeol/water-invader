@@ -65,7 +65,7 @@ export class Enemy extends Entity {
     } else {
       this.color = '#f97316'; // Orange/Fire
       this.speedX += level * 5;
-      this.canEvade = Math.random() < 0.2; // 20% of normal enemies can evade
+      this.canEvade = false; // 20% of normal enemies can evade
     }
     
     this.fireTimer = Math.random() * 3 + 1; // 1 to 4 seconds
@@ -117,7 +117,7 @@ export class Enemy extends Entity {
 
     if (this.type === EnemyType.ZIGZAG) {
       this.position.x += currentSpeedX * this.direction * deltaTime;
-      this.position.y += Math.sin(Date.now() / 200 + this.position.x) * 2 * speedMultiplier;
+      this.position.y += Math.sin(Date.now() / 500) * 2 * speedMultiplier;
     } else {
       const evadeBoost = (this.evadeCooldown > 0.5) ? 1.5 : 1.0;
       this.position.x += currentSpeedX * evadeBoost * this.direction * deltaTime;

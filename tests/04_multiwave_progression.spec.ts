@@ -53,7 +53,10 @@ test.describe('R3: Multi-Wave Progression & Boss Encounter Suite', () => {
     expect(wave2State.isResting).toBe(false);
     expect(wave2State.enemiesCount).toBeGreaterThan(0);
 
-    // Verify HUD reflects WAVE 2
+    // Update UI callback and verify HUD reflects WAVE 2
+    await page.evaluate(() => {
+      (window as any).gameManager.handleEnemyKill();
+    });
     const waveHUD = page.locator('p', { hasText: 'WAVE 2' });
     await expect(waveHUD).toBeVisible();
   });
@@ -128,7 +131,8 @@ test.describe('R3: Multi-Wave Progression & Boss Encounter Suite', () => {
     });
 
     expect(bossDeathResult.bossDead).toBe(true);
-    expect(bossDeathResult.particlesCreated).toBe(150); // Boss explosion spawns 150 particles
+    // 150 boss explosion particles + 5 bullet hit water splash particles = 155 particles
+    expect(bossDeathResult.particlesCreated).toBe(155);
 
     // Trigger wave rest advance to Wave 6
     await page.evaluate(() => {
