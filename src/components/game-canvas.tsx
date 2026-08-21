@@ -9,6 +9,7 @@ export default function GameCanvas() {
   const gameManagerRef = useRef<GameManager | null>(null);
   
   const [gameState, setGameState] = useState<GameState>(GameState.MENU);
+  const [gameOverReason, setGameOverReason] = useState<string>("");
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [currency, setCurrency] = useState(0);
@@ -70,6 +71,7 @@ export default function GameCanvas() {
       if (state === GameState.GAME_OVER) {
         const saved = localStorage.getItem('waterInvaderHighScore');
         if (saved) setHighScore(parseInt(saved, 10));
+        setGameOverReason(game.gameOverReason);
       }
     };
     game.onScoreChange = (newScore, newCurrency, newCombo, newWave, newUltimate) => {
@@ -306,7 +308,10 @@ export default function GameCanvas() {
 
       {gameState === GameState.GAME_OVER && (
         <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
-          <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-4">GAME OVER</h1>
+          <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-2">GAME OVER</h1>
+          {gameOverReason && (
+            <p className="text-lg sm:text-xl text-red-300 font-bold mb-4 text-center">{gameOverReason}</p>
+          )}
           <p className="text-xl sm:text-2xl text-white mb-8">Final Score: {score}</p>
           
           {/* Shop */}

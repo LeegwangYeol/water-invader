@@ -4,6 +4,7 @@ import { Enemy, EnemyType } from './Enemy';
 import { Bullet } from './Bullet';
 import { Particle } from './Particle';
 import { Barricade, BarricadeType } from './Barricade';
+import { Helper, HelperType } from './Helper';
 import { soundManager } from './SoundManager';
 
 export class GameManager {
@@ -17,6 +18,7 @@ export class GameManager {
   public bullets: Bullet[] = [];
   public particles: Particle[] = [];
   public barricades: Barricade[] = [];
+  public helpers: Helper[] = [];
   
   private lastTime: number = 0;
   private animationFrameId: number = 0;
@@ -181,10 +183,18 @@ export class GameManager {
                this.enemies.push(new Enemy(50 + i * 100, 20, this.canvas.width, this.level + 2, EnemyType.ZIGZAG));
             }
           } else if (this.pendingReinforcement === 'ALLY') {
-            // Spawn friendly droplets that shoot upwards automatically
-            for (let i = 0; i < 5; i++) {
-              this.bullets.push(new Bullet(this.canvas.width/6 * (i+1), this.canvas.height - 20, -500, 2, true));
-              this.createExplosion(this.canvas.width/6 * (i+1), this.canvas.height - 20, '#4ade80', 10);
+            // Spawn friendly helpers (FIGHTER, REPAIRER, TANK)
+            const count = Math.floor(Math.random() * 3) + 1; // 1 to 3
+            for (let i = 0; i < count; i++) {
+              const type = Math.floor(Math.random() * 3); // 0, 1, 2
+              this.helpers.push(new Helper(
+                 Math.random() * (this.canvas.width - 40), 
+                 this.canvas.height - 80, 
+                 this.canvas.width, 
+                 this.canvas.height, 
+                 type as HelperType
+              ));
+              this.createExplosion(this.canvas.width/2, this.canvas.height - 20, '#4ade80', 20);
             }
           }
           this.pendingReinforcement = null;
@@ -212,8 +222,15 @@ export class GameManager {
         
         // Game over if enemy reaches bottom
         if (enemy.position.y + enemy.size.height >= this.player.position.y) {
-          this.gameOver();
+          this.gameOver("외계 오염물질이 방어선을 돌파했습니다!");
         }
+      });
+      
+      this.helpers.forEach(helper => {
+         const newBullets = helper.update(deltaTime, this.barricades);
+         if (newBullets && newBullets.length > 0) {
+            this.bullets.push(...newBullets);
+         }
       });
       
       this.barricades.forEach(barricade => barricade.update(deltaTime));
@@ -231,6 +248,7 @@ export class GameManager {
     
     // Cleanup dead entities
     this.enemies = this.enemies.filter(e => !e.isDead);
+    this.helpers = this.helpers.filter(h => !h.isExpired());
     this.bullets = this.bullets.filter(b => 
       !b.isDead && 
       b.position.y > -50 && 
@@ -324,6 +342,22 @@ export class GameManager {
           }
         }
       } else {
+        // Enemy bullet vs Helpers
+        let hitHelper = false;
+        for (const helper of this.helpers) {
+          if (bullet.checkCollision(helper)) {
+            bullet.isDead = true;
+            hitHelper = true;
+            if (!helper.isInvincible) {
+               helper.hp -= bullet.damage;
+               this.createExplosion(bullet.position.x, bullet.position.y, helper.color, 10);
+            }
+            break;
+          }
+        }
+        
+        if (hitHelper) continue;
+
         // Enemy bullet vs Player
         if (bullet.checkCollision(this.player)) {
           bullet.isDead = true;
@@ -342,7 +376,7 @@ export class GameManager {
             if (this.player.hp <= 0) {
               this.createExplosion(this.player.position.x + this.player.size.width/2, this.player.position.y + this.player.size.height/2, '#38bdf8', 200, 3.5);
               this.triggerScreenShake(2.0);
-              this.gameOver();
+              this.gameOver("정수기가 파괴되었습니다. (체력 소진)");
             }
           }
         } else {
@@ -385,7 +419,10 @@ export class GameManager {
     }
   }
 
-  private gameOver() {
+  public gameOverReason: string = "";
+
+  private gameOver(reason: string) {
+    this.gameOverReason = reason;
     this.state = GameState.GAME_OVER;
     
     try {
@@ -434,6 +471,7 @@ export class GameManager {
     // Draw Entities
     this.barricades.forEach(b => b.draw(this.ctx));
     this.player.draw(this.ctx);
+    this.helpers.forEach(h => h.draw(this.ctx));
     this.enemies.forEach(e => e.draw(this.ctx));
     this.bullets.forEach(b => b.draw(this.ctx));
     this.particles.forEach(p => p.draw(this.ctx));
@@ -444,7 +482,7 @@ export class GameManager {
       this.ctx.strokeStyle = '#ff00ff'; // Magenta for hitboxes
       
       // Draw hitboxes
-      [this.player, ...this.enemies, ...this.bullets, ...this.barricades].forEach(entity => {
+      [this.player, ...this.enemies, ...this.helpers, ...this.bullets, ...this.barricades].forEach(entity => {
         if (!entity.isDead) {
           const r = entity.getRect();
           this.ctx.strokeRect(r.x, r.y, r.width, r.height);
