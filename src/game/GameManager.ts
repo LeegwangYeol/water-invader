@@ -48,6 +48,13 @@ export class GameManager {
   public isResting: boolean = false;
   public waveRestTimer: number = 0;
   
+  public readonly logicalWidth: number = 600;
+  public readonly logicalHeight: number = 800;
+  public dpr: number = 1;
+  
+  public isPaused: boolean = false;
+  public keysPressed: { [key: string]: boolean } = {};
+
   // Callbacks for React UI updates
   public onStateChange?: (state: GameState) => void;
   public onScoreChange?: (score: number, currency: number, combo: number, wave: number, ultimateGauge: number) => void;
@@ -56,20 +63,56 @@ export class GameManager {
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
+    this.dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+    this.canvas.width = this.logicalWidth * this.dpr;
+    this.canvas.height = this.logicalHeight * this.dpr;
     this.init();
+  }
+
+  public clearKeys(): void {
+    this.keysPressed = {};
+    if (this.player) {
+      this.player.isMovingLeft = false;
+      this.player.isMovingRight = false;
+      this.player.isShooting = false;
+    }
+  }
+
+  public pause(): void {
+    if (this.state === GameState.PLAYING) {
+      this.isPaused = true;
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = 0;
+      }
+      this.clearKeys();
+    }
+  }
+
+  public resume(): void {
+    if (this.state === GameState.PLAYING && this.isPaused) {
+      this.isPaused = false;
+      this.lastTime = performance.now();
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+      }
+      this.animationFrameId = requestAnimationFrame(this.loop);
+    }
   }
 
   public init() {
     if (!this.player) {
-      this.player = new Player(this.canvas.width, this.canvas.height);
+      this.player = new Player(this.logicalWidth, this.logicalHeight);
     } else {
-      this.player.hp = this.player.maxHp;
+      this.player.hp = 3;
       this.player.stressLevel = 0;
       this.player.suppressionLevel = 0;
+      this.player.invincibilityTimer = 0;
       this.player.ultimateGauge = 0;
-      this.player.position.x = this.canvas.width / 2 - 25;
-      this.player.position.y = this.canvas.height - 60;
+      this.player.position.x = this.logicalWidth / 2 - 25;
+      this.player.position.y = this.logicalHeight - 60;
     }
+    this.clearKeys();
     this.enemies = [];
     this.bullets = [];
     this.particles = [];
@@ -77,6 +120,7 @@ export class GameManager {
     this.combo = 0;
     this.level = 1;
     this.shakeTimer = 0;
+    this.isPaused = false;
     
     this.reinforcementTimer = 10;
     this.warningTimer = 0;
@@ -94,8 +138,8 @@ export class GameManager {
     this.barricades = [];
     // 4 barricades. 1st and 4th are destructible ice. 2nd and 3rd are indestructible stone.
     const padding = 150;
-    const startX = (this.canvas.width - (3 * padding + 60)) / 2;
-    const y = this.canvas.height - 150;
+    const startX = (this.logicalWidth - (3 * padding + 60)) / 2;
+    const y = this.logicalHeight - 150;
     
     this.barricades.push(new Barricade(startX, y, BarricadeType.DESTRUCTIBLE));
     this.barricades.push(new Barricade(startX + padding, y, BarricadeType.INDESTRUCTIBLE));
@@ -103,22 +147,35 @@ export class GameManager {
     this.barricades.push(new Barricade(startX + padding * 3, y, BarricadeType.DESTRUCTIBLE));
   }
 
+  public start() {
+    this.startGame();
+  }
+
   public startGame() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = 0;
+    }
     soundManager.init();
     this.state = GameState.PLAYING;
+    this.isPaused = false;
     if (this.onStateChange) this.onStateChange(this.state);
     this.lastTime = performance.now();
     this.loop(this.lastTime);
   }
 
   public stopGame() {
-    cancelAnimationFrame(this.animationFrameId);
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = 0;
+    }
+    this.clearKeys();
   }
 
   private spawnWave() {
     if (this.level % 5 === 0) {
-      // Boss wave
-      const boss = new Enemy(this.canvas.width / 2 - 100, 50, this.canvas.width, this.level, EnemyType.BOSS);
+      // Boss wave (F-13: spawn Y lowered to 90)
+      const boss = new Enemy(this.logicalWidth / 2 - 75, 90, this.logicalWidth, this.level, EnemyType.BOSS);
       this.enemies.push(boss);
       return;
     }
@@ -127,7 +184,7 @@ export class GameManager {
     const cols = 6 + Math.floor(this.level / 3);
     const paddingX = 60;
     const paddingY = 50;
-    const offsetX = (this.canvas.width - ((cols - 1) * paddingX)) / 2;
+    const offsetX = (this.logicalWidth - ((cols - 1) * paddingX)) / 2;
     
     let specialCount = 0;
     const maxSpecials = Math.max(1, Math.min(1 + Math.floor(this.level / 2), 4)); // 1~2 early on, cap at 4
@@ -144,8 +201,8 @@ export class GameManager {
           specialCount++;
         }
         
-        // Ensure starting Y is high enough so player has more vertical space
-        this.enemies.push(new Enemy(offsetX + c * paddingX, 40 + r * paddingY, this.canvas.width, this.level, type));
+        // F-13: Spawn Y offset at 80 so enemies and bullets do not emerge behind top HUD overlay cards
+        this.enemies.push(new Enemy(offsetX + c * paddingX, 80 + r * paddingY, this.logicalWidth, this.level, type));
       }
     }
   }
@@ -195,9 +252,9 @@ export class GameManager {
         if (this.warningTimer <= 0 && this.pendingReinforcement) {
           // Spawn reinforcement
           if (this.pendingReinforcement === 'ENEMY') {
-            // Spawn rapid zigzag enemies
+            // Spawn rapid zigzag enemies (spawn Y at 80)
             for (let i = 0; i < 4; i++) {
-               this.enemies.push(new Enemy(50 + i * 100, 20, this.canvas.width, this.level + 2, EnemyType.ZIGZAG));
+               this.enemies.push(new Enemy(50 + i * 100, 80, this.logicalWidth, this.level + 2, EnemyType.ZIGZAG));
             }
           } else if (this.pendingReinforcement === 'ALLY') {
             // Spawn friendly helpers (FIGHTER, REPAIRER, TANK)
@@ -205,13 +262,13 @@ export class GameManager {
             for (let i = 0; i < count; i++) {
               const type = Math.floor(Math.random() * 3); // 0, 1, 2
               this.helpers.push(new Helper(
-                 Math.random() * (this.canvas.width - 40), 
-                 this.canvas.height - 80, 
-                 this.canvas.width, 
-                 this.canvas.height, 
+                 Math.random() * (this.logicalWidth - 40), 
+                 this.logicalHeight - 80, 
+                 this.logicalWidth, 
+                 this.logicalHeight, 
                  type as HelperType
               ));
-              this.createExplosion(this.canvas.width/2, this.canvas.height - 20, '#4ade80', 20);
+              this.createExplosion(this.logicalWidth / 2, this.logicalHeight - 20, '#4ade80', 20);
             }
           }
           this.pendingReinforcement = null;
@@ -230,42 +287,48 @@ export class GameManager {
       }
 
       // Entities
-      const speedMultiplier = Math.max(1.0, 1.0 + (20 - Math.min(20, this.enemies.length)) * 0.1);
+      // Smooth scaling: scales smoothly from 1.0x to 1.8x as enemies decrease
+      const speedMultiplier = Math.min(1.8, Math.max(1.0, 1.0 + (20 - Math.min(20, this.enemies.length)) * 0.04));
       
       this.enemies.forEach(enemy => {
         enemy.update(deltaTime, speedMultiplier, this.bullets, this.player.position);
         const bullet = enemy.fire(this.player.position);
         if (bullet) this.bullets.push(bullet);
         
-                  // Enemies reaching the bottom line cost 1 HP instead of instant game over
-          if (enemy.position.y + enemy.size.height >= this.player.position.y) {
-            if (enemy.position.y > this.canvas.height) {
-              enemy.isDead = true; // Escaped off screen
-              if (!this.isGodMode) {
-                 this.player.hp -= 1; // Penalty for letting them pass
-                 this.player.stressLevel = Math.min(100, this.player.stressLevel + 20);
-                 this.triggerScreenShake(0.5);
-                 if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
-                 if (this.player.hp <= 0) {
-                    this.gameOver("워터 인베이더가 방어선을 돌파했습니다! (체력 소진)");
-                 }
-              }
-            } else if (enemy.checkCollision(this.player)) {
-              enemy.isDead = true;
-              if (!this.isGodMode) {
-                this.player.hp -= 1;
-                this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
-                this.createExplosion(this.player.position.x, this.player.position.y, '#ef4444', 10);
-                this.triggerScreenShake(0.5);
-                if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
-                if (this.player.hp <= 0) this.gameOver("정수기능이 파괴되었습니다 (체력 소진)");
-              }
+        // Enemies reaching the bottom line cost 1 HP instead of instant game over
+        if (enemy.position.y + enemy.size.height >= this.player.position.y) {
+          if (enemy.position.y > this.logicalHeight) {
+            enemy.isDead = true; // Escaped off screen
+            if (!this.isGodMode) {
+               this.player.hp -= 1; // Penalty for letting them pass
+               this.player.hitFlashTimer = 0.08;
+               soundManager.playPlayerHit();
+               this.player.stressLevel = Math.min(100, this.player.stressLevel + 20);
+               this.triggerScreenShake(0.5);
+               if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+               if (this.player.hp <= 0) {
+                  this.gameOver("워터 인베이더가 방어선을 돌파했습니다! (체력 소진)");
+               }
+            }
+          } else if (enemy.checkCollision(this.player)) {
+            enemy.isDead = true;
+            if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
+              this.player.hp -= 1;
+              this.player.hitFlashTimer = 0.08;
+              this.player.invincibilityTimer = 1.0;
+              soundManager.playPlayerHit();
+              this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
+              this.createExplosion(this.player.position.x, this.player.position.y, '#ef4444', 10);
+              this.triggerScreenShake(0.5);
+              if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+              if (this.player.hp <= 0) this.gameOver("정수기능이 파괴되었습니다 (체력 소진)");
             }
           }
-        });
+        }
+      });
       
       this.helpers.forEach(helper => {
-         const newBullets = helper.update(deltaTime, this.barricades);
+         const newBullets = helper.update(deltaTime, this.barricades, this.enemies, this.bullets);
          if (newBullets && newBullets.length > 0) {
             this.bullets.push(...newBullets);
          }
@@ -290,9 +353,9 @@ export class GameManager {
     this.bullets = this.bullets.filter(b => 
       !b.isDead && 
       b.position.y > -50 && 
-      b.position.y < this.canvas.height + 50 &&
+      b.position.y < this.logicalHeight + 50 &&
       b.position.x > -100 &&
-      b.position.x < this.canvas.width + 100
+      b.position.x < this.logicalWidth + 100
     );
     this.particles = this.particles.filter(p => !p.isDead);
     this.barricades = this.barricades.filter(b => !b.isDead);
@@ -309,6 +372,7 @@ export class GameManager {
         this.level++;
         this.spawnWave();
         this.isResting = false;
+        this.updateScoreUI();
       }
     }
   }
@@ -350,6 +414,26 @@ export class GameManager {
       if (hitBarricade) continue;
 
       if (bullet.isPlayerBullet) {
+        // Player bullet vs Interceptable Enemy Bullets (F-07)
+        let intercepted = false;
+        for (const enemyBullet of this.bullets) {
+          if (!enemyBullet.isDead && !enemyBullet.isPlayerBullet && enemyBullet.isInterceptable) {
+            if (bullet.checkCollision(enemyBullet)) {
+              bullet.isDead = true;
+              enemyBullet.isDead = true;
+              intercepted = true;
+              this.createExplosion(
+                (bullet.position.x + enemyBullet.position.x) / 2,
+                (bullet.position.y + enemyBullet.position.y) / 2,
+                '#a855f7',
+                8
+              );
+              break;
+            }
+          }
+        }
+        if (intercepted) continue;
+
         for (const enemy of this.enemies) {
           if (enemy.isDead) continue;
           
@@ -357,9 +441,24 @@ export class GameManager {
             bullet.piercing--;
             if (bullet.piercing <= 0) bullet.isDead = true;
             
-            enemy.hp -= bullet.damage;
-            
-            this.createExplosion(bullet.position.x, bullet.position.y, '#3b82f6', 5); // water splash
+            // Shielded enemy damage & cooldown (F-06)
+            if (enemy.type === EnemyType.SHIELDED && enemy.shieldHp > 0) {
+              enemy.shieldHp -= bullet.damage;
+              enemy.hitFlashTimer = 0.08;
+              soundManager.playEnemyHit();
+              this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 6);
+              if (enemy.shieldHp <= 0) {
+                enemy.shieldHp = 0;
+                enemy.shieldRegenTimer = 5.0; // 5s cooldown before shield regenerates
+                soundManager.playShieldBreak();
+                this.createExplosion(enemy.position.x + enemy.size.width / 2, enemy.position.y + enemy.size.height / 2, '#38bdf8', 16);
+              }
+            } else {
+              enemy.hp -= bullet.damage;
+              enemy.hitFlashTimer = 0.08;
+              soundManager.playEnemyHit();
+              this.createExplosion(bullet.position.x, bullet.position.y, '#3b82f6', 5); // water splash
+            }
             
             if (enemy.hp <= 0) {
               enemy.isDead = true;
@@ -372,18 +471,19 @@ export class GameManager {
               
               if (isBoss) {
                 this.triggerScreenShake(0.75);
+                soundManager.playVictory();
               }
               
-                              if (enemy.type === EnemyType.SPLITTER) {
-                  // Spawn 2 mini-enemies that are extremely slow
-                  const mini1 = new Enemy(enemy.position.x - 15, enemy.position.y, this.canvas.width, this.level, EnemyType.NORMAL);
-                  const mini2 = new Enemy(enemy.position.x + 35, enemy.position.y, this.canvas.width, this.level, EnemyType.NORMAL);
-                  mini1.size = { width: 20, height: 20 };
-                  mini2.size = { width: 20, height: 20 };
-                  mini1.speedX = 10; mini1.speedY = 5;
-                  mini2.speedX = -10; mini2.speedY = 5;
-                  this.enemies.push(mini1, mini2);
-                }
+              if (enemy.type === EnemyType.SPLITTER) {
+                // Spawn 2 mini-enemies that are extremely slow
+                const mini1 = new Enemy(enemy.position.x - 15, enemy.position.y, this.logicalWidth, this.level, EnemyType.NORMAL);
+                const mini2 = new Enemy(enemy.position.x + 35, enemy.position.y, this.logicalWidth, this.level, EnemyType.NORMAL);
+                mini1.size = { width: 20, height: 20 };
+                mini2.size = { width: 20, height: 20 };
+                mini1.speedX = 10; mini1.speedY = 5;
+                mini2.speedX = -10; mini2.speedY = 5;
+                this.enemies.push(mini1, mini2);
+              }
               
               this.handleEnemyKill();
             }
@@ -407,11 +507,14 @@ export class GameManager {
         
         if (hitHelper) continue;
 
-        // Enemy bullet vs Player
+        // Enemy bullet vs Player (F-04: Player i-frames)
         if (bullet.checkCollision(this.player)) {
           bullet.isDead = true;
-          if (!this.isGodMode) {
+          if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
             this.player.hp -= bullet.damage;
+            this.player.hitFlashTimer = 0.08;
+            this.player.invincibilityTimer = 1.0;
+            soundManager.playPlayerHit();
             this.createExplosion(this.player.position.x + this.player.size.width/2, this.player.position.y, '#ef4444', 10);
             this.triggerScreenShake(0.2); // Shake on hit
             
@@ -429,40 +532,39 @@ export class GameManager {
             }
           }
         } else {
-          // Near miss detection for Suppression
-          // If bullet is moving past the player vertically and is close horizontally
-          if (bullet.position.y > this.player.position.y && bullet.position.y < this.player.position.y + this.player.size.height) {
+          // F-08: Near miss detection for Suppression (Single Trigger)
+          if (!bullet.hasTriggeredNearMiss && 
+              bullet.position.y > this.player.position.y && 
+              bullet.position.y < this.player.position.y + this.player.size.height) {
             const dx = Math.abs((bullet.position.x + bullet.size.width/2) - (this.player.position.x + this.player.size.width/2));
             if (dx < 80) {
+               bullet.hasTriggeredNearMiss = true;
                this.player.suppressionLevel = Math.min(100, this.player.suppressionLevel + 15); // Near miss increases suppression
                // Getting suppressed also stresses you out a little
                this.player.stressLevel = Math.min(100, this.player.stressLevel + 5); 
-               
-               // Mark bullet as processed for near miss so it doesn't trigger every frame?
-               // The bullet moves fast, it will only be in this Y range for maybe 1-2 frames.
             }
           }
         }
       }
+    }
 
-      // Enemy vs Barricade
-      for (const enemy of this.enemies) {
-        if (enemy.isDead) continue;
-        enemy.isGnawing = false;
-        
-        for (const barricade of this.barricades) {
-          if (!barricade.isDead && enemy.checkCollision(barricade)) {
-            if (enemy.type === EnemyType.DIVER) {
-              enemy.isDead = true;
-              if (barricade.type === BarricadeType.DESTRUCTIBLE) {
-                barricade.hp -= 20; // Crash damage
-              }
-              this.createExplosion(enemy.position.x, enemy.position.y, '#ef4444', 30);
-            } else {
-              enemy.isGnawing = true;
-              if (barricade.type === BarricadeType.DESTRUCTIBLE) {
-                barricade.hp -= 0.1; // Gnaw damage per frame
-              }
+    // F-01: Enemy vs Barricade (Independent loop)
+    for (const enemy of this.enemies) {
+      if (enemy.isDead) continue;
+      enemy.isGnawing = false;
+      
+      for (const barricade of this.barricades) {
+        if (!barricade.isDead && enemy.checkCollision(barricade)) {
+          if (enemy.type === EnemyType.DIVER) {
+            enemy.isDead = true;
+            if (barricade.type === BarricadeType.DESTRUCTIBLE) {
+              barricade.hp -= 20; // Crash damage
+            }
+            this.createExplosion(enemy.position.x, enemy.position.y, '#ef4444', 30);
+          } else {
+            enemy.isGnawing = true;
+            if (barricade.type === BarricadeType.DESTRUCTIBLE) {
+              barricade.hp -= 0.1; // Gnaw damage per frame
             }
           }
         }
@@ -496,10 +598,13 @@ export class GameManager {
   private gameOver(reason: string) {
     this.gameOverReason = reason;
     this.state = GameState.GAME_OVER;
+    soundManager.playGameOver();
     
     try {
       const best = localStorage.getItem('waterInvaderHighScore');
-      if (!best || this.score > parseInt(best)) {
+      const parsedHighScore = best ? parseInt(best, 10) : 0;
+      const validHighScore = Number.isFinite(parsedHighScore) && parsedHighScore >= 0 ? parsedHighScore : 0;
+      if (!best || this.score > validHighScore || !Number.isFinite(parsedHighScore)) {
         localStorage.setItem('waterInvaderHighScore', this.score.toString());
       }
     } catch (e) {
@@ -509,8 +614,75 @@ export class GameManager {
     if (this.onStateChange) this.onStateChange(this.state);
   }
 
+  private drawBossHpBar(boss: Enemy) {
+    this.ctx.save();
+    const barW = 320;
+    const barH = 16;
+    const barX = (this.logicalWidth - barW) / 2;
+    const barY = 28;
+
+    // Boss Title
+    this.ctx.font = 'bold 12px sans-serif';
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.textAlign = 'center';
+    this.ctx.shadowBlur = 8;
+    this.ctx.shadowColor = '#ef4444';
+    this.ctx.fillText('⚠️ BOSS: BIO-MECH TITAN ⚠️', this.logicalWidth / 2, barY - 6);
+    this.ctx.shadowBlur = 0;
+
+    // Background Frame
+    this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    this.ctx.strokeStyle = '#ef4444';
+    this.ctx.lineWidth = 2;
+    if (this.ctx.roundRect) {
+      this.ctx.beginPath();
+      this.ctx.roundRect(barX, barY, barW, barH, 8);
+      this.ctx.fill();
+      this.ctx.stroke();
+    } else {
+      this.ctx.fillRect(barX, barY, barW, barH);
+      this.ctx.strokeRect(barX, barY, barW, barH);
+    }
+
+    // Health Fill
+    const maxHp = boss.maxHp || (boss.level * 10);
+    const ratio = Math.max(0, Math.min(1, boss.hp / maxHp));
+    const fillW = Math.max(0, (barW - 4) * ratio);
+
+    if (fillW > 0) {
+      const grad = this.ctx.createLinearGradient(barX + 2, barY + 2, barX + 2 + fillW, barY + 2);
+      if (ratio < 0.3) {
+        grad.addColorStop(0, '#f87171');
+        grad.addColorStop(1, '#dc2626');
+      } else {
+        grad.addColorStop(0, '#fbbf24');
+        grad.addColorStop(1, '#ef4444');
+      }
+      this.ctx.fillStyle = grad;
+      if (this.ctx.roundRect) {
+        this.ctx.beginPath();
+        this.ctx.roundRect(barX + 2, barY + 2, fillW, barH - 4, 6);
+        this.ctx.fill();
+      } else {
+        this.ctx.fillRect(barX + 2, barY + 2, fillW, barH - 4);
+      }
+    }
+
+    // HP Text
+    this.ctx.font = 'bold 11px monospace';
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.textAlign = 'center';
+    this.ctx.shadowBlur = 4;
+    this.ctx.shadowColor = '#000000';
+    this.ctx.fillText(`${boss.hp} / ${maxHp} HP`, this.logicalWidth / 2, barY + barH - 4);
+    this.ctx.shadowBlur = 0;
+
+    this.ctx.restore();
+  }
+
   private draw() {
     this.ctx.save();
+    this.ctx.scale(this.dpr, this.dpr);
     
     // Screen shake
     if (this.shakeTimer > 0) {
@@ -526,14 +698,14 @@ export class GameManager {
 
     // Clear
     this.ctx.fillStyle = '#0f172a'; // dark slate
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
 
     // Draw scrolling background (Bubbles)
     const time = performance.now() / 1000;
     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
     for (let i = 0; i < 30; i++) {
-      const x = (Math.sin(i * 13) * 1000 + time * 10) % this.canvas.width;
-      const y = this.canvas.height - ((time * 50 * (i % 3 + 1) + i * 90) % this.canvas.height);
+      const x = (Math.sin(i * 13) * 1000 + time * 10) % this.logicalWidth;
+      const y = this.logicalHeight - ((time * 50 * (i % 3 + 1) + i * 90) % this.logicalHeight);
       const size = (i % 4) + 1;
       this.ctx.beginPath();
       this.ctx.arc(Math.abs(x), Math.abs(y), size, 0, Math.PI * 2);
@@ -547,6 +719,12 @@ export class GameManager {
     this.enemies.forEach(e => e.draw(this.ctx));
     this.bullets.forEach(b => b.draw(this.ctx));
     this.particles.forEach(p => p.draw(this.ctx));
+
+    // Boss HP Bar (F-14)
+    const activeBoss = this.enemies.find(e => e.type === EnemyType.BOSS && !e.isDead);
+    if (activeBoss) {
+      this.drawBossHpBar(activeBoss);
+    }
     
     // Debug Overlay
     if (this.isDebugMode) {
@@ -574,13 +752,11 @@ export class GameManager {
       this.ctx.fillText(`Particles: ${this.particles.length}`, 10, 80);
       this.ctx.fillText(`Barricades: ${this.barricades.length}`, 10, 95);
     }
-
-    this.ctx.restore();
     
     // UI overlays that shouldn't shake
     if (this.warningTimer > 0) {
       this.ctx.fillStyle = this.pendingReinforcement === 'ENEMY' ? 'rgba(255, 0, 0, 0.3)' : 'rgba(0, 255, 0, 0.2)';
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
       
       this.ctx.fillStyle = this.pendingReinforcement === 'ENEMY' ? '#ef4444' : '#4ade80';
       this.ctx.font = 'bold 48px sans-serif';
@@ -590,22 +766,24 @@ export class GameManager {
       
       // Flash effect
       if (Math.floor(time * 10) % 2 === 0) {
-        this.ctx.fillText(this.warningMessage, this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.fillText(this.warningMessage, this.logicalWidth / 2, this.logicalHeight / 2);
       }
       this.ctx.shadowBlur = 0;
     } else if (this.isResting) {
       this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
       
       this.ctx.fillStyle = '#38bdf8';
       this.ctx.font = 'bold 48px sans-serif';
       this.ctx.textAlign = 'center';
-      this.ctx.fillText(`WAVE ${this.level} CLEARED`, this.canvas.width / 2, this.canvas.height / 2 - 20);
+      this.ctx.fillText(`WAVE ${this.level} CLEARED`, this.logicalWidth / 2, this.logicalHeight / 2 - 20);
       
       this.ctx.fillStyle = '#ffffff';
       this.ctx.font = '24px sans-serif';
-      this.ctx.fillText(`Next wave in ${Math.ceil(this.waveRestTimer)}...`, this.canvas.width / 2, this.canvas.height / 2 + 30);
+      this.ctx.fillText(`Next wave in ${Math.ceil(this.waveRestTimer)}...`, this.logicalWidth / 2, this.logicalHeight / 2 + 30);
     }
+
+    this.ctx.restore();
   }
 
   public triggerSummonAlly() {
@@ -629,7 +807,7 @@ export class GameManager {
       
       // Spawn massive amount of bullets from the top
       for (let i = 0; i < 30; i++) {
-        const x = Math.random() * this.canvas.width;
+        const x = Math.random() * this.logicalWidth;
         const b = new Bullet(x, -20, 300, 10, true, 3); // Downward moving, piercing, high damage player bullet
         b.velocity.x = (Math.random() - 0.5) * 50;
         this.bullets.push(b);
@@ -641,31 +819,37 @@ export class GameManager {
 
   // Input handling mapped from React
   public handleKeyDown(key: string) {
-    if (key === 'ArrowLeft' || key === 'a') this.player.isMovingLeft = true;
-    if (key === 'ArrowRight' || key === 'd') this.player.isMovingRight = true;
-    if (key === ' ' || key === 'Spacebar') {
+    const k = key.toLowerCase();
+    this.keysPressed[k] = true;
+
+    if (k === 'arrowleft' || k === 'a') this.player.isMovingLeft = true;
+    if (k === 'arrowright' || k === 'd') this.player.isMovingRight = true;
+    if (k === ' ' || k === 'spacebar' || k === 'space') {
       this.player.isShooting = true;
     }
-    if (key === 'e' || key === 'Shift') {
+    if (k === 'e' || k === 'shift') {
       this.triggerUltimate();
     }
-    if (key === 'q') {
+    if (k === 'q') {
       this.triggerSummonAlly();
     }
     
     // Debug & Cheats
-    if (key === 'F3') this.isDebugMode = !this.isDebugMode;
-    if (key === 'F4') this.isGodMode = !this.isGodMode;
-    if (key === 'F5') {
+    if (k === 'f3') this.isDebugMode = !this.isDebugMode;
+    if (k === 'f4') this.isGodMode = !this.isGodMode;
+    if (k === 'f5') {
       this.currency += 1000;
       this.updateScoreUI();
     }
   }
 
   public handleKeyUp(key: string) {
-    if (key === 'ArrowLeft' || key === 'a') this.player.isMovingLeft = false;
-    if (key === 'ArrowRight' || key === 'd') this.player.isMovingRight = false;
-    if (key === ' ' || key === 'Spacebar') {
+    const k = key.toLowerCase();
+    this.keysPressed[k] = false;
+
+    if (k === 'arrowleft' || k === 'a') this.player.isMovingLeft = false;
+    if (k === 'arrowright' || k === 'd') this.player.isMovingRight = false;
+    if (k === ' ' || k === 'spacebar' || k === 'space') {
       this.player.isShooting = false;
     }
   }

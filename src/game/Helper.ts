@@ -1,5 +1,6 @@
 import { Entity } from './Entity';
 import { Bullet } from './Bullet';
+import { Enemy } from './Enemy';
 import { Barricade } from './Barricade';
 import { soundManager } from './SoundManager';
 
@@ -52,53 +53,98 @@ export class Helper extends Entity {
     }
   }
 
-  public update(deltaTime: number, barricades: Barricade[]): Bullet[] {
+  public update(deltaTime: number, barricades: Barricade[], enemies: Enemy[], bullets: Bullet[]): Bullet[] {
     this.lifespan -= deltaTime;
-    const bullets: Bullet[] = [];
+    const newBullets: Bullet[] = [];
     
-    // Move towards target
-    const dx = this.targetX - this.position.x;
-    if (Math.abs(dx) > 10) {
-      this.position.x += Math.sign(dx) * 200 * deltaTime;
-    } else {
-      // Pick new target
-      this.targetX = Math.random() * (this.canvasWidth - this.size.width);
-    }
-    
+
     // Bounce Y slightly
     this.position.y += Math.sin(Date.now() / 200) * 0.5;
 
-    // Behaviors
+    // Smart AI Behaviors
     if (this.type === HelperType.FIGHTER) {
+      // FIGHTER AI: Target the lowest/closest enemy
+      let bestEnemy = null;
+      let lowestY = -1;
+      for (const e of enemies) {
+         if (e.position.y > lowestY) {
+            lowestY = e.position.y;
+            bestEnemy = e;
+         }
+      }
+      
+      if (bestEnemy) {
+         this.targetX = bestEnemy.position.x + bestEnemy.size.width / 2 - this.size.width / 2;
+      } else {
+         this.targetX = this.canvasWidth / 2 - this.size.width / 2;
+      }
+      
       this.fireTimer -= deltaTime;
       if (this.fireTimer <= 0) {
-        this.fireTimer = 0.5; // shoot every 0.5s
-        bullets.push(new Bullet(this.position.x + this.size.width / 2, this.position.y, -500, 1, true, 1));
+        this.fireTimer = 0.3; // Increased fire rate from 0.5 to 0.3
+        newBullets.push(new Bullet(this.position.x + this.size.width / 2, this.position.y, -500, 2, true, 1)); // 2 damage instead of 1
         soundManager.playShoot();
       }
     } else if (this.type === HelperType.REPAIRER) {
-      // randomly find a broken block and fix it
-      if (Math.random() < 0.2) {
-         const b = barricades[Math.floor(Math.random() * barricades.length)];
-         if (b && b.blocks) {
-            for (let i = 0; i < b.blocks.length; i++) {
-                if (!b.blocks[i]) {
-                    b.blocks[i] = true;
-                    b.hp = Math.min(b.maxHp, b.hp + 5);
-                    break;
-                }
+      // REPAIRER AI: Find the most damaged barricade
+      let bestBarricade = null;
+      let minHp = 999;
+      for (const b of barricades) {
+         if (b.hp < b.maxHp && b.hp < minHp) {
+            minHp = b.hp;
+            bestBarricade = b;
+         }
+      }
+      
+      if (bestBarricade) {
+         this.targetX = bestBarricade.position.x + bestBarricade.size.width / 2 - this.size.width / 2;
+         // repair if close
+         if (Math.abs(this.position.x - this.targetX) < 20) {
+            if (Math.random() < 0.5) { // 50% chance per frame if right above it (much faster repair)
+               for (let i = 0; i < bestBarricade.blocks.length; i++) {
+                   if (!bestBarricade.blocks[i]) {
+                       bestBarricade.blocks[i] = true;
+                       bestBarricade.hp = Math.min(bestBarricade.maxHp, bestBarricade.hp + 5);
+                       break;
+                   }
+               }
             }
+         }
+      } else {
+         // Wander if nothing to repair
+         if (Math.abs(this.targetX - this.position.x) < 10) {
+            this.targetX = Math.random() * (this.canvasWidth - this.size.width);
          }
       }
     } else if (this.type === HelperType.TANK) {
-       this.targetX = this.canvasWidth / 2 + Math.sin(Date.now() / 1000) * 200;
+       // TANK AI: Intercept incoming enemy bullets!
+       let bestBullet = null;
+       let lowestY = -1;
+       for (const b of bullets) {
+          if (!b.isPlayerBullet && b.position.y > lowestY && b.position.y < this.position.y + 100) {
+             lowestY = b.position.y;
+             bestBullet = b;
+          }
+       }
+       if (bestBullet) {
+          this.targetX = bestBullet.position.x - this.size.width / 2;
+       } else {
+          this.targetX = this.canvasWidth / 2 - this.size.width / 2;
+       }
     }
     
-    // Clamp
+    // Move towards target smoothly
+    const dx = this.targetX - this.position.x;
+    if (Math.abs(dx) > 5) {
+       const speed = this.type === HelperType.FIGHTER ? 300 : (this.type === HelperType.TANK ? 400 : 250);
+       this.position.x += Math.sign(dx) * speed * deltaTime;
+    }
+    
+// Clamp
     if (this.position.x < 0) this.position.x = 0;
     if (this.position.x + this.size.width > this.canvasWidth) this.position.x = this.canvasWidth - this.size.width;
     
-    return bullets;
+    return newBullets;
   }
   
   public isExpired(): boolean {
