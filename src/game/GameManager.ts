@@ -139,7 +139,7 @@ export class GameManager {
         if (r === 1 && c % 2 === 0) {
           type = EnemyType.ZIGZAG; // keep some zigzags
         } else if (specialCount < maxSpecials && Math.random() > 0.85) {
-          const specials = [EnemyType.SNIPER, EnemyType.SHIELDED, EnemyType.DIVER, EnemyType.SPLITTER];
+          const specials = [EnemyType.SNIPER, EnemyType.SHIELDED, EnemyType.SPLITTER];
           type = specials[Math.floor(Math.random() * specials.length)];
           specialCount++;
         }
