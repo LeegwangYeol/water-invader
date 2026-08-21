@@ -10,6 +10,8 @@ export class Player extends Entity {
   // Upgradeable stats
   public baseFireRate: number = 0.5; // seconds between shots
   public multiShot: number = 1; // number of projectiles
+  public piercing: number = 1; // new weapon upgrade
+  public ultimateGauge: number = 0; // 0 to 100
   
   // Dynamic mechanics
   public suppressionLevel: number = 0; // 0 to 100. High = less accuracy
@@ -85,21 +87,21 @@ export class Player extends Entity {
 
     // Multi-shot logic
     if (this.multiShot === 1) {
-      const b = new Bullet(this.position.x + this.size.width / 2 - 3, this.position.y, -400, 1, true);
+      const b = new Bullet(this.position.x + this.size.width / 2 - 3, this.position.y, -400, 1, true, this.piercing);
       b.velocity.x = getSpread();
       bullets.push(b);
     } else if (this.multiShot === 2) {
-      const b1 = new Bullet(this.position.x + 10, this.position.y, -400, 1, true);
+      const b1 = new Bullet(this.position.x + 10, this.position.y, -400, 1, true, this.piercing);
       b1.velocity.x = getSpread() - 20;
-      const b2 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -400, 1, true);
+      const b2 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -400, 1, true, this.piercing);
       b2.velocity.x = getSpread() + 20;
       bullets.push(b1, b2);
     } else {
-      const b1 = new Bullet(this.position.x + 10, this.position.y, -400, 1, true);
+      const b1 = new Bullet(this.position.x + 10, this.position.y, -400, 1, true, this.piercing);
       b1.velocity.x = getSpread() - 40;
-      const b2 = new Bullet(this.position.x + this.size.width / 2 - 3, this.position.y - 10, -400, 1, true);
+      const b2 = new Bullet(this.position.x + this.size.width / 2 - 3, this.position.y - 10, -400, 1, true, this.piercing);
       b2.velocity.x = getSpread();
-      const b3 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -400, 1, true);
+      const b3 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -400, 1, true, this.piercing);
       b3.velocity.x = getSpread() + 40;
       bullets.push(b1, b2, b3);
     }

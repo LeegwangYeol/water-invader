@@ -10,9 +10,19 @@ export default function GameCanvas() {
   
   const [gameState, setGameState] = useState<GameState>(GameState.MENU);
   const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
   const [currency, setCurrency] = useState(0);
   const [combo, setCombo] = useState(0);
+  const [wave, setWave] = useState(1);
+  const [ultimate, setUltimate] = useState(0);
   const [hp, setHp] = useState(3);
+  
+  const [showManual, setShowManual] = useState(false);
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('waterInvaderHighScore');
+    if (saved) setHighScore(parseInt(saved, 10));
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -23,16 +33,30 @@ export default function GameCanvas() {
     // Expose for testing
     (window as any).gameManager = game;
     
-    game.onStateChange = setGameState;
-    game.onScoreChange = (newScore, newCurrency, newCombo) => {
+    game.onStateChange = (state) => {
+      setGameState(state);
+      if (state === GameState.GAME_OVER) {
+        const saved = localStorage.getItem('waterInvaderHighScore');
+        if (saved) setHighScore(parseInt(saved, 10));
+      }
+    };
+    game.onScoreChange = (newScore, newCurrency, newCombo, newWave, newUltimate) => {
       setScore(newScore);
       setCurrency(newCurrency);
       setCombo(newCombo);
+      setWave(newWave);
+      setUltimate(newUltimate);
     };
     game.onPlayerHpChange = setHp;
 
-    const handleKeyDown = (e: KeyboardEvent) => game.handleKeyDown(e.key);
-    const handleKeyUp = (e: KeyboardEvent) => game.handleKeyUp(e.key);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (showManual) return;
+      game.handleKeyDown(e.key);
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (showManual) return;
+      game.handleKeyUp(e.key);
+    };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
@@ -42,7 +66,7 @@ export default function GameCanvas() {
       window.removeEventListener('keyup', handleKeyUp);
       game.stopGame();
     };
-  }, []);
+  }, [showManual]);
 
   const startGame = () => {
     gameManagerRef.current?.init(); // Reset state
@@ -57,13 +81,19 @@ export default function GameCanvas() {
     gameManagerRef.current?.upgradeMultiShot();
   };
 
+  const buyPiercing = () => {
+    gameManagerRef.current?.upgradePiercing();
+  };
+
   // Mobile controls
   const handleTouchStart = (key: string) => (e: React.TouchEvent | React.MouseEvent) => {
+    if (showManual) return;
     e.preventDefault();
     gameManagerRef.current?.handleKeyDown(key);
   };
 
   const handleTouchEnd = (key: string) => (e: React.TouchEvent | React.MouseEvent) => {
+    if (showManual) return;
     e.preventDefault();
     gameManagerRef.current?.handleKeyUp(key);
   };
@@ -75,8 +105,11 @@ export default function GameCanvas() {
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-blue-400">Score: {score}</h2>
           <p className="text-sm sm:text-base text-blue-200">Pure Water: {currency} 💧</p>
+          {gameState === GameState.PLAYING && (
+            <p className="text-sm sm:text-base text-yellow-300 font-bold mt-1">WAVE {wave}</p>
+          )}
         </div>
-        <div className="text-right">
+        <div className="text-right flex flex-col items-end">
           <div className="flex gap-1 justify-end mb-2">
             {[...Array(3)].map((_, i) => (
               <div key={i} className={`w-4 h-4 sm:w-6 sm:h-6 rounded-full ${i < hp ? 'bg-blue-500' : 'bg-gray-600'}`} />
@@ -85,6 +118,15 @@ export default function GameCanvas() {
           {combo > 1 && (
             <div className="text-lg sm:text-xl font-bold text-yellow-400 animate-pulse">
               {combo}x COMBO!
+            </div>
+          )}
+          {/* Ultimate Gauge */}
+          {gameState === GameState.PLAYING && (
+            <div className="mt-2 w-32 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-500">
+              <div 
+                className={`h-full transition-all duration-300 ${ultimate >= 100 ? 'bg-gradient-to-r from-yellow-400 to-red-500 animate-pulse' : 'bg-blue-500'}`}
+                style={{ width: `${ultimate}%` }}
+              />
             </div>
           )}
         </div>
@@ -101,7 +143,7 @@ export default function GameCanvas() {
 
       {/* Mobile Controls */}
       {gameState === GameState.PLAYING && (
-        <div className="w-full flex justify-between p-4 mt-2 gap-4 touch-none">
+        <div className="w-full flex justify-between p-4 mt-2 gap-2 sm:gap-4 touch-none">
           <div className="flex gap-2 w-1/2">
             <button 
               className="flex-1 bg-slate-700/80 active:bg-blue-600 rounded-xl h-20 flex items-center justify-center text-4xl text-white select-none touch-none"
@@ -122,30 +164,100 @@ export default function GameCanvas() {
               ▶
             </button>
           </div>
-          <button 
-            className="w-1/2 bg-blue-600/80 active:bg-blue-400 rounded-xl h-20 flex items-center justify-center text-3xl font-black text-white tracking-widest select-none shadow-[0_0_15px_rgba(59,130,246,0.5)] touch-none"
-            onPointerDown={handleTouchStart(' ')}
-            onPointerUp={handleTouchEnd(' ')}
-            onPointerLeave={handleTouchEnd(' ')}
-            onPointerCancel={handleTouchEnd(' ')}
-          >
-            FIRE
-          </button>
+          <div className="flex gap-2 w-1/2">
+            <button 
+              className={`flex-1 ${ultimate >= 100 ? 'bg-yellow-500 hover:bg-yellow-400 text-slate-900 shadow-[0_0_15px_rgba(234,179,8,0.8)] animate-pulse' : 'bg-slate-700/50 text-slate-500'} rounded-xl h-20 flex flex-col items-center justify-center font-black tracking-widest select-none touch-none`}
+              onPointerDown={handleTouchStart('e')}
+              onPointerUp={handleTouchEnd('e')}
+              onPointerLeave={handleTouchEnd('e')}
+              onPointerCancel={handleTouchEnd('e')}
+            >
+              <span className="text-xl">ULT</span>
+              <span className="text-xs">{ultimate}%</span>
+            </button>
+            <button 
+              className="flex-[1.5] bg-blue-600/80 active:bg-blue-400 rounded-xl h-20 flex items-center justify-center text-2xl sm:text-3xl font-black text-white tracking-widest select-none shadow-[0_0_15px_rgba(59,130,246,0.5)] touch-none"
+              onPointerDown={handleTouchStart(' ')}
+              onPointerUp={handleTouchEnd(' ')}
+              onPointerLeave={handleTouchEnd(' ')}
+              onPointerCancel={handleTouchEnd(' ')}
+            >
+              FIRE
+            </button>
+          </div>
         </div>
       )}
 
       {/* Overlays */}
       {gameState === GameState.MENU && (
         <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-lg z-20">
-          <h1 className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300 mb-8 tracking-wider uppercase text-center px-4">
+          <h1 className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300 mb-4 tracking-wider uppercase text-center px-4">
             Water Invader
           </h1>
-          <button 
-            onClick={startGame}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl sm:text-2xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:scale-105"
-          >
-            START GAME
-          </button>
+          {highScore > 0 && (
+            <p className="text-xl text-yellow-400 font-bold mb-8">HIGH SCORE: {highScore}</p>
+          )}
+          <div className="flex flex-col gap-4">
+            <button 
+              onClick={startGame}
+              className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl sm:text-2xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:scale-105"
+            >
+              START GAME
+            </button>
+            <button 
+              onClick={() => setShowManual(true)}
+              className="px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded text-lg transition-all"
+            >
+              HOW TO PLAY
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Modal */}
+      {showManual && (
+        <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center rounded-lg z-30 p-4">
+          <div className="bg-slate-800 p-6 rounded-xl max-w-lg w-full max-h-[90%] overflow-y-auto text-white">
+            <h2 className="text-3xl font-black text-blue-400 mb-6 text-center border-b border-slate-600 pb-4">HOW TO PLAY</h2>
+            
+            <div className="space-y-6">
+              <section>
+                <h3 className="text-xl font-bold text-yellow-400 mb-2">Controls</h3>
+                <ul className="list-disc pl-5 space-y-1 text-slate-300">
+                  <li><strong className="text-white">Move:</strong> Left/Right Arrows or A/D keys</li>
+                  <li><strong className="text-white">Shoot:</strong> Spacebar</li>
+                  <li><strong className="text-white">Ultimate Skill (Heavy Rain):</strong> E or Shift key (Requires 100% Gauge)</li>
+                </ul>
+              </section>
+
+              <section>
+                <h3 className="text-xl font-bold text-yellow-400 mb-2">Game Mechanics</h3>
+                <ul className="list-disc pl-5 space-y-1 text-slate-300">
+                  <li>Survive endless waves of enemies! Every 5th wave features a Boss.</li>
+                  <li>Collect <strong className="text-blue-300">Pure Water 💧</strong> by defeating enemies.</li>
+                  <li>Build up your <strong className="text-yellow-300">Combo</strong> by defeating enemies quickly to multiply your score and currency gain!</li>
+                  <li>Taking damage increases your <strong className="text-red-400">Stress & Panic</strong>, which lowers your accuracy and causes your character to visually panic!</li>
+                </ul>
+              </section>
+
+              <section>
+                <h3 className="text-xl font-bold text-yellow-400 mb-2">Developer Tools (Cheats)</h3>
+                <p className="text-slate-300 mb-2">For testing purposes, the following hotkeys are available:</p>
+                <ul className="list-disc pl-5 space-y-1 text-slate-300">
+                  <li><strong className="text-fuchsia-400">F3:</strong> Toggle Debug Overlay (Hitboxes & FPS)</li>
+                  <li><strong className="text-green-400">F4:</strong> Toggle God Mode (Invincibility)</li>
+                  <li><strong className="text-blue-400">F5:</strong> Add 1000 💧 instantly</li>
+                </ul>
+              </section>
+            </div>
+
+            <button 
+              onClick={() => setShowManual(false)}
+              className="mt-8 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl transition-all"
+            >
+              CLOSE
+            </button>
+          </div>
         </div>
       )}
 
@@ -172,7 +284,7 @@ export default function GameCanvas() {
               </button>
             </div>
             
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
               <div>
                 <p className="font-bold">Multi-Shot</p>
                 <p className="text-xs sm:text-sm text-slate-400">More projectiles</p>
@@ -183,6 +295,20 @@ export default function GameCanvas() {
                 className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
               >
                 100 💧
+              </button>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-bold">Piercing</p>
+                <p className="text-xs sm:text-sm text-slate-400">Bullets penetrate enemies</p>
+              </div>
+              <button 
+                onClick={buyPiercing}
+                disabled={currency < 200}
+                className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
+              >
+                200 💧
               </button>
             </div>
           </div>

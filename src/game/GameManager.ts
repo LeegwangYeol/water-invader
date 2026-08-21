@@ -43,9 +43,12 @@ export class GameManager {
   private frameCount: number = 0;
   private lastFpsTime: number = 0;
   
+  public isResting: boolean = false;
+  public waveRestTimer: number = 0;
+  
   // Callbacks for React UI updates
   public onStateChange?: (state: GameState) => void;
-  public onScoreChange?: (score: number, currency: number, combo: number) => void;
+  public onScoreChange?: (score: number, currency: number, combo: number, wave: number, ultimateGauge: number) => void;
   public onPlayerHpChange?: (hp: number) => void;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -235,8 +238,17 @@ export class GameManager {
     
     // Next wave
     if (this.enemies.length === 0 && this.warningTimer <= 0) {
-      this.level++;
-      this.spawnWave();
+      if (!this.isResting) {
+        this.isResting = true;
+        this.waveRestTimer = 3.0;
+      }
+      
+      this.waveRestTimer -= deltaTime;
+      if (this.waveRestTimer <= 0) {
+        this.level++;
+        this.spawnWave();
+        this.isResting = false;
+      }
     }
   }
   
@@ -281,7 +293,9 @@ export class GameManager {
           if (enemy.isDead) continue;
           
           if (bullet.checkCollision(enemy)) {
-            bullet.isDead = true;
+            bullet.piercing--;
+            if (bullet.piercing <= 0) bullet.isDead = true;
+            
             enemy.hp -= bullet.damage;
             
             this.createExplosion(bullet.position.x, bullet.position.y, '#3b82f6', 5); // water splash
@@ -339,6 +353,7 @@ export class GameManager {
     
     // Killing enemies gives adrenaline/stress
     this.player.stressLevel = Math.min(100, this.player.stressLevel + 10);
+    this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 5);
     
     const comboMultiplier = 1 + Math.floor(this.combo / 5) * 0.5;
     this.score += Math.floor(100 * comboMultiplier);
@@ -349,12 +364,22 @@ export class GameManager {
 
   private updateScoreUI() {
     if (this.onScoreChange) {
-      this.onScoreChange(this.score, this.currency, this.combo);
+      this.onScoreChange(this.score, this.currency, this.combo, this.level, this.player.ultimateGauge);
     }
   }
 
   private gameOver() {
     this.state = GameState.GAME_OVER;
+    
+    try {
+      const best = localStorage.getItem('waterInvaderHighScore');
+      if (!best || this.score > parseInt(best)) {
+        localStorage.setItem('waterInvaderHighScore', this.score.toString());
+      }
+    } catch (e) {
+      // Ignore if localStorage is disabled
+    }
+
     if (this.onStateChange) this.onStateChange(this.state);
   }
 
@@ -425,7 +450,7 @@ export class GameManager {
 
     this.ctx.restore();
     
-    // UI overlays that shouldn't shake (or maybe they should shake? Let's leave them out of the restore so they don't shake, or draw them after restore)
+    // UI overlays that shouldn't shake
     if (this.warningTimer > 0) {
       this.ctx.fillStyle = this.pendingReinforcement === 'ENEMY' ? 'rgba(255, 0, 0, 0.3)' : 'rgba(0, 255, 0, 0.2)';
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -441,6 +466,38 @@ export class GameManager {
         this.ctx.fillText(this.warningMessage, this.canvas.width / 2, this.canvas.height / 2);
       }
       this.ctx.shadowBlur = 0;
+    } else if (this.isResting) {
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      
+      this.ctx.fillStyle = '#38bdf8';
+      this.ctx.font = 'bold 48px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText(`WAVE ${this.level} CLEARED`, this.canvas.width / 2, this.canvas.height / 2 - 20);
+      
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.font = '24px sans-serif';
+      this.ctx.fillText(`Next wave in ${Math.ceil(this.waveRestTimer)}...`, this.canvas.width / 2, this.canvas.height / 2 + 30);
+    }
+  }
+
+  // Ultimate Skill: Heavy Rain
+  public triggerUltimate() {
+    if (this.player.ultimateGauge >= 100) {
+      this.player.ultimateGauge = 0;
+      soundManager.playPowerUp(); // or a new ultimate sound
+      
+      this.triggerScreenShake(1.0);
+      
+      // Spawn massive amount of bullets from the top
+      for (let i = 0; i < 30; i++) {
+        const x = Math.random() * this.canvas.width;
+        const b = new Bullet(x, -20, 300, 10, true, 3); // Downward moving, piercing, high damage player bullet
+        b.velocity.x = (Math.random() - 0.5) * 50;
+        this.bullets.push(b);
+      }
+      
+      this.updateScoreUI();
     }
   }
 
@@ -454,6 +511,9 @@ export class GameManager {
         soundManager.playShoot();
         this.bullets.push(...newBullets);
       }
+    }
+    if (key === 'e' || key === 'Shift') {
+      this.triggerUltimate();
     }
     
     // Debug & Cheats
@@ -484,6 +544,15 @@ export class GameManager {
     if (this.currency >= 100 && this.player.multiShot < 3) {
       this.currency -= 100;
       this.player.multiShot++;
+      soundManager.playPowerUp();
+      this.updateScoreUI();
+    }
+  }
+
+  public upgradePiercing() {
+    if (this.currency >= 200 && this.player.piercing < 5) {
+      this.currency -= 200;
+      this.player.piercing++;
       soundManager.playPowerUp();
       this.updateScoreUI();
     }

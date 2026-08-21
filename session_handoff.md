@@ -102,3 +102,9 @@ Water Invader Game Flow
 - GitHub CLI 로그인을 통해 오너님 계정으로 자동 로그인 연동
 - https://github.com/LeegwangYeol/water-invader 에 프로젝트 자동 생성 및 푸시(Push) 완료
 - Vercel 연동 가이드 제공 완료
+
+
+## 추가 기능 및 디버깅 툴 제안/구현 완료
+- Vercel 라이브 배포 성공 확인 (https://water-invader.vercel.app/)
+- 향후 웨이브(Wave) 시스템, 무기 다양화, 리더보드 등 제안(future_features.md)
+- 제안에 그치지 않고 개발용 디버그 툴(F3: FPS 및 히트박스 시각화, F4: 무적 모드, F5: 재화 즉시 획득) 즉각 구현 후 커밋(Commit) 완료

@@ -3,14 +3,15 @@ import { Entity } from './Entity';
 export class Bullet extends Entity {
   public damage: number;
   public isPlayerBullet: boolean;
+  public piercing: number;
 
-  constructor(x: number, y: number, velocityY: number, damage: number, isPlayerBullet: boolean) {
-    // Water drop style for player, fireball for enemies
-    super(x, y, 6, 15);
-    this.velocity.y = velocityY;
+  constructor(x: number, y: number, speedY: number, damage: number, isPlayerBullet: boolean, piercing: number = 1) {
+    super(x, y, 6, 12);
+    this.velocity.y = speedY;
     this.damage = damage;
     this.isPlayerBullet = isPlayerBullet;
-    this.color = isPlayerBullet ? '#4ade80' : '#ef4444'; // green/blueish water vs red fire
+    this.piercing = piercing;
+    this.color = isPlayerBullet ? '#60a5fa' : '#ef4444'; // blue for player, red for enemy
   }
 
   public update(deltaTime: number): void {
