@@ -21,6 +21,7 @@ export default function GameCanvas() {
   const [showManual, setShowManual] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [lang, setLang] = useState('ko');
+  const [upgrades, setUpgrades] = useState({ fireRate: 1, multiShot: 1, piercing: 1 });
 
   useEffect(() => {
     const navLang = navigator.language || 'ko';
@@ -126,15 +127,15 @@ export default function GameCanvas() {
   };
 
   const buyFireRate = () => {
-    gameManagerRef.current?.upgradeFireRate();
+    if(gameManagerRef.current){ gameManagerRef.current.upgradeFireRate(); setUpgrades({ ...upgrades, fireRate: Math.round((0.5 - gameManagerRef.current.player.baseFireRate)/0.1) + 1 }); setCurrency(gameManagerRef.current.currency); }
   };
 
   const buyMultiShot = () => {
-    gameManagerRef.current?.upgradeMultiShot();
+    if(gameManagerRef.current){ gameManagerRef.current.upgradeMultiShot(); setUpgrades({ ...upgrades, multiShot: gameManagerRef.current.player.multiShot }); setCurrency(gameManagerRef.current.currency); }
   };
 
   const buyPiercing = () => {
-    gameManagerRef.current?.upgradePiercing();
+    if(gameManagerRef.current){ gameManagerRef.current.upgradePiercing(); setUpgrades({ ...upgrades, piercing: gameManagerRef.current.player.piercing }); setCurrency(gameManagerRef.current.currency); }
   };
 
   // Mobile controls
@@ -328,44 +329,38 @@ export default function GameCanvas() {
             
             <div className="flex justify-between items-center mb-4">
               <div>
-                <p className="font-bold">Fire Rate</p>
+                <p className="font-bold">Fire Rate (Lv. {upgrades.fireRate})</p>
                 <p className="text-xs sm:text-sm text-slate-400">Shoot faster</p>
               </div>
               <button 
                 onClick={buyFireRate}
-                disabled={currency < 50}
+                disabled={currency < 50 || upgrades.fireRate >= 5}
                 className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >
-                50 💧
-              </button>
+              >{upgrades.fireRate >= 5 ? "MAX" : "50 💧"}</button>
             </div>
             
             <div className="flex justify-between items-center mb-4">
               <div>
-                <p className="font-bold">Multi-Shot</p>
+                <p className="font-bold">Multi-Shot (Lv. {upgrades.multiShot})</p>
                 <p className="text-xs sm:text-sm text-slate-400">More projectiles</p>
               </div>
               <button 
                 onClick={buyMultiShot}
-                disabled={currency < 100}
+                disabled={currency < 100 || upgrades.multiShot >= 5}
                 className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >
-                100 💧
-              </button>
+              >{upgrades.multiShot >= 5 ? "MAX" : "100 💧"}</button>
             </div>
             
             <div className="flex justify-between items-center">
               <div>
-                <p className="font-bold">Piercing</p>
+                <p className="font-bold">Piercing (Lv. {upgrades.piercing})</p>
                 <p className="text-xs sm:text-sm text-slate-400">Bullets penetrate enemies</p>
               </div>
               <button 
                 onClick={buyPiercing}
-                disabled={currency < 200}
+                disabled={currency < 200 || upgrades.piercing >= 5}
                 className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >
-                200 💧
-              </button>
+              >{upgrades.piercing >= 5 ? "MAX" : "200 💧"}</button>
             </div>
           </div>
 
