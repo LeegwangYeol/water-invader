@@ -91,3 +91,14 @@ Water Invader Game Flow
 - 플레이어의 제압 상태(창백한 X눈)와 기세등등(붉은색 V눈) 애니메이션 극적 대비 추가
 - 외부 에셋 없이 Web Audio API로 레트로 사운드 신시사이징 구현 완료
 - Vercel 무료 배포 계획 수립: Next.js 프레임워크이므로 GitHub과 연동하여 1분 만에 CI/CD 자동 배포 구축 가능
+
+
+## GitHub 저장소 커밋 완료 (Git Commit)
+- 'Water Invader' 완성본을 로컬 Git 저장소(Local Repo)에 전부 커밋(Commit) 완료
+- GitHub 서버로 푸시(Push)하기 위해 원격 저장소(Remote Repository) URL을 오너님께 요청 중
+
+
+## GitHub 푸시 완료 및 배포 안내 (Push & Deploy)
+- GitHub CLI 로그인을 통해 오너님 계정으로 자동 로그인 연동
+- https://github.com/LeegwangYeol/water-invader 에 프로젝트 자동 생성 및 푸시(Push) 완료
+- Vercel 연동 가이드 제공 완료

@@ -36,6 +36,13 @@ export class GameManager {
   private warningMessage: string = "";
   private pendingReinforcement: 'ENEMY' | 'ALLY' | null = null;
   
+  // Debugging & Developer Tools
+  public isDebugMode: boolean = false;
+  public isGodMode: boolean = false;
+  public fps: number = 0;
+  private frameCount: number = 0;
+  private lastFpsTime: number = 0;
+  
   // Callbacks for React UI updates
   public onStateChange?: (state: GameState) => void;
   public onScoreChange?: (score: number, currency: number, combo: number) => void;
@@ -121,13 +128,22 @@ export class GameManager {
     }
   }
 
-  private loop = (currentTime: number) => {
+  private loop = (timestamp: number) => {
     if (this.state !== GameState.PLAYING) return;
 
-    const deltaTime = (currentTime - this.lastTime) / 1000; // in seconds
-    this.lastTime = currentTime;
+    const deltaTime = (timestamp - this.lastTime) / 1000;
+    this.lastTime = timestamp;
+    
+    // FPS Calculation
+    this.frameCount++;
+    if (timestamp - this.lastFpsTime >= 1000) {
+      this.fps = this.frameCount;
+      this.frameCount = 0;
+      this.lastFpsTime = timestamp;
+    }
 
-    this.update(deltaTime);
+    // Fixed timestep update for physics stability (optional, but using raw delta here)
+    this.update(Math.min(deltaTime, 0.1));
     this.draw();
 
     this.animationFrameId = requestAnimationFrame(this.loop);
@@ -282,19 +298,21 @@ export class GameManager {
         // Enemy bullet vs Player
         if (bullet.checkCollision(this.player)) {
           bullet.isDead = true;
-          this.player.hp -= bullet.damage;
-          this.createExplosion(this.player.position.x + this.player.size.width/2, this.player.position.y, '#ef4444', 10);
-          this.triggerScreenShake(0.2); // Shake on hit
-          
-          // Taking damage increases stress significantly
-          this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
-          this.player.suppressionLevel = Math.min(100, this.player.suppressionLevel + 20); // panic
-          
-          this.combo = 0; // reset combo on hit
-          if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
-          
-          if (this.player.hp <= 0) {
-            this.gameOver();
+          if (!this.isGodMode) {
+            this.player.hp -= bullet.damage;
+            this.createExplosion(this.player.position.x + this.player.size.width/2, this.player.position.y, '#ef4444', 10);
+            this.triggerScreenShake(0.2); // Shake on hit
+            
+            // Taking damage increases stress significantly
+            this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
+            this.player.suppressionLevel = Math.min(100, this.player.suppressionLevel + 20); // panic
+            
+            this.combo = 0; // reset combo on hit
+            if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+            
+            if (this.player.hp <= 0) {
+              this.gameOver();
+            }
           }
         } else {
           // Near miss detection for Suppression
@@ -378,6 +396,33 @@ export class GameManager {
     this.bullets.forEach(b => b.draw(this.ctx));
     this.particles.forEach(p => p.draw(this.ctx));
     
+    // Debug Overlay
+    if (this.isDebugMode) {
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeStyle = '#ff00ff'; // Magenta for hitboxes
+      
+      // Draw hitboxes
+      [this.player, ...this.enemies, ...this.bullets, ...this.barricades].forEach(entity => {
+        if (!entity.isDead) {
+          const r = entity.getRect();
+          this.ctx.strokeRect(r.x, r.y, r.width, r.height);
+        }
+      });
+      
+      // Draw Metrics
+      this.ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      this.ctx.fillRect(5, 5, 180, 100);
+      this.ctx.fillStyle = '#00ff00';
+      this.ctx.font = '12px monospace';
+      this.ctx.textAlign = 'left';
+      this.ctx.fillText(`FPS: ${this.fps}`, 10, 20);
+      this.ctx.fillText(`God Mode: ${this.isGodMode ? 'ON' : 'OFF'}`, 10, 35);
+      this.ctx.fillText(`Enemies: ${this.enemies.length}`, 10, 50);
+      this.ctx.fillText(`Bullets: ${this.bullets.length}`, 10, 65);
+      this.ctx.fillText(`Particles: ${this.particles.length}`, 10, 80);
+      this.ctx.fillText(`Barricades: ${this.barricades.length}`, 10, 95);
+    }
+
     this.ctx.restore();
     
     // UI overlays that shouldn't shake (or maybe they should shake? Let's leave them out of the restore so they don't shake, or draw them after restore)
@@ -409,6 +454,14 @@ export class GameManager {
         soundManager.playShoot();
         this.bullets.push(...newBullets);
       }
+    }
+    
+    // Debug & Cheats
+    if (key === 'F3') this.isDebugMode = !this.isDebugMode;
+    if (key === 'F4') this.isGodMode = !this.isGodMode;
+    if (key === 'F5') {
+      this.currency += 1000;
+      this.updateScoreUI();
     }
   }
 
