@@ -132,7 +132,7 @@ export class GameManager {
   }
 
   private loop = (timestamp: number) => {
-    if (this.state !== GameState.PLAYING) return;
+    if (this.state === GameState.MENU) return;
 
     const deltaTime = (timestamp - this.lastTime) / 1000;
     this.lastTime = timestamp;
@@ -153,77 +153,76 @@ export class GameManager {
   };
 
   private update(deltaTime: number) {
-    // Player
-    this.player.update(deltaTime);
-    
-    // Combo timer
-    if (this.combo > 0) {
-      this.comboTimer -= deltaTime;
-      if (this.comboTimer <= 0) {
-        this.combo = 0;
-        this.updateScoreUI();
+    if (this.state === GameState.PLAYING) {
+      // Player
+      this.player.update(deltaTime);
+      
+      // Combo timer
+      if (this.combo > 0) {
+        this.comboTimer -= deltaTime;
+        if (this.comboTimer <= 0) {
+          this.combo = 0;
+          this.updateScoreUI();
+        }
       }
+      
+      // Reinforcement logic
+      if (this.warningTimer > 0) {
+        this.warningTimer -= deltaTime;
+        if (this.warningTimer <= 0 && this.pendingReinforcement) {
+          // Spawn reinforcement
+          if (this.pendingReinforcement === 'ENEMY') {
+            // Spawn rapid zigzag enemies
+            for (let i = 0; i < 4; i++) {
+               this.enemies.push(new Enemy(50 + i * 100, 20, this.canvas.width, this.level + 2, EnemyType.ZIGZAG));
+            }
+          } else if (this.pendingReinforcement === 'ALLY') {
+            // Spawn friendly droplets that shoot upwards automatically
+            for (let i = 0; i < 5; i++) {
+              this.bullets.push(new Bullet(this.canvas.width/6 * (i+1), this.canvas.height - 20, -500, 2, true));
+              this.createExplosion(this.canvas.width/6 * (i+1), this.canvas.height - 20, '#4ade80', 10);
+            }
+          }
+          this.pendingReinforcement = null;
+        }
+      } else {
+        this.reinforcementTimer -= deltaTime;
+        if (this.reinforcementTimer <= 0) {
+          this.reinforcementTimer = Math.random() * 10 + 10; // 10-20 seconds
+          if (Math.random() > 0.5 && this.enemies.length > 0) {
+            this.triggerScreenShake(2.0);
+            this.warningTimer = 2.0;
+            this.pendingReinforcement = Math.random() > 0.6 ? 'ALLY' : 'ENEMY';
+            this.warningMessage = this.pendingReinforcement === 'ENEMY' ? "WARNING! ENEMY REINFORCEMENTS!" : "ALLY SUPPORT INCOMING!";
+          }
+        }
+      }
+
+      // Entities
+      this.enemies.forEach(enemy => {
+        enemy.update(deltaTime);
+        const bullet = enemy.fire();
+        if (bullet) this.bullets.push(bullet);
+        
+        // Game over if enemy reaches bottom
+        if (enemy.position.y + enemy.size.height >= this.player.position.y) {
+          this.gameOver();
+        }
+      });
+      
+      this.barricades.forEach(barricade => barricade.update(deltaTime));
+      this.bullets.forEach(bullet => bullet.update(deltaTime));
+      
+      // Collision
+      this.checkCollisions();
     }
     
-    // Shake timer
+    // Always update visual effects
     if (this.shakeTimer > 0) {
       this.shakeTimer -= deltaTime;
     }
-    
-    // Reinforcement logic
-    if (this.warningTimer > 0) {
-      this.warningTimer -= deltaTime;
-      if (this.warningTimer <= 0 && this.pendingReinforcement) {
-        // Spawn reinforcement
-        if (this.pendingReinforcement === 'ENEMY') {
-          // Spawn rapid zigzag enemies
-          for (let i = 0; i < 4; i++) {
-             this.enemies.push(new Enemy(50 + i * 100, 20, this.canvas.width, this.level + 2, EnemyType.ZIGZAG));
-          }
-        } else if (this.pendingReinforcement === 'ALLY') {
-          // Spawn friendly droplets that shoot upwards automatically
-          // We can simulate ally by adding invisible entities that fire bullets
-          for (let i = 0; i < 5; i++) {
-            // Just shoot a volley of friendly bullets
-            this.bullets.push(new Bullet(this.canvas.width/6 * (i+1), this.canvas.height - 20, -500, 2, true));
-            this.createExplosion(this.canvas.width/6 * (i+1), this.canvas.height - 20, '#4ade80', 10);
-          }
-        }
-        this.pendingReinforcement = null;
-      }
-    } else {
-      this.reinforcementTimer -= deltaTime;
-      if (this.reinforcementTimer <= 0) {
-        this.reinforcementTimer = Math.random() * 10 + 10; // 10-20 seconds
-        if (Math.random() > 0.5 && this.enemies.length > 0) {
-          // Trigger Warning!
-          this.triggerScreenShake(2.0); // Shake screen for 2 seconds
-          this.warningTimer = 2.0;
-          this.pendingReinforcement = Math.random() > 0.6 ? 'ALLY' : 'ENEMY';
-          this.warningMessage = this.pendingReinforcement === 'ENEMY' ? "WARNING! ENEMY REINFORCEMENTS!" : "ALLY SUPPORT INCOMING!";
-        }
-      }
-    }
-
-    // Entities
-    this.enemies.forEach(enemy => {
-      enemy.update(deltaTime);
-      const bullet = enemy.fire();
-      if (bullet) this.bullets.push(bullet);
-      
-      // Game over if enemy reaches bottom
-      if (enemy.position.y + enemy.size.height >= this.player.position.y) {
-        this.gameOver();
-      }
-    });
-    
-    this.barricades.forEach(barricade => barricade.update(deltaTime));
-    this.bullets.forEach(bullet => bullet.update(deltaTime));
     this.particles.forEach(particle => particle.update(deltaTime));
-
-    // Collision
-    this.checkCollisions();
-
+    
     // Cleanup dead entities
     this.enemies = this.enemies.filter(e => !e.isDead);
     this.bullets = this.bullets.filter(b => 
@@ -252,12 +251,12 @@ export class GameManager {
     }
   }
   
-  private createExplosion(x: number, y: number, color: string, count: number) {
+  private createExplosion(x: number, y: number, color: string, count: number, speedMult: number = 1.0) {
     if (count > 5) {
       soundManager.playExplosion();
     }
     for (let i = 0; i < count; i++) {
-      this.particles.push(new Particle(x, y, color));
+      this.particles.push(new Particle(x, y, color, speedMult));
     }
   }
 
@@ -302,7 +301,17 @@ export class GameManager {
             
             if (enemy.hp <= 0) {
               enemy.isDead = true;
-              this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, '#f97316', 15); // fire dying
+              const isBoss = enemy.type === EnemyType.BOSS;
+              const explosionColor = isBoss ? '#fbbf24' : '#f97316';
+              const particleCount = isBoss ? 150 : 30;
+              const speedMult = isBoss ? 3.0 : 1.5;
+              
+              this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, explosionColor, particleCount, speedMult);
+              
+              if (isBoss) {
+                this.triggerScreenShake(1.5);
+              }
+              
               this.handleEnemyKill();
             }
             break;
@@ -325,6 +334,8 @@ export class GameManager {
             if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
             
             if (this.player.hp <= 0) {
+              this.createExplosion(this.player.position.x + this.player.size.width/2, this.player.position.y + this.player.size.height/2, '#38bdf8', 200, 3.5);
+              this.triggerScreenShake(2.0);
               this.gameOver();
             }
           }
