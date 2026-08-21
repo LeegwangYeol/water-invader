@@ -1,4 +1,4 @@
-# BRIEFING — 2026-08-21T08:04:45Z
+# BRIEFING — 2026-08-21T08:08:55Z
 
 ## Mission
 QA, stress-test, and verify the deployed web game at https://water-invader.vercel.app/ across UI/visuals, gameplay mechanics, and live wave survival.
@@ -13,27 +13,26 @@ QA, stress-test, and verify the deployed web game at https://water-invader.verce
 ## 🔒 My Workflow
 - **Pattern**: Project
 - **Scope document**: C:\src\SpaceInvader\PROJECT.md
-1. **Decompose**: Survey (3 parallel explorers/spec miners) -> Decomposition into UI/Visual Verification, Mechanics & Physics Testing, and End-to-End Stress & Wave Survival Testing -> Specialist Subagents -> Multi-review -> Adversarial Challengers -> Forensic Integrity Audit.
+1. **Decompose**: Survey (completed) -> Test Automation & Live DevTools Verification -> Review -> Adversarial Challengers -> Forensic Audit.
 2. **Dispatch & Execute**:
-   - **Direct (iteration loop)**: Survey -> Explorer -> Worker/Test Writer -> Reviewer -> Challenger -> Auditor -> Gate.
-   - **Delegate (sub-orchestrator)**: Spawn specialized subagents for parallel execution.
+   - Direct iteration loop: Survey -> Explorer -> Worker/Test Writer -> Reviewer -> Challenger -> Auditor -> Gate.
 3. **On failure**: Retry -> Replace -> Skip -> Redistribute -> Redesign -> Escalate.
 4. **Succession**: Self-succeed at 16 spawns.
 - **Work items**:
-  1. Survey and Spec Mining [in-progress]
-  2. Test Infrastructure & Automation Setup [pending]
-  3. UI & Character Visual Verification (R1) [pending]
-  4. Game Mechanics & Physics Verification (R2) [pending]
-  5. Multi-Wave Live Survival & Stress Testing (R3) [pending]
+  1. Survey and Spec Mining [done]
+  2. Test Infrastructure & Automation Setup (Playwright/Node) [in-progress]
+  3. UI & Character Visual Verification (R1) [in-progress]
+  4. Game Mechanics & Physics Verification (R2) [in-progress]
+  5. Multi-Wave Live Survival & Stress Testing (R3) [in-progress]
   6. Multi-Review & Challenger Verification [pending]
   7. Forensic Integrity Audit & Final Report [pending]
-- **Current phase**: 0 (Survey)
-- **Current focus**: Surveying codebase and live deployed app at https://water-invader.vercel.app/
+- **Current phase**: 1 (Test Suite & Live QA Execution)
+- **Current focus**: Executing automated test suite and live Chrome DevTools stress testing
 
 ## 🔒 Key Constraints
 - NEVER write, modify, or create source code directly — delegate all work.
 - Zero tolerance for cheating or fake verifications.
-- Live verification on deployed environment (https://water-invader.vercel.app/) using Chrome DevTools MCP and automated scripts (Playwright/Puppeteer).
+- Live verification on deployed environment (https://water-invader.vercel.app/) using Chrome DevTools MCP and automated scripts.
 - Never reuse subagents after handoff.
 
 ## Current Parent
@@ -41,19 +40,23 @@ QA, stress-test, and verify the deployed web game at https://water-invader.verce
 - Updated: not yet
 
 ## Key Decisions Made
-- Dispatched 3 parallel exploratory agents (Spec Miner, Mechanics Explorer, QA/Automation Explorer) to survey the live app and repository code.
+- Survey completed. Identified 2 mechanics gaps (Barricade slowdown and bullet-on-bullet interception) and deployed DOM discrepancy.
+- Dispatched Test Writer for automated Playwright test suite.
+- Dispatched Live QA DevTools Specialist for live Chrome DevTools interactive play, screenshot captures, and multi-wave survival.
 
 ## Team Roster
 | Agent | Type | Work Item | Status | Conv ID |
 |-------|------|-----------|--------|---------|
-| spec_miner_survey_1 | teamwork_preview_spec_miner | Survey UI & Vector Art Specs | in-progress | 5d735e04-eee2-4073-afe2-44405945a6ff |
-| explorer_mechanics_1 | teamwork_preview_explorer | Survey Mechanics & Physics Specs | in-progress | 6e846844-f6dc-4ce6-83d7-73ff7a93c9eb |
-| explorer_stress_1 | teamwork_preview_explorer | Survey QA Automation & Live Stress Strategy | in-progress | 6f949ca1-a02b-49f2-8912-43a925e47472 |
+| spec_miner_survey_1 | teamwork_preview_spec_miner | Survey UI & Vector Art Specs | completed | 5d735e04-eee2-4073-afe2-44405945a6ff |
+| explorer_mechanics_1 | teamwork_preview_explorer | Survey Mechanics & Physics Specs | completed | 6e846844-f6dc-4ce6-83d7-73ff7a93c9eb |
+| explorer_stress_1 | teamwork_preview_explorer | Survey QA Automation & Live Stress Strategy | completed | 6f949ca1-a02b-49f2-8912-43a925e47472 |
+| test_writer_m3 | teamwork_preview_test_writer | Automated Test Suite (Playwright/Node) | in-progress | f1ae7497-5dd5-4ea7-bc23-7c8662ec4350 |
+| worker_live_m4 | teamwork_preview_worker | Live QA DevTools & Multi-wave Survival | in-progress | 5d891d28-cdde-412e-9e2c-5e85559d0651 |
 
 ## Succession Status
 - Succession required: no
-- Spawn count: 3 / 16
-- Pending subagents: 5d735e04-eee2-4073-afe2-44405945a6ff, 6e846844-f6dc-4ce6-83d7-73ff7a93c9eb, 6f949ca1-a02b-49f2-8912-43a925e47472
+- Spawn count: 5 / 16
+- Pending subagents: f1ae7497-5dd5-4ea7-bc23-7c8662ec4350, 5d891d28-cdde-412e-9e2c-5e85559d0651
 - Predecessor: none
 - Successor: not yet spawned
 

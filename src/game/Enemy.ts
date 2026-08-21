@@ -20,8 +20,8 @@ export class Enemy extends Entity {
   
   // Movement pattern
   private direction: number = 1; // 1 for right, -1 for left
-  public speedX: number = 50;
-  public speedY: number = 10;
+  public speedX: number = 30;
+  public speedY: number = 8;
   private startY: number;
   
   private fireTimer: number;
@@ -84,7 +84,7 @@ export class Enemy extends Entity {
     }
 
     if (this.isDiving) {
-      this.position.y += currentSpeedY * 15 * deltaTime; // Dive very fast
+      this.position.y += currentSpeedY * 6 * deltaTime; // Dive very fast
       return; // Skip normal movement
     }
 

@@ -221,7 +221,7 @@ export class GameManager {
         if (this.reinforcementTimer <= 0) {
           this.reinforcementTimer = Math.random() * 10 + 10; // 10-20 seconds
           if (Math.random() > 0.5 && this.enemies.length > 0) {
-            this.triggerScreenShake(2.0);
+            this.triggerScreenShake(1);
             this.warningTimer = 2.0;
             this.pendingReinforcement = Math.random() > 0.6 ? 'ALLY' : 'ENEMY';
             this.warningMessage = this.pendingReinforcement === 'ENEMY' ? "WARNING! ENEMY REINFORCEMENTS!" : "ALLY SUPPORT INCOMING!";
@@ -371,7 +371,7 @@ export class GameManager {
               this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, explosionColor, particleCount, speedMult);
               
               if (isBoss) {
-                this.triggerScreenShake(1.5);
+                this.triggerScreenShake(0.75);
               }
               
                               if (enemy.type === EnemyType.SPLITTER) {
@@ -424,7 +424,7 @@ export class GameManager {
             
             if (this.player.hp <= 0) {
               this.createExplosion(this.player.position.x + this.player.size.width/2, this.player.position.y + this.player.size.height/2, '#38bdf8', 200, 3.5);
-              this.triggerScreenShake(2.0);
+              this.triggerScreenShake(1);
               this.gameOver("정수기가 파괴되었습니다. (체력 소진)");
             }
           }
@@ -514,10 +514,10 @@ export class GameManager {
     
     // Screen shake
     if (this.shakeTimer > 0) {
-      let shakeAmount = 5;
+      let shakeAmount = 2;
       if (this.warningTimer > 0) {
          // Heavier shake during warning
-         shakeAmount = 15;
+         shakeAmount = 5;
       }
       const offsetX = (Math.random() - 0.5) * shakeAmount;
       const offsetY = (Math.random() - 0.5) * shakeAmount;
@@ -625,7 +625,7 @@ export class GameManager {
       this.player.ultimateGauge = 0;
       soundManager.playPowerUp(); // or a new ultimate sound
       
-      this.triggerScreenShake(1.0);
+      this.triggerScreenShake(0.5);
       
       // Spawn massive amount of bullets from the top
       for (let i = 0; i < 30; i++) {

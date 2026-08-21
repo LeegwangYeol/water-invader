@@ -5,7 +5,7 @@ export class Player extends Entity {
   private canvasWidth: number;
   public speed: number = 300;
   public hp: number = 3;
-  public maxHp: number = 3;
+  public maxHp: number = 5;
   
   // Upgradeable stats
   public baseFireRate: number = 0.5; // seconds between shots

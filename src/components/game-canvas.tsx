@@ -16,7 +16,7 @@ export default function GameCanvas() {
   const [combo, setCombo] = useState(0);
   const [wave, setWave] = useState(1);
   const [ultimate, setUltimate] = useState(0);
-  const [hp, setHp] = useState(3);
+  const [hp, setHp] = useState(5);
   
   const [showManual, setShowManual] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -163,7 +163,7 @@ export default function GameCanvas() {
         </div>
         <div className="text-right flex flex-col items-end">
           <div className="flex gap-1 justify-end mb-2">
-            {[...Array(3)].map((_, i) => (
+            {[...Array(5)].map((_, i) => (
               <div key={i} className={`w-4 h-4 sm:w-6 sm:h-6 rounded-full ${i < hp ? 'bg-blue-500' : 'bg-gray-600'}`} />
             ))}
           </div>
