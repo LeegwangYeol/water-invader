@@ -20,6 +20,7 @@ export class Player extends Entity {
   private fireTimer: number = 0;
   public isMovingLeft: boolean = false;
   public isMovingRight: boolean = false;
+  public isShooting: boolean = false;
   
   private timeAlive: number = 0;
 
@@ -37,7 +38,7 @@ export class Player extends Entity {
     this.baseFireRate = val;
   }
 
-  public update(deltaTime: number): void {
+  public update(deltaTime: number): Bullet[] {
     this.timeAlive += deltaTime;
     
     if (this.isMovingLeft) {
@@ -66,6 +67,13 @@ export class Player extends Entity {
       this.stressLevel -= 10 * deltaTime;
       if (this.stressLevel < 0) this.stressLevel = 0;
     }
+    
+    let generatedBullets: Bullet[] = [];
+    if (this.isShooting) {
+      generatedBullets = this.fire();
+    }
+    
+    return generatedBullets;
   }
 
   public fire(): Bullet[] {

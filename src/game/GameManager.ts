@@ -155,7 +155,11 @@ export class GameManager {
   private update(deltaTime: number) {
     if (this.state === GameState.PLAYING) {
       // Player
-      this.player.update(deltaTime);
+      const newBullets = this.player.update(deltaTime);
+      if (newBullets && newBullets.length > 0) {
+        soundManager.playShoot();
+        this.bullets.push(...newBullets);
+      }
       
       // Combo timer
       if (this.combo > 0) {
@@ -519,11 +523,7 @@ export class GameManager {
     if (key === 'ArrowLeft' || key === 'a') this.player.isMovingLeft = true;
     if (key === 'ArrowRight' || key === 'd') this.player.isMovingRight = true;
     if (key === ' ' || key === 'Spacebar') {
-      const newBullets = this.player.fire();
-      if (newBullets.length > 0) {
-        soundManager.playShoot();
-        this.bullets.push(...newBullets);
-      }
+      this.player.isShooting = true;
     }
     if (key === 'e' || key === 'Shift') {
       this.triggerUltimate();
@@ -541,6 +541,9 @@ export class GameManager {
   public handleKeyUp(key: string) {
     if (key === 'ArrowLeft' || key === 'a') this.player.isMovingLeft = false;
     if (key === 'ArrowRight' || key === 'd') this.player.isMovingRight = false;
+    if (key === ' ' || key === 'Spacebar') {
+      this.player.isShooting = false;
+    }
   }
   
   // Upgrades
