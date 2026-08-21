@@ -1,10 +1,15 @@
 import { Entity } from './Entity';
 import { Bullet } from './Bullet';
+import { Vector2D } from './types';
 
 export enum EnemyType {
   NORMAL,
   ZIGZAG,
-  BOSS
+  BOSS,
+  SNIPER,
+  DIVER,
+  SHIELDED,
+  SPLITTER
 }
 
 export class Enemy extends Entity {
@@ -21,6 +26,10 @@ export class Enemy extends Entity {
   private fireTimer: number;
   public canEvade: boolean = false;
   private evadeCooldown: number = 0;
+  
+  public isDiving: boolean = false;
+  public shieldHp: number = 0;
+  private shieldRegenTimer: number = 0;
 
   constructor(x: number, y: number, canvasWidth: number, level: number, type: EnemyType = EnemyType.NORMAL) {
     super(x, y, 40, 30);
@@ -39,6 +48,19 @@ export class Enemy extends Entity {
       this.size.height = 100;
       this.hp = level * 10;
       this.speedX += level * 2;
+    } else if (type === EnemyType.SNIPER) {
+      this.color = '#a855f7'; // Purple
+      this.speedX = 20; // slow
+      this.hp = Math.max(1, this.hp - 1);
+    } else if (type === EnemyType.DIVER) {
+      this.color = '#ef4444'; // Red
+      this.speedX += level * 8;
+    } else if (type === EnemyType.SHIELDED) {
+      this.color = '#64748b'; // Slate
+      this.shieldHp = 3;
+    } else if (type === EnemyType.SPLITTER) {
+      this.color = '#22c55e'; // Green
+      this.size = { width: 50, height: 40 }; // slightly bigger
     } else {
       this.color = '#f97316'; // Orange/Fire
       this.speedX += level * 5;
@@ -48,25 +70,44 @@ export class Enemy extends Entity {
     this.fireTimer = Math.random() * 3 + 1; // 1 to 4 seconds
   }
 
-  public update(deltaTime: number, speedMultiplier: number = 1.0, bullets: Bullet[] = []): void {
+  public update(deltaTime: number, speedMultiplier: number = 1.0, bullets: Bullet[] = [], playerPos?: Vector2D): void {
     const currentSpeedX = this.speedX * speedMultiplier;
     const currentSpeedY = this.speedY * speedMultiplier;
 
+    // Diver Logic
+    if (this.type === EnemyType.DIVER && playerPos) {
+      if (!this.isDiving && Math.abs((this.position.x + this.size.width/2) - (playerPos.x + 25)) < 20) {
+        // Player is directly below!
+        this.isDiving = true;
+      }
+    }
+
+    if (this.isDiving) {
+      this.position.y += currentSpeedY * 15 * deltaTime; // Dive very fast
+      return; // Skip normal movement
+    }
+
     this.position.y += currentSpeedY * deltaTime; // Constantly slowly move down
+
+    // Shield Regen Logic
+    if (this.type === EnemyType.SHIELDED && this.shieldHp <= 0) {
+      this.shieldRegenTimer -= deltaTime;
+      if (this.shieldRegenTimer <= 0) {
+        this.shieldHp = 3; // Regenerate shield
+      }
+    }
 
     // Evasive maneuver logic
     if (this.canEvade && this.evadeCooldown <= 0) {
-      // Check for incoming player bullets
       const incoming = bullets.find(b => 
         b.isPlayerBullet && 
-        b.position.y > this.position.y && // below the enemy
-        b.position.y - this.position.y < 250 && // within threat range
-        Math.abs(b.position.x - this.position.x) < this.size.width + 10 // directly below
+        b.position.y > this.position.y && 
+        b.position.y - this.position.y < 250 && 
+        Math.abs(b.position.x - this.position.x) < this.size.width + 10 
       );
       if (incoming) {
-        // Dodge! Swap direction
         this.direction = (incoming.position.x > this.position.x + this.size.width / 2) ? -1 : 1;
-        this.evadeCooldown = 1.5; // Cooldown before next dodge
+        this.evadeCooldown = 1.5; 
       }
     }
     if (this.evadeCooldown > 0) {
@@ -77,7 +118,6 @@ export class Enemy extends Entity {
       this.position.x += currentSpeedX * this.direction * deltaTime;
       this.position.y += Math.sin(Date.now() / 200 + this.position.x) * 2 * speedMultiplier;
     } else {
-      // Normal / Boss logic. Evasive enemies move 50% faster while evading
       const evadeBoost = (this.evadeCooldown > 0.5) ? 1.5 : 1.0;
       this.position.x += currentSpeedX * evadeBoost * this.direction * deltaTime;
     }
@@ -88,20 +128,38 @@ export class Enemy extends Entity {
       this.position.y += (this.type === EnemyType.BOSS) ? 10 : 20; 
     }
     
-    // Clamp to prevent getting stuck
+    // Clamp
     if (this.position.x <= 0) this.position.x = 0;
     if (this.position.x + this.size.width >= this.canvasWidth) {
       this.position.x = this.canvasWidth - this.size.width;
     }
     
-    // Bosses fire faster as speed multiplier increases
     this.fireTimer -= deltaTime * speedMultiplier;
   }
 
-  public fire(): Bullet | null {
+  public fire(playerPos?: Vector2D): Bullet | null {
+    if (this.isDiving) return null; // divers don't shoot while diving
+
     if (this.fireTimer <= 0) {
       this.fireTimer = Math.random() * 3 + (this.type === EnemyType.BOSS ? 0.5 : 2); // Reset timer
-      return new Bullet(this.position.x + this.size.width / 2 - 3, this.position.y + this.size.height, this.type === EnemyType.BOSS ? 300 : 200, 1, false);
+      
+      const spawnX = this.position.x + this.size.width / 2 - 3;
+      const spawnY = this.position.y + this.size.height;
+      const bulletSpeed = this.type === EnemyType.BOSS ? 300 : 200;
+
+      const b = new Bullet(spawnX, spawnY, bulletSpeed, 1, false);
+
+      if (this.type === EnemyType.SNIPER && playerPos) {
+         // Aim at player
+         const dx = (playerPos.x + 25) - spawnX;
+         const dy = (playerPos.y + 20) - spawnY;
+         const angle = Math.atan2(dy, dx);
+         const speed = 400; // sniper bullets are fast
+         b.velocity.x = Math.cos(angle) * speed;
+         b.velocity.y = Math.sin(angle) * speed;
+      }
+      
+      return b;
     }
     return null;
   }
@@ -109,8 +167,20 @@ export class Enemy extends Entity {
   public draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = this.color;
+    const cx = this.position.x + this.size.width / 2;
+    const cy = this.position.y + this.size.height / 2;
+
+    // Draw Shield Aura if Shielded
+    if (this.type === EnemyType.SHIELDED && this.shieldHp > 0) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, this.size.width / 2 + 5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(56, 189, 248, ${0.2 + this.shieldHp * 0.1})`; // Blue aura
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#38bdf8';
+      ctx.stroke();
+    }
+    
     ctx.fillStyle = this.color;
     
     if (this.type === EnemyType.BOSS) {
@@ -122,32 +192,69 @@ export class Enemy extends Entity {
         ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
       }
       
-      // Boss Eyes
+      // Angry Boss Eyes
       ctx.fillStyle = '#000000';
-      ctx.shadowBlur = 0;
       ctx.beginPath();
-      ctx.arc(this.position.x + 40, this.position.y + 40, 10, 0, Math.PI * 2);
-      ctx.arc(this.position.x + this.size.width - 40, this.position.y + 40, 10, 0, Math.PI * 2);
+      // Left eye angry
+      ctx.moveTo(this.position.x + 30, this.position.y + 35);
+      ctx.lineTo(this.position.x + 50, this.position.y + 45);
+      ctx.lineTo(this.position.x + 30, this.position.y + 45);
+      ctx.fill();
+      // Right eye angry
+      ctx.beginPath();
+      ctx.moveTo(this.position.x + this.size.width - 30, this.position.y + 35);
+      ctx.lineTo(this.position.x + this.size.width - 50, this.position.y + 45);
+      ctx.lineTo(this.position.x + this.size.width - 30, this.position.y + 45);
       ctx.fill();
     } else {
-      // Draw smooth blob-like enemy shape
+      // Smooth blob shape
       ctx.beginPath();
-      const cx = this.position.x + this.size.width / 2;
-      const cy = this.position.y + this.size.height / 2;
-      
       ctx.moveTo(this.position.x + 10, this.position.y + 10);
       ctx.bezierCurveTo(cx, this.position.y - 10, this.position.x + this.size.width - 10, this.position.y + 10, this.position.x + this.size.width, cy);
       ctx.bezierCurveTo(this.position.x + this.size.width + 10, this.position.y + this.size.height, cx, this.position.y + this.size.height + 10, this.position.x, cy);
       ctx.bezierCurveTo(this.position.x - 10, this.position.y + 10, this.position.x + 10, this.position.y + 10, this.position.x + 10, this.position.y + 10);
       ctx.fill();
       
-      // Eyes
+      // Diver Thruster
+      if (this.isDiving) {
+         ctx.fillStyle = '#fbbf24'; // Fire
+         ctx.beginPath();
+         ctx.moveTo(cx - 10, this.position.y - 5);
+         ctx.lineTo(cx, this.position.y - 20 - Math.random() * 10);
+         ctx.lineTo(cx + 10, this.position.y - 5);
+         ctx.fill();
+      } else if (this.type === EnemyType.DIVER) {
+         // Small idle thruster
+         ctx.fillStyle = '#fbbf24'; 
+         ctx.beginPath();
+         ctx.arc(cx, this.position.y, 4, 0, Math.PI*2);
+         ctx.fill();
+      }
+
+      // Eyes (Angry)
       ctx.fillStyle = '#000000';
-      ctx.shadowBlur = 0;
       ctx.beginPath();
-      ctx.arc(this.position.x + 15, this.position.y + 12, 3, 0, Math.PI * 2);
-      ctx.arc(this.position.x + 28, this.position.y + 12, 3, 0, Math.PI * 2);
+      // left
+      ctx.moveTo(cx - 10, cy - 6);
+      ctx.lineTo(cx - 4, cy - 2);
+      ctx.lineTo(cx - 10, cy - 2);
       ctx.fill();
+      // right
+      ctx.beginPath();
+      ctx.moveTo(cx + 10, cy - 6);
+      ctx.lineTo(cx + 4, cy - 2);
+      ctx.lineTo(cx + 10, cy - 2);
+      ctx.fill();
+
+      // Sniper Laser Sight
+      if (this.type === EnemyType.SNIPER) {
+         ctx.fillStyle = 'rgba(239, 68, 68, 0.3)'; // Red laser
+         ctx.beginPath();
+         ctx.moveTo(cx, cy + 5);
+         ctx.lineTo(cx - 2, cy + 250); // shoot down arbitrarily
+         ctx.lineTo(cx + 2, cy + 250);
+         ctx.fill();
+      }
     }
     
     ctx.restore();

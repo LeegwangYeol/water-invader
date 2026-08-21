@@ -20,6 +20,18 @@ export default function GameCanvas() {
   
   const [showManual, setShowManual] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [lang, setLang] = useState('ko');
+
+  useEffect(() => {
+    const navLang = navigator.language || 'ko';
+    if (navLang.startsWith('en')) {
+      setLang('en');
+    } else {
+      setLang('ko');
+    }
+  }, []);
+
+  const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
   useEffect(() => {
     // Register Service Worker for PWA
@@ -37,7 +49,13 @@ export default function GameCanvas() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    return () => {
+    const handleSkill = (key: string) => {
+    if (gameManagerRef.current && gameState === GameState.PLAYING) {
+      gameManagerRef.current.handleKeyDown(key);
+    }
+  };
+
+  return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []);
@@ -137,8 +155,8 @@ export default function GameCanvas() {
       {/* Top HUD */}
       <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start text-white pointer-events-none z-10">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-blue-400">Score: {score}</h2>
-          <p className="text-sm sm:text-base text-blue-200">Pure Water: {currency} 💧</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-blue-400">{t('점수:', 'Score:')} {score}</h2>
+          <p className="text-sm sm:text-base text-blue-200">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
           {gameState === GameState.PLAYING && (
             <p className="text-sm sm:text-base text-yellow-300 font-bold mt-1">WAVE {wave}</p>
           )}
@@ -156,7 +174,7 @@ export default function GameCanvas() {
           )}
           {/* Ultimate Gauge */}
           {gameState === GameState.PLAYING && (
-            <div className="mt-2 w-32 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-500">
+            <div className="mt-2 w-32 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-500 relative">
               <div 
                 className={`h-full transition-all duration-300 ${ultimate >= 100 ? 'bg-gradient-to-r from-yellow-400 to-red-500 animate-pulse' : 'bg-blue-500'}`}
                 style={{ width: `${ultimate}%` }}

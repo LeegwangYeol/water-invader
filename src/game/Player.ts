@@ -268,6 +268,49 @@ export class Player extends Entity {
         ctx.arc(cx, cy + 8, 4, 0, Math.PI);
         ctx.stroke();
       }
+
+      // Visual Damage (Torn/Battered) based on HP
+      if (this.hp <= 2) {
+         ctx.save();
+         ctx.translate(cx, cy);
+         // Bandage 1
+         ctx.fillStyle = '#fcd34d'; // Yellowish bandage
+         ctx.beginPath();
+         ctx.fillRect(-15, -15, 12, 4);
+         ctx.fillRect(-11, -19, 4, 12);
+         ctx.fillStyle = '#b45309';
+         ctx.fillRect(-13, -13, 2, 2);
+         
+         // Scratch
+         ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+         ctx.lineWidth = 1.5;
+         ctx.beginPath();
+         ctx.moveTo(-18, -2);
+         ctx.lineTo(-8, 5);
+         ctx.stroke();
+         ctx.restore();
+      }
+
+      if (this.hp <= 1) {
+         ctx.save();
+         ctx.translate(cx, cy);
+         // Bandage 2 (Right cheek)
+         ctx.fillStyle = '#fcd34d';
+         ctx.rotate(Math.PI / 4);
+         ctx.fillRect(8, 8, 14, 5);
+         
+         // Deep cut
+         ctx.strokeStyle = '#dc2626';
+         ctx.lineWidth = 2;
+         ctx.beginPath();
+         ctx.moveTo(10, -5);
+         ctx.lineTo(20, -15);
+         ctx.stroke();
+         
+         ctx.restore();
+      }
+      
+      ctx.restore();
     }
     
     ctx.restore();

@@ -127,7 +127,14 @@ export class GameManager {
     
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        const type = (r === 1) ? EnemyType.ZIGZAG : EnemyType.NORMAL;
+        let type = EnemyType.NORMAL;
+        if (r === 0) {
+          type = Math.random() > 0.6 ? EnemyType.SNIPER : EnemyType.SHIELDED;
+        } else if (r === 1) {
+          type = EnemyType.ZIGZAG;
+        } else if (r === rows - 1) {
+          type = Math.random() > 0.7 ? EnemyType.DIVER : EnemyType.SPLITTER;
+        }
         this.enemies.push(new Enemy(offsetX + c * padding, 50 + r * padding, this.canvas.width, this.level, type));
       }
     }
@@ -216,13 +223,13 @@ export class GameManager {
       const speedMultiplier = Math.max(1.0, 1.0 + (20 - Math.min(20, this.enemies.length)) * 0.1);
       
       this.enemies.forEach(enemy => {
-        enemy.update(deltaTime, speedMultiplier, this.bullets);
-        const bullet = enemy.fire();
+        enemy.update(deltaTime, speedMultiplier, this.bullets, this.player.position);
+        const bullet = enemy.fire(this.player.position);
         if (bullet) this.bullets.push(bullet);
         
         // Game over if enemy reaches bottom
         if (enemy.position.y + enemy.size.height >= this.player.position.y) {
-          this.gameOver("외계 오염물질이 방어선을 돌파했습니다!");
+          this.gameOver("워터 인베이더가 방어선을 돌파했습니다!");
         }
       });
       
@@ -326,7 +333,7 @@ export class GameManager {
             if (enemy.hp <= 0) {
               enemy.isDead = true;
               const isBoss = enemy.type === EnemyType.BOSS;
-              const explosionColor = isBoss ? '#fbbf24' : '#f97316';
+              const explosionColor = isBoss ? '#fbbf24' : enemy.color;
               const particleCount = isBoss ? 150 : 30;
               const speedMult = isBoss ? 3.0 : 1.5;
               
@@ -334,6 +341,18 @@ export class GameManager {
               
               if (isBoss) {
                 this.triggerScreenShake(1.5);
+              }
+              
+              if (enemy.type === EnemyType.SPLITTER) {
+                // Spawn 2 mini-enemies
+                const mini1 = new Enemy(enemy.position.x - 10, enemy.position.y, this.canvas.width, this.level, EnemyType.NORMAL);
+                const mini2 = new Enemy(enemy.position.x + 30, enemy.position.y, this.canvas.width, this.level, EnemyType.NORMAL);
+                mini1.size = { width: 20, height: 15 };
+                mini2.size = { width: 20, height: 15 };
+                // Make them super fast
+                mini1.update = function(dt: number) { this.position.y += 100 * dt; this.position.x -= 50 * dt; };
+                mini2.update = function(dt: number) { this.position.y += 100 * dt; this.position.x += 50 * dt; };
+                this.enemies.push(mini1, mini2);
               }
               
               this.handleEnemyKill();
@@ -536,6 +555,17 @@ export class GameManager {
     }
   }
 
+  public triggerSummonAlly() {
+    if (this.currency >= 50) {
+      this.currency -= 50;
+      this.pendingReinforcement = 'ALLY';
+      this.reinforcementTimer = 0.1; // trigger almost immediately
+      this.warningMessage = "ALLY SUPPORT SUMMONED!";
+      this.warningTimer = 2.0;
+      this.updateScoreUI();
+    }
+  }
+
   // Ultimate Skill: Heavy Rain
   public triggerUltimate() {
     if (this.player.ultimateGauge >= 100) {
@@ -565,6 +595,9 @@ export class GameManager {
     }
     if (key === 'e' || key === 'Shift') {
       this.triggerUltimate();
+    }
+    if (key === 'q') {
+      this.triggerSummonAlly();
     }
     
     // Debug & Cheats
