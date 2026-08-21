@@ -126,7 +126,7 @@ export class Enemy extends Entity {
     // Bounce off walls
     if (this.position.x <= 0 || this.position.x + this.size.width >= this.canvasWidth) {
       this.direction *= -1;
-      if (this.type !== EnemyType.ZIGZAG) { this.position.y += (this.type === EnemyType.BOSS) ? 10 : 20; } 
+      if (this.type !== EnemyType.ZIGZAG) { this.position.y += 0; } // Removed wall bounce drop 
     }
     
     // Clamp

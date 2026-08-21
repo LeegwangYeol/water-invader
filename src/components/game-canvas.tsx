@@ -139,6 +139,48 @@ export default function GameCanvas() {
   };
 
   // Mobile controls
+  
+  const handleCanvasPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (gameState !== GameState.PLAYING) return;
+    if (gameManagerRef.current) {
+      gameManagerRef.current.handleKeyDown(' '); // Auto shoot
+      updateTargetX(e);
+    }
+  };
+  const handleCanvasPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (gameState !== GameState.PLAYING) return;
+    if (e.buttons > 0 || e.pointerType === 'touch') {
+      updateTargetX(e);
+    }
+  };
+  const handleCanvasPointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (gameManagerRef.current) {
+      gameManagerRef.current.handleKeyUp(' ');
+      gameManagerRef.current.player.isMovingLeft = false;
+      gameManagerRef.current.player.isMovingRight = false;
+    }
+  };
+  const updateTargetX = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !gameManagerRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const scaleX = canvasRef.current.width / rect.width;
+    const targetX = (e.clientX - rect.left) * scaleX;
+    const playerCenter = gameManagerRef.current.player.position.x + gameManagerRef.current.player.size.width / 2;
+    
+    if (Math.abs(targetX - playerCenter) > 20) {
+      if (targetX < playerCenter) {
+        gameManagerRef.current.player.isMovingLeft = true;
+        gameManagerRef.current.player.isMovingRight = false;
+      } else {
+        gameManagerRef.current.player.isMovingLeft = false;
+        gameManagerRef.current.player.isMovingRight = true;
+      }
+    } else {
+      gameManagerRef.current.player.isMovingLeft = false;
+      gameManagerRef.current.player.isMovingRight = false;
+    }
+  };
+
   const handleTouchStart = (key: string) => (e: React.TouchEvent | React.MouseEvent) => {
     if (showManual) return;
     e.preventDefault();
@@ -154,7 +196,7 @@ export default function GameCanvas() {
   return (
     <div className="relative flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
       {/* Top HUD */}
-      <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start text-white pointer-events-none z-10">
+      <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start text-white touch-none z-10">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-blue-400">{t('점수:', 'Score:')} {score}</h2>
           <p className="text-sm sm:text-base text-blue-200">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
@@ -187,6 +229,10 @@ export default function GameCanvas() {
 
       <div className="w-full aspect-[3/4] sm:aspect-auto">
         <canvas
+        onPointerDown={handleCanvasPointerDown}
+        onPointerMove={handleCanvasPointerMove}
+        onPointerUp={handleCanvasPointerUp}
+        onPointerLeave={handleCanvasPointerUp}
           ref={canvasRef}
           width={600}
           height={800}
