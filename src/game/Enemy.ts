@@ -88,7 +88,7 @@ export class Enemy extends Entity {
       return; // Skip normal movement
     }
 
-    this.position.y += currentSpeedY * deltaTime; // Constantly slowly move down
+    if (this.type !== EnemyType.ZIGZAG) { this.position.y += currentSpeedY * deltaTime; } // ZIGZAG does NOT move down constantly
 
     // Shield Regen Logic
     if (this.type === EnemyType.SHIELDED && this.shieldHp <= 0) {
@@ -117,7 +117,7 @@ export class Enemy extends Entity {
 
     if (this.type === EnemyType.ZIGZAG) {
       this.position.x += currentSpeedX * this.direction * deltaTime;
-      this.position.y += Math.sin(Date.now() / 500) * 2 * speedMultiplier;
+      this.position.x += Math.sin(Date.now() / 200) * 5 * speedMultiplier;
     } else {
       const evadeBoost = (this.evadeCooldown > 0.5) ? 1.5 : 1.0;
       this.position.x += currentSpeedX * evadeBoost * this.direction * deltaTime;
@@ -126,7 +126,7 @@ export class Enemy extends Entity {
     // Bounce off walls
     if (this.position.x <= 0 || this.position.x + this.size.width >= this.canvasWidth) {
       this.direction *= -1;
-      this.position.y += (this.type === EnemyType.BOSS) ? 10 : 20; 
+      if (this.type !== EnemyType.ZIGZAG) { this.position.y += (this.type === EnemyType.BOSS) ? 10 : 20; } 
     }
     
     // Clamp
