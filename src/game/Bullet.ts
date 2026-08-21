@@ -4,6 +4,7 @@ export class Bullet extends Entity {
   public damage: number;
   public isPlayerBullet: boolean;
   public piercing: number;
+  public isInterceptable: boolean = false;
 
   constructor(x: number, y: number, speedY: number, damage: number, isPlayerBullet: boolean, piercing: number = 1) {
     // Increase size for better visibility
@@ -30,6 +31,7 @@ export class Bullet extends Entity {
     if (this.isPlayerBullet) {
       // Fake glow for player bullet
       ctx.globalAlpha = 0.5;
+      if (this.isInterceptable) { ctx.fillStyle = "#a855f7"; }
       ctx.beginPath();
       ctx.arc(this.position.x + this.size.width / 2, this.position.y + this.size.height - 3, this.size.width * 0.8, 0, Math.PI * 2);
       ctx.fill();

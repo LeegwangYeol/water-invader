@@ -64,6 +64,9 @@ export class GameManager {
       this.player = new Player(this.canvas.width, this.canvas.height);
     } else {
       this.player.hp = this.player.maxHp;
+      this.player.stressLevel = 0;
+      this.player.suppressionLevel = 0;
+      this.player.ultimateGauge = 0;
       this.player.position.x = this.canvas.width / 2 - 25;
       this.player.position.y = this.canvas.height - 60;
     }
@@ -120,22 +123,29 @@ export class GameManager {
       return;
     }
 
-    const rows = 3 + Math.floor(this.level / 2);
-    const cols = 6 + Math.floor(this.level / 2);
-    const padding = 60;
-    const offsetX = (this.canvas.width - (cols * padding)) / 2 + 20;
+    const rows = 3 + Math.floor(this.level / 4);
+    const cols = 6 + Math.floor(this.level / 3);
+    const paddingX = 60;
+    const paddingY = 50;
+    const offsetX = (this.canvas.width - ((cols - 1) * paddingX)) / 2;
+    
+    let specialCount = 0;
+    const maxSpecials = Math.max(1, Math.min(1 + Math.floor(this.level / 2), 4)); // 1~2 early on, cap at 4
     
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         let type = EnemyType.NORMAL;
-        if (r === 0) {
-          type = Math.random() > 0.6 ? EnemyType.SNIPER : EnemyType.SHIELDED;
-        } else if (r === 1) {
-          type = EnemyType.ZIGZAG;
-        } else if (r === rows - 1) {
-          type = Math.random() > 0.7 ? EnemyType.DIVER : EnemyType.SPLITTER;
+        
+        if (r === 1 && c % 2 === 0) {
+          type = EnemyType.ZIGZAG; // keep some zigzags
+        } else if (specialCount < maxSpecials && Math.random() > 0.85) {
+          const specials = [EnemyType.SNIPER, EnemyType.SHIELDED, EnemyType.DIVER, EnemyType.SPLITTER];
+          type = specials[Math.floor(Math.random() * specials.length)];
+          specialCount++;
         }
-        this.enemies.push(new Enemy(offsetX + c * padding, 50 + r * padding, this.canvas.width, this.level, type));
+        
+        // Ensure starting Y is high enough so player has more vertical space
+        this.enemies.push(new Enemy(offsetX + c * paddingX, 40 + r * paddingY, this.canvas.width, this.level, type));
       }
     }
   }
@@ -227,11 +237,32 @@ export class GameManager {
         const bullet = enemy.fire(this.player.position);
         if (bullet) this.bullets.push(bullet);
         
-        // Game over if enemy reaches bottom
-        if (enemy.position.y + enemy.size.height >= this.player.position.y) {
-          this.gameOver("워터 인베이더가 방어선을 돌파했습니다!");
-        }
-      });
+                  // Enemies reaching the bottom line cost 1 HP instead of instant game over
+          if (enemy.position.y + enemy.size.height >= this.player.position.y) {
+            if (enemy.position.y > this.canvas.height) {
+              enemy.isDead = true; // Escaped off screen
+              if (!this.isGodMode) {
+                 this.player.hp -= 1; // Penalty for letting them pass
+                 this.player.stressLevel = Math.min(100, this.player.stressLevel + 20);
+                 this.triggerScreenShake(0.5);
+                 if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+                 if (this.player.hp <= 0) {
+                    this.gameOver("워터 인베이더가 방어선을 돌파했습니다! (체력 소진)");
+                 }
+              }
+            } else if (enemy.checkCollision(this.player)) {
+              enemy.isDead = true;
+              if (!this.isGodMode) {
+                this.player.hp -= 1;
+                this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
+                this.createExplosion(this.player.position.x, this.player.position.y, '#ef4444', 10);
+                this.triggerScreenShake(0.5);
+                if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+                if (this.player.hp <= 0) this.gameOver("정수기능이 파괴되었습니다 (체력 소진)");
+              }
+            }
+          }
+        });
       
       this.helpers.forEach(helper => {
          const newBullets = helper.update(deltaTime, this.barricades);
@@ -343,17 +374,16 @@ export class GameManager {
                 this.triggerScreenShake(1.5);
               }
               
-              if (enemy.type === EnemyType.SPLITTER) {
-                // Spawn 2 mini-enemies
-                const mini1 = new Enemy(enemy.position.x - 10, enemy.position.y, this.canvas.width, this.level, EnemyType.NORMAL);
-                const mini2 = new Enemy(enemy.position.x + 30, enemy.position.y, this.canvas.width, this.level, EnemyType.NORMAL);
-                mini1.size = { width: 20, height: 15 };
-                mini2.size = { width: 20, height: 15 };
-                // Make them super fast
-                mini1.update = function(dt: number) { this.position.y += 100 * dt; this.position.x -= 50 * dt; };
-                mini2.update = function(dt: number) { this.position.y += 100 * dt; this.position.x += 50 * dt; };
-                this.enemies.push(mini1, mini2);
-              }
+                              if (enemy.type === EnemyType.SPLITTER) {
+                  // Spawn 2 mini-enemies that are extremely slow
+                  const mini1 = new Enemy(enemy.position.x - 15, enemy.position.y, this.canvas.width, this.level, EnemyType.NORMAL);
+                  const mini2 = new Enemy(enemy.position.x + 35, enemy.position.y, this.canvas.width, this.level, EnemyType.NORMAL);
+                  mini1.size = { width: 20, height: 20 };
+                  mini2.size = { width: 20, height: 20 };
+                  mini1.speedX = 10; mini1.speedY = 5;
+                  mini2.speedX = -10; mini2.speedY = 5;
+                  this.enemies.push(mini1, mini2);
+                }
               
               this.handleEnemyKill();
             }
@@ -414,6 +444,29 @@ export class GameManager {
           }
         }
       }
+
+      // Enemy vs Barricade
+      for (const enemy of this.enemies) {
+        if (enemy.isDead) continue;
+        enemy.isGnawing = false;
+        
+        for (const barricade of this.barricades) {
+          if (!barricade.isDead && enemy.checkCollision(barricade)) {
+            if (enemy.type === EnemyType.DIVER) {
+              enemy.isDead = true;
+              if (barricade.type === BarricadeType.DESTRUCTIBLE) {
+                barricade.hp -= 20; // Crash damage
+              }
+              this.createExplosion(enemy.position.x, enemy.position.y, '#ef4444', 30);
+            } else {
+              enemy.isGnawing = true;
+              if (barricade.type === BarricadeType.DESTRUCTIBLE) {
+                barricade.hp -= 0.1; // Gnaw damage per frame
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -423,7 +476,7 @@ export class GameManager {
     
     // Killing enemies gives adrenaline/stress
     this.player.stressLevel = Math.min(100, this.player.stressLevel + 10);
-    this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 5);
+    this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 1.5);
     
     const comboMultiplier = 1 + Math.floor(this.combo / 5) * 0.5;
     this.score += Math.floor(100 * comboMultiplier);
@@ -619,7 +672,7 @@ export class GameManager {
   
   // Upgrades
   public upgradeFireRate() {
-    if (this.currency >= 50 && this.player.fireRate > 0.1) {
+    if (this.currency >= 50 && this.player.fireRate > 0.05) {
       this.currency -= 50;
       this.player.fireRate = Math.max(0.1, this.player.fireRate - 0.1);
       soundManager.playPowerUp();
@@ -628,7 +681,7 @@ export class GameManager {
   }
   
   public upgradeMultiShot() {
-    if (this.currency >= 100 && this.player.multiShot < 3) {
+    if (this.currency >= 100 && this.player.multiShot < 5) {
       this.currency -= 100;
       this.player.multiShot++;
       soundManager.playPowerUp();
@@ -637,7 +690,7 @@ export class GameManager {
   }
 
   public upgradePiercing() {
-    if (this.currency >= 200 && this.player.piercing < 5) {
+    if (this.currency >= 200 && this.player.piercing < 99) {
       this.currency -= 200;
       this.player.piercing++;
       soundManager.playPowerUp();

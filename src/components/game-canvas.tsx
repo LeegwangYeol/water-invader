@@ -174,7 +174,7 @@ export default function GameCanvas() {
           )}
           {/* Ultimate Gauge */}
           {gameState === GameState.PLAYING && (
-            <div className="mt-2 w-32 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-500 relative">
+            <div className="mt-2 w-32 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-500 relative relative">
               <div 
                 className={`h-full transition-all duration-300 ${ultimate >= 100 ? 'bg-gradient-to-r from-yellow-400 to-red-500 animate-pulse' : 'bg-blue-500'}`}
                 style={{ width: `${ultimate}%` }}
@@ -184,11 +184,11 @@ export default function GameCanvas() {
         </div>
       </div>
 
-      <div className="w-full aspect-[4/3] sm:aspect-auto">
+      <div className="w-full aspect-[3/4] sm:aspect-auto">
         <canvas
           ref={canvasRef}
-          width={800}
-          height={600}
+          width={600}
+          height={800}
           className="w-full h-full border-4 border-blue-900 rounded-lg shadow-2xl bg-slate-900 touch-none object-contain"
         />
       </div>
@@ -196,45 +196,35 @@ export default function GameCanvas() {
       {/* Mobile Controls */}
       {gameState === GameState.PLAYING && (
         <div className="w-full flex justify-between p-4 mt-2 gap-2 sm:gap-4 touch-none">
-          <div className="flex gap-2 w-1/2">
+          <div className="flex flex-col gap-1 w-1/2">
+            <div className="flex gap-1 h-1/2">
+              <button 
+                className={`flex-1 rounded-xl text-xs font-bold text-white pointer-events-auto touch-none select-none ${currency >= 50 ? 'bg-green-600 active:bg-green-500' : 'bg-slate-700 opacity-50'}`}
+                onPointerDown={handleTouchStart('q')}
+                onPointerUp={handleTouchEnd('q')}
+                onPointerLeave={handleTouchEnd('q')}
+                onPointerCancel={handleTouchEnd('q')}
+              >
+                ALLY(Q)
+              </button>
+              <button 
+                className={`flex-1 rounded-xl text-xs font-bold text-white pointer-events-auto touch-none select-none ${ultimate >= 100 ? 'bg-yellow-600 active:bg-yellow-500' : 'bg-slate-700 opacity-50'}`}
+                onPointerDown={handleTouchStart('e')}
+                onPointerUp={handleTouchEnd('e')}
+                onPointerLeave={handleTouchEnd('e')}
+                onPointerCancel={handleTouchEnd('e')}
+              >
+                ULT({ultimate}%)
+              </button>
+            </div>
             <button 
-              className="flex-1 bg-slate-700/80 active:bg-blue-600 rounded-xl h-20 flex items-center justify-center text-4xl text-white select-none touch-none"
-              onPointerDown={handleTouchStart('ArrowLeft')}
-              onPointerUp={handleTouchEnd('ArrowLeft')}
-              onPointerLeave={handleTouchEnd('ArrowLeft')}
-              onPointerCancel={handleTouchEnd('ArrowLeft')}
-            >
-              ◀
-            </button>
-            <button 
-              className="flex-1 bg-slate-700/80 active:bg-blue-600 rounded-xl h-20 flex items-center justify-center text-4xl text-white select-none touch-none"
-              onPointerDown={handleTouchStart('ArrowRight')}
-              onPointerUp={handleTouchEnd('ArrowRight')}
-              onPointerLeave={handleTouchEnd('ArrowRight')}
-              onPointerCancel={handleTouchEnd('ArrowRight')}
-            >
-              ▶
-            </button>
-          </div>
-          <div className="flex gap-2 w-1/2">
-            <button 
-              className={`flex-1 ${ultimate >= 100 ? 'bg-yellow-500 hover:bg-yellow-400 text-slate-900 shadow-[0_0_15px_rgba(234,179,8,0.8)] animate-pulse' : 'bg-slate-700/50 text-slate-500'} rounded-xl h-20 flex flex-col items-center justify-center font-black tracking-widest select-none touch-none`}
-              onPointerDown={handleTouchStart('e')}
-              onPointerUp={handleTouchEnd('e')}
-              onPointerLeave={handleTouchEnd('e')}
-              onPointerCancel={handleTouchEnd('e')}
-            >
-              <span className="text-xl">ULT</span>
-              <span className="text-xs">{ultimate}%</span>
-            </button>
-            <button 
-              className="flex-[1.5] bg-blue-600/80 active:bg-blue-400 rounded-xl h-20 flex items-center justify-center text-2xl sm:text-3xl font-black text-white tracking-widest select-none shadow-[0_0_15px_rgba(59,130,246,0.5)] touch-none"
+              className="w-full bg-blue-600/80 active:bg-blue-400 rounded-xl h-1/2 flex items-center justify-center text-xl font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)]"
               onPointerDown={handleTouchStart(' ')}
               onPointerUp={handleTouchEnd(' ')}
               onPointerLeave={handleTouchEnd(' ')}
               onPointerCancel={handleTouchEnd(' ')}
             >
-              FIRE
+              FIRE!
             </button>
           </div>
         </div>
@@ -330,7 +320,7 @@ export default function GameCanvas() {
           {gameOverReason && (
             <p className="text-lg sm:text-xl text-red-300 font-bold mb-4 text-center">{gameOverReason}</p>
           )}
-          <p className="text-xl sm:text-2xl text-white mb-8">Final Score: {score}</p>
+          <p className="text-xl sm:text-2xl text-white mb-8">Final {t('점수:', 'Score:')} {score}</p>
           
           {/* Shop */}
           <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-8 text-white w-full max-w-sm">

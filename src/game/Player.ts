@@ -117,33 +117,29 @@ export class Player extends Entity {
     return bullets;
   }
 
-  public draw(ctx: CanvasRenderingContext2D): void {
+      public draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     
     const isStressed = this.stressLevel > 50;
     const isSuppressed = this.suppressionLevel > 50;
     
-    // Dramatic Color Changes
-    let bodyColor = this.color; // Normal blue
-    let glowColor = this.color;
+    let glowColor = '#38bdf8';
     let jitterX = 0;
     let jitterY = 0;
     
     if (isSuppressed) {
-      bodyColor = '#94a3b8'; // Pale gray/blue (Panic)
-      glowColor = '#38bdf8';
-      jitterX = (Math.random() - 0.5) * 6; // Heavy shivering
-      jitterY = (Math.random() - 0.5) * 6;
+      glowColor = '#94a3b8';
+      jitterX = (Math.random() - 0.5) * 4;
+      jitterY = (Math.random() - 0.5) * 4;
     } else if (isStressed) {
-      bodyColor = '#ef4444'; // Blazing red (Adrenaline/Angry)
-      glowColor = '#f97316'; // Orange glow
+      glowColor = '#ef4444';
     }
     
     ctx.shadowBlur = isStressed ? 25 : 15;
     ctx.shadowColor = glowColor;
     
-    // Bouncy animation based on movement and time
-    const bounce = Math.sin(this.timeAlive * 10) * 2;
+    // Breathing/bouncing animation
+    const bounce = Math.sin(this.timeAlive * 8) * 3;
     const stretch = this.isMovingLeft || this.isMovingRight ? 2 : 0;
     
     const cx = this.position.x + this.size.width / 2 + jitterX;
@@ -151,168 +147,95 @@ export class Player extends Entity {
     const w = this.size.width / 2 + stretch;
     const h = this.size.height / 2 - stretch;
     
-    // 1. Draw the squirt nozzle
-    ctx.fillStyle = isStressed ? '#fca5a5' : '#60a5fa'; // Reddish nozzle if angry
-    ctx.beginPath();
-    if (ctx.roundRect) {
-      ctx.roundRect(cx - 8, this.position.y - 8 + bounce + jitterY, 16, 15, 4);
+    // Gradient body
+    const grad = ctx.createRadialGradient(cx, cy + h/4, 5, cx, cy, Math.max(w, h)*1.5);
+    if (isStressed) {
+      grad.addColorStop(0, '#f87171');
+      grad.addColorStop(1, '#b91c1c');
+    } else if (isSuppressed) {
+      grad.addColorStop(0, '#cbd5e1');
+      grad.addColorStop(1, '#64748b');
     } else {
-      ctx.fillRect(cx - 8, this.position.y - 8 + bounce + jitterY, 16, 15);
+      grad.addColorStop(0, '#7dd3fc');
+      grad.addColorStop(1, '#0284c7');
     }
-    ctx.fill();
-
-    // 2. Draw bouncy slime body
-    ctx.fillStyle = bodyColor;
+    
+    // Cute Droplet Shape
+    ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.ellipse(cx, cy + 5, w, h, 0, 0, Math.PI * 2);
+    ctx.moveTo(cx, cy - h - 10); // pointy top
+    ctx.bezierCurveTo(cx + w + 5, cy - h/2, cx + w + 5, cy + h, cx, cy + h); // right belly
+    ctx.bezierCurveTo(cx - w - 5, cy + h, cx - w - 5, cy - h/2, cx, cy - h - 10); // left belly
     ctx.fill();
     
     ctx.shadowBlur = 0;
     
-    // 3. Eyes (Dramatic Changes)
-    if (isStressed && !isSuppressed) {
-      // Very Angry / Fiery eyes
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
+    // White reflection highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.beginPath();
+    ctx.ellipse(cx - w/2.5, cy - h/4, w/4, h/3, Math.PI/6, 0, Math.PI*2);
+    ctx.fill();
+    
+    // Cute Eyes
+    ctx.fillStyle = '#1e293b';
+    if (isStressed) {
+      // Angry eyes >_<
       ctx.beginPath();
-      // V-shaped angry eyes
-      ctx.moveTo(cx - 16, cy - 4);
-      ctx.lineTo(cx - 6, cy + 4);
-      ctx.lineTo(cx - 16, cy + 6);
-      
-      ctx.moveTo(cx + 16, cy - 4);
-      ctx.lineTo(cx + 6, cy + 4);
-      ctx.lineTo(cx + 16, cy + 6);
+      ctx.moveTo(cx - 12, cy - 2); ctx.lineTo(cx - 4, cy + 4); ctx.lineTo(cx - 12, cy + 8);
+      ctx.moveTo(cx + 12, cy - 2); ctx.lineTo(cx + 4, cy + 4); ctx.lineTo(cx + 12, cy + 8);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#1e293b';
       ctx.stroke();
-      
-      // Cheeks (blazing)
-      ctx.fillStyle = '#fef08a'; // Yellow hot cheeks
-      ctx.beginPath();
-      ctx.ellipse(cx - 18, cy + 8, 5, 4, 0, 0, Math.PI * 2);
-      ctx.ellipse(cx + 18, cy + 8, 5, 4, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Screaming mouth
-      ctx.fillStyle = '#000000';
-      ctx.beginPath();
-      ctx.ellipse(cx, cy + 12, 6, 8, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
     } else if (isSuppressed) {
-      // Swirly / Dizzy Panic Eyes
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 2;
-      
-      // Draw X or swirl. Let's do huge X for panic
+      // Dizzy eyes @_@
       ctx.beginPath();
-      ctx.moveTo(cx - 14, cy - 4); ctx.lineTo(cx - 6, cy + 4);
-      ctx.moveTo(cx - 6, cy - 4); ctx.lineTo(cx - 14, cy + 4);
-      
-      ctx.moveTo(cx + 14, cy - 4); ctx.lineTo(cx + 6, cy + 4);
-      ctx.moveTo(cx + 6, cy - 4); ctx.lineTo(cx + 14, cy + 4);
-      ctx.stroke();
-      
-      // Heavy Sweat drops
-      ctx.fillStyle = '#bfdbfe';
-      ctx.beginPath();
-      ctx.ellipse(cx + 18, cy - 8, 3, 6, 0.2, 0, Math.PI * 2);
-      ctx.ellipse(cx - 18, cy - 2, 2.5, 5, -0.2, 0, Math.PI * 2);
-      ctx.ellipse(cx + 22, cy + 2, 2, 4, 0.5, 0, Math.PI * 2);
+      ctx.arc(cx - 8, cy + 4, 3, 0, Math.PI*2);
+      ctx.arc(cx + 8, cy + 4, 3, 0, Math.PI*2);
       ctx.fill();
-      
-      // Wavy terrified mouth
-      ctx.strokeStyle = '#000000';
-      ctx.beginPath();
-      ctx.moveTo(cx - 6, cy + 10);
-      ctx.bezierCurveTo(cx - 3, cy + 6, cx + 3, cy + 14, cx + 6, cy + 10);
-      ctx.stroke();
-      
     } else {
-      // Normal cute eyes
+      // Normal happy eyes
+      ctx.beginPath();
+      ctx.ellipse(cx - 8, cy + 2, 3, 5, 0, 0, Math.PI*2);
+      ctx.ellipse(cx + 8, cy + 2, 3, 5, 0, 0, Math.PI*2);
+      ctx.fill();
+      // Eye sparkles
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.ellipse(cx - 10, cy + 2, 6, 8, 0, 0, Math.PI * 2);
-      ctx.ellipse(cx + 10, cy + 2, 6, 8, 0, 0, Math.PI * 2);
+      ctx.arc(cx - 8, cy - 1, 1.5, 0, Math.PI*2);
+      ctx.arc(cx + 8, cy - 1, 1.5, 0, Math.PI*2);
       ctx.fill();
-      
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.ellipse(cx - 10, cy + 2, 4, 5, 0, 0, Math.PI * 2);
-      ctx.ellipse(cx + 10, cy + 2, 4, 5, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(cx - 11, cy, 1.5, 0, Math.PI * 2);
-      ctx.arc(cx + 9, cy, 1.5, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Cheeks
-      ctx.fillStyle = 'rgba(244, 114, 182, 0.7)';
-      ctx.beginPath();
-      ctx.ellipse(cx - 18, cy + 8, 4, 3, 0, 0, Math.PI * 2);
-      ctx.ellipse(cx + 18, cy + 8, 4, 3, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Mouth
-      if (this.fireTimer > this.baseFireRate - 0.1) {
-        ctx.fillStyle = '#0f172a';
+    }
+
+    // Visual degradation when HP is low (<= 2)
+    if (this.hp <= 2) {
+      // Band-aid
+      ctx.save();
+      ctx.translate(cx + 10, cy - 10);
+      ctx.rotate(Math.PI / 4);
+      ctx.fillStyle = '#fcd34d'; // yellowish band-aid
+      if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.ellipse(cx, cy + 10, 4, 5, 0, 0, Math.PI * 2);
+        ctx.roundRect(-8, -4, 16, 8, 2);
         ctx.fill();
       } else {
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(cx, cy + 8, 4, 0, Math.PI);
-        ctx.stroke();
+        ctx.fillRect(-8, -4, 16, 8);
       }
-
-      // Visual Damage (Torn/Battered) based on HP
-      if (this.hp <= 2) {
-         ctx.save();
-         ctx.translate(cx, cy);
-         // Bandage 1
-         ctx.fillStyle = '#fcd34d'; // Yellowish bandage
-         ctx.beginPath();
-         ctx.fillRect(-15, -15, 12, 4);
-         ctx.fillRect(-11, -19, 4, 12);
-         ctx.fillStyle = '#b45309';
-         ctx.fillRect(-13, -13, 2, 2);
-         
-         // Scratch
-         ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-         ctx.lineWidth = 1.5;
-         ctx.beginPath();
-         ctx.moveTo(-18, -2);
-         ctx.lineTo(-8, 5);
-         ctx.stroke();
-         ctx.restore();
-      }
-
-      if (this.hp <= 1) {
-         ctx.save();
-         ctx.translate(cx, cy);
-         // Bandage 2 (Right cheek)
-         ctx.fillStyle = '#fcd34d';
-         ctx.rotate(Math.PI / 4);
-         ctx.fillRect(8, 8, 14, 5);
-         
-         // Deep cut
-         ctx.strokeStyle = '#dc2626';
-         ctx.lineWidth = 2;
-         ctx.beginPath();
-         ctx.moveTo(10, -5);
-         ctx.lineTo(20, -15);
-         ctx.stroke();
-         
-         ctx.restore();
-      }
-      
+      ctx.fillStyle = '#f59e0b'; // darker center
+      ctx.fillRect(-2, -4, 4, 8);
       ctx.restore();
     }
-    
+
+    if (this.hp <= 1) {
+      // Deep red crack
+      ctx.strokeStyle = '#991b1b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx - 15, cy + 10);
+      ctx.lineTo(cx - 5, cy + 5);
+      ctx.lineTo(cx, cy + 15);
+      ctx.stroke();
+    }
+
     ctx.restore();
   }
 }

@@ -16,6 +16,7 @@ export class Enemy extends Entity {
   public hp: number;
   private canvasWidth: number;
   public type: EnemyType = EnemyType.NORMAL;
+    public isGnawing: boolean = false;
   
   // Movement pattern
   private direction: number = 1; // 1 for right, -1 for left
@@ -150,6 +151,7 @@ export class Enemy extends Entity {
       const b = new Bullet(spawnX, spawnY, bulletSpeed, 1, false);
 
       if (this.type === EnemyType.SNIPER && playerPos) {
+           b.isInterceptable = true;
          // Aim at player
          const dx = (playerPos.x + 25) - spawnX;
          const dy = (playerPos.y + 20) - spawnY;
@@ -164,17 +166,19 @@ export class Enemy extends Entity {
     return null;
   }
 
-  public draw(ctx: CanvasRenderingContext2D): void {
+    public draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     
     const cx = this.position.x + this.size.width / 2;
     const cy = this.position.y + this.size.height / 2;
+    const w = this.size.width;
+    const h = this.size.height;
 
-    // Draw Shield Aura if Shielded
+    // Shield Aura
     if (this.type === EnemyType.SHIELDED && this.shieldHp > 0) {
       ctx.beginPath();
-      ctx.arc(cx, cy, this.size.width / 2 + 5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(56, 189, 248, ${0.2 + this.shieldHp * 0.1})`; // Blue aura
+      ctx.arc(cx, cy, w/2 + 6, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(56, 189, 248, ${0.2 + this.shieldHp * 0.1})`;
       ctx.fill();
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#38bdf8';
@@ -184,77 +188,119 @@ export class Enemy extends Entity {
     ctx.fillStyle = this.color;
     
     if (this.type === EnemyType.BOSS) {
+      // Menacing Boss Skull/Machine
       if (ctx.roundRect) {
         ctx.beginPath();
-        ctx.roundRect(this.position.x, this.position.y, this.size.width, this.size.height, 20);
+        ctx.roundRect(this.position.x, this.position.y, w, h, 15);
         ctx.fill();
       } else {
-        ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
+        ctx.fillRect(this.position.x, this.position.y, w, h);
       }
-      
-      // Angry Boss Eyes
+      // Eyes
+      ctx.fillStyle = '#111827';
+      ctx.beginPath();
+      ctx.arc(cx - w/4, cy - 10, 15, 0, Math.PI*2);
+      ctx.arc(cx + w/4, cy - 10, 15, 0, Math.PI*2);
+      ctx.fill();
+      // Angry glowing pupils
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(cx - w/4, cy - 10, 5, 0, Math.PI*2);
+      ctx.arc(cx + w/4, cy - 10, 5, 0, Math.PI*2);
+      ctx.fill();
+      // Mouth grille
+      ctx.fillStyle = '#111827';
+      for(let i=0; i<5; i++) {
+        ctx.fillRect(cx - 40 + i*20, cy + 20, 10, 20);
+      }
+    } else if (this.type === EnemyType.SNIPER) {
+      // Sleek Triangle/Diamond (pointing down)
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + h/2);
+      ctx.lineTo(cx + w/2, cy - h/2);
+      ctx.lineTo(cx, cy - h/4);
+      ctx.lineTo(cx - w/2, cy - h/2);
+      ctx.closePath();
+      ctx.fill();
+      // Eye
       ctx.fillStyle = '#000000';
       ctx.beginPath();
-      // Left eye angry
-      ctx.moveTo(this.position.x + 30, this.position.y + 35);
-      ctx.lineTo(this.position.x + 50, this.position.y + 45);
-      ctx.lineTo(this.position.x + 30, this.position.y + 45);
+      ctx.moveTo(cx - 10, cy - h/4 - 5);
+      ctx.lineTo(cx + 10, cy - h/4 - 5);
+      ctx.lineTo(cx, cy);
       ctx.fill();
-      // Right eye angry
+    } else if (this.type === EnemyType.DIVER) {
+      // Teardrop / Rocket
       ctx.beginPath();
-      ctx.moveTo(this.position.x + this.size.width - 30, this.position.y + 35);
-      ctx.lineTo(this.position.x + this.size.width - 50, this.position.y + 45);
-      ctx.lineTo(this.position.x + this.size.width - 30, this.position.y + 45);
+      ctx.moveTo(cx, cy + h/2);
+      ctx.bezierCurveTo(cx + w/2 + 10, cy, cx + w/2, cy - h/2, cx, cy - h/2);
+      ctx.bezierCurveTo(cx - w/2, cy - h/2, cx - w/2 - 10, cy, cx, cy + h/2);
       ctx.fill();
+      // Engine flame
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.moveTo(cx - 8, cy - h/2);
+      ctx.lineTo(cx, cy - h/2 - 15 - Math.random()*10);
+      ctx.lineTo(cx + 8, cy - h/2);
+      ctx.fill();
+    } else if (this.type === EnemyType.ZIGZAG) {
+      // Electric Star shape
+      ctx.beginPath();
+      for(let i=0; i<8; i++) {
+        const radius = i % 2 === 0 ? w/2 : w/4;
+        const angle = (i * Math.PI * 2) / 8 + (Date.now()/500);
+        ctx.lineTo(cx + Math.cos(angle)*radius, cy + Math.sin(angle)*radius);
+      }
+      ctx.closePath();
+      ctx.fill();
+    } else if (this.type === EnemyType.SPLITTER) {
+      // Two overlapping toxic bubbles
+      ctx.beginPath();
+      ctx.arc(cx - 6, cy, w/2.5, 0, Math.PI*2);
+      ctx.arc(cx + 6, cy + 4, w/2.5, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(cx - 6, cy, 3, 0, Math.PI*2);
+      ctx.arc(cx + 6, cy + 4, 3, 0, Math.PI*2);
+      ctx.fill();
+    } else if (this.type === EnemyType.SHIELDED) {
+      // Bulky Armored Hexagon
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - h/2);
+      ctx.lineTo(cx + w/2, cy - h/4);
+      ctx.lineTo(cx + w/2, cy + h/4);
+      ctx.lineTo(cx, cy + h/2);
+      ctx.lineTo(cx - w/2, cy + h/4);
+      ctx.lineTo(cx - w/2, cy - h/4);
+      ctx.closePath();
+      ctx.fill();
+      // Armor lines
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cx - w/2, cy); ctx.lineTo(cx + w/2, cy);
+      ctx.moveTo(cx, cy - h/2); ctx.lineTo(cx, cy + h/2);
+      ctx.stroke();
     } else {
-      // Smooth blob shape
-      ctx.beginPath();
-      ctx.moveTo(this.position.x + 10, this.position.y + 10);
-      ctx.bezierCurveTo(cx, this.position.y - 10, this.position.x + this.size.width - 10, this.position.y + 10, this.position.x + this.size.width, cy);
-      ctx.bezierCurveTo(this.position.x + this.size.width + 10, this.position.y + this.size.height, cx, this.position.y + this.size.height + 10, this.position.x, cy);
-      ctx.bezierCurveTo(this.position.x - 10, this.position.y + 10, this.position.x + 10, this.position.y + 10, this.position.x + 10, this.position.y + 10);
-      ctx.fill();
-      
-      // Diver Thruster
-      if (this.isDiving) {
-         ctx.fillStyle = '#fbbf24'; // Fire
-         ctx.beginPath();
-         ctx.moveTo(cx - 10, this.position.y - 5);
-         ctx.lineTo(cx, this.position.y - 20 - Math.random() * 10);
-         ctx.lineTo(cx + 10, this.position.y - 5);
-         ctx.fill();
-      } else if (this.type === EnemyType.DIVER) {
-         // Small idle thruster
-         ctx.fillStyle = '#fbbf24'; 
-         ctx.beginPath();
-         ctx.arc(cx, this.position.y, 4, 0, Math.PI*2);
-         ctx.fill();
+      // NORMAL: Classic space invader octopus blob
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(cx - w/2, cy - h/2, w, h/2 + 5, [10, 10, 0, 0]);
+        ctx.fill();
+      } else {
+        ctx.fillRect(cx - w/2, cy - h/2, w, h/2 + 5);
       }
-
-      // Eyes (Angry)
+      // Tentacles
+      const tW = w / 5;
+      for (let i=0; i<3; i++) {
+        const offset = Math.sin(Date.now()/200 + i) * 5;
+        ctx.fillRect(cx - w/2 + i*(tW*2), cy, tW, h/2 + offset);
+      }
+      // Eyes
       ctx.fillStyle = '#000000';
-      ctx.beginPath();
-      // left
-      ctx.moveTo(cx - 10, cy - 6);
-      ctx.lineTo(cx - 4, cy - 2);
-      ctx.lineTo(cx - 10, cy - 2);
-      ctx.fill();
-      // right
-      ctx.beginPath();
-      ctx.moveTo(cx + 10, cy - 6);
-      ctx.lineTo(cx + 4, cy - 2);
-      ctx.lineTo(cx + 10, cy - 2);
-      ctx.fill();
-
-      // Sniper Laser Sight
-      if (this.type === EnemyType.SNIPER) {
-         ctx.fillStyle = 'rgba(239, 68, 68, 0.3)'; // Red laser
-         ctx.beginPath();
-         ctx.moveTo(cx, cy + 5);
-         ctx.lineTo(cx - 2, cy + 250); // shoot down arbitrarily
-         ctx.lineTo(cx + 2, cy + 250);
-         ctx.fill();
-      }
+      ctx.fillRect(cx - 10, cy - h/4, 6, 6);
+      ctx.fillRect(cx + 4, cy - h/4, 6, 6);
     }
     
     ctx.restore();
