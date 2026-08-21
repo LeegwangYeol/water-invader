@@ -73,7 +73,7 @@ export class Helper extends Entity {
       this.fireTimer -= deltaTime;
       if (this.fireTimer <= 0) {
         this.fireTimer = 0.5; // shoot every 0.5s
-        bullets.push(new Bullet(this.position.x + this.size.width / 2, this.position.y, -500, 1, true, false));
+        bullets.push(new Bullet(this.position.x + this.size.width / 2, this.position.y, -500, 1, true, 1));
         soundManager.playShoot();
       }
     } else if (this.type === HelperType.REPAIRER) {

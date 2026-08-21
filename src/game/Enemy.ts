@@ -20,8 +20,8 @@ export class Enemy extends Entity {
   
   // Movement pattern
   private direction: number = 1; // 1 for right, -1 for left
-  private speedX: number = 50;
-  private speedY: number = 10;
+  public speedX: number = 50;
+  public speedY: number = 10;
   private startY: number;
   
   private fireTimer: number;

@@ -13,7 +13,7 @@ export abstract class Entity {
     this.size = { width, height };
   }
 
-  public abstract update(deltaTime: number): void;
+  public abstract update(deltaTime: number, ...args: any[]): any;
   public abstract draw(ctx: CanvasRenderingContext2D): void;
 
   public getRect(): Rect {

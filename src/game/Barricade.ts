@@ -13,7 +13,7 @@ export class Barricade extends Entity {
   // Voxel-based destruction (6 columns x 4 rows)
   private cols = 6;
   private rows = 4;
-  private blocks: boolean[];
+  public blocks: boolean[];
 
   constructor(x: number, y: number, type: BarricadeType) {
     super(x, y, 60, 40);
