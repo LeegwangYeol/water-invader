@@ -18,7 +18,39 @@ export default function GameCanvas() {
   const [hp, setHp] = useState(3);
   
   const [showManual, setShowManual] = useState(false);
-  
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('SW registered', reg))
+        .catch(err => console.error('SW registration failed', err));
+    }
+
+    // Listen for the PWA install prompt
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    }
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem('waterInvaderHighScore');
     if (saved) setHighScore(parseInt(saved, 10));
@@ -210,6 +242,17 @@ export default function GameCanvas() {
             >
               HOW TO PLAY
             </button>
+            {deferredPrompt && (
+              <button 
+                onClick={handleInstallClick}
+                className="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                INSTALL APP
+              </button>
+            )}
           </div>
         </div>
       )}
