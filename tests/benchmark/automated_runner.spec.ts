@@ -130,12 +130,20 @@ test.describe('Automated Benchmark Suite', () => {
           };
 
           botInterval = setInterval(() => {
-            if (game.state === 2 /* GAME_OVER */) {
+            if (game.state === 'GAME_OVER' || game.state === 2) {
               finalizeTelemetry();
               return;
             }
 
-            if (game.state !== 1 /* PLAYING */) return;
+            if (game.state === 'SHOP' || game.state === 3) {
+              if (game.currency >= 50 && game.player.baseFireRate > 0.1) game.upgradeFireRate();
+              if (game.currency >= 100 && game.player.multiShot < 5) game.upgradeMultiShot();
+              if (game.currency >= 200 && game.player.piercing < 5) game.upgradePiercing();
+              game.startNextWave();
+              return;
+            }
+
+            if (game.state !== 'PLAYING' && game.state !== 1) return;
 
             if (game.level !== currentWave) {
               const now = performance.now();

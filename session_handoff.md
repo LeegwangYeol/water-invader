@@ -1,40 +1,64 @@
-# Session Handoff — Water Invader Endless Survival Stress Test (COMPLETED)
+# Session Handoff — Water Invader Shop Fix
 
-## 1. Executive Summary & Final Verdict
-- **Status**: **VICTORY CONFIRMED** (100% Complete & Independently Audited)
-- **Mission**: Automated Playwright test bot swarm for Water Invader endless survival stress test (deep evasion, skills E/Q, shop upgrades, massive concurrency endurance).
+## 1. Executive Summary
+- **Status**: **COMPLETED (ALL 39 TESTS PASSED)**
+- **Mission**: Fix Wave Intermission Shop transition and restore Game Over Rogue-lite upgrade shop in `Water Invader`.
+- **Target Components**: `src/game/GameManager.ts`, `src/components/game-canvas.tsx`.
 - **Workspace**: `C:\src\SpaceInvader`
 
-## 2. Verification Architecture & Subagent Tree
+## 2. Architecture & Execution Flow Tree
 
-```
-Water Invader Stress Test Project (C:\src\SpaceInvader)
-├── 🛰️ Project Sentinel (.agents/sentinel)
-│   ├── ORIGINAL_REQUEST.md (Authoritative verbatim user intent)
-│   ├── BRIEFING.md (Phase: Complete / VICTORY CONFIRMED)
-│   └── handoff.md (Sentinel final handoff)
+```text
+Water Invader State & Execution Flow Tree
+├── GameState.MENU
+│   ├── User Action: Clicks 'START GAME'
+│   └── Trigger: init() (resets player status, preserves purchased rogue-lite upgrades, spawns barricades & wave 1 enemies) -> startGame() -> starts rAF loop
 │
-├── 👑 Project Orchestrator (.agents/teamwork_preview_orchestrator_stress_1)
-│   ├── PROJECT.md & GATE_STATUS.md (5-milestone roadmap & gate approvals)
-│   └── 16 Multi-Agent Swarm (Explorers, Workers, Reviewers, Challengers, Auditors)
+├── GameState.PLAYING
+│   ├── Combat Loop: Player Movement, Bullet Physics, Collision Checks, Hit Flash FX, Boss Warning
+│   ├── Branch A (Wave Cleared):
+│   │   ├── Condition: this.enemies.length === 0 && this.warningTimer <= 0
+│   │   ├── Action: this.state = GameState.SHOP; this.pause(); onStateChange(GameState.SHOP)
+│   │   └── UI: Triggers Intermission Shop Overlay ('WAVE CLEARED')
+│   └── Branch B (Player HP <= 0):
+│       ├── Condition: this.player.hp <= 0
+│       ├── Action: this.state = GameState.GAME_OVER; this.pause(); onStateChange(GameState.GAME_OVER)
+│       └── UI: Triggers Game Over Overlay ('GAME OVER') with Restored Upgrades Shop
 │
-├── ⚖️ Independent Victory Auditor (.agents/teamwork_preview_victory_auditor_stress_1)
-│   ├── Phase A: Timeline & Provenance Audit ── PASS
-│   ├── Phase B: Forensic Integrity & Anti-Cheat Audit ── PASS (CLEAN)
-│   └── Phase C: Independent Build & Test Execution ── PASS (34/34 Tests PASS, 0 Errors)
+├── GameState.SHOP (Wave Intermission)
+│   ├── UI: Displays 'WAVE CLEARED', current Pure Water 💧 currency, Upgrades Shop (Fire Rate, Multi-Shot, Piercing)
+│   ├── Actions: buyFireRate(), buyMultiShot(), buyPiercing() deduct currency and apply player upgrades
+│   └── Advance: Clicks 'NEXT WAVE' -> calls startNextWave() -> this.level++, spawnWave(), resumes game loop
 │
-└── 📦 Final Deliverables
-    ├── 🧠 tests/stress/swarm_bot_engine.ts (1D Potential Field Evasion, E/Q Skills, Pure Water Upgrades)
-    ├── 📈 tests/stress/telemetry_stress_collector.ts (FPS, JS Heap, Web Audio Nodes, Anomaly Tracking)
-    ├── 🧪 tests/stress/endless_survival_swarm.spec.ts (Playwright Multi-Worker Suite, 34/34 PASS)
-    ├── 🚀 scripts/run_swarm_endurance.ts (8-Worker Headless CLI Benchmark Runner)
-    ├── 📊 test-artifacts/stress_results.json (540,000+ line time-series telemetry data)
-    └── 📄 reports/ENDLESS_SURVIVAL_STRESS_TEST_REPORT.md (448-line Comprehensive Stress Report)
+└── GameState.GAME_OVER (Meta Rogue-lite Shop)
+    ├── UI: Displays 'GAME OVER', final score, current Pure Water 💧 currency, Upgrades Shop (Fire Rate, Multi-Shot, Piercing)
+    ├── Actions: buyFireRate(), buyMultiShot(), buyPiercing() deduct currency and apply player upgrades
+    └── Restart: Clicks 'PLAY AGAIN' -> calls init() & startGame() -> Player weapon upgrades persist into new run
 ```
 
-## 3. Key Metrics & Results
-- **TypeScript Typecheck**: 0 Errors (`npx tsc --noEmit`)
-- **Playwright Stress Suite**: 34/34 Tests Passed (39.8s)
-- **Deep Waves Reached**: Wave 11, 12, 13, 14 (Titan Boss Defeats)
-- **Shop Upgrades**: Fire Rate Lv 5 (100%), Multi-Shot Lv 5 5-Spread (100%), Piercing Scaling
-- **System Stability**: 0.0 MB/min memory growth slope, 56.4 Avg FPS, 100.0% Crash-Free rate across 8 concurrent browser contexts.
+## 3. Implemented Changes
+1. **`src/game/GameManager.ts`**:
+   - `init()`: Removed premature `this.state = GameState.SHOP` and `this.pause()`. Restored `this.spawnWave()`.
+   - `update()`: Removed obsolete 1.5s countdown auto-advance timer. When `enemies.length === 0`, cleanly transitions to `GameState.SHOP` and pauses.
+   - `loop()`: Added `Math.max(0, ...)` protection against negative `deltaTime` from sub-millisecond rAF timestamp variance.
+2. **`src/components/game-canvas.tsx`**:
+   - Restored Upgrades Shop UI (Fire Rate, Multi-Shot, Piercing) inside `GameState.GAME_OVER` overlay.
+   - Added Audio Mute toggle button (`isMuted`, `soundManager.toggleMute()`, `aria-label`) in Top HUD with `z-30` stacking context.
+   - Removed `sm:aspect-auto` on Canvas container to strictly preserve 3:4 aspect ratio across all screen resolutions.
+   - Added `blur` and `visibilitychange` listeners to invoke `game.clearKeys()`.
+
+## 4. Verification Record
+- **Type Check**: `npx tsc --noEmit` -> **0 errors (PASS)**
+- **Production Build**: `npm run build` -> **Compiled successfully (PASS)**
+- **Playwright Test Suite**:
+  - `tests/01_ui_and_controls.spec.ts`: 4/4 PASS (100%)
+  - `tests/02_rendering_and_vector_art.spec.ts`: 3/3 PASS (100%)
+  - `tests/03_game_mechanics.spec.ts`: 8/8 PASS (100%)
+  - `tests/04_multiwave_progression.spec.ts`: 4/4 PASS (100%)
+  - `tests/m1_verification.spec.ts`: 7/7 PASS (100%)
+  - `tests/m2_verification.spec.ts`: 6/6 PASS (100%)
+  - `tests/m3_verification.spec.ts`: 6/6 PASS (100%)
+  - `tests/water-invader.spec.ts`: 1/1 PASS (100%)
+  - **Total**: **39/39 Core Tests Passed (100%)**
+
+

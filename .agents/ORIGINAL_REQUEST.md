@@ -51,4 +51,34 @@ A very large team of agents must execute these bots concurrently. They must moni
 - [ ] Bots successfully execute extreme survival gameplay while actively casting Ultimates and summoning Allies.
 - [ ] Bots successfully purchase and fully upgrade shop items during the run.
 - [ ] A final Markdown report is generated detailing any new bugs (e.g., memory leaks, projectile limit crashes, skill cooldown bugs) discovered during the runs.
+## Follow-up — 2026-08-24T16:38:54+09:00
 
+# Teamwork Project Prompt — Draft
+
+> Status: Launched
+> Goal: Fix the Wave Intermission Shop transition and restore the Game Over shop
+> Requested team: Small, focused team
+
+The recent shop refactoring introduced bugs in `GameManager.ts` and `game-canvas.tsx`. The shop currently incorrectly appears at the start of the game, does not trigger between waves as intended, and was removed from the GAME_OVER screen, preventing players from purchasing upgrades. The team must cleanly implement the in-game intermission shop and restore the rogue-lite upgrade mechanics.
+
+Working directory: ~/teamwork_projects/water_invader_shop_fix
+Integrity mode: development
+
+## Requirements
+
+### R1. Fix Wave Intermission Transition
+Rewrite the wave transition logic in `src/game/GameManager.ts`. When a wave is cleared (`this.enemies.length === 0`), the game must pause and transition to `GameState.SHOP` instead of automatically spawning the next wave. Ensure `init()` properly starts the game with `spawnWave()` instead of jumping to the shop.
+
+### R2. Restore Game Over Shop
+Players should also be able to purchase upgrades using their remaining Pure Water when they die. Restore the shop UI inside the `GameState.GAME_OVER` overlay in `src/components/game-canvas.tsx`, while keeping it in the `GameState.SHOP` overlay.
+
+### R3. Verify Purchasing Logic
+Ensure that purchasing upgrades (Fire Rate, Multi-Shot, Piercing) properly deducts currency and applies the upgrades to the player's weapon both during the Intermission Shop and the Game Over Shop.
+
+## Acceptance Criteria
+
+### Verification
+- [ ] Automated or manual verification confirms the game starts normally on Wave 1 (not in the shop).
+- [ ] Clearing all enemies in a wave properly transitions the game to the `SHOP` state.
+- [ ] Dying transitions the game to `GAME_OVER` where the shop is fully accessible.
+- [ ] Purchasing an upgrade correctly reduces currency and updates player stats.

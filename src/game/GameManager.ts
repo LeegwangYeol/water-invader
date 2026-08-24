@@ -128,9 +128,7 @@ export class GameManager {
     this.pendingReinforcement = null;
     
     this.spawnBarricades();
-    this.state = GameState.SHOP;
-          if (this.onStateChange) this.onStateChange(GameState.SHOP);
-          this.pause();
+    this.spawnWave();
     
     if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
     this.updateScoreUI();
@@ -228,7 +226,7 @@ export class GameManager {
   private loop = (timestamp: number) => {
     if (this.state === GameState.MENU) return;
 
-    const deltaTime = (timestamp - this.lastTime) / 1000;
+    const deltaTime = Math.max(0, (timestamp - this.lastTime) / 1000);
     this.lastTime = timestamp;
     
     // FPS Calculation
@@ -239,7 +237,7 @@ export class GameManager {
       this.lastFpsTime = timestamp;
     }
 
-    // Fixed timestep update for physics stability (optional, but using raw delta here)
+    // Fixed timestep update for physics stability (clamped between 0 and 0.1)
     this.update(Math.min(deltaTime, 0.1));
     this.draw();
 
@@ -378,20 +376,11 @@ export class GameManager {
     this.particles = this.particles.filter(p => !p.isDead);
     this.barricades = this.barricades.filter(b => !b.isDead);
     
-    // Next wave
-    if (this.enemies.length === 0 && this.warningTimer <= 0) {
-      if (!this.isResting) {
-        this.isResting = true;
-        this.waveRestTimer = 1.5;
-      }
-      
-      this.waveRestTimer -= deltaTime;
-      if (this.waveRestTimer <= 0) {
-        
-        this.spawnWave();
-        this.isResting = false;
-        this.updateScoreUI();
-      }
+    // Next wave - transition to Intermission Shop
+    if (this.state === GameState.PLAYING && this.enemies.length === 0 && this.warningTimer <= 0) {
+      this.state = GameState.SHOP;
+      if (this.onStateChange) this.onStateChange(this.state);
+      this.pause();
     }
   }
   

@@ -7,7 +7,7 @@ test.describe('R3: Multi-Wave Progression & Boss Encounter Suite', () => {
     await page.locator('button', { hasText: 'START GAME' }).click();
   });
 
-  test('Clearing Wave 1 triggers rest countdown and advances to Wave 2', async ({ page }) => {
+  test('Clearing Wave 1 triggers intermission shop and advances to Wave 2', async ({ page }) => {
     // 1. Initial state check
     const initialWave = await page.evaluate(() => (window as any).gameManager.level);
     expect(initialWave).toBe(1);
@@ -18,24 +18,26 @@ test.describe('R3: Multi-Wave Progression & Boss Encounter Suite', () => {
       gm.enemies.forEach((e: any) => { e.isDead = true; });
     });
 
-    // 3. Wait for game update loop to recognize wave clear
+    // 3. Wait for game update loop to recognize wave clear and transition to SHOP
     await page.waitForTimeout(200);
 
-    const restingState = await page.evaluate(() => {
+    const shopState = await page.evaluate(() => {
       const gm = (window as any).gameManager;
       return {
-        isResting: gm.isResting,
-        waveRestTimer: gm.waveRestTimer,
+        state: gm.state,
+        isPaused: gm.isPaused,
       };
     });
 
-    expect(restingState.isResting).toBe(true);
-    expect(restingState.waveRestTimer).toBeGreaterThan(0);
+    expect(shopState.state).toBe('SHOP'); // GameState.SHOP
+    expect(shopState.isPaused).toBe(true);
 
-    // Fast-forward rest timer to finish countdown
-    await page.evaluate(() => {
-      (window as any).gameManager.waveRestTimer = 0.05;
-    });
+    // Verify WAVE CLEARED overlay and NEXT WAVE button
+    const waveClearedOverlay = page.locator('h1', { hasText: 'WAVE CLEARED' });
+    await expect(waveClearedOverlay).toBeVisible();
+
+    // Click NEXT WAVE button
+    await page.locator('button', { hasText: 'NEXT WAVE' }).click();
 
     // Wait for wave advance
     await page.waitForTimeout(300);
@@ -44,13 +46,15 @@ test.describe('R3: Multi-Wave Progression & Boss Encounter Suite', () => {
       const gm = (window as any).gameManager;
       return {
         level: gm.level,
-        isResting: gm.isResting,
+        state: gm.state,
+        isPaused: gm.isPaused,
         enemiesCount: gm.enemies.length,
       };
     });
 
     expect(wave2State.level).toBe(2);
-    expect(wave2State.isResting).toBe(false);
+    expect(wave2State.state).toBe('PLAYING'); // GameState.PLAYING
+    expect(wave2State.isPaused).toBe(false);
     expect(wave2State.enemiesCount).toBeGreaterThan(0);
 
     // Update UI callback and verify HUD reflects WAVE 2
@@ -66,9 +70,8 @@ test.describe('R3: Multi-Wave Progression & Boss Encounter Suite', () => {
     for (let targetLevel = 2; targetLevel <= 5; targetLevel++) {
       await page.evaluate(() => {
         const gm = (window as any).gameManager;
-        gm.enemies.forEach((e: any) => { e.isDead = true; });
-        gm.isResting = true;
-        gm.waveRestTimer = 0.05;
+        gm.enemies = [];
+        gm.startNextWave();
       });
       await page.waitForTimeout(300);
 
@@ -134,11 +137,10 @@ test.describe('R3: Multi-Wave Progression & Boss Encounter Suite', () => {
     // 150 boss explosion particles + 5 bullet hit water splash particles = 155 particles
     expect(bossDeathResult.particlesCreated).toBe(155);
 
-    // Trigger wave rest advance to Wave 6
+    // Advance to Wave 6 via startNextWave
     await page.evaluate(() => {
       const gm = (window as any).gameManager;
-      gm.isResting = true;
-      gm.waveRestTimer = 0.05;
+      gm.startNextWave();
     });
 
     await page.waitForTimeout(300);

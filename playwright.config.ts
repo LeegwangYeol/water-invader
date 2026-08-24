@@ -15,7 +15,7 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }]
   ],
   use: {
-    baseURL: process.env.TARGET_URL || 'https://water-invader.vercel.app',
+    baseURL: process.env.TARGET_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     viewport: { width: 1280, height: 900 },
