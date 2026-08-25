@@ -1,48 +1,55 @@
-﻿# BRIEFING — 2026-08-21T20:44:00+09:00
+# BRIEFING — 2026-08-25T05:05:00Z
 
 ## Mission
-Endless Survival Stress Test Milestone 1 (Swarm Bot Engine) Quality & Adversarial Review
+Review and stress-test Milestone 1 (Enemy Physics & Movement Fixes: E-01, E-02, E-04, E-05, E-06, E-07, E-08, G-03) implementation for Water Invader, verify tests and builds, and issue a verdict.
 
 ## 🔒 My Identity
-- Archetype: reviewer
+- Archetype: reviewer & critic
 - Roles: reviewer, critic
 - Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_1
-- Original parent: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Milestone: Milestone 1 - Bot Engine & Auto-Upgrades Review
+- Original parent: e737693e-6ff7-485f-936f-dbcb6c7779bf
+- Milestone: Milestone 1 (Enemy Physics & Movement Fixes)
 - Instance: 1 of 1
 
 ## 🔒 Key Constraints
 - Review-only — do NOT modify implementation code
-- Integrity check: actively check for hardcoded test results, facade implementations, bypass shortcuts, fabricated logs
-- All communications to parent via send_message
-- 5-component handoff report (Observation, Logic Chain, Caveats, Conclusion, Verification Method)
+- Evidence-based review with integrity verification (no hardcoding, facade, cheats)
+- Multi-dimensional quality and adversarial stress-testing
+- Tree structure explanations for code / flow logic
 
 ## Current Parent
-- Conversation ID: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Updated: 2026-08-21T20:44:00+09:00
+- Conversation ID: e737693e-6ff7-485f-936f-dbcb6c7779bf
+- Updated: 2026-08-25T05:05:00Z
 
 ## Review Scope
-- **Files to review**: tests/stress/swarm_bot_engine.ts, tests/stress/swarm_bot_engine.spec.ts
-- **Interface contracts**: PROJECT.md §Interface Contracts
-- **Review criteria**: correctness, math integrity, skill triggering, shop buyer priority, edge cases, type safety, performance overhead
+- **Files reviewed**: `src/game/Enemy.ts`, `src/game/GameManager.ts`
+- **Specification files**: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`, `C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md`, `C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1_1\handoff.md`
+- **Verification tests**: `tests/03_game_mechanics.spec.ts`, `tests/04_multiwave_progression.spec.ts`, `tests/stress/qa_harvest_verification.spec.ts`, `tests/m1_verification.spec.ts`, `tests/adversarial_m1_challenger.spec.ts`
 
 ## Review Checklist
-- **Items reviewed**: tests/stress/swarm_bot_engine.ts, tests/stress/swarm_bot_engine.spec.ts, PROJECT.md, src/game/GameManager.ts, src/components/game-canvas.tsx
+- **Items reviewed**:
+  - E-01 (Splitter mini2 wall bounce logic with movingDir check) -> PASS
+  - E-02 (Diver enemy addition to spawnWave specials array) -> PASS
+  - E-04 (Zigzag vertical Y descent enabled) -> PASS
+  - E-05 (Diver dive speed tuned to max(280, speedY*35)) -> PASS
+  - E-06 (Wave grid scaling clamped: cols<=8, rows<=5, offsetX>=20) -> PASS
+  - E-07 (Indestructible stone barricade rigid halt) -> PASS
+  - E-08 (Boss ramming HP reduction and i-frames protection) -> PASS
+  - G-03 (Barricade gnawing 0.2x speed throttle) -> PASS
 - **Verdict**: APPROVE
-- **Unverified claims**: None (all verified via live Playwright test suite & TypeScript compiler)
+- **Unverified claims**: 0 unverified items. All claims verified via static code audit, Playwright tests, typecheck, and production build.
 
 ## Attack Surface
-- **Hypotheses tested**: TTI raymarching, barricade 0.02x/0.2x occlusion, diver 3000 threat, economy 3-tier priority, sub-5ms tick overhead, state guards
-- **Vulnerabilities found**: No critical vulnerabilities. Loop safety guards and null protections are properly in place.
-- **Untested angles**: Multi-worker concurrent load and live deep wave memory growth (delegated to M2-M4).
-
-## Key Decisions Made
-- Confirmed full mathematical and logical integrity of SwarmBotEngine.
-- Validated that no integrity bypasses, cheats, or dummy implementations exist.
-- Formally issued APPROVE verdict for Milestone 1.
+- **Hypotheses tested**:
+  - Mini splitter with negative speedX hitting left/right boundaries -> Bounces correctly without clipping.
+  - Diver dive triggering over varying player positions and delta time spikes -> Clamped to 0.1s delta, dive speed >= 280 px/s.
+  - Multi-wave progression up to Wave 20+ grid boundaries -> Clamped to 8 cols max, offsetX >= 20px always inside 600px canvas.
+  - Rapid repeated player body collisions against 50~150 HP Boss -> Boss takes 10 dmg, player takes 1 dmg with 1.0s i-frame.
+  - Gnawing enemies on ice/stone barricades with 0 active bullets -> Operates in dedicated collision loop without hanging.
+- **Vulnerabilities found**: 0 critical/major defects in M1 implementation. Integrity intact (no facades or hardcoded values).
+- **Untested angles**: M2/M3 scope items (Shop sync, piercing multi-target hit tracking) are scoped for subsequent milestones.
 
 ## Artifact Index
-- DISPATCH.md — Task dispatch record
-- BRIEFING.md — Persistent situational awareness
-- progress.md — Liveness heartbeat
-- handoff.md — Final review and challenge report
+- `.agents/teamwork_preview_reviewer_m1_1/DISPATCH.md` — Inbound dispatch log
+- `.agents/teamwork_preview_reviewer_m1_1/progress.md` — Liveness & progress tracking
+- `.agents/teamwork_preview_reviewer_m1_1/handoff.md` — Final review handoff report

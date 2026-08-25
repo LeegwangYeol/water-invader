@@ -1,17 +1,17 @@
-﻿## 2026-08-21T11:42:36Z
+## 2026-08-25T05:01:47Z
+You are a Challenger agent conducting adversarial stress verification of Milestone 1 for Water Invader.
 
-<USER_REQUEST>
-You are Challenger 2 for Milestone 1 of the Water Invader Endless Survival Stress Test.
-Your Working Directory is: C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_2
-Authoritative User Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-Project Scope Document: C:\src\SpaceInvader\PROJECT.md
-Worker Handoff Report: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1\handoff.md
+Read the authoritative requirements at: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`
+Read `C:\src\SpaceInvader\PROJECT.md` and `C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md`.
+Your working directory is: `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_2` (create your metadata files there).
+Your identity is teamwork_preview_challenger_m1_2.
 
-Task:
-1. Empirically verify the combat, skill casting, and shop auto-buying logic in 	ests/stress/swarm_bot_engine.ts.
-2. Test corner cases:
-   - Currency reaching 10,000 Pure Water: does it correctly max out Fire Rate to 0.1, Multi-Shot to 5, and purchase Piercing without infinite loops or integer overflows?
-   - Rapid skill gauge oscillation: does Ultimate / Ally casting remain idempotent and never double-spend?
-   - Controller lifecycle: start/stop/tick multiple times in rapid succession.
-3. Run tests and report your empirical findings and verdict (APPROVE or REQUEST_CHANGES) in C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_2\handoff.md and report via send_message.
-</USER_REQUEST>
+Your Mission:
+1. Empirically test wave scaling and barricade collision:
+   - Test wave generation across waves 1 to 50: verify enemy columns, rows, and spawn offset never go negative or out of bounds.
+   - Test stone barricade collision: verify enemies do not ghost through indestructible stone barricades.
+   - Test destructible barricade gnawing: verify enemy speed is throttled while gnawing.
+2. Run tests: `npx playwright test tests/04_multiwave_progression.spec.ts tests/stress/qa_harvest_verification.spec.ts --project=chromium`.
+3. Provide a clear verdict: APPROVE or REJECT in your handoff.
+
+Write your report to `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_2\handoff.md` and report back.

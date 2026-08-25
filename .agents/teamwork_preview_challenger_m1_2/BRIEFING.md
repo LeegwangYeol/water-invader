@@ -1,51 +1,52 @@
-﻿# BRIEFING — 2026-08-21T11:44:30Z
+# BRIEFING — 2026-08-25T14:04:55+09:00
 
 ## Mission
-Adversarial challenge & empirical stress verification of Milestone 1 Swarm Bot Engine (	ests/stress/swarm_bot_engine.ts) — COMPLETE
+Adversarial stress verification of Milestone 1 for Water Invader (wave scaling 1-50, stone barricade collision, destructible barricade gnawing, playwright tests).
 
 ## 🔒 My Identity
-- Archetype: empirical-challenger
+- Archetype: Empirical Challenger
 - Roles: critic, specialist
 - Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_2
-- Original parent: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Milestone: Milestone 1 (Deep Survival & Combat Swarm Bot Engine)
-- Instance: Challenger 2 of 2
+- Original parent: e737693e-6ff7-485f-936f-dbcb6c7779bf
+- Milestone: Milestone 1
+- Instance: 2 of 2
 
 ## 🔒 Key Constraints
-- Review-only — do NOT modify implementation code without explicit authorization
-- EMPIRICAL ONLY: Must run verification code directly; claims without empirical tests are invalid
-- Write only to .agents/teamwork_preview_challenger_m1_2/
-- Reply in Korean; include tree structure explanations
+- Review-only — do NOT modify production implementation code
+- Write all metadata to C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_2
+- Empirical verification: must run actual tests and verification scripts
+- Provide clear verdict: APPROVE or REJECT in handoff.md
 
 ## Current Parent
-- Conversation ID: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Updated: 2026-08-21T11:44:30Z
+- Conversation ID: e737693e-6ff7-485f-936f-dbcb6c7779bf
+- Updated: 2026-08-25T14:04:55+09:00
 
 ## Review Scope
-- **Files reviewed**: 	ests/stress/swarm_bot_engine.ts, 	ests/stress/swarm_bot_engine.spec.ts, 	ests/stress/swarm_bot_engine_corner_cases.spec.ts, src/game/GameManager.ts, src/game/Player.ts
-- **Interface contracts**: PROJECT.md, ORIGINAL_REQUEST.md, Worker handoff
-- **Review criteria**: Correctness, corner case resilience (10,000 currency, skill oscillation, lifecycle torture), performance under heavy load
+- **Files to review**: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`, `C:\src\SpaceInvader\PROJECT.md`, `C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md`, `src/game/Enemy.ts`, `src/game/GameManager.ts`, `src/game/Barricade.ts`
+- **Interface contracts**: PROJECT.md / ORIGINAL_REQUEST.md
+- **Review criteria**: Wave scaling 1..50 bounds, stone barricade collision prevention, destructible barricade gnawing throttling, Playwright test suite execution.
 
 ## Attack Surface
-- **Hypotheses tested**:
-  1. Economy auto-buyer handling of 10,000+ Pure Water (loop bounds, max stat capping, no integer overflow) -> VERIFIED PASS
-  2. Skill casting idempotency under high-frequency gauge/currency oscillations (no double-spend, accurate telemetry) -> VERIFIED PASS
-  3. Controller lifecycle stability under 500+ rapid start/stop/tick transitions (no timer leaks, clean key release) -> VERIFIED PASS
-  4. Extreme projectile barrage (500 bullets) performance and boundary survival -> VERIFIED PASS (< 10ms execution)
-- **Vulnerabilities found**: extractBotPerception lacks null-element guards (if (!b || b.isDead)) if entity arrays contain sparse nulls.
-- **Untested angles**: Multi-worker browser pool (M3 scope)
+- **Hypotheses tested**: 
+  1. Wave generation across waves 1..50: verified columns <= 8, rows <= 5, offsetX >= 20, minX >= 0, maxX <= 600, minY >= 80, maxY < 500, zero NaNs. [PASSED]
+  2. Stone barricades (indestructible): verified enemies strictly blocked at `y <= barricade.y - enemy.height`, preventing tunneling/ghosting, barricade takes 0 damage. [PASSED]
+  3. Destructible barricades gnawing: verified enemy speed throttled by 0.2x multiplier during gnawing and barricade takes 0.1 hp/frame. [PASSED]
+- **Vulnerabilities found**: None in current M1 implementation.
+- **Untested angles**: Audio node count over 30+ minutes (handled by long-duration M0 telemetry sweep).
 
 ## Loaded Skills
-- **Source**: N/A
-- **Core methodology**: Empirical test generation, adversarial fuzzing, lifecycle stress verification
+- None
 
 ## Key Decisions Made
-- Created 	ests/stress/swarm_bot_engine_corner_cases.spec.ts with 13 comprehensive corner case stress tests. All 13 tests passed cleanly in 1.1s.
-- Overall Milestone 1 Verdict: **APPROVE**.
+- Executed `tests/04_multiwave_progression.spec.ts` (4/4 passed).
+- Executed `tests/stress/qa_harvest_verification.spec.ts` (7/7 passed).
+- Created and executed `tests/adversarial_challenger_m1_2.spec.ts` (3/3 passed).
+- Ran full regression test run: 14/14 tests passed in 23.4s.
+- Validated build and typecheck: `npx tsc --noEmit` and `npm run build` passed with code 0.
+- Final Verdict: **APPROVE**.
 
 ## Artifact Index
-- .agents/teamwork_preview_challenger_m1_2/DISPATCH.md — Inbound dispatches
-- .agents/teamwork_preview_challenger_m1_2/BRIEFING.md — Situational awareness
-- .agents/teamwork_preview_challenger_m1_2/progress.md — Liveness & heartbeat
-- .agents/teamwork_preview_challenger_m1_2/handoff.md — Challenger evaluation & verdict report
-- 	ests/stress/swarm_bot_engine_corner_cases.spec.ts — 13 automated corner case stress tests
+- handoff.md — Verification Report and Verdict (APPROVE)
+- progress.md — Heartbeat and test execution trace
+- DISPATCH.md — Dispatch log
+- tests/adversarial_challenger_m1_2.spec.ts — Empirical adversarial test suite

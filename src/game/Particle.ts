@@ -1,14 +1,24 @@
 import { Entity } from './Entity';
 
 export class Particle extends Entity {
-  public lifeTime: number;
-  public maxLifeTime: number;
+  public lifeTime: number = 0;
+  public maxLifeTime: number = 0;
   private alpha: number = 1;
   private gravity: number = 400; // pixels per second squared
 
   constructor(x: number, y: number, color: string, speedMult: number = 1.0) {
-    super(x, y, Math.random() * 4 + 2, Math.random() * 4 + 2);
+    super(x, y, 4, 4);
+    this.init(x, y, color, speedMult);
+  }
+
+  public init(x: number, y: number, color: string, speedMult: number = 1.0): void {
+    const size = Math.random() * 4 + 2;
+    this.position.x = x;
+    this.position.y = y;
+    this.size.width = size;
+    this.size.height = size;
     this.color = color;
+    this.isDead = false;
     
     // Random velocity for explosion effect
     const angle = Math.random() * Math.PI * 2;
@@ -18,6 +28,7 @@ export class Particle extends Entity {
     
     this.maxLifeTime = Math.random() * 0.4 + 0.3; // 0.3 to 0.7 seconds
     this.lifeTime = this.maxLifeTime;
+    this.alpha = 1;
   }
 
   public update(deltaTime: number): void {

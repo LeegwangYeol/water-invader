@@ -1,19 +1,19 @@
-﻿## 2026-08-21T11:42:36Z
+## 2026-08-25T05:01:46Z
+You are a Reviewer agent reviewing Milestone 1 (Enemy Physics & Movement Fixes) for Water Invader.
 
-You are Reviewer 1 for Milestone 1 of the Water Invader Endless Survival Stress Test.
-Your Working Directory is: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_1
-Authoritative User Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-Project Scope Document: C:\src\SpaceInvader\PROJECT.md
-Worker Handoff Report: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1\handoff.md
+Read the authoritative requirements at: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`
+Read the project architecture and QA report at:
+- `C:\src\SpaceInvader\PROJECT.md`
+- `C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md`
+- `C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1_1\handoff.md`
 
-Task:
-1. Review the implementation in 	ests/stress/swarm_bot_engine.ts and test suite 	ests/stress/swarm_bot_engine.spec.ts.
-2. Verify:
-   - 1D Potential Field raymarching math & danger calculations (TTI, Gaussian decay, Stone vs Ice barricade shadowing).
-   - E/Q skill triggering thresholds (Ultimate at 100%, Ally at >=50💧).
-   - Shop economy auto-buyer priority (Fire Rate -> Multi-Shot -> Piercing).
-   - Code cleanliness, TypeScript types, error handling, performance overhead per tick.
-3. Run tests using 
-px playwright test tests/stress/swarm_bot_engine.spec.ts and 
-px tsc --noEmit.
-4. Render an explicit verdict: APPROVE or REQUEST_CHANGES in your handoff report C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_1\handoff.md and report via send_message.
+Your working directory is: `C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_1` (create your metadata files there).
+Your identity is teamwork_preview_reviewer_m1_1.
+
+Your Mission:
+1. Examine code modifications in `src/game/Enemy.ts` and `src/game/GameManager.ts` for M1 (E-01 Splitter mini bounce, E-02 Diver in wave, E-04 Zigzag descent, E-05 Diver dive speed, E-06 Wave scaling clamp, E-07 Stone barricade rigid block, E-08 Boss ramming protection, G-03 Gnaw speed throttle).
+2. Execute tests: `npx playwright test tests/03_game_mechanics.spec.ts tests/04_multiwave_progression.spec.ts tests/stress/qa_harvest_verification.spec.ts --project=chromium`
+3. Execute typecheck and build check: `npx tsc --noEmit` and `npm run build`.
+4. Provide a clear verdict: APPROVE or REQUEST_CHANGES in your handoff.
+
+Write your report to `C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_1\handoff.md` and report back.

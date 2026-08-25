@@ -1,38 +1,58 @@
-﻿# BRIEFING — 2026-08-21T20:54:30+09:00
+# BRIEFING — 2026-08-25T05:12:00Z
 
 ## Mission
-Implement Milestones 2 & 3: Telemetry Collector, Multi-Worker Test Suite, and Swarm Endurance Runner for Water Invader.
+Implement Milestone 2 & 3 tasks: Shop, Economy, UI Interaction, Weapon Piercing, & Performance Fixes for Water Invader.
 
 ## 🔒 My Identity
 - Archetype: worker
 - Roles: implementer, qa, specialist
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m2_m3
-- Original parent: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Milestone: M2 & M3
+- Working directory: C:\\src\\SpaceInvader\\.agents\\teamwork_preview_worker_m2_m3
+- Original parent: e737693e-6ff7-485f-936f-dbcb6c7779bf
+- Milestone: Milestone 2 & 3 (Shop, Economy, UI Interaction, Weapon Piercing, Performance)
 
 ## 🔒 Key Constraints
-- Non-intrusive monitoring hooks into window.gameManager and browser runtime
-- Zero hardcoding / facade implementations (Mandatory Integrity Mandate)
-- Support configurable workers, durations, telemetry snapshots and aggregate report
-- Reply with Korean and tree structures
+- Genuine implementations only (No cheating/facades/hardcoded test responses).
+- Comply with Next.js/React & TypeScript best practices.
+- File ownership:
+  - src/components/game-canvas.tsx
+  - src/game/GameManager.ts
+  - src/game/Bullet.ts
+  - src/game/Particle.ts
+- Verify with Playwright test suites and npx tsc --noEmit & npm run build.
 
 ## Current Parent
-- Conversation ID: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Updated: 2026-08-21T20:54:30+09:00
+- Conversation ID: e737693e-6ff7-485f-936f-dbcb6c7779bf
+- Updated: 2026-08-25T05:12:00Z
 
 ## Task Summary
-- **What to build**: Telemetry Stress Collector, Endless Survival Swarm Spec, Swarm Endurance CLI Runner, Null-safety & Performance Optimization
-- **Success criteria**: 100% type-checked, genuine telemetry & anomaly monitoring, multi-context endurance execution, artifact export
-- **Interface contracts**: tests/stress/telemetry_stress_collector.ts, tests/stress/endless_survival_swarm.spec.ts, scripts/run_swarm_endurance.ts
-- **Code layout**: tests/stress/, scripts/
+- **What to build**: Fix S-01, S-02, S-03, S-04, S-05, G-02, G-01, G-04 in Water Invader.
+- **Success criteria**: All Playwright tests pass, TS builds cleanly, genuine logic verified.
+- **Interface contracts**: PROJECT.md, reports/QA_SWEEP_REPORT.md
 
 ## Change Tracker
-- **Files modified**: tests/stress/swarm_bot_engine.ts, tests/stress/swarm_bot_adversarial.spec.ts
-- **Files created**: tests/stress/telemetry_stress_collector.ts, tests/stress/telemetry_stress_collector.spec.ts, tests/stress/endless_survival_swarm.spec.ts, scripts/run_swarm_endurance.ts
-- **Build status**: PASS (Turbopack in 1.0s, 34/34 tests passed)
-- **Pending issues**: none
+- **Files modified**:
+  - src/game/Bullet.ts: Added hitEntities & hitEntityIds Sets for piercing tracking
+  - src/game/Particle.ts: Added init() method for pooling/reuse
+  - src/game/GameManager.ts: Fixed S-01, S-03, S-04, G-01, G-04, and added onUpgradesChange sync
+  - src/components/game-canvas.tsx: Fixed S-02, S-05, G-02 with ShopUpgradePanel and decoupled useEffect
+  - tests/stress/qa_harvest_verification.spec.ts: Updated BUG-S01, S03, G01 assertions to verify fixes
+- **Build status**: PASS (Next.js build & tsc 0 errors)
+- **Pending issues**: None
 
 ## Quality Status
-- **Build/test result**: 34/34 tests PASS
-- **Lint status**: clean
-- **Tests added/modified**: telemetry_stress_collector.spec.ts, endless_survival_swarm.spec.ts, swarm_bot_adversarial.spec.ts
+- **Build/test result**: 23/23 tests pass in target suite, all regression suites pass
+- **Lint status**: 0 errors
+- **Tests added/modified**: Updated qa_harvest_verification.spec.ts to verify fixed bug conditions
+
+## Loaded Skills
+- None
+
+## Key Decisions Made
+- Extracted ShopUpgradePanel component in game-canvas.tsx to deduplicate shop UI.
+- Decoupled GameManager lifecycle from showManual state by using showManualRef for keyboard guarding.
+- Utilized bullet.hitEntities Set to allow true piercing across multiple enemies while preventing multi-frame tick depletion on single targets.
+- Implemented Particle Object Pool in GameManager with max capacity 500.
+
+## Artifact Index
+- C:\\src\\SpaceInvader\\.agents\\teamwork_preview_worker_m2_m3\\progress.md
+- C:\\src\\SpaceInvader\\.agents\\teamwork_preview_worker_m2_m3\\handoff.md

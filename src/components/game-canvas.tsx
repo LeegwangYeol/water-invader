@@ -5,6 +5,64 @@ import { GameManager } from '../game/GameManager';
 import { GameState } from '../game/types';
 import { soundManager } from '../game/SoundManager';
 
+interface ShopUpgradePanelProps {
+  currency: number;
+  upgrades: { fireRate: number; multiShot: number; piercing: number };
+  onBuyFireRate: () => void;
+  onBuyMultiShot: () => void;
+  onBuyPiercing: () => void;
+}
+
+function ShopUpgradePanel({
+  currency,
+  upgrades,
+  onBuyFireRate,
+  onBuyMultiShot,
+  onBuyPiercing,
+}: ShopUpgradePanelProps) {
+  return (
+    <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-8 text-white w-full max-w-sm">
+      <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center border-b border-slate-600 pb-2">Upgrades (💧 {currency})</h2>
+      
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <p className="font-bold">Fire Rate (Lv. {upgrades.fireRate})</p>
+          <p className="text-xs sm:text-sm text-slate-400">Shoot faster</p>
+        </div>
+        <button 
+          onClick={onBuyFireRate}
+          disabled={currency < 50 || upgrades.fireRate >= 5}
+          className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
+        >{upgrades.fireRate >= 5 ? 'MAX' : '50 💧'}</button>
+      </div>
+      
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <p className="font-bold">Multi-Shot (Lv. {upgrades.multiShot})</p>
+          <p className="text-xs sm:text-sm text-slate-400">More projectiles</p>
+        </div>
+        <button 
+          onClick={onBuyMultiShot}
+          disabled={currency < 100 || upgrades.multiShot >= 5}
+          className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
+        >{upgrades.multiShot >= 5 ? 'MAX' : '100 💧'}</button>
+      </div>
+      
+      <div className="flex justify-between items-center">
+        <div>
+          <p className="font-bold">Piercing (Lv. {upgrades.piercing})</p>
+          <p className="text-xs sm:text-sm text-slate-400">Bullets penetrate enemies</p>
+        </div>
+        <button 
+          onClick={onBuyPiercing}
+          disabled={currency < 200 || upgrades.piercing >= 5}
+          className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
+        >{upgrades.piercing >= 5 ? 'MAX' : '200 💧'}</button>
+      </div>
+    </div>
+  );
+}
+
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameManagerRef = useRef<GameManager | null>(null);
@@ -21,6 +79,9 @@ export default function GameCanvas() {
   const [isMuted, setIsMuted] = useState(false);
   
   const [showManual, setShowManual] = useState(false);
+  const showManualRef = useRef(false);
+  showManualRef.current = showManual;
+
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [lang, setLang] = useState('ko');
   const [upgrades, setUpgrades] = useState({ fireRate: 1, multiShot: 1, piercing: 1 });
@@ -29,6 +90,18 @@ export default function GameCanvas() {
     soundManager.init();
     const muted = soundManager.toggleMute();
     setIsMuted(muted);
+  };
+
+  const handleOpenManual = () => {
+    gameManagerRef.current?.pause();
+    setShowManual(true);
+  };
+
+  const handleCloseManual = () => {
+    setShowManual(false);
+    if (gameManagerRef.current?.state === GameState.PLAYING) {
+      gameManagerRef.current?.resume();
+    }
   };
 
   useEffect(() => {
@@ -101,13 +174,16 @@ export default function GameCanvas() {
       setUltimate(newUltimate);
     };
     game.onPlayerHpChange = setHp;
+    game.onUpgradesChange = (newUpgrades) => {
+      setUpgrades(newUpgrades);
+    };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (showManual) return;
+      if (showManualRef.current) return;
       game.handleKeyDown(e.key);
     };
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (showManual) return;
+      if (showManualRef.current) return;
       game.handleKeyUp(e.key);
     };
 
@@ -132,17 +208,21 @@ export default function GameCanvas() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       game.stopGame();
     };
-  }, [showManual]);
+  }, []);
 
   const startGame = () => {
     gameManagerRef.current?.init();
+    if (gameManagerRef.current) {
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+    }
     gameManagerRef.current?.startGame();
   };
 
   const buyFireRate = () => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradeFireRate();
-      setUpgrades({ ...upgrades, fireRate: Math.round((0.5 - gameManagerRef.current.player.baseFireRate) / 0.1) + 1 });
+      setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
     }
   };
@@ -150,7 +230,7 @@ export default function GameCanvas() {
   const buyMultiShot = () => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradeMultiShot();
-      setUpgrades({ ...upgrades, multiShot: gameManagerRef.current.player.multiShot });
+      setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
     }
   };
@@ -158,7 +238,7 @@ export default function GameCanvas() {
   const buyPiercing = () => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradePiercing();
-      setUpgrades({ ...upgrades, piercing: gameManagerRef.current.player.piercing });
+      setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
     }
   };
@@ -329,7 +409,7 @@ export default function GameCanvas() {
               START GAME
             </button>
             <button 
-              onClick={() => setShowManual(true)}
+              onClick={() => handleOpenManual()}
               className="px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded text-lg transition-all"
             >
               HOW TO PLAY
@@ -387,7 +467,7 @@ export default function GameCanvas() {
             </div>
 
             <button 
-              onClick={() => setShowManual(false)}
+              onClick={handleCloseManual}
               className="mt-8 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl transition-all"
             >
               CLOSE
@@ -401,46 +481,13 @@ export default function GameCanvas() {
           <h1 className="text-4xl sm:text-5xl font-black text-blue-400 mb-2">WAVE CLEARED</h1>
           <p className="text-xl sm:text-2xl text-white mb-8">Prepare for next wave!</p>
           
-          {/* Shop */}
-          <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-8 text-white w-full max-w-sm">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center border-b border-slate-600 pb-2">Upgrades (💧 {currency})</h2>
-            
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <p className="font-bold">Fire Rate (Lv. {upgrades.fireRate})</p>
-                <p className="text-xs sm:text-sm text-slate-400">Shoot faster</p>
-              </div>
-              <button 
-                onClick={buyFireRate}
-                disabled={currency < 50 || upgrades.fireRate >= 5}
-                className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >{upgrades.fireRate >= 5 ? 'MAX' : '50 💧'}</button>
-            </div>
-            
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <p className="font-bold">Multi-Shot (Lv. {upgrades.multiShot})</p>
-                <p className="text-xs sm:text-sm text-slate-400">More projectiles</p>
-              </div>
-              <button 
-                onClick={buyMultiShot}
-                disabled={currency < 100 || upgrades.multiShot >= 5}
-                className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >{upgrades.multiShot >= 5 ? 'MAX' : '100 💧'}</button>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-bold">Piercing (Lv. {upgrades.piercing})</p>
-                <p className="text-xs sm:text-sm text-slate-400">Bullets penetrate enemies</p>
-              </div>
-              <button 
-                onClick={buyPiercing}
-                disabled={currency < 200 || upgrades.piercing >= 5}
-                className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >{upgrades.piercing >= 5 ? 'MAX' : '200 💧'}</button>
-            </div>
-          </div>
+          <ShopUpgradePanel
+            currency={currency}
+            upgrades={upgrades}
+            onBuyFireRate={buyFireRate}
+            onBuyMultiShot={buyMultiShot}
+            onBuyPiercing={buyPiercing}
+          />
           
           <button 
             onClick={() => gameManagerRef.current?.startNextWave()}
@@ -459,46 +506,13 @@ export default function GameCanvas() {
           )}
           <p className="text-xl sm:text-2xl text-white mb-8">Final {t('점수:', 'Score:')} {score}</p>
           
-          {/* Shop */}
-          <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-8 text-white w-full max-w-sm">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center border-b border-slate-600 pb-2">Upgrades (💧 {currency})</h2>
-            
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <p className="font-bold">Fire Rate (Lv. {upgrades.fireRate})</p>
-                <p className="text-xs sm:text-sm text-slate-400">Shoot faster</p>
-              </div>
-              <button 
-                onClick={buyFireRate}
-                disabled={currency < 50 || upgrades.fireRate >= 5}
-                className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >{upgrades.fireRate >= 5 ? 'MAX' : '50 💧'}</button>
-            </div>
-            
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <p className="font-bold">Multi-Shot (Lv. {upgrades.multiShot})</p>
-                <p className="text-xs sm:text-sm text-slate-400">More projectiles</p>
-              </div>
-              <button 
-                onClick={buyMultiShot}
-                disabled={currency < 100 || upgrades.multiShot >= 5}
-                className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >{upgrades.multiShot >= 5 ? 'MAX' : '100 💧'}</button>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-bold">Piercing (Lv. {upgrades.piercing})</p>
-                <p className="text-xs sm:text-sm text-slate-400">Bullets penetrate enemies</p>
-              </div>
-              <button 
-                onClick={buyPiercing}
-                disabled={currency < 200 || upgrades.piercing >= 5}
-                className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
-              >{upgrades.piercing >= 5 ? 'MAX' : '200 💧'}</button>
-            </div>
-          </div>
+          <ShopUpgradePanel
+            currency={currency}
+            upgrades={upgrades}
+            onBuyFireRate={buyFireRate}
+            onBuyMultiShot={buyMultiShot}
+            onBuyPiercing={buyPiercing}
+          />
 
           <button 
             onClick={startGame}

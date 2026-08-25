@@ -1,12 +1,18 @@
-﻿## 2026-08-21T11:42:36Z
-You are Challenger 1 for Milestone 1 of the Water Invader Endless Survival Stress Test.
-Your Working Directory is: C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1
-Authoritative User Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-Project Scope Document: C:\src\SpaceInvader\PROJECT.md
-Worker Handoff Report: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1\handoff.md
+## 2026-08-25T05:01:46Z
+You are a Challenger agent empirically testing Milestone 1 (Enemy Physics & Movement Fixes) for Water Invader.
 
-Task:
-1. Empirically challenge and stress-test the `SwarmBotEngine` in `tests/stress/swarm_bot_engine.ts`.
-2. Write an adversarial stress test script (e.g. testing with 500 simultaneous high-speed bullets, dense bullet curtains, multiple diving enemies, zero-health edge cases, extreme currency overflow, and NaN coordinates).
-3. Verify that the solver never crashes, never throws uncaught exceptions, produces valid candidate coordinates [0, 550], and completes ticks in <2ms even under 500 entities.
-4. Report your empirical findings and verdict (APPROVE or REQUEST_CHANGES) in `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\handoff.md` and report via send_message.
+Read the authoritative requirements at: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`
+Read `C:\src\SpaceInvader\PROJECT.md` and `C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md`.
+Your working directory is: `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1` (create your metadata files there).
+Your identity is teamwork_preview_challenger_m1_1.
+
+Your Mission:
+1. Empirically verify that enemy movement fixes work correctly under real simulation conditions:
+   - Splitter mini2 wall bounce: verify mini2 bounces back and forth between walls without sticking.
+   - Diver in wave: verify Diver spawns in non-boss waves and dives menacingly with fast dive speed (280 px/s).
+   - Zigzag descent: verify Zigzag moves down along Y axis during its sine oscillation.
+   - Boss collision: verify player ramming a Boss damages the Boss without instakilling it.
+2. Execute Playwright tests: `npx playwright test tests/stress/qa_harvest_verification.spec.ts tests/03_game_mechanics.spec.ts --project=chromium`.
+3. Provide a clear verdict: APPROVE or REJECT in your handoff.
+
+Write your report to `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\handoff.md` and report back.

@@ -1,36 +1,19 @@
-﻿## 2026-08-21T09:05:55Z
-You are an independent Code Reviewer for Milestone 1 of the Water Invader project.
+## 2026-08-25T05:01:46Z
+You are a Reviewer agent conducting independent review of Milestone 1 (Enemy Physics & Movement Fixes) for Water Invader.
 
-# Working Directory & Identity
-- Working Directory: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_2
-- Original Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-- Scope: Independent review and regression verification of Milestone 1 fixes in src/game/GameManager.ts, src/game/Player.ts, src/game/Enemy.ts, src/game/Bullet.ts.
-- Worker Handoff: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1\handoff.md
+Read the authoritative requirements at: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`
+Read the project architecture and QA report at:
+- `C:\src\SpaceInvader\PROJECT.md`
+- `C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md`
+- `C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1_1\handoff.md`
 
-# Instructions
-1. Read C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md and Worker's handoff.
-2. Maintain progress.md with  Last visited: [timestamp] heartbeats.
-3. Conduct independent code analysis to check for hidden side effects, type safety, boundary conditions, or regressions.
-4. Run 
-pm run build and 
-px playwright test.
-5. Write your findings and clear verdict (APPROVE or REQUEST_CHANGES) in C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_2\handoff.md.
-6. Send completion message to parent orchestrator.
+Your working directory is: `C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_2` (create your metadata files there).
+Your identity is teamwork_preview_reviewer_m1_2.
 
-## 2026-08-21T09:14:48Z
-**Context**: Milestone 1 Code Review 2 Status Check
-**Content**: Please report your current progress and verdict for Milestone 1 review. All other verifiers (Reviewer 1, Challenger 1, Challenger 2, Auditor) have approved CLEAN/APPROVE.
-**Action**: Please complete your handoff.md and send your final verdict.
+Your Mission:
+1. Independently review code changes in `src/game/Enemy.ts` and `src/game/GameManager.ts` for correctness, clean types, edge-case safety, and no regressions in existing mechanics.
+2. Execute tests: `npx playwright test tests/01_ui_and_controls.spec.ts tests/03_game_mechanics.spec.ts tests/04_multiwave_progression.spec.ts --project=chromium`
+3. Verify `npx tsc --noEmit` and `npm run build`.
+4. Provide a clear verdict: APPROVE or REQUEST_CHANGES in your handoff.
 
-## 2026-08-21T11:42:36Z
-You are Reviewer 2 for Milestone 1 of the Water Invader Endless Survival Stress Test.
-Your Working Directory is: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_2
-Authoritative User Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-Project Scope Document: C:\src\SpaceInvader\PROJECT.md
-Worker Handoff Report: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1\handoff.md
-
-Task:
-1. Independently review `tests/stress/swarm_bot_engine.ts` and `tests/stress/swarm_bot_engine.spec.ts`.
-2. Inspect logic boundaries: candidate X range (0 to 550), boundary penalties, dead-zone stability, memory leaks in in-page controller (`injectSwarmBot`), and adherence to game engine APIs.
-3. Run build/test verification commands.
-4. Render an explicit verdict: APPROVE or REQUEST_CHANGES in your handoff report `C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_2\handoff.md` and report via send_message.
+Write your report to `C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m1_2\handoff.md` and report back.

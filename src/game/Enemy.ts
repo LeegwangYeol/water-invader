@@ -82,8 +82,9 @@ export class Enemy extends Entity {
       if (this.hitFlashTimer < 0) this.hitFlashTimer = 0;
     }
 
-    const currentSpeedX = this.speedX * speedMultiplier;
-    const currentSpeedY = this.speedY * speedMultiplier;
+    const gnawMultiplier = this.isGnawing ? 0.2 : 1.0;
+    const currentSpeedX = this.speedX * speedMultiplier * gnawMultiplier;
+    const currentSpeedY = this.speedY * speedMultiplier * gnawMultiplier;
 
     // Diver Logic
     if (this.type === EnemyType.DIVER && playerPos) {
@@ -94,11 +95,12 @@ export class Enemy extends Entity {
     }
 
     if (this.isDiving) {
-      this.position.y += currentSpeedY * 6 * deltaTime; // Dive very fast
+      const diveSpeed = Math.max(280, currentSpeedY * 35);
+      this.position.y += diveSpeed * deltaTime; // Dive very fast
       return; // Skip normal movement
     }
 
-    if (this.type !== EnemyType.ZIGZAG) { this.position.y += currentSpeedY * deltaTime; } // ZIGZAG does NOT move down constantly
+    this.position.y += currentSpeedY * deltaTime;
 
     // Shield Regen Logic
     if (this.type === EnemyType.SHIELDED && this.shieldHp <= 0) {
@@ -135,10 +137,11 @@ export class Enemy extends Entity {
     }
     
     // Bounce off walls
-    if (this.position.x <= 0 && this.direction < 0) {
-      this.direction = 1;
-    } else if (this.position.x + this.size.width >= this.canvasWidth && this.direction > 0) {
-      this.direction = -1;
+    const movingDir = this.speedX >= 0 ? this.direction : -this.direction;
+    if (this.position.x <= 0 && movingDir < 0) {
+      this.direction = this.speedX >= 0 ? 1 : -1;
+    } else if (this.position.x + this.size.width >= this.canvasWidth && movingDir > 0) {
+      this.direction = this.speedX >= 0 ? -1 : 1;
     }
     
     // Clamp

@@ -17,6 +17,7 @@ export class GameManager {
   public enemies: Enemy[] = [];
   public bullets: Bullet[] = [];
   public particles: Particle[] = [];
+  private particlePool: Particle[] = [];
   public barricades: Barricade[] = [];
   public helpers: Helper[] = [];
   
@@ -59,6 +60,7 @@ export class GameManager {
   public onStateChange?: (state: GameState) => void;
   public onScoreChange?: (score: number, currency: number, combo: number, wave: number, ultimateGauge: number) => void;
   public onPlayerHpChange?: (hp: number) => void;
+  public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number }) => void;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -111,10 +113,18 @@ export class GameManager {
       this.player.ultimateGauge = 0;
       this.player.position.x = this.logicalWidth / 2 - 25;
       this.player.position.y = this.logicalHeight - 60;
+      this.player.baseFireRate = 0.5;
+      this.player.multiShot = 1;
+      this.player.piercing = 1;
     }
     this.clearKeys();
     this.enemies = [];
     this.bullets = [];
+    for (const p of this.particles) {
+      if (this.particlePool.length < 500) {
+        this.particlePool.push(p);
+      }
+    }
     this.particles = [];
     this.score = 0;
     this.combo = 0;
@@ -132,6 +142,7 @@ export class GameManager {
     
     if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
     this.updateScoreUI();
+    this.updateUpgradesUI();
   }
   
   private spawnBarricades() {
@@ -196,11 +207,11 @@ export class GameManager {
       return;
     }
 
-    const rows = 3 + Math.floor(this.level / 4);
-    const cols = 6 + Math.floor(this.level / 3);
+    const rows = Math.min(5, 3 + Math.floor(this.level / 4));
+    const cols = Math.min(8, 6 + Math.floor(this.level / 3));
     const paddingX = 60;
     const paddingY = 50;
-    const offsetX = (this.logicalWidth - ((cols - 1) * paddingX)) / 2;
+    const offsetX = Math.max(20, (this.logicalWidth - ((cols - 1) * paddingX)) / 2);
     
     let specialCount = 0;
     const maxSpecials = Math.max(1, Math.min(1 + Math.floor(this.level / 2), 4)); // 1~2 early on, cap at 4
@@ -212,7 +223,7 @@ export class GameManager {
         if (r === 1 && c % 2 === 0) {
           type = EnemyType.ZIGZAG; // keep some zigzags
         } else if (specialCount < maxSpecials && Math.random() > 0.85) {
-          const specials = [EnemyType.SNIPER, EnemyType.SHIELDED, EnemyType.SPLITTER];
+          const specials = [EnemyType.SNIPER, EnemyType.DIVER, EnemyType.SHIELDED, EnemyType.SPLITTER];
           type = specials[Math.floor(Math.random() * specials.length)];
           specialCount++;
         }
@@ -327,7 +338,23 @@ export class GameManager {
                }
             }
           } else if (enemy.checkCollision(this.player)) {
-            enemy.isDead = true;
+            if (enemy.type === EnemyType.BOSS) {
+              enemy.hp -= 10;
+              enemy.hitFlashTimer = 0.08;
+              soundManager.playEnemyHit();
+              if (enemy.hp <= 0) {
+                enemy.isDead = true;
+                this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, '#fbbf24', 150, 3.0);
+                this.triggerScreenShake(0.75);
+                soundManager.playVictory();
+                this.handleEnemyKill();
+              }
+            } else {
+              enemy.isDead = true;
+              this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, enemy.color, 20);
+              this.handleEnemyKill();
+            }
+
             if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
               this.player.hp -= 1;
               this.player.hitFlashTimer = 0.08;
@@ -373,7 +400,21 @@ export class GameManager {
       b.position.x > -100 &&
       b.position.x < this.logicalWidth + 100
     );
-    this.particles = this.particles.filter(p => !p.isDead);
+    
+    // Recycle dead particles into pool
+    let writeIdx = 0;
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
+      if (p.isDead) {
+        if (this.particlePool.length < 500) {
+          this.particlePool.push(p);
+        }
+      } else {
+        this.particles[writeIdx++] = p;
+      }
+    }
+    this.particles.length = writeIdx;
+    
     this.barricades = this.barricades.filter(b => !b.isDead);
     
     // Next wave - transition to Intermission Shop
@@ -389,7 +430,13 @@ export class GameManager {
       soundManager.playExplosion();
     }
     for (let i = 0; i < count; i++) {
-      this.particles.push(new Particle(x, y, color, speedMult));
+      let p = this.particlePool.pop();
+      if (p) {
+        p.init(x, y, color, speedMult);
+      } else {
+        p = new Particle(x, y, color, speedMult);
+      }
+      this.particles.push(p);
     }
   }
 
@@ -443,8 +490,10 @@ export class GameManager {
 
         for (const enemy of this.enemies) {
           if (enemy.isDead) continue;
+          if (bullet.hitEntities.has(enemy)) continue;
           
           if (bullet.checkCollision(enemy)) {
+            bullet.hitEntities.add(enemy);
             bullet.piercing--;
             if (bullet.piercing <= 0) bullet.isDead = true;
             
@@ -494,7 +543,7 @@ export class GameManager {
               
               this.handleEnemyKill();
             }
-            break;
+            if (bullet.isDead) break;
           }
         }
       } else {
@@ -566,12 +615,17 @@ export class GameManager {
             enemy.isDead = true;
             if (barricade.type === BarricadeType.DESTRUCTIBLE) {
               barricade.hp -= 20; // Crash damage
+            } else {
+              this.createExplosion(enemy.position.x, enemy.position.y, '#94a3b8', 20);
             }
             this.createExplosion(enemy.position.x, enemy.position.y, '#ef4444', 30);
           } else {
             enemy.isGnawing = true;
             if (barricade.type === BarricadeType.DESTRUCTIBLE) {
               barricade.hp -= 0.1; // Gnaw damage per frame
+            } else {
+              // Indestructible stone barricade: block vertical penetration
+              enemy.position.y = Math.min(enemy.position.y, barricade.position.y - enemy.size.height);
             }
           }
         }
@@ -794,6 +848,7 @@ export class GameManager {
   }
 
   public triggerSummonAlly() {
+    if (this.state !== GameState.PLAYING) return;
     if (this.currency >= 50) {
       this.currency -= 50;
       this.pendingReinforcement = 'ALLY';
@@ -806,6 +861,7 @@ export class GameManager {
 
   // Ultimate Skill: Heavy Rain
   public triggerUltimate() {
+    if (this.state !== GameState.PLAYING) return;
     if (this.player.ultimateGauge >= 100) {
       this.player.ultimateGauge = 0;
       soundManager.playPowerUp(); // or a new ultimate sound
@@ -829,16 +885,18 @@ export class GameManager {
     const k = key.toLowerCase();
     this.keysPressed[k] = true;
 
-    if (k === 'arrowleft' || k === 'a') this.player.isMovingLeft = true;
-    if (k === 'arrowright' || k === 'd') this.player.isMovingRight = true;
-    if (k === ' ' || k === 'spacebar' || k === 'space') {
-      this.player.isShooting = true;
-    }
-    if (k === 'e' || k === 'shift') {
-      this.triggerUltimate();
-    }
-    if (k === 'q') {
-      this.triggerSummonAlly();
+    if (this.state === GameState.PLAYING) {
+      if (k === 'arrowleft' || k === 'a') this.player.isMovingLeft = true;
+      if (k === 'arrowright' || k === 'd') this.player.isMovingRight = true;
+      if (k === ' ' || k === 'spacebar' || k === 'space') {
+        this.player.isShooting = true;
+      }
+      if (k === 'e' || k === 'shift') {
+        this.triggerUltimate();
+      }
+      if (k === 'q') {
+        this.triggerSummonAlly();
+      }
     }
     
     // Debug & Cheats
@@ -860,14 +918,30 @@ export class GameManager {
       this.player.isShooting = false;
     }
   }
+
+  public getUpgrades(): { fireRate: number; multiShot: number; piercing: number } {
+    const fireRateLevel = this.player ? Math.min(5, Math.max(1, Math.round((0.5 - this.player.baseFireRate) / 0.1) + 1)) : 1;
+    return {
+      fireRate: fireRateLevel,
+      multiShot: this.player ? this.player.multiShot : 1,
+      piercing: this.player ? this.player.piercing : 1,
+    };
+  }
+
+  public updateUpgradesUI() {
+    if (this.onUpgradesChange && this.player) {
+      this.onUpgradesChange(this.getUpgrades());
+    }
+  }
   
   // Upgrades
   public upgradeFireRate() {
-    if (this.currency >= 50 && this.player.fireRate > 0.05) {
+    if (this.currency >= 50 && this.player.fireRate > 0.1) {
       this.currency -= 50;
       this.player.fireRate = Math.max(0.1, this.player.fireRate - 0.1);
       soundManager.playPowerUp();
       this.updateScoreUI();
+      this.updateUpgradesUI();
     }
   }
   
@@ -877,15 +951,17 @@ export class GameManager {
       this.player.multiShot++;
       soundManager.playPowerUp();
       this.updateScoreUI();
+      this.updateUpgradesUI();
     }
   }
 
   public upgradePiercing() {
-    if (this.currency >= 200 && this.player.piercing < 99) {
+    if (this.currency >= 200 && this.player.piercing < 5) {
       this.currency -= 200;
       this.player.piercing++;
       soundManager.playPowerUp();
       this.updateScoreUI();
+      this.updateUpgradesUI();
     }
   }
 }

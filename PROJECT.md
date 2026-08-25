@@ -1,74 +1,56 @@
-﻿# Project: Water Invader Endless Survival Stress Test
+# Project: Water Invader Comprehensive QA Sweep and Auto-fix
 
 ## Architecture
-The Endless Survival Stress Test infrastructure employs a Dual-Tier Hybrid Swarm architecture designed for zero-latency in-browser bot intelligence, automated economy/skill optimization, and multi-process concurrency endurance:
+```
+[Water Invader Application Architecture]
+├── src/
+│   ├── components/
+│   │   ├── game-canvas.tsx (Canvas setup, React UI overlays: MENU, PLAYING, SHOP, GAME_OVER, Modal controls)
+│   │   └── ui/ (Tailwind / Lucide UI icons & buttons)
+│   ├── game/
+│   │   ├── Entity.ts (Base AABB bounding box, collision math)
+│   │   ├── GameManager.ts (Game loop, state machine, wave spawner, collision resolution, economy & upgrades, skills)
+│   │   ├── Player.ts (Ship position, HP, speed, fire rate, multi-shot, piercing, ultimate gauge, combo)
+│   │   ├── Enemy.ts (7 enemy types, movement, evasion, diving, shooting, hit flashes)
+│   │   ├── Bullet.ts (Player & enemy projectiles, piercing counters, entity hit tracking)
+│   │   ├── Barricade.ts (Destructible ice voxel grid & indestructible stone barriers)
+│   │   ├── Helper.ts (Allies: Fighter, Repairer, Tank)
+│   │   ├── Particle.ts (Visual effects, splash, spark, explosions, object pooling)
+│   │   └── SoundManager.ts (Web Audio synthesis oscillators and gain nodes)
+│   └── types.ts (Game state, upgrade types, enemy types)
+└── tests/
+    ├── stress/
+    │   ├── swarm_bot_engine.ts (1D Potential Field Evasion, Threat Targeter, Auto-Shop, Skill Invoker)
+    │   ├── telemetry_stress_collector.ts (FPS, Heap, Web Audio nodes, Anomaly Watchdog)
+    │   ├── endless_survival_swarm.spec.ts (Multi-worker Playwright endurance bot suite)
+    │   └── qa_harvest_verification.spec.ts (16-defect verification suite)
+    └── ...
+```
 
-`
-[Swarm Orchestration Layer]
- ├── scripts/run_swarm_endurance.ts (Multi-Worker Concurrent Headless Browser Pool)
- └── tests/stress/endless_survival_swarm.spec.ts (Standard Playwright Multi-Worker Spec)
-         │
-         ▼
-[Browser Runtime & In-Page Engine Layer (tests/stress/swarm_bot_engine.ts)]
- ├── Perception: 60 FPS hook on window.gameManager (Player, Enemies, Bullets, Barricades, Economy)
- ├── 1D Potential Field Solver: Bullet TTI, Barricade Shadowing (Stone/Ice), Diver Intercept
- ├── Combat Controller: Continuous Fire, Ultimate (E) at 100%, Ally (Q) Summon at >=50 💧 
- └── Economy Auto-Buyer: Fire Rate (50💧) -> Multi-Shot (100💧 up to 5-spread) -> Piercing (200💧)
-         │
-         ▼
-[Telemetry & Telemetry Monitor Layer (tests/stress/telemetry_stress_collector.ts)]
- ├── Performance: FPS (Avg/Min/1% Low), JS Heap Memory (used/total), Web Audio Active Nodes
- ├── Entities: Bullet count, Particle count, Enemy count, Wave level
- └── Anomaly Watchdog: Janks (>50ms frames), NaN Coordinates, Unhandled Errors
-         │
-         ▼
-[Artifacts & Reporting]
- ├── test-artifacts/stress_results.json (540k lines time-series dataset)
- └── reports/ENDLESS_SURVIVAL_STRESS_TEST_REPORT.md (448 lines comprehensive report)
-`
-
-## Feature Inventory
-| # | Feature | Description | Milestone | Source |
-|---|---------|-------------|-----------|--------|
-| 1 | 1D Potential Field Evasion | Zero-latency 16ms raymarching evasion with barricade shadow occlusion & diver alert | M1 | ORIGINAL_REQUEST §R1 |
-| 2 | Automated Combat & Skills (E/Q) | Continuous fire, Ultimate Heavy Rain (E) at 100%, Ally Summon (Q) at 50+💧 | M1 | ORIGINAL_REQUEST §R1 |
-| 3 | In-Game Shop Upgrade Automation | Auto-spending Pure Water on Fire Rate (50💧), 5-Spread Multi-Shot (100💧), Piercing (200💧) | M1 | ORIGINAL_REQUEST §R2 |
-| 4 | Real-Time Telemetry & Metric Engine | FPS, JS Heap memory, Web Audio node tracking, entity counts, kill & wave analytics | M2 | ORIGINAL_REQUEST §R3 |
-| 5 | Anomaly & Leak Watchdog | Detection of memory growth slopes, frame drops (<30 FPS), projectile overload, crashes | M2 | ORIGINAL_REQUEST §R3 |
-| 6 | Playwright Multi-Worker Test Suite | Standard Playwright test specification supporting parallel worker execution | M3 | ORIGINAL_REQUEST §R3 |
-| 7 | Swarm Endurance CLI Runner | Standalone multi-process/multi-context endurance runner for deep wave stress | M3 | ORIGINAL_REQUEST §R3 |
-| 8 | Deep Wave Endurance Execution | Multi-worker live execution reaching deep waves with maxed weapon stats | M4 | ORIGINAL_REQUEST §Verification |
-| 9 | Forensic Integrity Verification | Forensic audit ensuring authentic execution without mocks, hardcoding, or cheats | M5 | ORIGINAL_REQUEST §Verification |
-| 10 | Final Comprehensive Stress Report | Detailed Markdown report with test architecture, run metrics, bugs, and analysis | M5 | ORIGINAL_REQUEST §Verification |
+## Feature Inventory & QA Bug Matrix
+| # | Defect / Feature | Category | Location | Assigned Milestone | Status | Source |
+|---|---|---|---|---|---|---|
+| 1 | E-01: Splitter Mini2 Stuck at Left Wall | Enemy Physics | `GameManager.ts`, `Enemy.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
+| 2 | E-02: Diver Enemy Missing in `spawnWave()` | Spawning / Dead Code | `GameManager.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
+| 3 | E-04: Zigzag Enemy Missing Y-Descent | Enemy Movement | `Enemy.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
+| 4 | E-05: Diver Dive Speed Too Slow | Enemy Movement | `Enemy.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
+| 5 | E-06: Wave Grid Scaling Unbounded | Wave Engine | `GameManager.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
+| 6 | E-07: Enemy Penetrates Stone Barricades / Gnawing | Physics / Barricades | `GameManager.ts`, `Enemy.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
+| 7 | E-08: Player Ramming Boss Causes 0-Dmg Instakill | Combat / Balance | `GameManager.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
+| 8 | S-01: Fire Rate Max Upgrade Infinite Currency Drain | Shop / Economy | `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
+| 9 | S-02: React Upgrades State Desync | UI / React State | `game-canvas.tsx` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
+| 10 | S-03: Q/E Skills Activated During Non-Playing States | UI / Controls | `game-canvas.tsx`, `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
+| 11 | S-04: Piercing Cap Discrepancy (UI 5 vs Engine 99) | Shop / Economy | `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
+| 12 | S-05: Duplicate Shop JSX in Canvas Component | Code Quality / UI | `game-canvas.tsx` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
+| 13 | G-01: Piercing Bullets Multi-Hit / Frame Depletion | Weapon Collision | `Bullet.ts`, `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 3) |
+| 14 | G-02: Modal Open/Close Resets Active Game Session | UX / Lifecycle | `game-canvas.tsx` | M2-3 | DONE (PASSED) | Survey (Explorer 3) |
+| 15 | G-03: Barricade Gnawing Movement Throttle | Enemy Physics | `Enemy.ts`, `GameManager.ts` | M1 | DONE (PASSED) | Survey (Explorer 3) |
+| 16 | G-04: Particle System Pooling Optimization | Memory / Performance | `Particle.ts`, `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 3) |
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|--------------|--------|
-| 1 | Bot Engine & Auto-Upgrades | 	ests/stress/swarm_bot_engine.ts (Evasion, Combat, E/Q Skills, Shop Auto-Buy) | none | DONE |
-| 2 | Telemetry & Anomaly Collector | 	ests/stress/telemetry_stress_collector.ts (FPS, Heap, Audio, Entity metrics) | M1 | DONE |
-| 3 | Swarm Harness & Test Runners | 	ests/stress/endless_survival_swarm.spec.ts & scripts/run_swarm_endurance.ts | M1, M2 | DONE |
-| 4 | Deep Wave Swarm Stress Run | Multi-worker parallel endurance execution, telemetry data collection | M3 | DONE |
-| 5 | Forensic Audit & Final Report | Audit verification & eports/ENDLESS_SURVIVAL_STRESS_TEST_REPORT.md generation | M4 | DONE |
-
-## Interface Contracts
-### swarm_bot_engine.ts ↔ window.gameManager
-- window.gameManager.player: { position, hp, ultimateGauge, baseFireRate, multiShot, piercing, isMovingLeft, isMovingRight, isShooting }
-- window.gameManager.currency: number
-- window.gameManager.triggerUltimate(): void
-- window.gameManager.triggerSummonAlly(): void
-- window.gameManager.upgradeFireRate(): void
-- window.gameManager.upgradeMultiShot(): void
-- window.gameManager.upgradePiercing(): void
-
-### 	elemetry_stress_collector.ts ↔ Test Runners
-- ttachTelemetry(page: Page): Promise<void>
-- getTelemetrySnapshot(page: Page): Promise<TelemetrySnapshot>
-- exportStressMetrics(results: TelemetrySnapshot[]): StressReportData
-
-## Code Layout
-- 	ests/stress/swarm_bot_engine.ts — Core in-page bot decision engine and action dispatcher
-- 	ests/stress/telemetry_stress_collector.ts — Performance, memory, audio, entity, and anomaly tracker
-- 	ests/stress/endless_survival_swarm.spec.ts — Playwright multi-worker test suite
-- scripts/run_swarm_endurance.ts — Standalone multi-worker concurrent endurance runner
-- eports/ENDLESS_SURVIVAL_STRESS_TEST_REPORT.md — Final comprehensive stress testing report
-- 	est-artifacts/stress_results.json — Time-series telemetry benchmark dataset
+| 0 | Comprehensive QA Bot Sweep | Playwright bot multi-run gameplay & anomaly harvesting | none | DONE |
+| 1 | Enemy Physics & Movement Fixes | E-01, E-02, E-04, E-05, E-06, E-07, E-08, G-03 in `Enemy.ts`, `GameManager.ts` | M0 | DONE |
+| 2-3 | Shop, UI, Piercing & Performance Fixes | S-01~S-05, G-01, G-02, G-04 in `game-canvas.tsx`, `GameManager.ts`, `Bullet.ts`, `Particle.ts` | M1 | DONE |
+| 4 | Final E2E Verification & Build | Playwright multi-worker stress run + full test suite + `npm run build` | M2-3 | DONE |

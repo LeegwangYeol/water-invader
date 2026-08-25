@@ -1,55 +1,51 @@
-﻿# BRIEFING — 2026-08-21T20:45:00+09:00
+# BRIEFING — 2026-08-25T14:04:00+09:00
 
 ## Mission
-Adversarially stress-test and empirically challenge the `SwarmBotEngine` in `tests/stress/swarm_bot_engine.ts` across heavy entity loads (500+ bullets/enemies), edge cases (NaN/undefined, 0 HP, extreme currency), coordinate bounds, and latency benchmarks (<2ms).
+Empirically test Milestone 1 (Enemy Physics & Movement Fixes) for Water Invader with rigorous tests and Playwright test executions.
 
 ## 🔒 My Identity
-- Archetype: Empirical Challenger
+- Archetype: Challenger
 - Roles: critic, specialist
 - Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1
-- Original parent: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Milestone: M1 (Water Invader Endless Survival Stress Test)
+- Original parent: e737693e-6ff7-485f-936f-dbcb6c7779bf
+- Milestone: Milestone 1 (Enemy Physics & Movement Fixes)
 - Instance: 1 of 1
 
 ## 🔒 Key Constraints
-- Review-only & challenger — do NOT modify worker's implementation code directly without authorization
-- Write dedicated adversarial stress test suite to empirically challenge the bot brain
-- Ensure all findings are verified by running test execution
-- Produce 5-component handoff report (handoff.md)
-- Communicate with caller via send_message
+- Review-only — do NOT modify implementation code
+- Write only to .agents/teamwork_preview_challenger_m1_1/
+- Empirically verify claims; run verification code ourselves
+- Output handoff.md with 5 components: Observation, Logic Chain, Caveats, Conclusion, Verification Method
+- Reply in Korean
 
 ## Current Parent
-- Conversation ID: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Updated: 2026-08-21T20:45:00+09:00
+- Conversation ID: e737693e-6ff7-485f-936f-dbcb6c7779bf
+- Updated: 2026-08-25T14:04:00+09:00
 
 ## Review Scope
-- **Files to review**: `tests/stress/swarm_bot_engine.ts`, `tests/stress/swarm_bot_engine.spec.ts`
-- **Interface contracts**: `PROJECT.md`
-- **Review criteria**: Robustness against crashes/exceptions, candidate coordinate validity [0, 550], sub-2ms performance under 500+ entities, edge case handling (NaN, negative, zero health, massive currency).
+- **Files to review**: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`, `C:\src\SpaceInvader\PROJECT.md`, `C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md`, `src/game/Enemy.ts`, `src/game/GameManager.ts`, `tests/stress/qa_harvest_verification.spec.ts`, `tests/03_game_mechanics.spec.ts`, `tests/m1_verification.spec.ts`, `tests/adversarial_challenger_m1.spec.ts`
+- **Interface contracts**: PROJECT.md, ORIGINAL_REQUEST.md
+- **Review criteria**: Correctness of enemy physics (Splitter mini2 bounce, Diver spawn/dive speed 280px/s, Zigzag sine descent, Boss collision damage without instakill), Playwright test execution results, TypeScript build verification.
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - High-density bullet curtain (500 simultaneous bullets) causes TLE or latency >2ms -> **DISPROVED**: Avg tick time = 1.0072ms (P99 = 1.77ms), well below 2.0ms threshold.
-  - Multi-diver swarm causes crashes or invalid evasion -> **DISPROVED**: Accurately computes diver collision field.
-  - 10,000 randomized extreme fuzz states cause candidate coordinate out-of-bounds -> **DISPROVED**: 100% in [0, maxCandidateX].
-  - Extreme currency overflow (1e9) causes infinite loop -> **DISPROVED**: Guarded by maxIterations = 20.
-  - Sparse arrays with null/undefined items in entity lists -> **CONFIRMED VULNERABILITY**: `extractBotPerception` throws TypeError when encountering `null` in bullets/enemies/barricades.
-- **Vulnerabilities found**:
-  - Minor: `extractBotPerception` lacks `if (!b) continue;` check for sparse array elements.
-- **Untested angles**:
-  - None within M1 scope (28 tests across 3 suites executed and passing).
+  1. Splitter mini2 wall bounce: [PASSED] mini2 with negative speedX correctly bounces back and forth between walls using `movingDir = speedX >= 0 ? direction : -direction`.
+  2. Diver in wave: [PASSED] Diver included in specials array, spawns in non-boss waves, dives with speed >= 280 px/s when player aligns horizontally.
+  3. Zigzag descent: [PASSED] Moves down smoothly along Y axis (38.4 px / 300 frames) while oscillating horizontally.
+  4. Boss collision: [PASSED] Player ramming Boss deals 10 damage to Boss (50 -> 40 HP), Boss does not instakill, player takes 1 damage and gains 1.0s invincibility timer.
+- **Vulnerabilities found**: None in M1 enemy physics.
+- **Untested angles**: Shop/UI fixes (assigned to M2), Piercing/Particle pooling (assigned to M3).
 
 ## Loaded Skills
-- None explicitly loaded
+- None
 
 ## Key Decisions Made
-- Authored `tests/stress/swarm_bot_adversarial.spec.ts` with 8 comprehensive adversarial stress tests.
-- Executed Playwright stress test suite: 28 total tests passed (0 failures).
-- Verified Next.js build and TypeScript compilation.
-- Verdict: **APPROVE** (All core performance and logic requirements passed).
+- Executed Playwright test suites (15 tests in qa_harvest_verification + 03_game_mechanics, 11 tests in m1_verification + adversarial_challenger_m1).
+- Executed `npm run build` (Next.js 16.3.1 Turbopack build passed with 0 errors).
+- Issued APPROVE verdict for Milestone 1.
 
 ## Artifact Index
-- `tests/stress/swarm_bot_adversarial.spec.ts` — Adversarial stress test suite
-- `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\BRIEFING.md`
-- `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\progress.md`
-- `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\handoff.md`
+- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\DISPATCH.md
+- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\BRIEFING.md
+- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\progress.md
+- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_1\handoff.md

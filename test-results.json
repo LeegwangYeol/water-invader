@@ -4,14 +4,9 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\src\\SpaceInvader\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/01_ui_and_controls.spec.ts",
-      "tests/02_rendering_and_vector_art.spec.ts",
-      "tests/03_game_mechanics.spec.ts",
-      "tests/04_multiwave_progression.spec.ts",
-      "tests/m1_verification.spec.ts",
-      "tests/m2_verification.spec.ts",
-      "tests/m3_verification.spec.ts",
-      "tests/water-invader.spec.ts"
+      "tests/adversarial_challenger_m1_2.spec.ts",
+      "tests/stress/challenger_piercing_particle_empirical.spec.ts",
+      "tests/stress/endless_survival_swarm.spec.ts"
     ],
     "configFile": "C:\\src\\SpaceInvader\\playwright.config.ts",
     "rootDir": "C:/src/SpaceInvader/tests",
@@ -80,20 +75,20 @@
   },
   "suites": [
     {
-      "title": "01_ui_and_controls.spec.ts",
-      "file": "01_ui_and_controls.spec.ts",
+      "title": "adversarial_challenger_m1_2.spec.ts",
+      "file": "adversarial_challenger_m1_2.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "R1: UI & Controls Verification Suite",
-          "file": "01_ui_and_controls.spec.ts",
+          "title": "Challenger M1 Adversarial Verification Suite (teamwork_preview_challenger_m1_2)",
+          "file": "adversarial_challenger_m1_2.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "Page loads properly with Canvas and Menu Overlay",
+              "title": "EMP-WAVE-01: Exhaustive Wave Scaling & Boundary Invariants (Waves 1 to 50)",
               "ok": true,
               "tags": [],
               "tests": [
@@ -108,12 +103,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 820,
+                      "duration": 1264,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:31.154Z",
+                      "startTime": "2026-08-25T05:32:59.508Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -121,13 +116,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "b93b26d555c6a51bb42b-0c9e5c4138a6b0550d76",
-              "file": "01_ui_and_controls.spec.ts",
-              "line": 9,
+              "id": "1344ee7b68ab837dbbbf-2c16cecd5a6809965513",
+              "file": "adversarial_challenger_m1_2.spec.ts",
+              "line": 10,
               "column": 7
             },
             {
-              "title": "HOW TO PLAY modal opens, shows controls/mechanics/cheats, and closes",
+              "title": "EMP-BARRICADE-01: Stone Barricade Rigid Body Collision & Anti-Ghosting Verification",
               "ok": true,
               "tags": [],
               "tests": [
@@ -142,12 +137,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 777,
+                      "duration": 893,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:32.198Z",
+                      "startTime": "2026-08-25T05:33:00.937Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -155,13 +150,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "b93b26d555c6a51bb42b-b90bd83a0b2eea4458f0",
-              "file": "01_ui_and_controls.spec.ts",
-              "line": 38,
+              "id": "1344ee7b68ab837dbbbf-b7e7d3c7a3f1f6476023",
+              "file": "adversarial_challenger_m1_2.spec.ts",
+              "line": 111,
               "column": 7
             },
             {
-              "title": "Starting game initializes window.gameManager and transitions HUD & In-Game Controls",
+              "title": "EMP-BARRICADE-02: Destructible Barricade Gnawing Speed Throttling (0.2x Multiplier)",
               "ok": true,
               "tags": [],
               "tests": [
@@ -176,12 +171,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 981,
+                      "duration": 890,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:32.986Z",
+                      "startTime": "2026-08-25T05:33:01.839Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -189,43 +184,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "b93b26d555c6a51bb42b-2c07d76fa9151714f5e8",
-              "file": "01_ui_and_controls.spec.ts",
-              "line": 63,
-              "column": 7
-            },
-            {
-              "title": "HUD reflect pure water currency changes and enables ALLY(Q) button",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 751,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:33.976Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b93b26d555c6a51bb42b-9627e101c5dba8c63b16",
-              "file": "01_ui_and_controls.spec.ts",
-              "line": 96,
+              "id": "1344ee7b68ab837dbbbf-2ec37aae9ccf9b033b78",
+              "file": "adversarial_challenger_m1_2.spec.ts",
+              "line": 180,
               "column": 7
             }
           ]
@@ -233,20 +194,20 @@
       ]
     },
     {
-      "title": "02_rendering_and_vector_art.spec.ts",
-      "file": "02_rendering_and_vector_art.spec.ts",
+      "title": "stress\\challenger_piercing_particle_empirical.spec.ts",
+      "file": "stress/challenger_piercing_particle_empirical.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "R1: Canvas Rendering & Vector Graphics Verification Suite",
-          "file": "02_rendering_and_vector_art.spec.ts",
+          "title": "Challenger Empirical Verification: G-01 Piercing & G-04 Particle Pooling",
+          "file": "stress/challenger_piercing_particle_empirical.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "Player Cute Droplet vector rendering and state transitions",
+              "title": "G-01 [EMPIRICAL 1]: Piercing Bullet vs Single 100 HP Enemy - Hit Tracking prevents frame-by-frame tick depletion",
               "ok": true,
               "tags": [],
               "tests": [
@@ -261,12 +222,16 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 799,
+                      "duration": 919,
                       "errors": [],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "[G-01 Single Enemy Traversal Summary]: {\n  totalPiercingConsumed: \u001b[33m1\u001b[39m,\n  totalDamageDealt: \u001b[33m1\u001b[39m,\n  finalPiercing: \u001b[33m2\u001b[39m,\n  bulletIsDead: \u001b[33mfalse\u001b[39m\n}\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:34.745Z",
+                      "startTime": "2026-08-25T05:33:02.753Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -274,13 +239,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "c65cf58c351b47863508-cdf2873ef6aa3ef85f3f",
-              "file": "02_rendering_and_vector_art.spec.ts",
+              "id": "2c601ab2cffb0f18800d-ed8e49ecf3bb48a2cf1e",
+              "file": "stress/challenger_piercing_particle_empirical.spec.ts",
               "line": 10,
               "column": 7
             },
             {
-              "title": "All 7 Enemy types render procedural vector graphics without errors",
+              "title": "G-01 [EMPIRICAL 2]: Piercing Bullet vs Single Boss (50 HP, 150x80 hitbox) - No multi-tick depletion",
               "ok": true,
               "tags": [],
               "tests": [
@@ -295,12 +260,16 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 799,
+                      "duration": 1005,
                       "errors": [],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "[G-01 Boss Traversal Summary]: {\n  hitsCount: \u001b[33m1\u001b[39m,\n  initialHp: \u001b[33m50\u001b[39m,\n  finalBossHp: \u001b[33m49\u001b[39m,\n  finalPiercing: \u001b[33m2\u001b[39m,\n  bulletIsDead: \u001b[33mfalse\u001b[39m\n}\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:35.559Z",
+                      "startTime": "2026-08-25T05:33:03.685Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -308,13 +277,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "c65cf58c351b47863508-462e9370de65f2abfbb0",
-              "file": "02_rendering_and_vector_art.spec.ts",
+              "id": "2c601ab2cffb0f18800d-9a36189fc048f6674c3a",
+              "file": "stress/challenger_piercing_particle_empirical.spec.ts",
               "line": 81,
               "column": 7
             },
             {
-              "title": "Barricades layout and voxel block grid rendering",
+              "title": "G-01 [EMPIRICAL 3]: Piercing=3 cleanly penetrates and damages 3 distinct enemies in a vertical column",
               "ok": true,
               "tags": [],
               "tests": [
@@ -329,12 +298,16 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 799,
+                      "duration": 964,
                       "errors": [],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "[G-01 3-Enemy Penetration Result]: {\n  e1Hp: \u001b[33m9\u001b[39m,\n  e2Hp: \u001b[33m9\u001b[39m,\n  e3Hp: \u001b[33m9\u001b[39m,\n  e4Hp: \u001b[33m10\u001b[39m,\n  finalPiercing: \u001b[33m0\u001b[39m,\n  bulletIsDead: \u001b[33mtrue\u001b[39m,\n  hitEntitiesCount: \u001b[33m3\u001b[39m\n}\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:36.371Z",
+                      "startTime": "2026-08-25T05:33:04.703Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -342,9 +315,161 @@
                   "status": "expected"
                 }
               ],
-              "id": "c65cf58c351b47863508-34acacd0ae3eaa6f6cf1",
-              "file": "02_rendering_and_vector_art.spec.ts",
-              "line": 155,
+              "id": "2c601ab2cffb0f18800d-0ae57a6db35ed42361c3",
+              "file": "stress/challenger_piercing_particle_empirical.spec.ts",
+              "line": 126,
+              "column": 7
+            },
+            {
+              "title": "G-01 [EMPIRICAL 4]: Standard Bullet (Piercing=1) destroys on first enemy and does not touch subsequent enemies",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 896,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[G-01 Standard Bullet Piercing=1 Result]: { e1Hp: \u001b[33m9\u001b[39m, e2Hp: \u001b[33m10\u001b[39m, bulletIsDead: \u001b[33mtrue\u001b[39m, finalPiercing: \u001b[33m0\u001b[39m }\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-25T05:33:05.679Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c601ab2cffb0f18800d-11233b8079f988baf6bb",
+              "file": "stress/challenger_piercing_particle_empirical.spec.ts",
+              "line": 210,
+              "column": 7
+            },
+            {
+              "title": "G-04 [EMPIRICAL 1]: Particle Object Pool recycles dead particles into pool on update",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 978,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[G-04 Particle Pool Recycling Result]: {\n  activeCountAfterSpawn: \u001b[33m20\u001b[39m,\n  poolCountAfterSpawn: \u001b[33m0\u001b[39m,\n  activeCountAfterExpire: \u001b[33m0\u001b[39m,\n  poolCountAfterExpire: \u001b[33m20\u001b[39m,\n  activeCountSecondSpawn: \u001b[33m20\u001b[39m,\n  poolCountSecondSpawn: \u001b[33m0\u001b[39m,\n  recycledCount: \u001b[33m20\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-25T05:33:06.586Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c601ab2cffb0f18800d-dbc19f770f1041a7998b",
+              "file": "stress/challenger_piercing_particle_empirical.spec.ts",
+              "line": 250,
+              "column": 7
+            },
+            {
+              "title": "G-04 [EMPIRICAL 2]: Particle Pool Capacity is strictly bounded at 500 to prevent unbounded heap memory growth",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 969,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[G-04 Particle Pool Capacity Bound Result]: {\n  totalSpawnedActive: \u001b[33m1000\u001b[39m,\n  activeAfterExpire: \u001b[33m0\u001b[39m,\n  poolSizeAfterExpire: \u001b[33m500\u001b[39m,\n  activeAfterSecondSpawn: \u001b[33m600\u001b[39m,\n  poolSizeAfterSecondSpawn: \u001b[33m0\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-25T05:33:07.576Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c601ab2cffb0f18800d-9a5c467d1b0e4bf41ab0",
+              "file": "stress/challenger_piercing_particle_empirical.spec.ts",
+              "line": 309,
+              "column": 7
+            },
+            {
+              "title": "G-04 [EMPIRICAL 3]: Reused particles reinitialize state correctly without NaN or stale velocity",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 970,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[G-04 Particle State Reset Result]: {\n  wasDead: \u001b[33mtrue\u001b[39m,\n  poolHasIt: \u001b[33mtrue\u001b[39m,\n  isSameRef: \u001b[33mtrue\u001b[39m,\n  isDeadReset: \u001b[33mtrue\u001b[39m,\n  posCorrect: \u001b[33mtrue\u001b[39m,\n  colorCorrect: \u001b[33mtrue\u001b[39m,\n  lifeTimeValid: \u001b[33mtrue\u001b[39m,\n  velocityValid: \u001b[33mtrue\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-25T05:33:08.557Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c601ab2cffb0f18800d-95ed9fae94a6935ff59c",
+              "file": "stress/challenger_piercing_particle_empirical.spec.ts",
+              "line": 362,
               "column": 7
             }
           ]
@@ -352,25 +477,25 @@
       ]
     },
     {
-      "title": "03_game_mechanics.spec.ts",
-      "file": "03_game_mechanics.spec.ts",
+      "title": "stress\\endless_survival_swarm.spec.ts",
+      "file": "stress/endless_survival_swarm.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "R2: Game Mechanics & State Simulation Suite",
-          "file": "03_game_mechanics.spec.ts",
-          "line": 3,
+          "title": "Water Invader Endless Survival Swarm Stress Test Suite",
+          "file": "stress/endless_survival_swarm.spec.ts",
+          "line": 13,
           "column": 6,
           "specs": [
             {
-              "title": "Simulate player keyboard movement and boundary clamping",
+              "title": "SWARM-1: Autonomous Survival Swarm Bot - Deep Wave Combat, Skills & Auto-Upgrades",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -380,12 +505,91 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5329,
+                      "duration": 16960,
                       "errors": [],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "[SWARM-1] Navigating to /...\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Swarm Bot Active. Monitoring 15s survival session...\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 3/5 | Score: 0 | Currency: 0💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 3/5 | Score: 200 | Currency: 10💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 58.9 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 3/5 | Score: 300 | Currency: 15💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 59.2 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 2/5 | Score: 300 | Currency: 15💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 59.4 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 2/5 | Score: 500 | Currency: 25💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 59.4 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 600 | Currency: 30💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 59.2 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 700 | Currency: 35💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 59.8 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 700 | Currency: 35💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 59.8 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 1200 | Currency: 9💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 59.8 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 1200 | Currency: 9💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 59.8 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 1400 | Currency: 19💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 1500 | Currency: 24💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 1500 | Currency: 24💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 1500 | Currency: 24💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "[SWARM-1] Wave: 1 | HP: 1/5 | Score: 1500 | Currency: 24💧 | Upgrades: [FR:0, MS:0, P:0] | FPS: 60 | Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "\n[SWARM-1] Run Completed Successfully:\n"
+                        },
+                        {
+                          "text": "  - Survival Duration: 15.77s\n"
+                        },
+                        {
+                          "text": "  - Wave Reached: 1\n"
+                        },
+                        {
+                          "text": "  - Final Score: 1500\n"
+                        },
+                        {
+                          "text": "  - Total Kills: 0\n"
+                        },
+                        {
+                          "text": "  - Accuracy: 20.9%\n"
+                        },
+                        {
+                          "text": "  - Cause of Death: SURVIVED\n"
+                        },
+                        {
+                          "text": "  - Avg FPS: 60\n"
+                        },
+                        {
+                          "text": "  - Total Upgrades Spent: 0💧\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:37.190Z",
+                      "startTime": "2026-08-25T05:33:09.551Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -393,18 +597,18 @@
                   "status": "expected"
                 }
               ],
-              "id": "be73e0aa7e060161c3f1-d52dbf3785a43bc9b338",
-              "file": "03_game_mechanics.spec.ts",
-              "line": 10,
+              "id": "3951a406963e50f08610-4fc9df9695eb59131623",
+              "file": "stress/endless_survival_swarm.spec.ts",
+              "line": 18,
               "column": 7
             },
             {
-              "title": "Simulate shooting mechanism and player bullet generation",
+              "title": "SWARM-2: Multi-Worker Swarm Concurrency Stress Simulation (4 Concurrent Bots)",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -414,12 +618,43 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1354,
+                      "duration": 12212,
                       "errors": [],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "[SWARM-2] Launching 4 concurrent Playwright browser contexts for swarm stress...\n"
+                        },
+                        {
+                          "text": "\n=======================================================\n"
+                        },
+                        {
+                          "text": " Swarm Concurrency Summary (4 Workers Completed)\n"
+                        },
+                        {
+                          "text": "  - Mean Survival Time: 10.53s\n"
+                        },
+                        {
+                          "text": "  - Mean Wave: 1 (Max: 1)\n"
+                        },
+                        {
+                          "text": "  - Overall Avg FPS: 59.9\n"
+                        },
+                        {
+                          "text": "  - Peak Heap: 10.7MB\n"
+                        },
+                        {
+                          "text": "  - Crash Free Rate: 100%\n"
+                        },
+                        {
+                          "text": "=======================================================\n\n"
+                        },
+                        {
+                          "text": "[SWARM-2] Saved stress report artifact to C:\\src\\SpaceInvader\\test-artifacts\\stress_results.json\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:42.528Z",
+                      "startTime": "2026-08-25T05:33:26.519Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -427,18 +662,18 @@
                   "status": "expected"
                 }
               ],
-              "id": "be73e0aa7e060161c3f1-f269846b6af5f078522b",
-              "file": "03_game_mechanics.spec.ts",
-              "line": 44,
+              "id": "3951a406963e50f08610-c0fd14bf0b8bf5a3a937",
+              "file": "stress/endless_survival_swarm.spec.ts",
+              "line": 305,
               "column": 7
             },
             {
-              "title": "Developer cheat keys: F3 (Debug), F4 (God Mode), F5 (Currency)",
+              "title": "SWARM-3: High Weapon Saturation & Audio Node Stability Check",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -448,12 +683,31 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 788,
+                      "duration": 7543,
                       "errors": [],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "[SWARM-3] High Weapon Saturation Snapshot:\n"
+                        },
+                        {
+                          "text": "  - Total Active Bullets: 119\n"
+                        },
+                        {
+                          "text": "  - Player Bullets: 117\n"
+                        },
+                        {
+                          "text": "  - Active Audio Nodes: 2\n"
+                        },
+                        {
+                          "text": "  - Current FPS: 60.2\n"
+                        },
+                        {
+                          "text": "  - Heap: 10.7MB\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-24T08:15:43.892Z",
+                      "startTime": "2026-08-25T05:33:38.742Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -461,1080 +715,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "be73e0aa7e060161c3f1-5b77d47e6c92db8029db",
-              "file": "03_game_mechanics.spec.ts",
-              "line": 71,
-              "column": 7
-            },
-            {
-              "title": "ALLY(Q) summon mechanism creates helpers and deducts currency",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1077,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:44.693Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "be73e0aa7e060161c3f1-777612f873da4e44f29d",
-              "file": "03_game_mechanics.spec.ts",
-              "line": 95,
-              "column": 7
-            },
-            {
-              "title": "Ultimate Skill Heavy Rain (E key) triggers at 100% gauge",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 752,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:45.786Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "be73e0aa7e060161c3f1-7360f7a070e9e134ed50",
-              "file": "03_game_mechanics.spec.ts",
-              "line": 135,
-              "column": 7
-            },
-            {
-              "title": "Diver enemy dive acceleration & barricade explosion collision",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 756,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:46.549Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "be73e0aa7e060161c3f1-e3af5b3426908615a9c5",
-              "file": "03_game_mechanics.spec.ts",
-              "line": 157,
-              "column": 7
-            },
-            {
-              "title": "Splitter enemy movement speed and splitting on death",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 776,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:47.316Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "be73e0aa7e060161c3f1-dc8b2d658cbdea8a3395",
-              "file": "03_game_mechanics.spec.ts",
-              "line": 218,
-              "column": 7
-            },
-            {
-              "title": "QA Audit: Barricade slowdown & Sniper bullet interception discrepancy analysis",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 735,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:48.104Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "be73e0aa7e060161c3f1-b93574b072660fc032f4",
-              "file": "03_game_mechanics.spec.ts",
-              "line": 266,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "04_multiwave_progression.spec.ts",
-      "file": "04_multiwave_progression.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "R3: Multi-Wave Progression & Boss Encounter Suite",
-          "file": "04_multiwave_progression.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Clearing Wave 1 triggers intermission shop and advances to Wave 2",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1370,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:48.860Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "11a3af44805795ca340e-c10e5c9c600a812e7e57",
-              "file": "04_multiwave_progression.spec.ts",
-              "line": 10,
-              "column": 7
-            },
-            {
-              "title": "Multi-wave progression advances through Wave 2, 3, 4 to Wave 5 Boss wave",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2020,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:50.248Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "11a3af44805795ca340e-40a2bcd4ed71617fc23f",
-              "file": "04_multiwave_progression.spec.ts",
-              "line": 68,
-              "column": 7
-            },
-            {
-              "title": "Boss defeat triggers massive explosion particles and advances to Wave 6",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1128,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:52.299Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "11a3af44805795ca340e-26f7a595790f58907ab7",
-              "file": "04_multiwave_progression.spec.ts",
-              "line": 106,
-              "column": 7
-            },
-            {
-              "title": "Combo multiplier increments score and pure water currency accurately",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 785,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:53.444Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "11a3af44805795ca340e-bfee14ebe337ee43725d",
-              "file": "04_multiwave_progression.spec.ts",
-              "line": 152,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "m1_verification.spec.ts",
-      "file": "m1_verification.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Milestone 1: Core Engine & Collision Fixes Verification Suite",
-          "file": "m1_verification.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "F-01 [CRITICAL]: Enemy-vs-Barricade collision functions independently with 0 active bullets",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 742,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:54.252Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-7ab4ec17ce7d826a3af3",
-              "file": "m1_verification.spec.ts",
-              "line": 10,
-              "column": 7
-            },
-            {
-              "title": "F-02 [CRITICAL]: Repeated start/startGame calls cancel existing rAF loop",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 764,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:55.006Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-da4d29acf515001c3f24",
-              "file": "m1_verification.spec.ts",
-              "line": 42,
-              "column": 7
-            },
-            {
-              "title": "F-04 [HIGH]: Player i-Frames (invincibilityTimer) protects from consecutive damage and decrements in update",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 784,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:55.787Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-506c9b82fefd7aabd236",
-              "file": "m1_verification.spec.ts",
-              "line": 72,
-              "column": 7
-            },
-            {
-              "title": "F-06 [HIGH]: Shielded enemy absorbs damage via shieldHp first and triggers 5s cooldown when broken",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 782,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:56.586Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-5ae0986a1a2d894d6418",
-              "file": "m1_verification.spec.ts",
-              "line": 121,
-              "column": 7
-            },
-            {
-              "title": "F-07 [HIGH]: Sniper interceptable purple bullet collides with player bullet and both are destroyed",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 786,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:57.384Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-855736c49daa8004f6ed",
-              "file": "m1_verification.spec.ts",
-              "line": 174,
-              "column": 7
-            },
-            {
-              "title": "F-08 [HIGH]: Near-miss suppression triggers only once per bullet (hasTriggeredNearMiss)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 778,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:58.184Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-b40c89e295bf6defd613",
-              "file": "m1_verification.spec.ts",
-              "line": 203,
-              "column": 7
-            },
-            {
-              "title": "F-15 [MEDIUM]: Corrupted localStorage NaN recovery falls back to 0 and stores valid high score",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 798,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:58.978Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-7018aa5e20fa87eb4bb0",
-              "file": "m1_verification.spec.ts",
-              "line": 237,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "m2_verification.spec.ts",
-      "file": "m2_verification.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Milestone 2: Gameplay Mechanics, Upgrades & Controls Verification Suite",
-          "file": "m2_verification.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "F-03 [CRITICAL]: Blur and visibilitychange events call clearKeys() to reset movement/keysPressed",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 767,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:15:59.808Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-b2de6aefc80c4cd19d59",
-              "file": "m2_verification.spec.ts",
-              "line": 10,
-              "column": 7
-            },
-            {
-              "title": "F-05 [HIGH]: Multi-Shot Lv 4 & Lv 5 genuinely fire 4 and 5 bullets with spread angles",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 780,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:00.592Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-f29532e61bfcbe814e65",
-              "file": "m2_verification.spec.ts",
-              "line": 67,
-              "column": 7
-            },
-            {
-              "title": "F-09 [HIGH]: Opening HOW TO PLAY modal pauses game and preserves GameManager instance across toggles",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 794,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:01.391Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-7db5e3c4cdb844ba16d0",
-              "file": "m2_verification.spec.ts",
-              "line": 133,
-              "column": 7
-            },
-            {
-              "title": "F-12 [HIGH]: CapsLock and uppercase key events correctly control movement, skills, and cheats",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 778,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:02.207Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-286f1b8d63e2ef207665",
-              "file": "m2_verification.spec.ts",
-              "line": 173,
-              "column": 7
-            },
-            {
-              "title": "F-16 [MEDIUM]: Starting Player HP initializes to 3 out of max 5 in Player instance, GameManager, and HUD",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 780,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:03.004Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-3c714f0058a09914982c",
-              "file": "m2_verification.spec.ts",
-              "line": 221,
-              "column": 7
-            },
-            {
-              "title": "F-17 [MEDIUM]: Enemy speed escalation scales smoothly and is capped at 1.8x without 2.9x spike",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 846,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:03.802Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-148adaa013f596a6c303",
-              "file": "m2_verification.spec.ts",
-              "line": 252,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "m3_verification.spec.ts",
-      "file": "m3_verification.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Milestone 3: UI/UX, HiDPI Scaling, Audio/Visual FX & Boss Polish Verification Suite",
-          "file": "m3_verification.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "F-10 [HIGH]: Desktop Canvas aspect-[3/4] maintains ratio without horizontal stretch",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 843,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:04.671Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-41a8c642ea3507c4fd10",
-              "file": "m3_verification.spec.ts",
-              "line": 9,
-              "column": 7
-            },
-            {
-              "title": "F-11 [HIGH]: Retina & HiDPI Canvas Scaling supports window.devicePixelRatio",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 759,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:05.531Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-ae8c767f10574d785df3",
-              "file": "m3_verification.spec.ts",
-              "line": 30,
-              "column": 7
-            },
-            {
-              "title": "F-13 [HIGH]: Top HUD Overlay Occlusion Fix — Spawn Y lowered from 40 to 80 (Boss 50 to 90)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 792,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:06.306Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-2fe6456839785e8029fb",
-              "file": "m3_verification.spec.ts",
-              "line": 57,
-              "column": 7
-            },
-            {
-              "title": "F-14 [HIGH]: Boss HP Bar renders when Boss is alive",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 755,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:07.115Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-b549cda11dd1efcda5c8",
-              "file": "m3_verification.spec.ts",
-              "line": 86,
-              "column": 7
-            },
-            {
-              "title": "F-14 [HIGH]: Hit Flash FX — Player & Enemy hitFlashTimer decrements on update and activates on damage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 789,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:07.886Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-0c3538b024a845ea9337",
-              "file": "m3_verification.spec.ts",
-              "line": 122,
-              "column": 7
-            },
-            {
-              "title": "F-14 [HIGH]: Audio FX Suite & Mute Toggle functionality",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 882,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:08.690Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-0ec6b9f5d9215c6b0745",
-              "file": "m3_verification.spec.ts",
-              "line": 168,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "water-invader.spec.ts",
-      "file": "water-invader.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Water Invader E2E Master Verification Suite",
-          "file": "water-invader.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Full Life-cycle: Menu -> In-game -> Combat -> Reinforcement -> Boss -> Game Over",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1562,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-24T08:16:09.594Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "2c561389e21ec9c94dfb-3eee5d46bdc7c9838461",
-              "file": "water-invader.spec.ts",
-              "line": 9,
+              "id": "3951a406963e50f08610-0f33107e5aa5b3b3a48e",
+              "file": "stress/endless_survival_swarm.spec.ts",
+              "line": 415,
               "column": 7
             }
           ]
@@ -1544,9 +727,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-24T08:15:30.605Z",
-    "duration": 40679.356999999996,
-    "expected": 39,
+    "startTime": "2026-08-25T05:32:59.084Z",
+    "duration": 47334.4,
+    "expected": 13,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

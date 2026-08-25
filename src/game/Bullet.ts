@@ -6,6 +6,8 @@ export class Bullet extends Entity {
   public piercing: number;
   public isInterceptable: boolean = false;
   public hasTriggeredNearMiss: boolean = false;
+  public hitEntities: Set<Entity> = new Set<Entity>();
+  public hitEntityIds: Set<string> = new Set<string>();
 
   constructor(x: number, y: number, speedY: number, damage: number, isPlayerBullet: boolean, piercing: number = 1) {
     // Increase size for better visibility
