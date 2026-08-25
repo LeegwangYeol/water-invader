@@ -34,32 +34,38 @@ export class Enemy extends Entity {
   public shieldHp: number = 0;
   public shieldRegenTimer: number = 0;
   public level: number = 1;
+  public canvasHeight: number = 800;
 
-  constructor(x: number, y: number, canvasWidth: number, level: number, type: EnemyType = EnemyType.NORMAL) {
-    super(x, y, 40, 30);
-    this.canvasWidth = canvasWidth;
-    this.startY = y;
-    this.level = level;
+  constructor(x: number, y: number, canvasWidth: number, level: number, type: EnemyType = EnemyType.NORMAL, canvasHeight: number = 800) {
+    const validX = Number.isFinite(x) ? x : 0;
+    const validY = Number.isFinite(y) ? y : 80;
+    super(validX, validY, 40, 30);
+    this.canvasWidth = Number.isFinite(canvasWidth) ? Math.max(100, canvasWidth) : 600;
+    this.canvasHeight = Number.isFinite(canvasHeight) ? Math.max(100, canvasHeight) : 800;
+    this.startY = validY;
+    this.position.x = Math.max(0, Math.min(validX, this.canvasWidth - this.size.width));
+    this.position.y = Math.max(0, Math.min(validY, this.canvasHeight - this.size.height));
+    this.level = Number.isFinite(level) && level >= 1 ? Math.floor(level) : 1;
     this.type = type;
-    this.hp = 1 + Math.floor(level / 3);
+    this.hp = 1 + Math.floor(this.level / 3);
     
     if (type === EnemyType.ZIGZAG) {
       this.color = '#eab308'; // Yellow
-      this.speedX += level * 10 + 50; // faster
+      this.speedX += this.level * 10 + 50; // faster
       this.hp = Math.max(1, this.hp - 1); // squishier
     } else if (type === EnemyType.BOSS) {
       this.color = '#dc2626'; // Dark red
       this.size.width = 150;
       this.size.height = 100;
-      this.hp = level * 10;
-      this.speedX += level * 2;
+      this.hp = this.level * 10;
+      this.speedX += this.level * 2;
     } else if (type === EnemyType.SNIPER) {
       this.color = '#a855f7'; // Purple
       this.speedX = 20; // slow
       this.hp = Math.max(1, this.hp - 1);
     } else if (type === EnemyType.DIVER) {
       this.color = '#ef4444'; // Red
-      this.speedX += level * 8;
+      this.speedX += this.level * 8;
     } else if (type === EnemyType.SHIELDED) {
       this.color = '#64748b'; // Slate
       this.shieldHp = 3;
@@ -68,27 +74,39 @@ export class Enemy extends Entity {
       this.size = { width: 50, height: 40 }; // slightly bigger
     } else {
       this.color = '#f97316'; // Orange/Fire
-      this.speedX += level * 5;
+      this.speedX += this.level * 5;
       this.canEvade = false; // 20% of normal enemies can evade
     }
     
     this.maxHp = this.hp;
     this.fireTimer = Math.random() * 3 + 1; // 1 to 4 seconds
+
+    // Re-clamp position in case type-specific size altered dimensions (e.g. BOSS: 150x100 or SPLITTER: 50x40)
+    const maxX = Math.max(0, this.canvasWidth - this.size.width);
+    const maxY = Math.max(0, this.canvasHeight - this.size.height);
+    this.position.x = Math.max(0, Math.min(this.position.x, maxX));
+    this.position.y = Math.max(0, Math.min(this.position.y, maxY));
   }
 
   public update(deltaTime: number, speedMultiplier: number = 1.0, bullets: Bullet[] = [], playerPos?: Vector2D): void {
+    if (!Number.isFinite(deltaTime) || deltaTime < 0) return;
+    const clampedDt = Math.min(deltaTime, 0.1); // Guard against massive lag spikes / tab throttle jumps
+
     if (this.hitFlashTimer > 0) {
-      this.hitFlashTimer -= deltaTime;
+      this.hitFlashTimer -= clampedDt;
       if (this.hitFlashTimer < 0) this.hitFlashTimer = 0;
     }
 
+    const validSpeedMultiplier = Number.isFinite(speedMultiplier) && speedMultiplier > 0 ? speedMultiplier : 1.0;
     const gnawMultiplier = this.isGnawing ? 0.2 : 1.0;
-    const currentSpeedX = this.speedX * speedMultiplier * gnawMultiplier;
-    const currentSpeedY = this.speedY * speedMultiplier * gnawMultiplier;
+    const currentSpeedX = this.speedX * validSpeedMultiplier * gnawMultiplier;
+    const currentSpeedY = this.speedY * validSpeedMultiplier * gnawMultiplier;
 
-    // Diver Logic
-    if (this.type === EnemyType.DIVER && playerPos) {
-      if (!this.isDiving && Math.abs((this.position.x + this.size.width/2) - (playerPos.x + 25)) < 20) {
+    // Diver Logic: Safe trajectory & dive trigger (target must be below the diver)
+    if (this.type === EnemyType.DIVER && playerPos && Number.isFinite(playerPos.x) && Number.isFinite(playerPos.y)) {
+      const diverCenterX = this.position.x + this.size.width / 2;
+      const playerCenterX = playerPos.x + 25;
+      if (!this.isDiving && Math.abs(diverCenterX - playerCenterX) < 25 && playerPos.y > this.position.y) {
         // Player is directly below!
         this.isDiving = true;
       }
@@ -96,15 +114,33 @@ export class Enemy extends Entity {
 
     if (this.isDiving) {
       const diveSpeed = Math.max(280, currentSpeedY * 35);
-      this.position.y += diveSpeed * deltaTime; // Dive very fast
+      this.position.y += diveSpeed * clampedDt; // Dive very fast
+      // Trajectory safety: clamp to canvas bottom bound + margin to prevent unbounded runaway / NaN
+      const maxDiverY = this.canvasHeight + 50;
+      this.position.y = Math.max(0, Math.min(maxDiverY, this.position.y));
+      // Diver NaN & boundary safety guard
+      if (!Number.isFinite(this.position.y)) this.position.y = maxDiverY;
+      if (!Number.isFinite(this.position.x)) this.position.x = 0;
+      if (this.position.x < 0) this.position.x = 0;
+      const maxDiverX = Math.max(0, this.canvasWidth - this.size.width);
+      if (this.position.x > maxDiverX) this.position.x = maxDiverX;
       return; // Skip normal movement
     }
 
-    this.position.y += currentSpeedY * deltaTime;
+    this.position.y += currentSpeedY * clampedDt;
+
+    // Strict Y-Axis Boundary Clamping for standard downward or zigzag movements (R1)
+    // Ensures standard downward / zigzag movements are strictly clamped so enemies do not overlap player UI or exit abnormally
+    const maxY = Math.max(0, this.canvasHeight - this.size.height);
+    this.position.y = Math.max(0, Math.min(this.position.y, maxY));
+
+    // Safeguard position values against NaN corruption
+    if (!Number.isFinite(this.position.y)) this.position.y = maxY;
+    if (!Number.isFinite(this.position.x)) this.position.x = 0;
 
     // Shield Regen Logic
     if (this.type === EnemyType.SHIELDED && this.shieldHp <= 0) {
-      this.shieldRegenTimer -= deltaTime;
+      this.shieldRegenTimer -= clampedDt;
       if (this.shieldRegenTimer <= 0) {
         this.shieldHp = 3; // Regenerate shield
         this.shieldRegenTimer = 0;
@@ -125,15 +161,15 @@ export class Enemy extends Entity {
       }
     }
     if (this.evadeCooldown > 0) {
-      this.evadeCooldown -= deltaTime;
+      this.evadeCooldown -= clampedDt;
     }
 
     if (this.type === EnemyType.ZIGZAG) {
-      this.position.x += currentSpeedX * this.direction * deltaTime;
-      this.position.x += Math.sin(Date.now() / 200) * 5 * speedMultiplier;
+      this.position.x += currentSpeedX * this.direction * clampedDt;
+      this.position.x += Math.sin(Date.now() / 200) * 5 * validSpeedMultiplier;
     } else {
       const evadeBoost = (this.evadeCooldown > 0.5) ? 1.5 : 1.0;
-      this.position.x += currentSpeedX * evadeBoost * this.direction * deltaTime;
+      this.position.x += currentSpeedX * evadeBoost * this.direction * clampedDt;
     }
     
     // Bounce off walls
@@ -144,13 +180,13 @@ export class Enemy extends Entity {
       this.direction = this.speedX >= 0 ? -1 : 1;
     }
     
-    // Clamp
+    // Clamp X to canvas width
     if (this.position.x <= 0) this.position.x = 0;
     if (this.position.x + this.size.width >= this.canvasWidth) {
-      this.position.x = this.canvasWidth - this.size.width;
+      this.position.x = Math.max(0, this.canvasWidth - this.size.width);
     }
     
-    this.fireTimer -= deltaTime * speedMultiplier;
+    this.fireTimer -= clampedDt * validSpeedMultiplier;
   }
 
   public fire(playerPos?: Vector2D): Bullet | null {
@@ -165,15 +201,15 @@ export class Enemy extends Entity {
 
       const b = new Bullet(spawnX, spawnY, bulletSpeed, 1, false);
 
-      if (this.type === EnemyType.SNIPER && playerPos) {
-           b.isInterceptable = true;
-         // Aim at player
-         const dx = (playerPos.x + 25) - spawnX;
-         const dy = (playerPos.y + 20) - spawnY;
-         const angle = Math.atan2(dy, dx);
-         const speed = 400; // sniper bullets are fast
-         b.velocity.x = Math.cos(angle) * speed;
-         b.velocity.y = Math.sin(angle) * speed;
+      if (this.type === EnemyType.SNIPER && playerPos && Number.isFinite(playerPos.x) && Number.isFinite(playerPos.y)) {
+        b.isInterceptable = true;
+        // Aim at player
+        const dx = (playerPos.x + 25) - spawnX;
+        const dy = (playerPos.y + 20) - spawnY;
+        const angle = Math.atan2(dy, dx);
+        const speed = 400; // sniper bullets are fast
+        b.velocity.x = Math.cos(angle) * speed;
+        b.velocity.y = Math.sin(angle) * speed;
       }
       
       return b;

@@ -114,3 +114,31 @@ Compile a precise list of any identified bugs from the QA phase. Automatically a
 - [ ] A generated Markdown report details all found issues (e.g., weird movements, shop bugs) and exactly how they were reproduced.
 - [ ] Code patches are successfully implemented to fix all identified bugs.
 - [ ] A final verification test run confirms that the previously identified bugs no longer occur, and `npm run build` passes.
+
+## 2026-08-25T11:44:08Z
+
+# Teamwork Project Prompt — Draft
+
+> Status: Launched
+> Goal: Fix enemy Y-axis boundary and dive movement bugs
+> Requested team: Small, focused team
+
+The current enemy movement logic allows certain enemies to descend too deeply on the Y-axis, or their diving mechanics break the game (e.g., clipping, crashing, or ignoring bounds). The team must fix these boundary and trajectory logic errors.
+
+Working directory: ~/teamwork_projects/water_invader_enemy_movement_fix
+Integrity mode: development
+
+## Requirements
+
+### R1. Implement Strict Y-Axis Boundaries
+Analyze the enemy movement logic in `src/game/Enemy.ts` and `src/game/GameManager.ts`. Ensure that standard downward or zigzag movements are strictly clamped to a maximum Y-axis value so enemies do not overlap the player UI or exit the playable area abnormally.
+
+### R2. Fix Dive Mechanic Edge Cases
+Investigate enemies with diving or plunging attacks (e.g., Diver type). Ensure their trajectory calculations are safe and that colliding with the bottom bounds, player, or barricades gracefully removes them or handles the collision without breaking the game state (e.g., no NaN values or endless loops).
+
+## Acceptance Criteria
+
+### Verification
+- [ ] Code inspection confirms strict `Math.min()` clamping or boundary checks for enemy Y coordinates.
+- [ ] Automated Playwright tests or test bots specifically trigger dive attacks and verify the game state remains stable and does not crash.
+- [ ] Enemies that reach the bottom boundary are handled correctly (e.g., despawned, hit player, or destroyed by barricades).

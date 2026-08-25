@@ -202,7 +202,7 @@ export class GameManager {
   private spawnWave() {
     if (this.level % 5 === 0) {
       // Boss wave (F-13: spawn Y lowered to 90)
-      const boss = new Enemy(this.logicalWidth / 2 - 75, 90, this.logicalWidth, this.level, EnemyType.BOSS);
+      const boss = new Enemy(this.logicalWidth / 2 - 75, 90, this.logicalWidth, this.level, EnemyType.BOSS, this.logicalHeight);
       this.enemies.push(boss);
       return;
     }
@@ -229,7 +229,7 @@ export class GameManager {
         }
         
         // F-13: Spawn Y offset at 80 so enemies and bullets do not emerge behind top HUD overlay cards
-        this.enemies.push(new Enemy(offsetX + c * paddingX, 80 + r * paddingY, this.logicalWidth, this.level, type));
+        this.enemies.push(new Enemy(offsetX + c * paddingX, 80 + r * paddingY, this.logicalWidth, this.level, type, this.logicalHeight));
       }
     }
   }
@@ -281,7 +281,7 @@ export class GameManager {
           if (this.pendingReinforcement === 'ENEMY') {
             // Spawn rapid zigzag enemies (spawn Y at 80)
             for (let i = 0; i < 4; i++) {
-               this.enemies.push(new Enemy(50 + i * 100, 80, this.logicalWidth, this.level + 2, EnemyType.ZIGZAG));
+               this.enemies.push(new Enemy(50 + i * 100, 80, this.logicalWidth, this.level + 2, EnemyType.ZIGZAG, this.logicalHeight));
             }
           } else if (this.pendingReinforcement === 'ALLY') {
             // Spawn friendly helpers (FIGHTER, REPAIRER, TANK)
@@ -322,50 +322,53 @@ export class GameManager {
         const bullet = enemy.fire(this.player.position);
         if (bullet) this.bullets.push(bullet);
         
-        // Enemies reaching the bottom line cost 1 HP instead of instant game over
-        if (enemy.position.y + enemy.size.height >= this.player.position.y) {
-          if (enemy.position.y > this.logicalHeight) {
-            enemy.isDead = true; // Escaped off screen
-            if (!this.isGodMode) {
-               this.player.hp -= 1; // Penalty for letting them pass
-               this.player.hitFlashTimer = 0.08;
-               soundManager.playPlayerHit();
-               this.player.stressLevel = Math.min(100, this.player.stressLevel + 20);
-               this.triggerScreenShake(0.5);
-               if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
-               if (this.player.hp <= 0) {
-                  this.gameOver("워터 인베이더가 방어선을 돌파했습니다! (체력 소진)");
-               }
-            }
-          } else if (enemy.checkCollision(this.player)) {
-            if (enemy.type === EnemyType.BOSS) {
-              enemy.hp -= 10;
-              enemy.hitFlashTimer = 0.08;
-              soundManager.playEnemyHit();
-              if (enemy.hp <= 0) {
-                enemy.isDead = true;
-                this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, '#fbbf24', 150, 3.0);
-                this.triggerScreenShake(0.75);
-                soundManager.playVictory();
-                this.handleEnemyKill();
-              }
-            } else {
+        // Handle Player Collision or Reaching Bottom Boundary (R1, R2)
+        if (enemy.checkCollision(this.player)) {
+          if (enemy.type === EnemyType.BOSS) {
+            enemy.hp -= 10;
+            enemy.hitFlashTimer = 0.08;
+            soundManager.playEnemyHit();
+            if (enemy.hp <= 0) {
               enemy.isDead = true;
-              this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, enemy.color, 20);
+              this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, '#fbbf24', 150, 3.0);
+              this.triggerScreenShake(0.75);
+              soundManager.playVictory();
               this.handleEnemyKill();
             }
+          } else {
+            enemy.isDead = true;
+            this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, enemy.color, 20);
+            this.handleEnemyKill();
+          }
 
-            if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
-              this.player.hp -= 1;
-              this.player.hitFlashTimer = 0.08;
-              this.player.invincibilityTimer = 1.0;
-              soundManager.playPlayerHit();
-              this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
-              this.createExplosion(this.player.position.x, this.player.position.y, '#ef4444', 10);
-              this.triggerScreenShake(0.5);
-              if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
-              if (this.player.hp <= 0) this.gameOver("정수기능이 파괴되었습니다 (체력 소진)");
-            }
+          if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
+            this.player.hp -= 1;
+            this.player.hitFlashTimer = 0.08;
+            this.player.invincibilityTimer = 1.0;
+            soundManager.playPlayerHit();
+            this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
+            this.combo = 0; // Reset combo when player takes damage from enemy collision
+            this.updateScoreUI();
+            this.createExplosion(this.player.position.x, this.player.position.y, '#ef4444', 10);
+            this.triggerScreenShake(0.5);
+            if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+            if (this.player.hp <= 0) this.gameOver("정수기능이 파괴되었습니다 (체력 소진)");
+          }
+        } else if (enemy.position.y + enemy.size.height >= this.logicalHeight) {
+          enemy.isDead = true; // Gracefully despawn enemy that reached bottom boundary
+          this.createExplosion(enemy.position.x + enemy.size.width/2, this.logicalHeight - 10, enemy.color, 15);
+          if (!this.isGodMode) {
+             this.player.hp -= 1; // Penalty for letting enemy breach defense line
+             this.player.hitFlashTimer = 0.08;
+             soundManager.playPlayerHit();
+             this.player.stressLevel = Math.min(100, this.player.stressLevel + 20);
+             this.combo = 0; // Breach penalty resets combo as well
+             this.updateScoreUI();
+             this.triggerScreenShake(0.5);
+             if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+             if (this.player.hp <= 0) {
+                this.gameOver("워터 인베이더가 방어선을 돌파했습니다! (체력 소진)");
+             }
           }
         }
       });
@@ -531,11 +534,18 @@ export class GameManager {
               }
               
               if (enemy.type === EnemyType.SPLITTER) {
-                // Spawn 2 mini-enemies that are extremely slow
-                const mini1 = new Enemy(enemy.position.x - 15, enemy.position.y, this.logicalWidth, this.level, EnemyType.NORMAL);
-                const mini2 = new Enemy(enemy.position.x + 35, enemy.position.y, this.logicalWidth, this.level, EnemyType.NORMAL);
+                // Spawn 2 mini-enemies that are extremely slow, safely clamped inside canvas bounds
+                const spawnY = Math.max(0, Math.min(enemy.position.y, this.logicalHeight - 20));
+                const spawnX1 = Math.max(0, Math.min(enemy.position.x - 15, this.logicalWidth - 20));
+                const spawnX2 = Math.max(0, Math.min(enemy.position.x + 35, this.logicalWidth - 20));
+                const mini1 = new Enemy(spawnX1, spawnY, this.logicalWidth, this.level, EnemyType.NORMAL, this.logicalHeight);
+                const mini2 = new Enemy(spawnX2, spawnY, this.logicalWidth, this.level, EnemyType.NORMAL, this.logicalHeight);
                 mini1.size = { width: 20, height: 20 };
                 mini2.size = { width: 20, height: 20 };
+                mini1.position.x = spawnX1;
+                mini1.position.y = spawnY;
+                mini2.position.x = spawnX2;
+                mini2.position.y = spawnY;
                 mini1.speedX = 10; mini1.speedY = 5;
                 mini2.speedX = -10; mini2.speedY = 5;
                 this.enemies.push(mini1, mini2);

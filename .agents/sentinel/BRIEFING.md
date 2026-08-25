@@ -1,13 +1,13 @@
-# BRIEFING — 2026-08-25T14:35:00Z
+# BRIEFING — 2026-08-25T11:44:08Z
 
 ## Mission
-Conduct a comprehensive QA sweep and stress test of Water Invader, and patch identified bugs.
+Fix enemy Y-axis boundary and dive movement bugs in Water Invader via SWE Light pipeline.
 
 ## 🔒 My Identity
 - Archetype: sentinel
 - Working directory: C:\src\SpaceInvader\.agents\sentinel
-- Orchestrator: e737693e-6ff7-485f-936f-dbcb6c7779bf (teamwork_preview_orchestrator)
-- Victory Auditor: dde2c66e-4020-4f9c-9e42-8abd801166c9 (teamwork_preview_victory_auditor)
+- Orchestrator: da57cf43-68c1-484f-84cc-af0bbeda0ea5 (teamwork_preview_swe)
+- Victory Auditor: 6a76334a-8209-4385-ad12-5bec4fb79164 (teamwork_preview_victory_auditor)
 
 ## 🔒 Key Constraints
 - No technical decisions — relay only
@@ -15,9 +15,9 @@ Conduct a comprehensive QA sweep and stress test of Water Invader, and patch ide
 - You MUST NOT write code, analyze problems, or make any technical decisions. Keep your context ultra-light.
 
 ## User Context
-- **Last user request**: Comprehensive QA testing, bug hunting, and fixing (anomalous enemy movements, shop purchasing glitches, general gameplay bugs) with full team.
+- **Last user request**: Fix enemy Y-axis boundary and dive movement bugs (clamping to max Y, safe dive trajectories, boundary handling) with small focused team.
 - **Pending clarifications**: none
-- **Delivered results**: Comprehensive QA Sweep & Auto-fix fully verified and completed.
+- **Delivered results**: [none yet for this run]
 
 ## Project Status
 - **Phase**: complete
@@ -30,8 +30,6 @@ Conduct a comprehensive QA sweep and stress test of Water Invader, and patch ide
 ## Artifact Index
 - C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md — Original User Request
 - C:\src\SpaceInvader\.agents\sentinel\BRIEFING.md — Sentinel Briefing
-- C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md — Comprehensive QA Harvesting Report
-- C:\src\SpaceInvader\.agents\teamwork_preview_orchestrator_comprehensive_qa_1\handoff.md — Orchestrator Handoff
-- C:\src\SpaceInvader\.agents\teamwork_preview_victory_auditor_qa_sweep_1\handoff.md — Victory Auditor Handoff
-
-
+- C:\src\SpaceInvader\.agents\teamwork_preview_swe_enemy_bounds_1\handoff.md — SWE Light Orchestrator Handoff
+- C:\src\SpaceInvader\.agents\teamwork_preview_victory_auditor_enemy_bounds_1\audit_report.md — Sentinel Victory Audit Report
+- C:\src\SpaceInvader\.agents\teamwork_preview_victory_auditor_enemy_bounds_1\handoff.md — Sentinel Victory Auditor Handoff
