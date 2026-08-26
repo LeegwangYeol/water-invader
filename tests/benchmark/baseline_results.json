@@ -2,10 +2,10 @@
   "benchmarkMetadata": {
     "target": "baseline",
     "totalRuns": 10,
-    "timestamp": "2026-08-26T03:08:11.860Z",
+    "timestamp": "2026-08-26T12:00:03.429Z",
     "gitCommit": "baseline_unmodified",
     "environment": {
-      "node": "v24.13.0",
+      "node": "v22.22.3",
       "playwright": "1.62.1",
       "viewport": {
         "width": 1280,
@@ -15,24 +15,22 @@
   },
   "summaryStatistics": {
     "sampleCount": 10,
-    "avgSurvivalTimeMs": 46302,
-    "medianSurvivalTimeMs": 49544,
-    "minSurvivalTimeMs": 18045,
-    "maxSurvivalTimeMs": 79390,
-    "stdDevSurvivalTimeMs": 21697.9,
-    "ci95LowerMs": 30781.3,
-    "ci95UpperMs": 61822.7,
-    "avgWaveReached": 2.3,
-    "maxWaveReached": 6,
+    "avgSurvivalTimeMs": 52042.4,
+    "medianSurvivalTimeMs": 51387.5,
+    "minSurvivalTimeMs": 20071,
+    "maxSurvivalTimeMs": 80642,
+    "stdDevSurvivalTimeMs": 20664.4,
+    "ci95LowerMs": 37261,
+    "ci95UpperMs": 66823.8,
+    "avgWaveReached": 1.2,
+    "maxWaveReached": 2,
     "waveDistribution": {
-      "1": 3,
-      "2": 4,
-      "3": 2,
-      "6": 1
+      "1": 8,
+      "2": 2
     },
-    "avgScore": 5655,
-    "avgAccuracy": 23.2,
-    "avgKills": 14.4,
+    "avgScore": 4820,
+    "avgAccuracy": 18.2,
+    "avgKills": 21.1,
     "deathCauseDistribution": {
       "ENEMY_BULLET": {
         "count": 10,
@@ -43,116 +41,14 @@
   "runs": [
     {
       "runId": "run_01",
-      "timestamp": "2026-08-26T03:01:27.536Z",
-      "durationMs": 66230,
-      "waveReached": 2,
-      "score": 5150,
-      "currency": 103,
-      "shotsFired": 204,
-      "shotsHit": 39,
-      "accuracy": 19.1,
-      "totalKills": 21,
-      "killBreakdown": {
-        "NORMAL": 0,
-        "ZIGZAG": 0,
-        "BOSS": 0,
-        "SNIPER": 0,
-        "DIVER": 0,
-        "SHIELDED": 0,
-        "SPLITTER": 0
-      },
-      "damageTaken": 3,
-      "causeOfDeath": "ENEMY_BULLET",
-      "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
-      "waveHistory": [
-        {
-          "wave": 1,
-          "durationMs": 22595.899999999907,
-          "kills": 18,
-          "damageTaken": 2
-        },
-        {
-          "wave": 2,
-          "durationMs": 43634.30000000028,
-          "kills": 21,
-          "damageTaken": 1
-        }
-      ]
-    },
-    {
-      "runId": "run_02",
-      "timestamp": "2026-08-26T03:01:56.667Z",
-      "durationMs": 28247,
+      "timestamp": "2026-08-26T11:51:54.762Z",
+      "durationMs": 38005,
       "waveReached": 1,
-      "score": 1200,
-      "currency": 10,
-      "shotsFired": 64,
-      "shotsHit": 12,
+      "score": 3850,
+      "currency": 49,
+      "shotsFired": 80,
+      "shotsHit": 15,
       "accuracy": 18.8,
-      "totalKills": 12,
-      "killBreakdown": {
-        "NORMAL": 0,
-        "ZIGZAG": 0,
-        "BOSS": 0,
-        "SNIPER": 0,
-        "DIVER": 0,
-        "SHIELDED": 0,
-        "SPLITTER": 0
-      },
-      "damageTaken": 3,
-      "causeOfDeath": "ENEMY_BULLET",
-      "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
-      "waveHistory": [
-        {
-          "wave": 1,
-          "durationMs": 28247.599999999627,
-          "kills": 12,
-          "damageTaken": 3
-        }
-      ]
-    },
-    {
-      "runId": "run_03",
-      "timestamp": "2026-08-26T03:02:21.124Z",
-      "durationMs": 23669,
-      "waveReached": 1,
-      "score": 2650,
-      "currency": 80,
-      "shotsFired": 77,
-      "shotsHit": 22,
-      "accuracy": 28.6,
-      "totalKills": 22,
-      "killBreakdown": {
-        "NORMAL": 0,
-        "ZIGZAG": 0,
-        "BOSS": 0,
-        "SNIPER": 0,
-        "DIVER": 0,
-        "SHIELDED": 0,
-        "SPLITTER": 0
-      },
-      "damageTaken": 3,
-      "causeOfDeath": "ENEMY_BULLET",
-      "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
-      "waveHistory": [
-        {
-          "wave": 1,
-          "durationMs": 23669.399999999907,
-          "kills": 22,
-          "damageTaken": 3
-        }
-      ]
-    },
-    {
-      "runId": "run_04",
-      "timestamp": "2026-08-26T03:03:06.706Z",
-      "durationMs": 44785,
-      "waveReached": 2,
-      "score": 4750,
-      "currency": 82,
-      "shotsFired": 172,
-      "shotsHit": 39,
-      "accuracy": 22.7,
       "totalKills": 15,
       "killBreakdown": {
         "NORMAL": 0,
@@ -169,29 +65,131 @@
       "waveHistory": [
         {
           "wave": 1,
-          "durationMs": 28563.399999999907,
-          "kills": 24,
+          "durationMs": 38005.09999999404,
+          "kills": 15,
+          "damageTaken": 3
+        }
+      ]
+    },
+    {
+      "runId": "run_02",
+      "timestamp": "2026-08-26T11:52:43.317Z",
+      "durationMs": 47861,
+      "waveReached": 1,
+      "score": 3925,
+      "currency": 4,
+      "shotsFired": 107,
+      "shotsHit": 15,
+      "accuracy": 14,
+      "totalKills": 15,
+      "killBreakdown": {
+        "NORMAL": 0,
+        "ZIGZAG": 0,
+        "BOSS": 0,
+        "SNIPER": 0,
+        "DIVER": 0,
+        "SHIELDED": 0,
+        "SPLITTER": 0
+      },
+      "damageTaken": 5,
+      "causeOfDeath": "ENEMY_BULLET",
+      "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
+      "waveHistory": [
+        {
+          "wave": 1,
+          "durationMs": 47860.69999998808,
+          "kills": 15,
+          "damageTaken": 5
+        }
+      ]
+    },
+    {
+      "runId": "run_03",
+      "timestamp": "2026-08-26T11:54:04.721Z",
+      "durationMs": 80642,
+      "waveReached": 2,
+      "score": 8375,
+      "currency": 63,
+      "shotsFired": 436,
+      "shotsHit": 54,
+      "accuracy": 12.4,
+      "totalKills": 29,
+      "killBreakdown": {
+        "NORMAL": 0,
+        "ZIGZAG": 0,
+        "BOSS": 0,
+        "SNIPER": 0,
+        "DIVER": 0,
+        "SHIELDED": 0,
+        "SPLITTER": 0
+      },
+      "damageTaken": 5,
+      "causeOfDeath": "ENEMY_BULLET",
+      "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
+      "waveHistory": [
+        {
+          "wave": 1,
+          "durationMs": 38466.09999999404,
+          "kills": 25,
           "damageTaken": 1
         },
         {
           "wave": 2,
-          "durationMs": 16221.400000000373,
-          "kills": 15,
+          "durationMs": 42176.29999998212,
+          "kills": 29,
+          "damageTaken": 4
+        }
+      ]
+    },
+    {
+      "runId": "run_04",
+      "timestamp": "2026-08-26T11:55:13.646Z",
+      "durationMs": 68229,
+      "waveReached": 2,
+      "score": 10100,
+      "currency": 8,
+      "shotsFired": 217,
+      "shotsHit": 46,
+      "accuracy": 21.2,
+      "totalKills": 19,
+      "killBreakdown": {
+        "NORMAL": 0,
+        "ZIGZAG": 0,
+        "BOSS": 0,
+        "SNIPER": 0,
+        "DIVER": 0,
+        "SHIELDED": 0,
+        "SPLITTER": 0
+      },
+      "damageTaken": 3,
+      "causeOfDeath": "ENEMY_BULLET",
+      "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
+      "waveHistory": [
+        {
+          "wave": 1,
+          "durationMs": 27274.29999998212,
+          "kills": 27,
+          "damageTaken": 1
+        },
+        {
+          "wave": 2,
+          "durationMs": 40954.5,
+          "kills": 19,
           "damageTaken": 2
         }
       ]
     },
     {
       "runId": "run_05",
-      "timestamp": "2026-08-26T03:03:25.533Z",
-      "durationMs": 18045,
+      "timestamp": "2026-08-26T11:56:00.575Z",
+      "durationMs": 46227,
       "waveReached": 1,
-      "score": 850,
-      "currency": 42,
-      "shotsFired": 49,
-      "shotsHit": 8,
-      "accuracy": 16.3,
-      "totalKills": 8,
+      "score": 4575,
+      "currency": 34,
+      "shotsFired": 107,
+      "shotsHit": 21,
+      "accuracy": 19.6,
+      "totalKills": 21,
       "killBreakdown": {
         "NORMAL": 0,
         "ZIGZAG": 0,
@@ -207,23 +205,23 @@
       "waveHistory": [
         {
           "wave": 1,
-          "durationMs": 18045.19999999972,
-          "kills": 8,
+          "durationMs": 46226.70000001788,
+          "kills": 21,
           "damageTaken": 3
         }
       ]
     },
     {
       "runId": "run_06",
-      "timestamp": "2026-08-26T03:03:50.586Z",
-      "durationMs": 24229,
-      "waveReached": 2,
-      "score": 3450,
-      "currency": 19,
-      "shotsFired": 79,
-      "shotsHit": 26,
-      "accuracy": 32.9,
-      "totalKills": 0,
+      "timestamp": "2026-08-26T11:56:25.007Z",
+      "durationMs": 23714,
+      "waveReached": 1,
+      "score": 2300,
+      "currency": 63,
+      "shotsFired": 77,
+      "shotsHit": 19,
+      "accuracy": 24.7,
+      "totalKills": 19,
       "killBreakdown": {
         "NORMAL": 0,
         "ZIGZAG": 0,
@@ -233,35 +231,29 @@
         "SHIELDED": 0,
         "SPLITTER": 0
       },
-      "damageTaken": 3,
+      "damageTaken": 5,
       "causeOfDeath": "ENEMY_BULLET",
       "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
       "waveHistory": [
         {
           "wave": 1,
-          "durationMs": 23723.80000000028,
-          "kills": 26,
-          "damageTaken": 2
-        },
-        {
-          "wave": 2,
-          "durationMs": 505.6999999997206,
-          "kills": 0,
-          "damageTaken": 1
+          "durationMs": 23714.5,
+          "kills": 19,
+          "damageTaken": 5
         }
       ]
     },
     {
       "runId": "run_07",
-      "timestamp": "2026-08-26T03:04:45.715Z",
-      "durationMs": 54303,
-      "waveReached": 3,
-      "score": 5600,
-      "currency": 21,
-      "shotsFired": 222,
-      "shotsHit": 47,
-      "accuracy": 21.2,
-      "totalKills": 11,
+      "timestamp": "2026-08-26T11:57:20.598Z",
+      "durationMs": 54914,
+      "waveReached": 1,
+      "score": 4700,
+      "currency": 38,
+      "shotsFired": 119,
+      "shotsHit": 21,
+      "accuracy": 17.6,
+      "totalKills": 21,
       "killBreakdown": {
         "NORMAL": 0,
         "ZIGZAG": 0,
@@ -271,84 +263,28 @@
         "SHIELDED": 0,
         "SPLITTER": 0
       },
-      "damageTaken": 3,
+      "damageTaken": 4,
       "causeOfDeath": "ENEMY_BULLET",
       "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
       "waveHistory": [
         {
           "wave": 1,
-          "durationMs": 22426.5,
-          "kills": 18,
-          "damageTaken": 1
-        },
-        {
-          "wave": 2,
-          "durationMs": 14624.200000000186,
-          "kills": 18,
-          "damageTaken": 1
-        },
-        {
-          "wave": 3,
-          "durationMs": 17252,
-          "kills": 11,
-          "damageTaken": 1
+          "durationMs": 54914.59999999404,
+          "kills": 21,
+          "damageTaken": 4
         }
       ]
     },
     {
       "runId": "run_08",
-      "timestamp": "2026-08-26T03:05:53.995Z",
-      "durationMs": 67462,
-      "waveReached": 3,
-      "score": 5650,
-      "currency": 26,
-      "shotsFired": 196,
-      "shotsHit": 49,
-      "accuracy": 25,
-      "totalKills": 7,
-      "killBreakdown": {
-        "NORMAL": 0,
-        "ZIGZAG": 0,
-        "BOSS": 0,
-        "SNIPER": 0,
-        "DIVER": 0,
-        "SHIELDED": 0,
-        "SPLITTER": 0
-      },
-      "damageTaken": 3,
-      "causeOfDeath": "ENEMY_BULLET",
-      "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
-      "waveHistory": [
-        {
-          "wave": 1,
-          "durationMs": 21782.299999999814,
-          "kills": 18,
-          "damageTaken": 0
-        },
-        {
-          "wave": 2,
-          "durationMs": 32642.600000000093,
-          "kills": 24,
-          "damageTaken": 1
-        },
-        {
-          "wave": 3,
-          "durationMs": 13037.700000000186,
-          "kills": 7,
-          "damageTaken": 2
-        }
-      ]
-    },
-    {
-      "runId": "run_09",
-      "timestamp": "2026-08-26T03:07:14.213Z",
-      "durationMs": 79390,
-      "waveReached": 6,
-      "score": 23050,
-      "currency": 78,
-      "shotsFired": 634,
-      "shotsHit": 124,
-      "accuracy": 19.6,
+      "timestamp": "2026-08-26T11:58:29.457Z",
+      "durationMs": 68214,
+      "waveReached": 1,
+      "score": 5175,
+      "currency": 15,
+      "shotsFired": 147,
+      "shotsHit": 28,
+      "accuracy": 19,
       "totalKills": 28,
       "killBreakdown": {
         "NORMAL": 0,
@@ -365,53 +301,23 @@
       "waveHistory": [
         {
           "wave": 1,
-          "durationMs": 22087.899999999907,
-          "kills": 19,
-          "damageTaken": 2
-        },
-        {
-          "wave": 2,
-          "durationMs": 14277.5,
-          "kills": 17,
-          "damageTaken": 0
-        },
-        {
-          "wave": 3,
-          "durationMs": 20224,
-          "kills": 25,
-          "damageTaken": 0
-        },
-        {
-          "wave": 4,
-          "durationMs": 11900.799999999814,
-          "kills": 34,
-          "damageTaken": 0
-        },
-        {
-          "wave": 5,
-          "durationMs": 5363.800000000279,
-          "kills": 1,
-          "damageTaken": 0
-        },
-        {
-          "wave": 6,
-          "durationMs": 5535.699999999721,
+          "durationMs": 68214.30000001192,
           "kills": 28,
-          "damageTaken": 1
+          "damageTaken": 3
         }
       ]
     },
     {
-      "runId": "run_10",
-      "timestamp": "2026-08-26T03:08:11.856Z",
-      "durationMs": 56660,
-      "waveReached": 2,
-      "score": 4200,
-      "currency": 56,
-      "shotsFired": 135,
-      "shotsHit": 38,
-      "accuracy": 28.1,
-      "totalKills": 20,
+      "runId": "run_09",
+      "timestamp": "2026-08-26T11:58:50.239Z",
+      "durationMs": 20071,
+      "waveReached": 1,
+      "score": 1700,
+      "currency": 35,
+      "shotsFired": 70,
+      "shotsHit": 13,
+      "accuracy": 18.6,
+      "totalKills": 13,
       "killBreakdown": {
         "NORMAL": 0,
         "ZIGZAG": 0,
@@ -427,14 +333,40 @@
       "waveHistory": [
         {
           "wave": 1,
-          "durationMs": 37456.60000000009,
-          "kills": 18,
-          "damageTaken": 0
-        },
+          "durationMs": 20071.5,
+          "kills": 13,
+          "damageTaken": 3
+        }
+      ]
+    },
+    {
+      "runId": "run_10",
+      "timestamp": "2026-08-26T12:00:03.418Z",
+      "durationMs": 72547,
+      "waveReached": 1,
+      "score": 3500,
+      "currency": 73,
+      "shotsFired": 188,
+      "shotsHit": 31,
+      "accuracy": 16.5,
+      "totalKills": 31,
+      "killBreakdown": {
+        "NORMAL": 0,
+        "ZIGZAG": 0,
+        "BOSS": 0,
+        "SNIPER": 0,
+        "DIVER": 0,
+        "SHIELDED": 0,
+        "SPLITTER": 0
+      },
+      "damageTaken": 3,
+      "causeOfDeath": "ENEMY_BULLET",
+      "rawGameOverReason": "정수기가 파괴되었습니다. (체력 소진)",
+      "waveHistory": [
         {
-          "wave": 2,
-          "durationMs": 19203.899999999907,
-          "kills": 20,
+          "wave": 1,
+          "durationMs": 72547,
+          "kills": 31,
           "damageTaken": 3
         }
       ]

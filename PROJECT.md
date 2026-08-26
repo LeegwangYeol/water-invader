@@ -1,56 +1,51 @@
-# Project: Water Invader Comprehensive QA Sweep and Auto-fix
+# Project: Water Invader — 3-Way Battle System & Dynamic Reinforcements
 
 ## Architecture
-```
-[Water Invader Application Architecture]
-├── src/
-│   ├── components/
-│   │   ├── game-canvas.tsx (Canvas setup, React UI overlays: MENU, PLAYING, SHOP, GAME_OVER, Modal controls)
-│   │   └── ui/ (Tailwind / Lucide UI icons & buttons)
-│   ├── game/
-│   │   ├── Entity.ts (Base AABB bounding box, collision math)
-│   │   ├── GameManager.ts (Game loop, state machine, wave spawner, collision resolution, economy & upgrades, skills)
-│   │   ├── Player.ts (Ship position, HP, speed, fire rate, multi-shot, piercing, ultimate gauge, combo)
-│   │   ├── Enemy.ts (7 enemy types, movement, evasion, diving, shooting, hit flashes)
-│   │   ├── Bullet.ts (Player & enemy projectiles, piercing counters, entity hit tracking)
-│   │   ├── Barricade.ts (Destructible ice voxel grid & indestructible stone barriers)
-│   │   ├── Helper.ts (Allies: Fighter, Repairer, Tank)
-│   │   ├── Particle.ts (Visual effects, splash, spark, explosions, object pooling)
-│   │   └── SoundManager.ts (Web Audio synthesis oscillators and gain nodes)
-│   └── types.ts (Game state, upgrade types, enemy types)
-└── tests/
-    ├── stress/
-    │   ├── swarm_bot_engine.ts (1D Potential Field Evasion, Threat Targeter, Auto-Shop, Skill Invoker)
-    │   ├── telemetry_stress_collector.ts (FPS, Heap, Web Audio nodes, Anomaly Watchdog)
-    │   ├── endless_survival_swarm.spec.ts (Multi-worker Playwright endurance bot suite)
-    │   └── qa_harvest_verification.spec.ts (16-defect verification suite)
-    └── ...
-```
+- **Framework**: Next.js 16.3.1 (App Router), React 19.2.8, Tailwind CSS v4, TypeScript 5
+- **Game Engine**: HTML5 Canvas 2D with procedural vector graphics & bioluminescent aquatic rendering, Web Audio API procedural synthesis, 60 FPS requestAnimationFrame loop
+- **State Machine**: Menu -> Playing (Wave & Reinforcements Loop) -> Shop (Inter-wave Upgrades) -> Game Over
+- **Multi-Faction Architecture**:
+  - `Faction.PLAYER`: Player ship (Pristine Water Droplet `#38bdf8`) and summoned Helpers (Fighter, Repairer, Tank).
+  - `Faction.INVADER`: Toxic Sea Invaders (Bioluminescent Octopus `#f97316`, Coral Bio-Mech Titan `#dc2626`/`#f43f5e`, Electric Deep-Sea Angler `#a855f7`, Toxic Piranha Diver `#ef4444`/`#f59e0b`, Crystal Armored Turtle `#06b6d4`, Toxic Anemone `#22c55e`).
+  - `Faction.ROGUE`: Cybernetic Marine Raiders (Cyber Jellyfish Drone `#84cc16`/`#a3e635`, Abyssal Stalker Ray `#10b981`/`#f59e0b`, Heavy Coral Dreadnought `#eab308`/`#84cc16`).
+  - **Collision Matrix**: Projectile of Faction A damages and collides with any Entity of Faction B if `A !== B`.
+  - **Dynamic Event Director**: Replaces static grid wave spawning with procedural formations, flank incursions, unpredictable rogue drops, and adaptive pacing.
 
-## Feature Inventory & QA Bug Matrix
-| # | Defect / Feature | Category | Location | Assigned Milestone | Status | Source |
-|---|---|---|---|---|---|---|
-| 1 | E-01: Splitter Mini2 Stuck at Left Wall | Enemy Physics | `GameManager.ts`, `Enemy.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
-| 2 | E-02: Diver Enemy Missing in `spawnWave()` | Spawning / Dead Code | `GameManager.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
-| 3 | E-04: Zigzag Enemy Missing Y-Descent | Enemy Movement | `Enemy.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
-| 4 | E-05: Diver Dive Speed Too Slow | Enemy Movement | `Enemy.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
-| 5 | E-06: Wave Grid Scaling Unbounded | Wave Engine | `GameManager.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
-| 6 | E-07: Enemy Penetrates Stone Barricades / Gnawing | Physics / Barricades | `GameManager.ts`, `Enemy.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
-| 7 | E-08: Player Ramming Boss Causes 0-Dmg Instakill | Combat / Balance | `GameManager.ts` | M1 | DONE (PASSED) | Survey (Explorer 1) |
-| 8 | S-01: Fire Rate Max Upgrade Infinite Currency Drain | Shop / Economy | `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
-| 9 | S-02: React Upgrades State Desync | UI / React State | `game-canvas.tsx` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
-| 10 | S-03: Q/E Skills Activated During Non-Playing States | UI / Controls | `game-canvas.tsx`, `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
-| 11 | S-04: Piercing Cap Discrepancy (UI 5 vs Engine 99) | Shop / Economy | `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
-| 12 | S-05: Duplicate Shop JSX in Canvas Component | Code Quality / UI | `game-canvas.tsx` | M2-3 | DONE (PASSED) | Survey (Explorer 2) |
-| 13 | G-01: Piercing Bullets Multi-Hit / Frame Depletion | Weapon Collision | `Bullet.ts`, `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 3) |
-| 14 | G-02: Modal Open/Close Resets Active Game Session | UX / Lifecycle | `game-canvas.tsx` | M2-3 | DONE (PASSED) | Survey (Explorer 3) |
-| 15 | G-03: Barricade Gnawing Movement Throttle | Enemy Physics | `Enemy.ts`, `GameManager.ts` | M1 | DONE (PASSED) | Survey (Explorer 3) |
-| 16 | G-04: Particle System Pooling Optimization | Memory / Performance | `Particle.ts`, `GameManager.ts` | M2-3 | DONE (PASSED) | Survey (Explorer 3) |
+## Feature Inventory
+| # | Feature | Description | Milestone | Source |
+|---|---------|-------------|-----------|--------|
+| 1 | Faction Enum & Entity Tagging | Define `Faction` enum (`PLAYER`, `INVADER`, `ROGUE`) on `Entity`, `Enemy`, `Helper`, `Bullet` | M1 | Survey |
+| 2 | Multi-Faction Projectile Model | Bullets carry `faction`, unique vector rendering (Cyan/Orange/Neon Lime), and backward-compatible `isPlayerBullet` getter | M1 | Survey |
+| 3 | 3-Way Collision & Combat Resolution | Bullets damage any entity of different faction (`A !== B`), support crossfire bullet interception, scoring, and particles | M1 | Survey |
+| 4 | Audio Synthesis for 3rd Faction & Crossfire | Web Audio API synthesizers: `playThirdFactionWarning()`, `playRogueShoot()`, `playCrossfireHit()` | M1 | Survey |
+| 5 | Rogue Unit Archetypes & Vector Art | Implement Rogue Drone, Rogue Stalker, and Rogue Mech with neon lime/amber procedural silhouettes and thrusters | M2 | Survey |
+| 6 | 3-Way Dynamic AI & Dual-Targeting | Rogue units identify and attack closest/highest-threat targets among both Player/Helpers and Invaders | M2 | Survey |
+| 7 | Dynamic Formations Engine | Procedural wave entries: V-formation spearheads, flank incursions (left/right), and dual-flank pincer spawns | M3 | Survey |
+| 8 | Unpredictable Mid-Wave Incursions | Procedural mid-combat reinforcement drops (Rogue airdrops, Invader surprise flanks) based on battle tempo | M3 | Survey |
+| 9 | Multi-Faction Wave Clear Logic | Wave clears only when both hostile factions (Invaders + Rogues) are completely eliminated | M3 | Survey |
+| 10 | Multi-Faction HUD Indicators | Top HUD display showing active counts for both Invader and Rogue factions alongside Player status | M4 | Survey |
+| 11 | Incursion Alert Banners & Alerts | Animated fullscreen warning banners for 3rd Faction Incursion and 3-Way Crossfire | M4 | Survey |
+| 12 | How to Play Modal Update | Updated modal explaining 3-Way Battlefield dynamics, crossfire tactics, and rogue faction behaviors | M4 | Survey |
+| 13 | E2E Opaque-Box Test Suite (Tiers 1-4) | Comprehensive Playwright test suite covering all multi-faction and dynamic spawn features | M_TEST | Dual Track |
+| 14 | 100% E2E Verification & Tier 5 Hardening | Full integration pass and adversarial stress/edge-case verification | M5 | Final Milestone |
+| 15 | Vibrant Aquatic/Deep-Sea Visual Overhaul | Colorful, vivid bioluminescent vector palettes & animated aquatic geometry (replacing dull/black shapes) | M2, M4 | User Update |
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
-|---|------|-------|--------------|--------|
-| 0 | Comprehensive QA Bot Sweep | Playwright bot multi-run gameplay & anomaly harvesting | none | DONE |
-| 1 | Enemy Physics & Movement Fixes | E-01, E-02, E-04, E-05, E-06, E-07, E-08, G-03 in `Enemy.ts`, `GameManager.ts` | M0 | DONE |
-| 2-3 | Shop, UI, Piercing & Performance Fixes | S-01~S-05, G-01, G-02, G-04 in `game-canvas.tsx`, `GameManager.ts`, `Bullet.ts`, `Particle.ts` | M1 | DONE |
-| 4 | Final E2E Verification & Build | Playwright multi-worker stress run + full test suite + `npm run build` | M2-3 | DONE |
+|---|------|-------|-------------|--------|
+| M_TEST | E2E Testing Suite | Comprehensive test suite (Tiers 1-4) published to `TEST_READY.md` | None | DONE |
+| M1 | Faction & Combat Core | `Faction` enum, `Entity`/`Bullet` tagging, 3-way collision matrix, crossfire scoring, audio synthesis | None | DONE |
+| M2 | Third Faction Units & AI + Aquatic Art | Rogue Drone/Stalker/Mech classes, dual-target AI, vibrant aquatic vector art for all enemies | M1 | DONE |
+| M3 | Dynamic Reinforcements Engine | Dynamic formation generator, unpredictable mid-wave incursions, wave clear conditions | M1, M2 | DONE |
+| M4 | UI/HUD & Visual Feedback | Multi-faction threat badges, warning banners, updated How-to-Play modal | M1, M2, M3 | DONE |
+| M5 | 100% E2E Test Pass & Hardening | Verify 100% pass on Tiers 1-4 E2E tests, followed by Tier 5 adversarial hardening | M_TEST, M1, M2, M3, M4 | DONE |
+
+## Code Layout
+- `src/game/types.ts`: `Faction`, `EnemyType`, `GameState`, `Vector2D`, `Size`, `Rect`
+- `src/game/Entity.ts`: Base entity class with `faction`
+- `src/game/Bullet.ts`: Multi-faction bullet styling, damage, piercing, and hit tracking
+- `src/game/Enemy.ts`: Standard Invaders + Rogue unit implementations with vibrant aquatic/bioluminescent rendering
+- `src/game/GameManager.ts`: Game loop, multi-faction collision coordinator, dynamic reinforcement director, wave state
+- `src/game/SoundManager.ts`: Procedural Web Audio synthesizers (Rogue lasers, alert sirens, crossfire clashes)
+- `src/components/game-canvas.tsx`: React HUD overlay (threat counters, badges, alert banners, modal updates)
+- `tests/05_three_way_battle.spec.ts`: E2E opaque-box test suite for 3-way battle & dynamic reinforcements

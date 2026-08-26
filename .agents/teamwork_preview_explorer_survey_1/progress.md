@@ -1,14 +1,14 @@
-﻿# Progress Heartbeat - Explorer Survey 1
-Last visited: 2026-08-21T11:37:45Z
+# Progress Heartbeat - Explorer Survey 1
+Last visited: 2026-08-26T19:39:50Z
 
 - [x] Read ORIGINAL_REQUEST.md and task instructions
 - [x] Initialized DISPATCH.md and BRIEFING.md
-- [x] Explore directory structure and codebase (`src/`, `components/`, `tests/`)
-- [x] Inspect GameManager, Player, Enemy, Bullet, Barricade, Helper, Shop, UI state
-- [x] Map controls, keybindings, DOM elements, Canvas interactions
-- [x] Analyze Ultimate 'E' charging/casting and Ally 'Q' summoning/cost
-- [x] Analyze Shop upgrade logic (Fire Rate, Multi-Shot, Piercing), currency (Pure Water)
-- [x] Analyze Wave scaling, enemy types, speeds, projectile limits, performance bottlenecks
-- [x] Formulate Playwright bot injection & automated control architecture (pixel-perfect dodging, shooting, skill/upgrade automation)
-- [x] Write comprehensive handoff report (`handoff.md`) with tree structure
-- [x] Send summary message to Orchestrator
+- [x] Explore src/game directory and find all entity, combat, and collision types/classes
+- [x] Analyze Entity hierarchy/models (Player, Helper/Allies, Enemy, Bullet, Barricade)
+- [x] Analyze Combat & Collision system (shooting, bullets, damage, hitboxes, collision loop)
+- [x] Analyze Faction hostility & targeting (who shoots whom, friendly fire checks, collision filtering)
+- [x] Synthesize findings into detailed analysis (analysis.md) and 5-component handoff report (handoff.md)
+- [x] Verified build and tests with npm run build and npx playwright test
+- [x] Send completion message to parent orchestrator
+
+

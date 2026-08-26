@@ -3,6 +3,7 @@ import { Bullet } from './Bullet';
 import { Enemy } from './Enemy';
 import { Barricade } from './Barricade';
 import { soundManager } from './SoundManager';
+import { Faction } from './types';
 
 export enum HelperType {
   FIGHTER,
@@ -26,6 +27,7 @@ export class Helper extends Entity {
     super(x, y, 40, 30); // similar size to player
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
+    this.faction = Faction.PLAYER;
     this.type = type;
     this.targetX = Math.random() * (canvasWidth - this.size.width);
     
@@ -63,11 +65,11 @@ export class Helper extends Entity {
 
     // Smart AI Behaviors
     if (this.type === HelperType.FIGHTER) {
-      // FIGHTER AI: Target the lowest/closest enemy
+      // FIGHTER AI: Target the lowest/closest hostile enemy (Invader or Rogue)
       let bestEnemy = null;
       let lowestY = -1;
       for (const e of enemies) {
-         if (e.position.y > lowestY) {
+         if (!e.isDead && e.faction !== this.faction && e.position.y > lowestY) {
             lowestY = e.position.y;
             bestEnemy = e;
          }
@@ -82,7 +84,9 @@ export class Helper extends Entity {
       this.fireTimer -= deltaTime;
       if (this.fireTimer <= 0) {
         this.fireTimer = 0.3; // Increased fire rate from 0.5 to 0.3
-        newBullets.push(new Bullet(this.position.x + this.size.width / 2, this.position.y, -500, 2, true, 1)); // 2 damage instead of 1
+        const b = new Bullet(this.position.x + this.size.width / 2, this.position.y, -500, 2, true, 1);
+        b.faction = Faction.PLAYER;
+        newBullets.push(b);
         soundManager.playShoot();
       }
     } else if (this.type === HelperType.REPAIRER) {
@@ -117,11 +121,11 @@ export class Helper extends Entity {
          }
       }
     } else if (this.type === HelperType.TANK) {
-       // TANK AI: Intercept incoming enemy bullets!
+       // TANK AI: Intercept incoming hostile bullets!
        let bestBullet = null;
        let lowestY = -1;
        for (const b of bullets) {
-          if (!b.isPlayerBullet && b.position.y > lowestY && b.position.y < this.position.y + 100) {
+          if (!b.isDead && b.faction !== this.faction && b.position.y > lowestY && b.position.y < this.position.y + 100) {
              lowestY = b.position.y;
              bestBullet = b;
           }

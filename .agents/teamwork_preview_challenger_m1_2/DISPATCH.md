@@ -1,17 +1,43 @@
-## 2026-08-25T05:01:47Z
-You are a Challenger agent conducting adversarial stress verification of Milestone 1 for Water Invader.
+## 2026-08-26T08:43:46Z
+You are Challenger 2 (teamwork_preview_challenger) for Milestone 1 of the Water Invader project.
 
-Read the authoritative requirements at: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`
-Read `C:\src\SpaceInvader\PROJECT.md` and `C:\src\SpaceInvader\reports\QA_SWEEP_REPORT.md`.
-Your working directory is: `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_2` (create your metadata files there).
-Your identity is teamwork_preview_challenger_m1_2.
+Working Directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_challenger_m1_2
+Project Root: /Users/a7111/src/water-invader
+Original Request: /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md
+QA Report: /Users/a7111/src/water-invader/QA_REPORT.md
+Scope Document: /Users/a7111/src/water-invader/.agents/teamwork_preview_orchestrator_m1/SCOPE.md
 
-Your Mission:
-1. Empirically test wave scaling and barricade collision:
-   - Test wave generation across waves 1 to 50: verify enemy columns, rows, and spawn offset never go negative or out of bounds.
-   - Test stone barricade collision: verify enemies do not ghost through indestructible stone barricades.
-   - Test destructible barricade gnawing: verify enemy speed is throttled while gnawing.
-2. Run tests: `npx playwright test tests/04_multiwave_progression.spec.ts tests/stress/qa_harvest_verification.spec.ts --project=chromium`.
-3. Provide a clear verdict: APPROVE or REJECT in your handoff.
+Mission:
+Adversarially stress-test and empirically verify Combat, Bullets, and Shields (F-04, F-06, F-07, F-08):
+1. Stress test F-04: Player i-frames with 50 overlapping enemy bullets hitting simultaneously, verifying player loses exactly 1 HP and remaining bullets are consumed.
+2. Stress test F-06: Shielded enemy with massive overkill single bullet (e.g. 50 damage), verifying shield absorbs it as a gate, triggers 5.0s cooldown, and body HP remains intact. Test timer decrement and shield regeneration after 5.0s.
+3. Stress test F-07: Sniper bullet interception with multi-shot angled bullets, verifying interceptable sniper bullets are destroyed while normal red enemy bullets pass through.
+4. Stress test F-08: Near-miss suppression with bullets skimming player border across 200 consecutive physics frames, verifying suppression increases by exactly 15 once.
 
-Write your report to `C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m1_2\handoff.md` and report back.
+Verification:
+- Run `npx playwright test tests/adversarial_challenger_m1.spec.ts`.
+- Run `npx tsx tests/stress_m1.ts`.
+
+Output:
+- Write your empirical verification report with an explicit verdict (`APPROVE` or `REQUEST_CHANGES`) to `/Users/a7111/src/water-invader/.agents/teamwork_preview_challenger_m1_2/handoff.md`.
+- Maintain `progress.md` in your working directory.
+- Send a message to the orchestrator with your verdict and report path.
+
+
+## 2026-08-26T10:50:55Z
+You are Challenger 2 for Milestone M1 (Faction System & Multi-Directional Combat Core).
+Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_challenger_m1_2
+
+Authoritative references:
+- Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Read /Users/a7111/src/water-invader/PROJECT.md
+- Read /Users/a7111/src/water-invader/TEST_READY.md
+
+Mission:
+Adversarially verify the multi-faction targeting and collision consistency:
+1. Test Helper AI targeting against both Invader and Rogue factions.
+2. Test same-faction friendly fire immunity.
+3. Test inter-faction enemy-vs-enemy physical body collision and mutual damage.
+4. State your verdict clearly: APPROVE or REJECT.
+
+Write your report to `/Users/a7111/src/water-invader/.agents/teamwork_preview_challenger_m1_2/handoff.md` and send a message.

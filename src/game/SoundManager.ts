@@ -244,6 +244,97 @@ export class SoundManager {
     osc.start();
     osc.stop(now + 0.7);
   }
+
+  public playThirdFactionWarning() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sawtooth';
+    const now = this.audioCtx.currentTime;
+    
+    // Siren alternating pulse (880Hz -> 587Hz -> 880Hz -> 587Hz)
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.linearRampToValueAtTime(587, now + 0.15);
+    osc.frequency.linearRampToValueAtTime(880, now + 0.3);
+    osc.frequency.linearRampToValueAtTime(587, now + 0.45);
+    osc.frequency.linearRampToValueAtTime(440, now + 0.6);
+
+    gainNode.gain.setValueAtTime(0.2, now);
+    gainNode.gain.setValueAtTime(0.2, now + 0.45);
+    gainNode.gain.linearRampToValueAtTime(0.01, now + 0.6);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.6);
+  }
+
+  public playRogueShoot() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'triangle';
+    const now = this.audioCtx.currentTime;
+
+    // High tech plasma laser sweep (1200Hz -> 280Hz)
+    osc.frequency.setValueAtTime(1200, now);
+    osc.frequency.exponentialRampToValueAtTime(280, now + 0.12);
+
+    gainNode.gain.setValueAtTime(0.12, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.12);
+  }
+
+  public playCrossfireHit() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'square';
+    const now = this.audioCtx.currentTime;
+
+    // Metallic clash / crossfire energy impact (750Hz -> 180Hz)
+    osc.frequency.setValueAtTime(750, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.18);
+
+    gainNode.gain.setValueAtTime(0.16, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.18);
+  }
 }
 
 // Singleton instance export

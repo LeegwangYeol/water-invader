@@ -1,7 +1,16 @@
-﻿## 2026-08-21T11:35:26Z
-Task:
-1. Read C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md to understand all project requirements.
-2. Investigate the test automation setup in C:\src\SpaceInvader (e.g., Playwright configs, existing tests in e2e/ or tests/ or scripts/, dependencies, dev server start command, port, headless browser configurations).
-3. Evaluate how to implement a massive swarm of automated Playwright test bots capable of continuous headless/headful multi-worker execution, real-time input dispatching, and survival loop execution.
-4. Identify any existing bot scripts, helper scripts, or test utilities in the workspace, and determine the optimal architecture for concurrent Playwright bot workers.
-5. Write your findings to C:\src\SpaceInvader\.agents\teamwork_preview_explorer_survey_2\handoff.md and report completion with a concise summary via send_message to the orchestrator.
+## 2026-08-26T10:36:34Z
+You are a Survey Explorer (Survey Explorer 2).
+Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_2
+
+Objective:
+Investigate the Water Invader codebase with a focus on:
+1. Wave / Spawner / Reinforcement system: How waves are defined, spawned, triggered, timed, and managed.
+2. Enemy types, stats, behaviors, movement patterns, shooting AI/cadence.
+3. How to rework wave spawning into dynamic, diverse, and unpredictable reinforcement spawning (e.g. dynamic event triggers, diverse spawn compositions, adaptive/randomized flanks/entries, independent third-faction spawns).
+
+Scope boundaries:
+- Read-only investigation. DO NOT write or edit source code.
+- Write your findings to /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_2/handoff.md
+
+Authoritative user request:
+Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md

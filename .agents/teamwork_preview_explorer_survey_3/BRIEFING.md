@@ -1,36 +1,41 @@
-# BRIEFING — 2026-08-21T11:37:05Z
+# BRIEFING — 2026-08-26T10:38:50Z
 
 ## Mission
-Investigate performance-critical systems (Audio, Projectiles/Particles, Enemies/Collisions, Metrics & Monitoring) and formulate stress test measurement strategies for Water Invader Endless Survival.
+Investigate game loop, state management, canvas rendering, UI/HUD, build/test setup, and design changes for 3-way battle support in Water Invader.
 
 ## 🔒 My Identity
 - Archetype: explorer
-- Roles: performance-investigation, stress-testing-design, metrics-architecture
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_explorer_survey_3
-- Original parent: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Milestone: survey
+- Roles: survey, investigation, synthesis
+- Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_3
+- Original parent: 738841f4-20be-4ebb-85ad-eff3ce31cb23
+- Milestone: survey_3_hud_rendering_build
 
 ## 🔒 Key Constraints
-- Read-only investigation — do NOT implement / do NOT modify source code
-- Tree structure explanations required for code/architectural flow
-- Fact check and provide exact file paths, line numbers, and logic chains
-- Output in Korean where appropriate / maintain handoff protocol
+- Read-only investigation — do NOT implement / modify source code
+- Write report to /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_3/handoff.md
+- Notify parent via send_message when complete
 
 ## Current Parent
-- Conversation ID: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Updated: not yet
+- Conversation ID: 738841f4-20be-4ebb-85ad-eff3ce31cb23
+- Updated: 2026-08-26T10:38:50Z
 
 ## Investigation State
-- **Explored paths**: `src/game/SoundManager.ts`, `src/game/GameManager.ts`, `src/game/Player.ts`, `src/game/Bullet.ts`, `src/game/Particle.ts`, `src/game/Enemy.ts`, `src/game/Helper.ts`, `src/game/Barricade.ts`, `src/components/game-canvas.tsx`, `tests/benchmark/*`
+- **Explored paths**:
+  - `package.json`, `playwright.config.ts`, `tsconfig.json`, `eslint.config.mjs`
+  - `src/components/game-canvas.tsx` (React overlays, HUD, touch controls)
+  - `src/game/GameManager.ts` (Game loop, state transitions, wave spawning, collision engine)
+  - `src/game/Player.ts`, `src/game/Enemy.ts`, `src/game/Bullet.ts`, `src/game/Helper.ts`, `src/game/Barricade.ts`, `src/game/Particle.ts`, `src/game/SoundManager.ts`, `src/game/types.ts`
+  - `tests/01_ui_and_controls.spec.ts`, `tests/02_rendering_and_vector_art.spec.ts`, `tests/03_game_mechanics.spec.ts`, `tests/04_multiwave_progression.spec.ts`
 - **Key findings**:
-  1. Web Audio allocates unpooled Oscillator & Gain nodes dynamically per sound, creating GC overhead under high fire rates (up to 150 bullets/sec).
-  2. Per-frame `.filter()` array reallocations (300 allocations/sec) across 5 entity arrays create memory churn. No upper bounds on particles/bullets.
-  3. Enemy scaling grid ($3+N/4 \times 6+N/3$) results in 100+ enemies in late waves, driving $O(N \cdot M)$ collision checks to >20,000 comparisons/frame without spatial partitioning.
-  4. Formulated a 4-tier stress testing strategy (Baseline, Max Saturation, Deep Wave Soak, Swarm Concurrency) and complete telemetry sampling architecture (FPS, Heap, Entities, Audio, Anomalies).
-- **Unexplored areas**: None. All requested investigation items fully surveyed.
+  - Typecheck (`npx tsc --noEmit`) and Next.js Turbopack build (`npm run build`) pass cleanly.
+  - Current combat architecture is strictly two-sided (`isPlayerBullet: boolean` on `Bullet` and direct checks against `this.enemies` or `this.player`/`this.helpers`).
+  - To support 3-way battles, a generalized `Faction` model (`PLAYER`, `INVADER`, `ROGUE`) with multi-faction collision matrix, neon lime/amber visual design for 3rd faction, dedicated Web Audio synthesis, multi-threat HUD indicators, and dynamic wave directors is required.
+- **Unexplored areas**: None within survey scope.
 
 ## Key Decisions Made
-- Authored comprehensive 5-component handoff report with tree structure diagrams at `handoff.md`.
+- Completed survey report in `handoff.md` following 5-Component Handoff Protocol.
 
 ## Artifact Index
-- C:\src\SpaceInvader\.agents\teamwork_preview_explorer_survey_3\handoff.md — Final findings & strategy handoff
+- handoff.md — Complete investigation & architecture handoff report
+- progress.md — Heartbeat and progress tracker
+- DISPATCH.md — Received task dispatches

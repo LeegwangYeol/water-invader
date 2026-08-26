@@ -1,4 +1,4 @@
-﻿## 2026-08-21T08:28:07Z
+## 2026-08-21T08:28:07Z
 
 You are Explorer 1 for the Water Invader Difficulty Rebalance project.
 Your working directory is: C:\src\SpaceInvader\.agents\teamwork_preview_explorer_survey_1
@@ -32,3 +32,23 @@ Task:
 3. Identify all game state variables, key bindings, DOM elements / canvas interactions, shop purchase triggers, upgrade levels, ultimate gauge charging, ally summoning cost and conditions.
 4. Document how an external Playwright bot or injected test harness can read game state (player position, incoming projectiles, enemies, currency, skill cooldowns/gauges, shop status) and send input commands to achieve pixel-perfect evasion, shooting, skill casting, and shop upgrading.
 5. Write your complete findings to C:\src\SpaceInvader\.agents\teamwork_preview_explorer_survey_1\handoff.md and report completion with a concise summary via send_message to the orchestrator.
+
+## 2026-08-26T10:36:34Z
+
+You are a Survey Explorer (Survey Explorer 1).
+Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_1
+
+Objective:
+Investigate the Water Invader codebase with a focus on:
+1. Entity hierarchy/models: How Player, Allies (if any), Enemies, and other entities are represented in types/classes/state.
+2. Combat and Collision system: How shooting, bullets/projectiles, damage calculations, hitboxes, and faction/team affiliations are currently implemented.
+3. Faction hostility: How targeting, collision filtering, and friendly fire/hostility are checked when bullets hit entities or entities collide.
+
+Scope boundaries:
+- Read-only investigation. DO NOT write or edit source code.
+- Write your findings to /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_1/handoff.md
+
+Authoritative user request:
+Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md
+
+When done, write your full report to handoff.md in your working directory and notify the orchestrator via send_message.

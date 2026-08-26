@@ -1,4 +1,4 @@
-import { GameState } from './types';
+import { GameState, Faction } from './types';
 import { Player } from './Player';
 import { Enemy, EnemyType } from './Enemy';
 import { Bullet } from './Bullet';
@@ -33,11 +33,12 @@ export class GameManager {
   
   private shakeTimer: number = 0;
   
-  // Reinforcement System
-  private reinforcementTimer: number = 10;
-  private warningTimer: number = 0;
-  private warningMessage: string = "";
-  private pendingReinforcement: 'ENEMY' | 'ALLY' | null = null;
+  // Reinforcement System & Dynamic Event Director
+  public reinforcementTimer: number = 10;
+  public warningTimer: number = 0;
+  public warningMessage: string = "";
+  public warningText: string = "WARNING! ENEMY REINFORCEMENTS!";
+  public pendingReinforcement: 'ENEMY' | 'ALLY' | 'FLANK' | 'SPEARHEAD' | 'ROGUE_INCURSION' | '3WAY_CLASH' | string | null = null;
   
   // Debugging & Developer Tools
   public isDebugMode: boolean = false;
@@ -58,7 +59,7 @@ export class GameManager {
 
   // Callbacks for React UI updates
   public onStateChange?: (state: GameState) => void;
-  public onScoreChange?: (score: number, currency: number, combo: number, wave: number, ultimateGauge: number) => void;
+  public onScoreChange?: (score: number, currency: number, combo: number, wave: number, ultimateGauge: number, invaderCount?: number, rogueCount?: number) => void;
   public onPlayerHpChange?: (hp: number) => void;
   public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number }) => void;
 
@@ -68,6 +69,12 @@ export class GameManager {
     this.dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
     this.canvas.width = this.logicalWidth * this.dpr;
     this.canvas.height = this.logicalHeight * this.dpr;
+    if (typeof window !== 'undefined') {
+      (window as any).Bullet = Bullet;
+      (window as any).Enemy = Enemy;
+      (window as any).Helper = Helper;
+      (window as any).Faction = Faction;
+    }
     this.init();
   }
 
@@ -135,6 +142,7 @@ export class GameManager {
     this.reinforcementTimer = 10;
     this.warningTimer = 0;
     this.warningMessage = "";
+    this.warningText = "WARNING! ENEMY REINFORCEMENTS!";
     this.pendingReinforcement = null;
     
     this.spawnBarricades();
@@ -158,23 +166,26 @@ export class GameManager {
     this.barricades.push(new Barricade(startX + padding * 3, y, BarricadeType.DESTRUCTIBLE));
   }
 
-  
-    public startNextWave() {
-      this.state = GameState.PLAYING;
-      this.isPaused = false;
-      this.level++;
-      this.spawnWave();
-      this.updateScoreUI();
-      if (this.onStateChange) this.onStateChange(GameState.PLAYING);
-      
-      this.lastTime = performance.now();
-      if (this.animationFrameId) {
-        cancelAnimationFrame(this.animationFrameId);
-      }
-      this.animationFrameId = requestAnimationFrame(this.loop);
+  public startNextWave() {
+    this.state = GameState.PLAYING;
+    this.isPaused = false;
+    this.warningTimer = 0;
+    this.warningMessage = "";
+    this.warningText = "";
+    this.pendingReinforcement = null;
+    this.level++;
+    this.spawnWave();
+    this.updateScoreUI();
+    if (this.onStateChange) this.onStateChange(GameState.PLAYING);
+    
+    this.lastTime = performance.now();
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
     }
+    this.animationFrameId = requestAnimationFrame(this.loop);
+  }
 
-    public start() {
+  public start() {
     this.startGame();
   }
 
@@ -214,24 +225,88 @@ export class GameManager {
     const offsetX = Math.max(20, (this.logicalWidth - ((cols - 1) * paddingX)) / 2);
     
     let specialCount = 0;
-    const maxSpecials = Math.max(1, Math.min(1 + Math.floor(this.level / 2), 4)); // 1~2 early on, cap at 4
+    const maxSpecials = Math.max(1, Math.min(1 + Math.floor(this.level / 2), 4));
     
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         let type = EnemyType.NORMAL;
         
         if (r === 1 && c % 2 === 0) {
-          type = EnemyType.ZIGZAG; // keep some zigzags
+          type = EnemyType.ZIGZAG;
         } else if (specialCount < maxSpecials && Math.random() > 0.85) {
           const specials = [EnemyType.SNIPER, EnemyType.DIVER, EnemyType.SHIELDED, EnemyType.SPLITTER];
           type = specials[Math.floor(Math.random() * specials.length)];
           specialCount++;
         }
         
-        // F-13: Spawn Y offset at 80 so enemies and bullets do not emerge behind top HUD overlay cards
         this.enemies.push(new Enemy(offsetX + c * paddingX, 80 + r * paddingY, this.logicalWidth, this.level, type, this.logicalHeight));
       }
     }
+  }
+
+  public spawnDynamicReinforcement(type?: 'FLANK' | 'SPEARHEAD' | 'ROGUE_INCURSION' | '3WAY_CLASH' | 'CHAOTIC_AIRDROP' | string) {
+    const selectedType = type || (['FLANK', 'SPEARHEAD', 'ROGUE_INCURSION', '3WAY_CLASH'] as const)[Math.floor(Math.random() * 4)];
+
+    if (selectedType === 'FLANK') {
+      const count = Math.min(3, 2 + Math.floor(this.level / 3));
+      for (let i = 0; i < count; i++) {
+        const y = 80 + i * 45;
+        const leftEnemy = new Enemy(10, y, this.logicalWidth, this.level + 1, EnemyType.ROGUE_DRONE, this.logicalHeight);
+        leftEnemy.speedX = 35 + this.level * 3;
+        const rightEnemy = new Enemy(this.logicalWidth - 50, y, this.logicalWidth, this.level + 1, EnemyType.ZIGZAG, this.logicalHeight);
+        rightEnemy.speedX = -35 - this.level * 3;
+        this.enemies.push(leftEnemy, rightEnemy);
+      }
+      this.warningMessage = "WARNING! FLANK INCURSION DETECTED!";
+      this.warningText = this.warningMessage;
+      this.warningTimer = 2.0;
+      this.triggerScreenShake(0.6);
+      soundManager.playThirdFactionWarning();
+    } else if (selectedType === 'SPEARHEAD' || selectedType === 'V_FORMATION') {
+      const centerX = Math.max(10, Math.min(this.logicalWidth - 60, this.logicalWidth / 2 - 25));
+      const apex = new Enemy(centerX, 80, this.logicalWidth, this.level + 2, EnemyType.ROGUE_MECH, this.logicalHeight);
+      const left1 = new Enemy(Math.max(10, centerX - 55), 125, this.logicalWidth, this.level + 1, EnemyType.ROGUE_STALKER, this.logicalHeight);
+      const right1 = new Enemy(Math.min(this.logicalWidth - 50, centerX + 55), 125, this.logicalWidth, this.level + 1, EnemyType.ROGUE_DRONE, this.logicalHeight);
+      const left2 = new Enemy(Math.max(10, centerX - 110), 170, this.logicalWidth, this.level + 1, EnemyType.ROGUE_DRONE, this.logicalHeight);
+      const right2 = new Enemy(Math.min(this.logicalWidth - 50, centerX + 110), 170, this.logicalWidth, this.level + 1, EnemyType.ROGUE_STALKER, this.logicalHeight);
+      this.enemies.push(apex, left1, right1, left2, right2);
+
+      this.warningMessage = "WARNING! SPEARHEAD FORMATION DETECTED!";
+      this.warningText = this.warningMessage;
+      this.warningTimer = 2.0;
+      this.triggerScreenShake(0.6);
+      soundManager.playThirdFactionWarning();
+    } else if (selectedType === 'ROGUE_INCURSION' || selectedType === 'CHAOTIC_AIRDROP') {
+      const count = Math.min(5, 3 + Math.floor(this.level / 3));
+      const spacing = (this.logicalWidth - 100) / Math.max(1, count - 1);
+      for (let i = 0; i < count; i++) {
+        const x = 50 + i * spacing;
+        const types = [EnemyType.ROGUE_DRONE, EnemyType.ROGUE_STALKER, EnemyType.ROGUE_MECH];
+        const rType = types[i % types.length];
+        const unit = new Enemy(x, 80 + (i % 2) * 30, this.logicalWidth, this.level + 1, rType, this.logicalHeight);
+        this.enemies.push(unit);
+      }
+      this.warningMessage = "WARNING! THIRD FACTION INCURSION!";
+      this.warningText = this.warningMessage;
+      this.warningTimer = 2.0;
+      this.triggerScreenShake(0.8);
+      soundManager.playThirdFactionWarning();
+    } else if (selectedType === '3WAY_CLASH') {
+      const count = Math.min(3, 2 + Math.floor(this.level / 4));
+      for (let i = 0; i < count; i++) {
+        const invader = new Enemy(40, 80 + i * 50, this.logicalWidth, this.level + 1, EnemyType.ZIGZAG, this.logicalHeight);
+        invader.faction = Faction.INVADER;
+        const rogue = new Enemy(this.logicalWidth - 85, 80 + i * 50, this.logicalWidth, this.level + 1, EnemyType.ROGUE_STALKER, this.logicalHeight);
+        rogue.faction = Faction.ROGUE;
+        this.enemies.push(invader, rogue);
+      }
+      this.warningMessage = "WARNING! 3-WAY BATTLEFIELD CLASH!";
+      this.warningText = this.warningMessage;
+      this.warningTimer = 2.0;
+      this.triggerScreenShake(0.8);
+      soundManager.playThirdFactionWarning();
+    }
+    this.updateScoreUI();
   }
 
   private loop = (timestamp: number) => {
@@ -273,56 +348,86 @@ export class GameManager {
         }
       }
       
-      // Reinforcement logic
+      // Dynamic Event Director & Reinforcement Logic
       if (this.warningTimer > 0) {
         this.warningTimer -= deltaTime;
-        if (this.warningTimer <= 0 && this.pendingReinforcement) {
-          // Spawn reinforcement
-          if (this.pendingReinforcement === 'ENEMY') {
-            // Spawn rapid zigzag enemies (spawn Y at 80)
-            for (let i = 0; i < 4; i++) {
-               this.enemies.push(new Enemy(50 + i * 100, 80, this.logicalWidth, this.level + 2, EnemyType.ZIGZAG, this.logicalHeight));
+        if (this.warningTimer <= 0) {
+          this.warningTimer = 0;
+          if (this.pendingReinforcement) {
+            if (this.pendingReinforcement === 'ALLY') {
+              const count = Math.floor(Math.random() * 3) + 1;
+              for (let i = 0; i < count; i++) {
+                const type = Math.floor(Math.random() * 3);
+                this.helpers.push(new Helper(
+                  Math.random() * (this.logicalWidth - 40),
+                  this.logicalHeight - 80,
+                  this.logicalWidth,
+                  this.logicalHeight,
+                  type as HelperType
+                ));
+                this.createExplosion(this.logicalWidth / 2, this.logicalHeight - 20, '#4ade80', 20);
+              }
+            } else if (this.pendingReinforcement === 'ENEMY') {
+              for (let i = 0; i < 4; i++) {
+                this.enemies.push(new Enemy(50 + i * 100, 80, this.logicalWidth, this.level + 2, EnemyType.ZIGZAG, this.logicalHeight));
+              }
+            } else if (typeof this.pendingReinforcement === 'string') {
+              this.spawnDynamicReinforcement(this.pendingReinforcement as any);
+            } else {
+              this.spawnDynamicReinforcement();
             }
-          } else if (this.pendingReinforcement === 'ALLY') {
-            // Spawn friendly helpers (FIGHTER, REPAIRER, TANK)
-            const count = Math.floor(Math.random() * 3) + 1; // 1 to 3
-            for (let i = 0; i < count; i++) {
-              const type = Math.floor(Math.random() * 3); // 0, 1, 2
-              this.helpers.push(new Helper(
-                 Math.random() * (this.logicalWidth - 40), 
-                 this.logicalHeight - 80, 
-                 this.logicalWidth, 
-                 this.logicalHeight, 
-                 type as HelperType
-              ));
-              this.createExplosion(this.logicalWidth / 2, this.logicalHeight - 20, '#4ade80', 20);
-            }
+            this.pendingReinforcement = null;
           }
-          this.pendingReinforcement = null;
         }
       } else {
         this.reinforcementTimer -= deltaTime;
         if (this.reinforcementTimer <= 0) {
-          this.reinforcementTimer = Math.random() * 10 + 10; // 10-20 seconds
-          if (Math.random() > 0.5 && this.enemies.length > 0) {
-            this.triggerScreenShake(1);
+          const tempoInterval = Math.max(8, 16 - Math.min(6, this.level) - Math.min(3, Math.floor(this.combo / 5)));
+          this.reinforcementTimer = tempoInterval + Math.random() * 4;
+
+          if (this.enemies.length > 0) {
+            this.triggerScreenShake(0.8);
             this.warningTimer = 2.0;
-            this.pendingReinforcement = Math.random() > 0.6 ? 'ALLY' : 'ENEMY';
-            this.warningMessage = this.pendingReinforcement === 'ENEMY' ? "WARNING! ENEMY REINFORCEMENTS!" : "ALLY SUPPORT INCOMING!";
+            if (Math.random() < 0.2) {
+              this.pendingReinforcement = 'ALLY';
+              this.warningMessage = "ALLY SUPPORT INCOMING!";
+              this.warningText = this.warningMessage;
+              soundManager.playPowerUp();
+            } else {
+              const events: Array<'FLANK' | 'SPEARHEAD' | 'ROGUE_INCURSION' | '3WAY_CLASH'> = ['FLANK', 'SPEARHEAD', 'ROGUE_INCURSION', '3WAY_CLASH'];
+              const chosenEvent = events[Math.floor(Math.random() * events.length)];
+              this.pendingReinforcement = chosenEvent;
+              if (chosenEvent === 'ROGUE_INCURSION') {
+                this.warningMessage = "WARNING! THIRD FACTION INCURSION!";
+              } else if (chosenEvent === '3WAY_CLASH') {
+                this.warningMessage = "WARNING! 3-WAY BATTLEFIELD CLASH!";
+              } else if (chosenEvent === 'FLANK') {
+                this.warningMessage = "WARNING! FLANK INCURSION DETECTED!";
+              } else {
+                this.warningMessage = "WARNING! SPEARHEAD FORMATION DETECTED!";
+              }
+              this.warningText = this.warningMessage;
+              soundManager.playThirdFactionWarning();
+            }
+          }
+        } else {
+          // Accelerated tempo if battle density drops below 3 while wave active
+          const activeHostiles = this.enemies.filter(e => !e.isDead && (e.faction === Faction.INVADER || e.faction === Faction.ROGUE));
+          if (activeHostiles.length > 0 && activeHostiles.length <= 2 && this.reinforcementTimer > 4 && this.warningTimer <= 0) {
+            this.reinforcementTimer = 2.0;
           }
         }
       }
 
       // Entities
-      // Smooth scaling: scales smoothly from 1.0x to 1.8x as enemies decrease
       const speedMultiplier = Math.min(1.8, Math.max(1.0, 1.0 + (20 - Math.min(20, this.enemies.length)) * 0.04));
       
       this.enemies.forEach(enemy => {
-        enemy.update(deltaTime, speedMultiplier, this.bullets, this.player.position);
-        const bullet = enemy.fire(this.player.position);
+        enemy.update(deltaTime, speedMultiplier, this.bullets, this.player.position, this.enemies);
+        const bullet = enemy.fire(this.player.position, this.enemies);
         if (bullet) this.bullets.push(bullet);
         
-        // Handle Player Collision or Reaching Bottom Boundary (R1, R2)
+        // Handle Player Collision or Reaching Bottom Boundary
         if (enemy.checkCollision(this.player)) {
           if (enemy.type === EnemyType.BOSS) {
             enemy.hp -= 10;
@@ -333,12 +438,12 @@ export class GameManager {
               this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, '#fbbf24', 150, 3.0);
               this.triggerScreenShake(0.75);
               soundManager.playVictory();
-              this.handleEnemyKill();
+              this.handleEnemyKill(enemy);
             }
           } else {
             enemy.isDead = true;
             this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, enemy.color, 20);
-            this.handleEnemyKill();
+            this.handleEnemyKill(enemy);
           }
 
           if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
@@ -347,7 +452,7 @@ export class GameManager {
             this.player.invincibilityTimer = 1.0;
             soundManager.playPlayerHit();
             this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
-            this.combo = 0; // Reset combo when player takes damage from enemy collision
+            this.combo = 0;
             this.updateScoreUI();
             this.createExplosion(this.player.position.x, this.player.position.y, '#ef4444', 10);
             this.triggerScreenShake(0.5);
@@ -355,14 +460,14 @@ export class GameManager {
             if (this.player.hp <= 0) this.gameOver("정수기능이 파괴되었습니다 (체력 소진)");
           }
         } else if (enemy.position.y + enemy.size.height >= this.logicalHeight) {
-          enemy.isDead = true; // Gracefully despawn enemy that reached bottom boundary
+          enemy.isDead = true;
           this.createExplosion(enemy.position.x + enemy.size.width/2, this.logicalHeight - 10, enemy.color, 15);
           if (!this.isGodMode) {
-             this.player.hp -= 1; // Penalty for letting enemy breach defense line
+             this.player.hp -= 1;
              this.player.hitFlashTimer = 0.08;
              soundManager.playPlayerHit();
              this.player.stressLevel = Math.min(100, this.player.stressLevel + 20);
-             this.combo = 0; // Breach penalty resets combo as well
+             this.combo = 0;
              this.updateScoreUI();
              this.triggerScreenShake(0.5);
              if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
@@ -420,9 +525,13 @@ export class GameManager {
     
     this.barricades = this.barricades.filter(b => !b.isDead);
     
-    // Next wave - transition to Intermission Shop
-    if (this.state === GameState.PLAYING && this.enemies.length === 0 && this.warningTimer <= 0) {
+    // Multi-Faction Wave Clear Logic: only clears when all hostile Invaders and Rogues are destroyed
+    const activeHostiles = this.enemies.filter(e => !e.isDead && (e.faction === Faction.INVADER || e.faction === Faction.ROGUE));
+    if (this.state === GameState.PLAYING && activeHostiles.length === 0 && this.warningTimer <= 0 && this.pendingReinforcement === null) {
       this.state = GameState.SHOP;
+      this.warningTimer = 0;
+      this.warningMessage = "";
+      this.warningText = "";
       if (this.onStateChange) this.onStateChange(this.state);
       this.pause();
     }
@@ -448,16 +557,20 @@ export class GameManager {
   }
 
   private checkCollisions() {
-    for (const bullet of this.bullets) {
+    // =========================================================================
+    // PHASE 1: Bullets vs Barricades, Bullets vs Bullets, Bullets vs Entities
+    // =========================================================================
+    for (let i = 0; i < this.bullets.length; i++) {
+      const bullet = this.bullets[i];
       if (bullet.isDead) continue;
-      
-      // Check barricades first
+
+      // 1.1 Bullet vs Barricades (Destructible & Indestructible Cover)
       let hitBarricade = false;
       for (const barricade of this.barricades) {
         if (!barricade.isDead && bullet.checkCollision(barricade)) {
           bullet.isDead = true;
           hitBarricade = true;
-          
+
           if (barricade.type === BarricadeType.DESTRUCTIBLE) {
             barricade.hp -= bullet.damage;
             this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 5);
@@ -467,113 +580,152 @@ export class GameManager {
           break;
         }
       }
-      
       if (hitBarricade) continue;
 
-      if (bullet.isPlayerBullet) {
-        // Player bullet vs Interceptable Enemy Bullets (F-07)
-        let intercepted = false;
-        for (const enemyBullet of this.bullets) {
-          if (!enemyBullet.isDead && !enemyBullet.isPlayerBullet && enemyBullet.isInterceptable) {
-            if (bullet.checkCollision(enemyBullet)) {
-              bullet.isDead = true;
-              enemyBullet.isDead = true;
-              intercepted = true;
-              this.createExplosion(
-                (bullet.position.x + enemyBullet.position.x) / 2,
-                (bullet.position.y + enemyBullet.position.y) / 2,
-                '#a855f7',
-                8
-              );
-              break;
-            }
-          }
-        }
-        if (intercepted) continue;
+      // 1.2 Generalized Bullet vs Bullet Interception (Hostile Factions)
+      let intercepted = false;
+      for (let j = 0; j < this.bullets.length; j++) {
+        const otherBullet = this.bullets[j];
+        if (i === j || otherBullet.isDead || bullet.faction === otherBullet.faction) continue;
 
-        for (const enemy of this.enemies) {
-          if (enemy.isDead) continue;
-          if (bullet.hitEntities.has(enemy)) continue;
-          
-          if (bullet.checkCollision(enemy)) {
-            bullet.hitEntities.add(enemy);
-            bullet.piercing--;
-            if (bullet.piercing <= 0) bullet.isDead = true;
-            
-            // Shielded enemy damage & cooldown (F-06)
-            if (enemy.type === EnemyType.SHIELDED && enemy.shieldHp > 0) {
-              enemy.shieldHp -= bullet.damage;
-              enemy.hitFlashTimer = 0.08;
-              soundManager.playEnemyHit();
-              this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 6);
-              if (enemy.shieldHp <= 0) {
-                enemy.shieldHp = 0;
-                enemy.shieldRegenTimer = 5.0; // 5s cooldown before shield regenerates
-                soundManager.playShieldBreak();
-                this.createExplosion(enemy.position.x + enemy.size.width / 2, enemy.position.y + enemy.size.height / 2, '#38bdf8', 16);
-              }
-            } else {
-              enemy.hp -= bullet.damage;
-              enemy.hitFlashTimer = 0.08;
-              soundManager.playEnemyHit();
-              this.createExplosion(bullet.position.x, bullet.position.y, '#3b82f6', 5); // water splash
-            }
-            
-            if (enemy.hp <= 0) {
-              enemy.isDead = true;
-              const isBoss = enemy.type === EnemyType.BOSS;
-              const explosionColor = isBoss ? '#fbbf24' : enemy.color;
-              const particleCount = isBoss ? 150 : 30;
-              const speedMult = isBoss ? 3.0 : 1.5;
-              
-              this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, explosionColor, particleCount, speedMult);
-              
-              if (isBoss) {
-                this.triggerScreenShake(0.75);
-                soundManager.playVictory();
-              }
-              
-              if (enemy.type === EnemyType.SPLITTER) {
-                // Spawn 2 mini-enemies that are extremely slow, safely clamped inside canvas bounds
-                const spawnY = Math.max(0, Math.min(enemy.position.y, this.logicalHeight - 20));
-                const spawnX1 = Math.max(0, Math.min(enemy.position.x - 15, this.logicalWidth - 20));
-                const spawnX2 = Math.max(0, Math.min(enemy.position.x + 35, this.logicalWidth - 20));
-                const mini1 = new Enemy(spawnX1, spawnY, this.logicalWidth, this.level, EnemyType.NORMAL, this.logicalHeight);
-                const mini2 = new Enemy(spawnX2, spawnY, this.logicalWidth, this.level, EnemyType.NORMAL, this.logicalHeight);
-                mini1.size = { width: 20, height: 20 };
-                mini2.size = { width: 20, height: 20 };
-                mini1.position.x = spawnX1;
-                mini1.position.y = spawnY;
-                mini2.position.x = spawnX2;
-                mini2.position.y = spawnY;
-                mini1.speedX = 10; mini1.speedY = 5;
-                mini2.speedX = -10; mini2.speedY = 5;
-                this.enemies.push(mini1, mini2);
-              }
-              
-              this.handleEnemyKill();
-            }
-            if (bullet.isDead) break;
-          }
-        }
-      } else {
-        // Enemy bullet vs Helpers
-        let hitHelper = false;
-        for (const helper of this.helpers) {
-          if (bullet.checkCollision(helper)) {
+        // Intercept if either bullet is designated interceptable OR hostile crossfire
+        if (otherBullet.isInterceptable || bullet.isInterceptable) {
+          if (bullet.checkCollision(otherBullet)) {
             bullet.isDead = true;
-            hitHelper = true;
-            if (!helper.isInvincible) {
-               helper.hp -= bullet.damage;
-               this.createExplosion(bullet.position.x, bullet.position.y, helper.color, 10);
+            otherBullet.isDead = true;
+            intercepted = true;
+
+            const midX = (bullet.position.x + otherBullet.position.x) / 2;
+            const midY = (bullet.position.y + otherBullet.position.y) / 2;
+
+            if (bullet.faction === Faction.PLAYER || otherBullet.faction === Faction.PLAYER) {
+              this.createExplosion(midX, midY, '#a855f7', 8);
+            } else {
+              // Crossfire spark between Invader and Rogue ordnance
+              this.createExplosion(midX, midY, '#f59e0b', 8);
+              soundManager.playCrossfireHit();
             }
             break;
           }
         }
-        
+      }
+      if (intercepted) continue;
+
+      // 1.3 Bullet vs Enemies (Invaders & Rogues)
+      for (const enemy of this.enemies) {
+        if (enemy.isDead) continue;
+        if (bullet.faction === enemy.faction) continue; // Friendly fire immunity
+        if (bullet.hitEntities.has(enemy)) continue;
+
+        if (bullet.checkCollision(enemy)) {
+          bullet.hitEntities.add(enemy);
+          bullet.piercing--;
+          if (bullet.piercing <= 0) bullet.isDead = true;
+
+          const isPlayerSource = bullet.faction === Faction.PLAYER;
+
+          // Shield Handling
+          if (enemy.type === EnemyType.SHIELDED && enemy.shieldHp > 0) {
+            enemy.shieldHp -= bullet.damage;
+            enemy.hitFlashTimer = 0.08;
+            if (isPlayerSource) {
+              soundManager.playEnemyHit();
+            } else {
+              soundManager.playCrossfireHit();
+            }
+            this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 6);
+
+            if (enemy.shieldHp <= 0) {
+              enemy.shieldHp = 0;
+              enemy.shieldRegenTimer = 5.0;
+              soundManager.playShieldBreak();
+              this.createExplosion(enemy.position.x + enemy.size.width / 2, enemy.position.y + enemy.size.height / 2, '#38bdf8', 16);
+            }
+          } else {
+            // Standard Damage
+            enemy.hp -= bullet.damage;
+            enemy.hitFlashTimer = 0.08;
+            if (isPlayerSource) {
+              soundManager.playEnemyHit();
+              this.createExplosion(bullet.position.x, bullet.position.y, '#3b82f6', 5);
+            } else {
+              soundManager.playCrossfireHit();
+              this.createExplosion(bullet.position.x, bullet.position.y, '#f59e0b', 6);
+            }
+          }
+
+          // Enemy Elimination
+          if (enemy.hp <= 0) {
+            enemy.isDead = true;
+            const isBoss = enemy.type === EnemyType.BOSS;
+            const explosionColor = isBoss ? '#fbbf24' : (enemy.color || '#f97316');
+            const particleCount = isBoss ? 150 : 30;
+            const speedMult = isBoss ? 3.0 : 1.5;
+
+            this.createExplosion(
+              enemy.position.x + enemy.size.width / 2,
+              enemy.position.y + enemy.size.height / 2,
+              explosionColor,
+              particleCount,
+              speedMult
+            );
+
+            if (isBoss) {
+              this.triggerScreenShake(0.75);
+              soundManager.playVictory();
+            }
+
+            if (enemy.type === EnemyType.SPLITTER) {
+              const spawnY = Math.max(0, Math.min(enemy.position.y, this.logicalHeight - 20));
+              const spawnX1 = Math.max(0, Math.min(enemy.position.x - 15, this.logicalWidth - 20));
+              const spawnX2 = Math.max(0, Math.min(enemy.position.x + 35, this.logicalWidth - 20));
+              const mini1 = new Enemy(spawnX1, spawnY, this.logicalWidth, this.level, EnemyType.NORMAL, this.logicalHeight);
+              const mini2 = new Enemy(spawnX2, spawnY, this.logicalWidth, this.level, EnemyType.NORMAL, this.logicalHeight);
+              mini1.faction = enemy.faction;
+              mini2.faction = enemy.faction;
+              mini1.size = { width: 20, height: 20 };
+              mini2.size = { width: 20, height: 20 };
+              mini1.position.x = spawnX1;
+              mini1.position.y = spawnY;
+              mini2.position.x = spawnX2;
+              mini2.position.y = spawnY;
+              mini1.speedX = 10; mini1.speedY = 5;
+              mini2.speedX = -10; mini2.speedY = 5;
+              this.enemies.push(mini1, mini2);
+            }
+
+            if (isPlayerSource) {
+              this.handleEnemyKill(enemy);
+            } else {
+              this.handleCrossfireKill(enemy, bullet.faction);
+            }
+          }
+
+          if (bullet.isDead) break;
+        }
+      }
+      if (bullet.isDead) continue;
+
+      // 1.4 Bullet vs Helpers (Hostile bullets only)
+      if (bullet.faction !== Faction.PLAYER) {
+        let hitHelper = false;
+        for (const helper of this.helpers) {
+          if (!helper.isExpired() && bullet.checkCollision(helper)) {
+            bullet.isDead = true;
+            hitHelper = true;
+            if (!helper.isInvincible) {
+              helper.hp -= bullet.damage;
+              this.createExplosion(bullet.position.x, bullet.position.y, helper.color, 10);
+              if (helper.hp <= 0) {
+                this.createExplosion(helper.position.x, helper.position.y, '#ef4444', 20);
+              }
+            }
+            break;
+          }
+        }
         if (hitHelper) continue;
 
-        // Enemy bullet vs Player (F-04: Player i-frames)
+        // 1.5 Bullet vs Player
         if (bullet.checkCollision(this.player)) {
           bullet.isDead = true;
           if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
@@ -581,50 +733,49 @@ export class GameManager {
             this.player.hitFlashTimer = 0.08;
             this.player.invincibilityTimer = 1.0;
             soundManager.playPlayerHit();
-            this.createExplosion(this.player.position.x + this.player.size.width/2, this.player.position.y, '#ef4444', 10);
-            this.triggerScreenShake(0.2); // Shake on hit
-            
-            // Taking damage increases stress significantly
+            this.createExplosion(this.player.position.x + this.player.size.width / 2, this.player.position.y, '#ef4444', 10);
+            this.triggerScreenShake(0.2);
+
             this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
-            this.player.suppressionLevel = Math.min(100, this.player.suppressionLevel + 20); // panic
-            
-            this.combo = 0; // reset combo on hit
+            this.player.suppressionLevel = Math.min(100, this.player.suppressionLevel + 20);
+            this.combo = 0;
             if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
-            
+
             if (this.player.hp <= 0) {
-              this.createExplosion(this.player.position.x + this.player.size.width/2, this.player.position.y + this.player.size.height/2, '#38bdf8', 200, 3.5);
+              this.createExplosion(this.player.position.x + this.player.size.width / 2, this.player.position.y + this.player.size.height / 2, '#38bdf8', 200, 3.5);
               this.triggerScreenShake(1);
               this.gameOver("정수기가 파괴되었습니다. (체력 소진)");
             }
           }
         } else {
-          // F-08: Near miss detection for Suppression (Single Trigger)
-          if (!bullet.hasTriggeredNearMiss && 
-              bullet.position.y > this.player.position.y && 
+          // 1.6 Near-miss suppression trigger for hostile bullets passing player
+          if (!bullet.hasTriggeredNearMiss &&
+              bullet.position.y > this.player.position.y &&
               bullet.position.y < this.player.position.y + this.player.size.height) {
-            const dx = Math.abs((bullet.position.x + bullet.size.width/2) - (this.player.position.x + this.player.size.width/2));
+            const dx = Math.abs((bullet.position.x + bullet.size.width / 2) - (this.player.position.x + this.player.size.width / 2));
             if (dx < 80) {
-               bullet.hasTriggeredNearMiss = true;
-               this.player.suppressionLevel = Math.min(100, this.player.suppressionLevel + 15); // Near miss increases suppression
-               // Getting suppressed also stresses you out a little
-               this.player.stressLevel = Math.min(100, this.player.stressLevel + 5); 
+              bullet.hasTriggeredNearMiss = true;
+              this.player.suppressionLevel = Math.min(100, this.player.suppressionLevel + 15);
+              this.player.stressLevel = Math.min(100, this.player.stressLevel + 5);
             }
           }
         }
       }
     }
 
-    // F-01: Enemy vs Barricade (Independent loop)
+    // =========================================================================
+    // PHASE 2: Hostile Entity vs Barricade (Independent loop)
+    // =========================================================================
     for (const enemy of this.enemies) {
       if (enemy.isDead) continue;
       enemy.isGnawing = false;
-      
+
       for (const barricade of this.barricades) {
         if (!barricade.isDead && enemy.checkCollision(barricade)) {
           if (enemy.type === EnemyType.DIVER) {
             enemy.isDead = true;
             if (barricade.type === BarricadeType.DESTRUCTIBLE) {
-              barricade.hp -= 20; // Crash damage
+              barricade.hp -= 20;
             } else {
               this.createExplosion(enemy.position.x, enemy.position.y, '#94a3b8', 20);
             }
@@ -632,35 +783,98 @@ export class GameManager {
           } else {
             enemy.isGnawing = true;
             if (barricade.type === BarricadeType.DESTRUCTIBLE) {
-              barricade.hp -= 0.1; // Gnaw damage per frame
+              barricade.hp -= 0.1;
             } else {
-              // Indestructible stone barricade: block vertical penetration
               enemy.position.y = Math.min(enemy.position.y, barricade.position.y - enemy.size.height);
             }
           }
         }
       }
     }
+
+    // =========================================================================
+    // PHASE 3: Hostile Entity vs Hostile Entity Inter-Faction Clashes
+    // =========================================================================
+    for (let i = 0; i < this.enemies.length; i++) {
+      const enemyA = this.enemies[i];
+      if (enemyA.isDead) continue;
+
+      for (let j = i + 1; j < this.enemies.length; j++) {
+        if (enemyA.isDead) break;
+        const enemyB = this.enemies[j];
+        if (enemyB.isDead || enemyA.faction === enemyB.faction) continue;
+
+        if (enemyA.checkCollision(enemyB)) {
+          enemyA.hp -= 1;
+          enemyB.hp -= 1;
+          enemyA.hitFlashTimer = 0.08;
+          enemyB.hitFlashTimer = 0.08;
+          soundManager.playCrossfireHit();
+          this.createExplosion((enemyA.position.x + enemyB.position.x) / 2, (enemyA.position.y + enemyB.position.y) / 2, '#f59e0b', 4);
+
+          if (enemyA.hp <= 0) {
+            enemyA.isDead = true;
+            this.createExplosion(enemyA.position.x + enemyA.size.width / 2, enemyA.position.y + enemyA.size.height / 2, enemyA.color || '#f97316', 25);
+            this.handleCrossfireKill(enemyA, enemyB.faction);
+          }
+          if (enemyB.hp <= 0) {
+            enemyB.isDead = true;
+            this.createExplosion(enemyB.position.x + enemyB.size.width / 2, enemyB.position.y + enemyB.size.height / 2, enemyB.color || '#f97316', 25);
+            this.handleCrossfireKill(enemyB, enemyA.faction);
+          }
+          if (enemyA.isDead) break;
+        }
+      }
+    }
   }
 
-  private handleEnemyKill() {
+  private handleEnemyKill(enemy?: Enemy) {
     this.combo++;
     this.comboTimer = 2.0; // 2 seconds to keep combo
-    
-    // Killing enemies gives adrenaline/stress
+
+    // Killing enemies gives adrenaline/stress & ultimate charge
     this.player.stressLevel = Math.min(100, this.player.stressLevel + 10);
     this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 1.5);
-    
+
     const comboMultiplier = 1 + Math.floor(this.combo / 5) * 0.5;
-    this.score += Math.floor(100 * comboMultiplier);
-    this.currency += Math.floor(5 * comboMultiplier);
-    
+    const baseScore = enemy && enemy.type === EnemyType.BOSS ? 1000 : 100;
+    const baseCurrency = enemy && enemy.type === EnemyType.BOSS ? 50 : 5;
+
+    this.score += Math.floor(baseScore * comboMultiplier);
+    this.currency += Math.floor(baseCurrency * comboMultiplier);
+
+    this.updateScoreUI();
+  }
+
+  private handleCrossfireKill(killedEnemy: Enemy, killerFaction: Faction) {
+    this.combo++;
+    this.comboTimer = 2.5; // Extended 2.5s window for crossfire chaos
+
+    // Strategic crossfire charges ultimate
+    this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 2.0);
+
+    const comboMultiplier = 1 + Math.floor(this.combo / 5) * 0.5;
+    const baseScore = killedEnemy.type === EnemyType.BOSS ? 1500 : 150;
+    const baseCurrency = killedEnemy.type === EnemyType.BOSS ? 75 : 8;
+
+    this.score += Math.floor(baseScore * comboMultiplier);
+    this.currency += Math.floor(baseCurrency * comboMultiplier);
+
+    this.createExplosion(
+      killedEnemy.position.x + killedEnemy.size.width / 2,
+      killedEnemy.position.y + killedEnemy.size.height / 2,
+      '#38bdf8',
+      12
+    );
+
     this.updateScoreUI();
   }
 
   private updateScoreUI() {
+    const invaderCount = this.enemies.filter(e => !e.isDead && e.faction === Faction.INVADER).length;
+    const rogueCount = this.enemies.filter(e => !e.isDead && e.faction === Faction.ROGUE).length;
     if (this.onScoreChange) {
-      this.onScoreChange(this.score, this.currency, this.combo, this.level, this.player.ultimateGauge);
+      this.onScoreChange(this.score, this.currency, this.combo, this.level, this.player ? this.player.ultimateGauge : 0, invaderCount, rogueCount);
     }
   }
 
@@ -759,7 +973,6 @@ export class GameManager {
     if (this.shakeTimer > 0) {
       let shakeAmount = 2;
       if (this.warningTimer > 0) {
-         // Heavier shake during warning
          shakeAmount = 5;
       }
       const offsetX = (Math.random() - 0.5) * shakeAmount;
@@ -826,18 +1039,19 @@ export class GameManager {
     
     // UI overlays that shouldn't shake
     if (this.warningTimer > 0) {
-      this.ctx.fillStyle = this.pendingReinforcement === 'ENEMY' ? 'rgba(255, 0, 0, 0.3)' : 'rgba(0, 255, 0, 0.2)';
+      const isThirdFaction = (this.warningMessage || this.warningText).includes('ROGUE') || (this.warningMessage || this.warningText).includes('THIRD') || (this.warningMessage || this.warningText).includes('3-WAY');
+      this.ctx.fillStyle = isThirdFaction ? 'rgba(132, 204, 22, 0.25)' : (this.pendingReinforcement === 'ALLY' ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.3)');
       this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
       
-      this.ctx.fillStyle = this.pendingReinforcement === 'ENEMY' ? '#ef4444' : '#4ade80';
-      this.ctx.font = 'bold 48px sans-serif';
+      this.ctx.fillStyle = isThirdFaction ? '#84cc16' : (this.pendingReinforcement === 'ALLY' ? '#4ade80' : '#ef4444');
+      this.ctx.font = 'bold 36px sans-serif';
       this.ctx.textAlign = 'center';
       this.ctx.shadowBlur = 20;
       this.ctx.shadowColor = this.ctx.fillStyle;
       
       // Flash effect
       if (Math.floor(time * 10) % 2 === 0) {
-        this.ctx.fillText(this.warningMessage, this.logicalWidth / 2, this.logicalHeight / 2);
+        this.ctx.fillText(this.warningMessage || this.warningText, this.logicalWidth / 2, this.logicalHeight / 2);
       }
       this.ctx.shadowBlur = 0;
     } else if (this.isResting) {
@@ -882,6 +1096,7 @@ export class GameManager {
       for (let i = 0; i < 30; i++) {
         const x = Math.random() * this.logicalWidth;
         const b = new Bullet(x, -20, 300, 10, true, 3); // Downward moving, piercing, high damage player bullet
+        b.faction = Faction.PLAYER;
         b.velocity.x = (Math.random() - 0.5) * 50;
         this.bullets.push(b);
       }

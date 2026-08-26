@@ -76,6 +76,8 @@ export default function GameCanvas() {
   const [wave, setWave] = useState(1);
   const [ultimate, setUltimate] = useState(0);
   const [hp, setHp] = useState(5);
+  const [invaderCount, setInvaderCount] = useState(0);
+  const [rogueCount, setRogueCount] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   
   const [showManual, setShowManual] = useState(false);
@@ -145,9 +147,19 @@ export default function GameCanvas() {
     }
   };
 
+  const getSafeStoredHighScore = (): number => {
+    try {
+      const saved = localStorage.getItem('waterInvaderHighScore');
+      if (!saved) return 0;
+      const parsed = parseInt(saved, 10);
+      return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+    } catch {
+      return 0;
+    }
+  };
+
   useEffect(() => {
-    const saved = localStorage.getItem('waterInvaderHighScore');
-    if (saved) setHighScore(parseInt(saved, 10));
+    setHighScore(getSafeStoredHighScore());
   }, []);
 
   useEffect(() => {
@@ -166,17 +178,18 @@ export default function GameCanvas() {
         isDraggingRef.current = false;
       }
       if (state === GameState.GAME_OVER) {
-        const saved = localStorage.getItem('waterInvaderHighScore');
-        if (saved) setHighScore(parseInt(saved, 10));
+        setHighScore(getSafeStoredHighScore());
         setGameOverReason(game.gameOverReason);
       }
     };
-    game.onScoreChange = (newScore, newCurrency, newCombo, newWave, newUltimate) => {
+    game.onScoreChange = (newScore, newCurrency, newCombo, newWave, newUltimate, newInvaderCount, newRogueCount) => {
       setScore(newScore);
       setCurrency(newCurrency);
       setCombo(newCombo);
       setWave(newWave);
       setUltimate(newUltimate);
+      if (typeof newInvaderCount === 'number') setInvaderCount(newInvaderCount);
+      if (typeof newRogueCount === 'number') setRogueCount(newRogueCount);
     };
     game.onPlayerHpChange = setHp;
     game.onUpgradesChange = (newUpgrades) => {
@@ -407,7 +420,23 @@ export default function GameCanvas() {
           <h2 className="text-xl sm:text-2xl font-bold text-blue-400">{t('점수:', 'Score:')} {score}</h2>
           <p className="text-sm sm:text-base text-blue-200">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
           {gameState === GameState.PLAYING && (
-            <p className="text-sm sm:text-base text-yellow-300 font-bold mt-1">WAVE {wave}</p>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <p className="text-sm sm:text-base text-yellow-300 font-bold">WAVE {wave}</p>
+              <div className="flex items-center gap-1.5 ml-1">
+                <span 
+                  data-testid="invader-threat-badge" 
+                  className="px-2 py-0.5 rounded-full text-xs font-black bg-red-950/80 text-red-400 border border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.4)] flex items-center gap-1 select-none"
+                >
+                  👾 {invaderCount}
+                </span>
+                <span 
+                  data-testid="rogue-threat-badge" 
+                  className="px-2 py-0.5 rounded-full text-xs font-black bg-lime-950/80 text-lime-400 border border-lime-500/60 shadow-[0_0_8px_rgba(132,204,22,0.4)] flex items-center gap-1 select-none"
+                >
+                  ⚡ {rogueCount}
+                </span>
+              </div>
+            </div>
           )}
         </div>
         <div className="text-right flex flex-col items-end">
@@ -551,6 +580,17 @@ export default function GameCanvas() {
                   <li>Collect <strong className="text-blue-300">Pure Water 💧</strong> by defeating enemies.</li>
                   <li>Build up your <strong className="text-yellow-300">Combo</strong> by defeating enemies quickly to multiply your score and currency gain!</li>
                   <li>Taking damage increases your <strong className="text-red-400">Stress & Panic</strong>, which lowers your accuracy and causes your character to visually panic!</li>
+                </ul>
+              </section>
+
+              <section>
+                <h3 className="text-xl font-bold text-yellow-400 mb-2">3-Way Battlefield & Factions</h3>
+                <ul className="list-disc pl-5 space-y-2 text-slate-300 text-sm sm:text-base">
+                  <li><strong className="text-cyan-400">Player & Allies (Blue/Green):</strong> Defend the water filtration station and deploy friendly support drones.</li>
+                  <li><strong className="text-orange-400">Alien Invaders (Orange/Red):</strong> Original invaders aiming to corrupt the clean water reservoir.</li>
+                  <li><strong className="text-lime-400">Rogue Cyber-Faction (Neon Lime):</strong> Autonomous third faction (Drones, Stalkers, Mechs) hostile to BOTH Player and Invaders!</li>
+                  <li><strong className="text-yellow-300">Crossfire Tactics:</strong> Lure Invaders and Rogues into fighting each other! Opposing factions destroying each other awards bonus score, pure water, and instant ultimate charge!</li>
+                  <li><strong className="text-amber-400">Dynamic Reinforcements:</strong> Beware of sudden Flank Incursions, Spearhead V-Formations, and Rogue Airdrops signaled by alert sirens!</li>
                 </ul>
               </section>
 

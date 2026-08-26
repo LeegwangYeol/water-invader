@@ -1,5 +1,6 @@
 import { Entity } from './Entity';
 import { Bullet } from './Bullet';
+import { Faction } from './types';
 
 export class Player extends Entity {
   private canvasWidth: number;
@@ -29,6 +30,7 @@ export class Player extends Entity {
   constructor(canvasWidth: number, canvasHeight: number) {
     super(canvasWidth / 2 - 25, canvasHeight - 60, 50, 40);
     this.canvasWidth = canvasWidth;
+    this.faction = Faction.PLAYER;
     this.color = '#3b82f6'; // Blue
   }
 
@@ -149,6 +151,10 @@ export class Player extends Entity {
       });
     }
     
+    bullets.forEach(b => {
+      b.faction = Faction.PLAYER;
+    });
+
     return bullets;
   }
 

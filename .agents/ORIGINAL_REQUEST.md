@@ -1,29 +1,29 @@
-﻿# Original User Request
+# Original User Request
 
-## 2026-08-26T02:38:26Z
+## Initial Request — 2026-08-26T11:09:06Z
 
 # Teamwork Project Prompt — Draft
 
 > Status: Launched
-> Goal: Fix mobile touch X-axis mapping and provide cross-device screenshot verification
-> Requested team: Small, focused team
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: [none — teamwork routes from the description]
 
-The mobile touch controls are misaligned; moving left and right doesn't seem to track correctly from the center of the screen on devices with various aspect ratios (like Samsung S25+ and iPhones). The team must fix this mapping and provide visual proof via screenshots.
+`/teamwork-preview` 기능과 다중 에이전트 시스템(Teamwork)의 종합적인 발전 방향을 모색하기 위한 심층 리서치를 수행하고 결과 보고서를 작성합니다.
 
-Working directory: ~/teamwork_projects/water_invader_mobile_centering_fix
+Working directory: ~/teamwork_projects/teamwork_future_research
 Integrity mode: development
 
 ## Requirements
 
-### R1. Fix Touch Coordinate Alignment
-Analyze the touch and pointer event logic in src/components/game-canvas.tsx. Fix the coordinate mapping so that the player character tracks the touch delta exactly 1:1, perfectly centered and scaled, regardless of the device's CSS aspect ratio, viewport size, or device pixel ratio. 
+### R1. 다각도 리서치 및 분석 수행
+최신 AI 및 에이전트 관련 학술 논문 트렌드, 유사 서비스(AutoGPT, Devin 등)의 시장 및 기능 분석, 그리고 에이전트 팀 자체의 창의적인 브레인스토밍을 모두 종합하여 다중 에이전트 시스템의 발전 방향을 도출해야 합니다.
 
-### R2. Cross-Device Emulator Verification
-Configure automated tests (e.g., Playwright) or use Chrome DevTools to emulate the viewports of a Samsung Galaxy S25+ and a modern iPhone (e.g., iPhone 15/16). Execute touch-drag actions in these emulated environments.
+### R2. 기능 명세 및 로드맵이 포함된 상세 보고서 작성
+리서치 결과를 바탕으로, 향후 도입해야 할 구체적인 기능 명세(Feature Specs)와 이를 구현하기 위한 단계별 실행 로드맵(Implementation Roadmap)이 포함된 상세한 마크다운 형태의 보고서를 작성해야 합니다.
 
 ## Acceptance Criteria
 
-### Verification
-- [ ] Code inspection confirms that touch clientX is properly mapped to the game's internal logical resolution using the canvas bounding client rect.
-- [ ] Playwright test scripts execute touch dragging on both a Samsung and an iPhone viewport profile.
-- [ ] The agent explicitly generates and saves screenshot artifacts showing the player perfectly aligned during a touch drag on these specific devices, fulfilling the user's request for visual proof.
+### 심판 에이전트(Agent-as-judge)를 통한 리뷰 루브릭
+- [ ] 보고서에 최신 연구 트렌드 분석, 타 서비스 비교 분석, 팀 자체의 독창적 아이디어가 각각 1개 이상 명시적인 섹션으로 포함되어 있는가?
+- [ ] 제안된 기능 명세가 단순히 추상적인 개념이 아니라, 실제 동작 방식이나 유즈케이스를 구체적으로 서술하고 있는가?
+- [ ] 구현 로드맵이 실현 가능한 논리적 순서(예: Phase 1, 2, 3)로 구성되어 있으며 각 단계의 목표가 명확한가?

@@ -1,58 +1,54 @@
-# BRIEFING — 2026-08-25T14:01:30+09:00
+# BRIEFING — 2026-08-26T11:07:20Z
 
 ## Mission
-Implement Milestone 1 (Enemy Physics & Movement Fixes) for Water Invader covering E-01, E-02, E-04, E-05, E-06, E-07, E-08, G-03 in `src/game/Enemy.ts` and `src/game/GameManager.ts`.
+Implement Milestone M1: Faction System & Multi-Directional Combat Core for 3-way battle mechanics.
 
 ## 🔒 My Identity
-- Archetype: Worker
+- Archetype: implementer
 - Roles: implementer, qa, specialist
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m1_1
-- Original parent: e737693e-6ff7-485f-936f-dbcb6c7779bf
-- Milestone: Milestone 1 (Enemy Physics & Movement Fixes)
+- Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_worker_m1_1
+- Original parent: 738841f4-20be-4ebb-85ad-eff3ce31cb23
+- Milestone: M1
 
 ## 🔒 Key Constraints
-- Genuine implementation only, no cheating or hardcoding test returns.
-- Minimal change principle: focus on `src/game/Enemy.ts` and `src/game/GameManager.ts`.
-- Must verify via Playwright tests and TypeScript type checking (`npx tsc --noEmit`).
-- Reply in Korean.
-- Explain reasoning and data flow with Tree Structures.
+- Exclusive write ownership: `src/game/types.ts`, `src/game/Entity.ts`, `src/game/Bullet.ts`, `src/game/Player.ts`, `src/game/Helper.ts`, `src/game/Enemy.ts`, `src/game/GameManager.ts`, `src/game/SoundManager.ts`.
+- Follow strict integrity mandate: genuine logic, real state and behavior.
+- Ensure build succeeds (`npx tsc --noEmit`, `npm run build`), existing tests pass.
 
 ## Current Parent
-- Conversation ID: e737693e-6ff7-485f-936f-dbcb6c7779bf
-- Updated: 2026-08-25T14:01:30+09:00
+- Conversation ID: 738841f4-20be-4ebb-85ad-eff3ce31cb23
+- Updated: 2026-08-26T11:07:20Z
 
 ## Task Summary
-- **What to build**:
-  1. Fix E-01: Splitter Mini2 Wall Bounce in `Enemy.ts` (bidirectional `movingDir` checking `Math.sign(speedX * direction)`)
-  2. Fix E-02: Include `EnemyType.DIVER` in `GameManager.ts` `spawnWave` specials candidate pool
-  3. Fix E-04: Enable Zigzag vertical descent along Y-axis (`position.y += currentSpeedY * deltaTime`) in `Enemy.ts`
-  4. Fix E-05: Tune Diver dive speed to dynamic menace (`Math.max(280, currentSpeedY * 35)`) in `Enemy.ts`
-  5. Fix E-06: Cap wave grid scaling (`Math.min(8, 6 + Math.floor(level / 3))`, `Math.min(5, 3 + Math.floor(level / 4))`, `offsetX >= 20`) in `GameManager.ts`
-  6. Fix E-07 & G-03: Stone barricade rigid halt (`position.y = Math.min(...)`) & destructible barricade gnawing speed throttle (0.2x) in `GameManager.ts` and `Enemy.ts`
-  7. Fix E-08: Protect Boss from player ramming instakill (deduct 10 HP rather than instakill) in `GameManager.ts`
-- **Success criteria**: All 7 defect fixes implemented cleanly; `npm run build` / `npx tsc --noEmit` clean; Playwright tests passing 29/29.
-- **Interface contracts**: PROJECT.md, reports/QA_SWEEP_REPORT.md
-- **Code layout**: `src/game/Enemy.ts`, `src/game/GameManager.ts`
-
-## Key Decisions Made
-- `movingDir` based wall bounce in `Enemy.ts` ensures proper reflection regardless of sign of `speedX`.
-- Diver dive speed is capped at a minimum 280 px/s and scales with speed multipliers for high combat tension.
-- Stone barricade collision clamps enemy Y to `barricade.position.y - enemy.size.height`, halting penetration.
-- Gnawing state throttles enemy horizontal/vertical speeds to 0.2x.
-- Player-boss collision deals 10 damage to Boss (and triggers explosion/kill only if `hp <= 0`).
+- **What to build**: Faction enum (`PLAYER`, `INVADER`, `ROGUE`), `Entity`/`Bullet` faction tagging and bullet styling, `Player`/`Helper`/`Enemy` faction assignment, generalized multi-faction collision matrix with crossfire handling, and Web Audio API procedural synthesis for 3rd faction warning, rogue laser, and crossfire hits.
+- **Success criteria**: TypeScript type check passes with 0 errors, build succeeds, Playwright tests pass, all 8 tasks fully implemented.
+- **Interface contracts**: PROJECT.md § Interface Contracts
+- **Code layout**: PROJECT.md § Code Layout
 
 ## Change Tracker
 - **Files modified**:
-  - `src/game/Enemy.ts`: E-01, E-04, E-05, G-03 fixes (speed throttle, dive speed, zigzag Y descent, wall bounce).
-  - `src/game/GameManager.ts`: E-02, E-06, E-07, E-08 fixes (spawnWave specials, grid bounds, boss collision damage, stone barricade penetration halt).
-  - `tests/stress/qa_harvest_verification.spec.ts`: assertions updated to verify resolved behavior.
-- **Build status**: PASS (`npx tsc --noEmit` 0 errors, `npm run build` completed in 5.0s, Playwright 29/29 passed).
+  - `src/game/types.ts`: Added `Faction` enum (`PLAYER`, `INVADER`, `ROGUE`).
+  - `src/game/Entity.ts`: Added `public faction: Faction = Faction.PLAYER;` and `isPlayerBullet` getter/setter.
+  - `src/game/Bullet.ts`: Added `faction` property, backward-compatible `isPlayerBullet` getter/setter, and faction-specific vector draw styles (`PLAYER` cyan, `ROGUE` neon lime/amber, `INVADER` red/orange/purple).
+  - `src/game/Player.ts`: Added `this.faction = Faction.PLAYER;` and tagged fired bullets.
+  - `src/game/Helper.ts`: Set `this.faction = Faction.PLAYER;`, tagged fired bullets, updated Fighter/Tank AI targeting to target opposing factions (`e.faction !== this.faction`, `b.faction !== this.faction`).
+  - `src/game/Enemy.ts`: Set `this.faction = Faction.INVADER;`, tagged fired bullets with `this.faction`, updated evasion logic, hit flash pure white silhouette, and staggered initial firing timer.
+  - `src/game/GameManager.ts`: Generalized `checkCollisions()` for multi-faction matrix (`bullet.faction !== target.faction`), crossfire destruction rewards (+50 score, 1-2 pure water, audio & particle sparks), opposing bullet interception, helper/player damage, and body collisions.
+  - `src/game/SoundManager.ts`: Added `playThirdFactionWarning()`, `playRogueShoot()`, `playCrossfireHit()` with Web Audio procedural synthesis and full node cleanup on `onended`.
+- **Build status**: PASS (0 TypeScript errors, clean Next.js 16.3.1 build)
 - **Pending issues**: None
 
 ## Quality Status
-- **Build/test result**: 29/29 Playwright tests passed across mechanics, multiwave, m1 verification, adversarial, and harvest verification suites.
+- **Build/test result**: PASS (All tests passing across core suites, adversarial suites, and 05_three_way_battle.spec.ts)
 - **Lint status**: Clean
-- **Tests added/modified**: `tests/stress/qa_harvest_verification.spec.ts`
+- **Tests added/modified**: Validated against `01_ui_and_controls.spec.ts`, `03_game_mechanics.spec.ts`, `04_multiwave_progression.spec.ts`, `05_three_way_battle.spec.ts`, `adversarial_challenger_m3.spec.ts`, and `enemy_y_boundary_and_dive_fixes.spec.ts`.
 
-## Loaded Skills
-- None
+## Key Decisions Made
+- Multi-faction collision matrix operates generically on `bullet.faction !== target.faction`, with same-faction friendly-fire immunity.
+- Crossfire destruction yields tactical reward points and pure water currency to player while triggering audio/particle feedback.
+
+## Artifact Index
+- `.agents/teamwork_preview_worker_m1_1/DISPATCH.md` — Assignment dispatch
+- `.agents/teamwork_preview_worker_m1_1/BRIEFING.md` — Agent memory
+- `.agents/teamwork_preview_worker_m1_1/progress.md` — Progress tracker
+- `.agents/teamwork_preview_worker_m1_1/handoff.md` — Final handoff report

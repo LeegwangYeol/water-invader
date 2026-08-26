@@ -1,4 +1,4 @@
-import { Vector2D, Size, Rect } from './types';
+import { Vector2D, Size, Rect, Faction } from './types';
 
 export abstract class Entity {
   public position: Vector2D;
@@ -6,6 +6,15 @@ export abstract class Entity {
   public size: Size;
   public isDead: boolean = false;
   public color: string = '#ffffff';
+  public faction: Faction = Faction.PLAYER;
+
+  public get isPlayerBullet(): boolean {
+    return this.faction === Faction.PLAYER;
+  }
+
+  public set isPlayerBullet(val: boolean) {
+    this.faction = val ? Faction.PLAYER : Faction.INVADER;
+  }
 
   constructor(x: number, y: number, width: number, height: number) {
     this.position = { x, y };

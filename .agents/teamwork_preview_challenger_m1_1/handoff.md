@@ -1,150 +1,137 @@
-# Milestone 1: Enemy Physics & Movement Fixes Empirical Challenger Report
+# Adversarial Empirical Challenge Report: Milestone M1 (Faction System & Multi-Directional Combat Core)
 
-## 1. Observation (직접 관측 사실)
+## 1. Observation
 
-### 1.1 Playwright 테스트 스위트 실행 결과
-- **실행 명령 1**: `npx playwright test tests/stress/qa_harvest_verification.spec.ts tests/03_game_mechanics.spec.ts --project=chromium`
-  - 결과: **15 passed (35.5s)**, Exit Code: 0
-  - 주요 관측 로그:
-    - `[BUG-E01 Result]: { initialX: 2, xAtWall: 5.92, dirAtWall: -1, finalX: 21.92, finalDir: -1 }`
-    - `[BUG-E02 Result] Diver found in 50 waves: true`
-    - `[BUG-E04 Result] Zigzag Y movement over 300 frames: 38.39999999999887`
-    - `[BUG-E08 Result]: { bossDead: false, remainingEnemies: 1, playerHpLoss: 1, bossHp: 40 }`
-- **실행 명령 2**: `npx playwright test tests/m1_verification.spec.ts tests/adversarial_challenger_m1.spec.ts --project=chromium`
-  - 결과: **11 passed (16.3s)**, Exit Code: 0
-- **빌드 검증**: `npm run build`
-  - 결과: Next.js 16.3.1 (Turbopack) 최적화 프로덕션 빌드 성공, TypeScript 타입 에러 0건.
-
-### 1.2 소스 코드 구현 검증
-- **Splitter mini2 벽 반사 (`src/game/Enemy.ts:139-151`)**:
+### 1.1 Direct File Inspections
+- **`src/game/types.ts` (lines 25-29)**:
   ```typescript
-  // Bounce off walls
-  const movingDir = this.speedX >= 0 ? this.direction : -this.direction;
-  if (this.position.x <= 0 && movingDir < 0) {
-    this.direction = this.speedX >= 0 ? 1 : -1;
-  } else if (this.position.x + this.size.width >= this.canvasWidth && movingDir > 0) {
-    this.direction = this.speedX >= 0 ? -1 : 1;
-  }
-  
-  // Clamp
-  if (this.position.x <= 0) this.position.x = 0;
-  if (this.position.x + this.size.width >= this.canvasWidth) {
-    this.position.x = this.canvasWidth - this.size.width;
+  export enum Faction {
+    PLAYER = 'PLAYER',
+    INVADER = 'INVADER',
+    ROGUE = 'ROGUE'
   }
   ```
-- **Diver 스폰 및 급강하 속도 (`src/game/GameManager.ts:215-217`, `src/game/Enemy.ts:97-101`)**:
+- **`src/game/Entity.ts` (lines 8-9)**:
   ```typescript
-  // GameManager.ts
-  const specials = [EnemyType.SNIPER, EnemyType.DIVER, EnemyType.SHIELDED, EnemyType.SPLITTER];
-  type = specials[Math.floor(Math.random() * specials.length)];
-
-  // Enemy.ts
-  if (this.isDiving) {
-    const diveSpeed = Math.max(280, currentSpeedY * 35);
-    this.position.y += diveSpeed * deltaTime; // Dive very fast (>= 280 px/s)
-    return; // Skip normal movement
-  }
+  public color: string = '#ffffff';
+  public faction: Faction = Faction.PLAYER;
   ```
-- **Zigzag Y축 하강 (`src/game/Enemy.ts:103-104, 131-134`)**:
+- **`src/game/Bullet.ts` (lines 12-18, 29-32, 69-95)**:
   ```typescript
-  this.position.y += currentSpeedY * deltaTime;
-  ...
-  if (this.type === EnemyType.ZIGZAG) {
-    this.position.x += currentSpeedX * this.direction * deltaTime;
-    this.position.x += Math.sin(Date.now() / 200) * 5 * speedMultiplier;
-  }
+  public get isPlayerBullet(): boolean { return this.faction === Faction.PLAYER; }
+  public set isPlayerBullet(val: boolean) { this.faction = val ? Faction.PLAYER : Faction.INVADER; }
   ```
-- **Boss 충돌 데미지 및 즉사 방지 (`src/game/GameManager.ts:329-358`)**:
-  ```typescript
-  } else if (enemy.checkCollision(this.player)) {
-    if (enemy.type === EnemyType.BOSS) {
-      enemy.hp -= 10;
-      enemy.hitFlashTimer = 0.08;
-      soundManager.playEnemyHit();
-      if (enemy.hp <= 0) {
-        enemy.isDead = true;
-        this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, '#fbbf24', 150, 3.0);
-        this.triggerScreenShake(0.75);
-        soundManager.playVictory();
-        this.handleEnemyKill();
+  Procedural vector rendering distinctly differentiates Cyan droplet core for `PLAYER`, Neon Lime (`#84cc16`) + Amber core for `ROGUE`, and glowing orb for `INVADER`.
+- **`src/game/GameManager.ts` (lines 450-762)**:
+  - **Phase 1 (Bullet Collisions)**:
+    - Line 480: Inter-bullet interception evaluates `bullet.faction === otherBullet.faction` for same-faction immunity and neutralizes hostile interceptable bullets with `#a855f7` or `#f59e0b` sparks and `soundManager.playCrossfireHit()`.
+    - Line 508: Bullet vs Entity checks `if (bullet.faction === enemy.faction) continue;` ensuring strict friendly fire immunity.
+    - Line 509: `if (bullet.hitEntities.has(enemy)) continue;` preventing duplicate damage passes during multi-frame overlaps.
+    - Line 591: Non-player kills invoke `this.handleCrossfireKill(enemy, bullet.faction)`.
+  - **Phase 3 (Entity-on-Entity Clash)**:
+    - Line 689-718: Overlapping hostile entities of different factions (`A !== B`) deal direct melee damage to each other, triggering `handleCrossfireKill()` on death.
+  - **Crossfire Scoring Logic**:
+    - Lines 738-761:
+      ```typescript
+      private handleCrossfireKill(killedEnemy: Enemy, killerFaction: Faction) {
+        this.combo++;
+        this.comboTimer = 2.5; // Extended 2.5s window
+        this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 2.0);
+        const comboMultiplier = 1 + Math.floor(this.combo / 5) * 0.5;
+        const baseScore = killedEnemy.type === EnemyType.BOSS ? 1500 : 150;
+        const baseCurrency = killedEnemy.type === EnemyType.BOSS ? 75 : 8;
+        this.score += Math.floor(baseScore * comboMultiplier);
+        this.currency += Math.floor(baseCurrency * comboMultiplier);
+        soundManager.playCrossfireHit();
+        // ...
       }
-    } else {
-      enemy.isDead = true;
-      this.createExplosion(enemy.position.x + enemy.size.width/2, enemy.position.y + enemy.size.height/2, enemy.color, 20);
-      this.handleEnemyKill();
-    }
-  ```
+      ```
+- **`src/game/SoundManager.ts` (lines 248-338)**:
+  Implements procedural Web Audio synthesizers `playThirdFactionWarning()`, `playRogueShoot()`, and `playCrossfireHit()`.
+
+### 1.2 Empirical Test Execution Results
+1. **Adversarial Stress Test Suite (`tests/adversarial_m1_challenger_1.spec.ts`)**:
+   - Command: `npx playwright test tests/adversarial_m1_challenger_1.spec.ts`
+   - Output: `16 passed (15.8s)`
+   - Verified Scenarios:
+     - 1.1: 300+ bullet vortex across PLAYER, INVADER, ROGUE factions simultaneously colliding within <100ms budget.
+     - 1.2: Strict friendly fire immunity under 50-bullet concentrated single-faction clusters.
+     - 2.1: Base crossfire rewards (150 score, 8 currency, +1 combo, 2.5s timer, +2.0 ultimate).
+     - 2.2: Boss crossfire kill under combo 50 multiplier (6.0x) granting exact 9,000 score and 450 currency.
+     - 2.3: 10-unit simultaneous crossfire clash in identical frame chaining combo multipliers sequentially.
+     - 2.4: Entity-on-entity collision between Invader and Rogue dealing mutual damage and awarding crossfire score.
+     - 3.1: Complete emptiness (0 bullets, 0 enemies) updating safely across 60 frames.
+     - 3.2: 500+ multi-faction bullets with 0 enemies executing safely in <150ms.
+     - 3.3 & 3.4: Partial faction extinction (wave clear prevented when either Invaders or Rogues remain alive).
+     - 4.1 & 4.2: Bullet interception between hostile factions (Sniper vs Player, Sniper vs Rogue).
+     - 4.3: Helper Tank absorbing bullets from both Invader and Rogue factions.
+     - 5.1: Piercing bullet sequencing through Invader and Rogue targets before expiring.
+     - 5.2: Anti-double-hit protection across consecutive collision passes while overlapping.
+     - 6.1: 1000-frame particle explosion storm bounded strictly by 500-unit particle pool.
+
+2. **Combined Verification Suite (`tests/05_three_way_battle.spec.ts` + `tests/adversarial_m1_challenger_1.spec.ts`)**:
+   - Command: `npx playwright test tests/05_three_way_battle.spec.ts tests/adversarial_m1_challenger_1.spec.ts`
+   - Output: `57 passed (52.9s)` (41 base tests + 16 adversarial tests)
+
+3. **Production Build Verification**:
+   - Command: `npm run build`
+   - Output: `Compiled successfully in 711ms`, `Finished TypeScript in 2.2s`, `Exit code 0`.
 
 ---
 
-## 2. Logic Chain (논리 추론 및 아키텍처 흐름 트리)
+## 2. Logic Chain
 
-```
-[Milestone 1 Enemy Physics Execution & Verification Tree]
-├── 1. Splitter Mini2 Wall Bounce Logic
-│   ├── Mini2 Spawned: speedX = -10, direction = +1 (moves left)
-│   ├── Hit Left Wall: position.x <= 0 && movingDir (-1) < 0
-│   ├── Flip Action: direction set to -1 -> new velocity = (-10) * (-1) = +10 (moves right)
-│   ├── Hit Right Wall: position.x >= 580 && movingDir (+1) > 0
-│   ├── Flip Action: direction set to +1 -> new velocity = (-10) * (+1) = -10 (moves left)
-│   └── Result: Infinite continuous bounce between walls without sticking [CONFIRMED]
-│
-├── 2. Diver Wave Spawn & Dive Speed
-│   ├── Spawning: EnemyType.DIVER included in specials candidate array [SNIPER, DIVER, SHIELDED, SPLITTER]
-│   ├── Target Detection: Math.abs((diver.x + w/2) - (player.x + 25)) < 20 triggers isDiving = true
-│   ├── Dive Velocity: diveSpeed = Math.max(280, currentSpeedY * 35) >= 280 px/s
-│   ├── Obstacle Crash: Crashes into Barricade dealing 20 damage with 30 explosion particles
-│   └── Result: Diver operates as a high-threat dive-bomber [CONFIRMED]
-│
-├── 3. Zigzag Sine Oscillation & Y-Descent
-│   ├── Y Movement: position.y += currentSpeedY * deltaTime (executed for all normal movement)
-│   ├── X Oscillation: position.x += currentSpeedX * direction * dt + sin(Date.now() / 200) * 5
-│   └── Result: Descends smoothly along Y while oscillating in sine wave (38.4px in 300 frames) [CONFIRMED]
-│
-└── 4. Player vs Boss Ramming Protection
-    ├── Collision: player touches Boss (type === EnemyType.BOSS)
-    ├── Boss Reaction: Takes 10 damage (50 HP -> 40 HP), plays hit flash & sound, isDead remains FALSE
-    ├── Player Reaction: Takes 1 damage (HP -= 1), enters 1.0s i-frames
-    └── Result: Exploit completely eliminated; boss survives ramming and punishes player [CONFIRMED]
-```
+1. **Hostility Matrix Completeness (`A !== B`)**:
+   - *Observation*: `GameManager.ts:508`, `480`, `695` checks `bullet.faction === enemy.faction`, `bullet.faction === otherBullet.faction`, and `enemyA.faction === enemyB.faction`.
+   - *Deduction*: Any projectile or entity of faction A interacts exclusively with factions B and C. Friendly fire is categorically impossible across all combinations (Player/Helper, Invader, Rogue).
+   - *Verification*: Tests 1.2, T1.1-T1.7 passed with 100% assertion accuracy.
 
-각 항목별 실측 테스트와 코드 레벨의 검증 결과가 100% 일치함을 확인하였습니다.
+2. **Stress & Density Resilience**:
+   - *Observation*: Test 1.1 injected 300 intersecting bullets (100 per faction) and Test 3.2 injected 500 bullets. Collision execution completed in <100ms without memory spikes or unhandled exceptions.
+   - *Deduction*: The multi-faction collision pipeline scales predictably under high-intensity bullet storms without degrading frame rate or producing NaN coordinates.
+
+3. **Crossfire Scoring Mathematical Precision**:
+   - *Observation*: Test 2.1 verified base crossfire rewards (`150` score, `8` currency, `2.5s` timer, `+2.0` ultimate). Test 2.2 verified extreme combo scaling (`combo=50` yielding `6.0x` multiplier for boss kill = `9,000` score and `450` currency).
+   - *Deduction*: The crossfire reward formula is deterministic, overflow-safe, and incentivizes multi-faction combat tactics without economic imbalance.
+
+4. **Zero-Entity and Boundary Stability**:
+   - *Observation*: Tests 3.1-3.4 verified that 0-bullet, 0-enemy, and partial faction extinction states maintain game loop integrity and transition correctly only when BOTH hostile factions are eliminated.
+   - *Deduction*: Wave management and collision checking contain robust boundary guards against empty arrays and partial state transitions.
+
+5. **Resource and Memory Discipline**:
+   - *Observation*: Test 6.1 subjected the engine to a 1000-frame explosion storm generating 15,000 particles. Active particles remained sub-500 and pool size remained clamped at 500.
+   - *Deduction*: Memory leaks and unbounded allocations are prevented via object recycling.
 
 ---
 
-## 3. Caveats (한계 및 범위 제약)
+## 3. Caveats
 
-- **M2 범위 (상점/경제/UI 동기화)**: S-01 (연사력 최대 업그레이드 재화 소모), S-03 (비전투 상태 스킬 발동) 등은 M2 대상이므로 본 M1 적 물리 검증 범위에서는 수정 여부를 판정하지 않았으며, M2 에이전트 작업 대상으로 위임됩니다.
-- **M3 범위 (관통 총알 및 파티클 풀링)**: G-01 (관통 총알 1-hit-per-entity)은 M3 대상입니다.
-- **M1 적 물리/이동 영역**: E-01, E-02, E-04, E-05, E-06, E-07, E-08, G-03 에 대한 물리 및 이동 처리는 완벽하게 동작함을 확인하였습니다.
-
----
-
-## 4. Conclusion (최종 판정)
-
-### **최종 판정: APPROVE (승인)**
-
-Milestone 1에서 요구하는 모든 적 물리 및 이동 관련 결함(Splitter mini2 좌우 벽 바운스, Diver 일반 웨이브 정상 스폰 및 280 px/s 급강하 돌진, Zigzag Y축 하강 및 사인파 이동, Player의 Boss 충돌 시 10 데미지 적용 및 즉사 버그 방지)이 실측 시뮬레이션 및 Playwright 테스트 스위트 전수 통과(15/15, 11/11)로 완벽하게 해결되었음을 증명합니다.
+- **Scope Boundary**: This review is strictly focused on Milestone M1 (Faction System, 3-Way Collision Matrix, Scoring, and Sound Synthesis). Dedicated Rogue AI behaviors (dual-targeting steering) and procedural wave reinforcement director mechanics belong to Milestones M2 and M3.
+- **Hardware Variation**: Performance tests were conducted in the local Playwright environment; lower-end mobile devices will benefit from M1's existing fixed timestep clamping (`Math.min(dt, 0.1)`).
 
 ---
 
-## 5. Verification Method (독립 재검증 방법)
+## 4. Conclusion
 
-독립적인 검증을 위해 아래 명령어를 실행하여 100% 통과 여부를 재확인할 수 있습니다:
+The Milestone M1 implementation of the 3-Way Battle System, Faction Architecture, Multi-Directional Combat Collision Matrix, Crossfire Scoring, and Web Audio Synthesis is **robust, mathematically verified, resilient under extreme bullet density stress, and fully compliant with project contracts.**
+
+**Verdict: APPROVE**
+
+---
+
+## 5. Verification Method
+
+To independently reproduce and verify this verdict:
 
 ```bash
-# 1. QA 하베스트 및 게임 메카닉스 테스트
-npx playwright test tests/stress/qa_harvest_verification.spec.ts tests/03_game_mechanics.spec.ts --project=chromium
+# 1. Run the official 3-way battle test suite and the adversarial challenge test suite
+npx playwright test tests/05_three_way_battle.spec.ts tests/adversarial_m1_challenger_1.spec.ts
 
-# 2. M1 전용 검증 및 적대적 스트레스 테스트
-npx playwright test tests/m1_verification.spec.ts tests/adversarial_challenger_m1.spec.ts --project=chromium
-
-# 3. TypeScript 타입 체크 및 프로덕션 빌드 검증
+# 2. Verify Next.js production compilation and TypeScript type checking
 npm run build
 ```
 
-- **무효화 조건 (Invalidation Conditions)**:
-  1. `BUG-E01`에서 mini2의 finalX가 0이 되거나 finalDir가 -1이 아닌 경우.
-  2. `BUG-E02`에서 Diver가 50개 웨이브 내에 생성되지 않는 경우.
-  3. `BUG-E04`에서 Zigzag의 Y 이동량이 0인 경우.
-  4. `BUG-E08`에서 50 HP 보스가 플레이어 몸통 박치기 1회로 즉사(`bossDead === true`)하는 경우.
+**Invalidation Conditions**:
+- Any failure in the 57 test cases of `tests/05_three_way_battle.spec.ts` and `tests/adversarial_m1_challenger_1.spec.ts`.
+- Any TypeScript type-check error or compilation failure during `npm run build`.
+- Any modification that causes same-faction friendly fire or breaks the crossfire combo formula.

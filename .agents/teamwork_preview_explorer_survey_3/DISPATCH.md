@@ -1,16 +1,16 @@
-## 2026-08-21T11:35:26Z
+## 2026-08-26T10:36:34Z
+You are a Survey Explorer (Survey Explorer 3).
+Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_3
 
-You are Explorer 3 for the Water Invader Endless Survival Stress Test project.
-Your Working Directory is: C:\src\SpaceInvader\.agents\teamwork_preview_explorer_survey_3
-Authoritative User Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-Workspace Root: C:\src\SpaceInvader
+Objective:
+Investigate the Water Invader codebase with a focus on:
+1. Game loop, state management, canvas rendering, and UI/HUD elements (score, health, wave/threat display, faction indicators).
+2. Existing build and test setup: package.json scripts (npm run build, npm test, etc.), test frameworks, linting, and directory structure.
+3. What changes to UI/HUD, visuals (colors/sprites/effects for 3rd faction), audio (if any), and game state transitions are needed to clearly support a 3-way battle.
 
-Task:
-1. Read C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md to understand all project requirements.
-2. Investigate performance-critical systems in C:\src\SpaceInvader:
-   - Web Audio context, sound effects, audio node creation, and potential audio node leak risks during high-frequency firing/explosions.
-   - Projectile arrays, particle systems, cleanup cycles, and max limits under 5-spread multi-shot and high fire rates.
-   - Enemy spawning, scaling, behavioral loops, collision detection performance in deep late-game waves.
-   - Metrics gathering mechanisms: how bots can monitor FPS, memory usage (JS heap), active audio nodes, active projectile counts, and detect anomalous behaviors/crashes.
-3. Formulate metrics collection and stress test measurement strategies.
-4. Write your findings to C:\src\SpaceInvader\.agents\teamwork_preview_explorer_survey_3\handoff.md and report completion with a concise summary via send_message to the orchestrator.
+Scope boundaries:
+- Read-only investigation. DO NOT write or edit source code.
+- Write your findings to /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_3/handoff.md
+
+Authoritative user request:
+Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md

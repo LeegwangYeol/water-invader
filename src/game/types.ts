@@ -21,3 +21,22 @@ export enum GameState {
   GAME_OVER = 'GAME_OVER',
   SHOP = 'SHOP'
 }
+
+export enum Faction {
+  PLAYER = 'PLAYER',
+  INVADER = 'INVADER',
+  ROGUE = 'ROGUE'
+}
+
+export enum EnemyType {
+  NORMAL = 0,
+  ZIGZAG = 1,
+  BOSS = 2,
+  SNIPER = 3,
+  DIVER = 4,
+  SHIELDED = 5,
+  SPLITTER = 6,
+  ROGUE_DRONE = 7,
+  ROGUE_STALKER = 8,
+  ROGUE_MECH = 9
+}

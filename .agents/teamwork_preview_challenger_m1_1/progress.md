@@ -1,14 +1,12 @@
-# Progress Log
+# Progress — Challenger 1 (Milestone M1)
 
-- Last visited: 2026-08-25T14:04:05+09:00
-- State: Testing & Verification Complete
-- Current step: Writing handoff.md and sending summary to parent orchestrator.
+Last visited: 2026-08-26T11:06:00Z
 
-## Execution History
-1. Initialized DISPATCH.md and BRIEFING.md.
-2. Inspected `src/game/Enemy.ts`, `src/game/GameManager.ts`, `tests/stress/qa_harvest_verification.spec.ts`, and `tests/03_game_mechanics.spec.ts`.
-3. Ran Playwright test suite: `npx playwright test tests/stress/qa_harvest_verification.spec.ts tests/03_game_mechanics.spec.ts --project=chromium` -> 15/15 passed in 35.5s.
-4. Ran M1 Verification & Adversarial test suite: `npx playwright test tests/m1_verification.spec.ts tests/adversarial_challenger_m1.spec.ts --project=chromium` -> 11/11 passed in 16.3s.
-5. Ran build check: `npm run build` -> Next.js 16.3.1 (Turbopack) build succeeded with 0 errors.
-6. Verified all 4 core M1 targets empirically.
-7. Prepared handoff.md with APPROVE verdict.
+- [x] Initialized workspace and briefing
+- [x] Read references (ORIGINAL_REQUEST.md, PROJECT.md, TEST_READY.md)
+- [x] Inspected codebase implementation for 3-Way battle, faction rules, scoring, bullet collisions
+- [x] Authored and executed empirical adversarial test suite (`tests/adversarial_m1_challenger_1.spec.ts`)
+- [x] Verified full M1 test suite (57/57 tests passing: 41 in `05_three_way_battle.spec.ts` + 16 in `adversarial_m1_challenger_1.spec.ts`)
+- [x] Verified production build (`npm run build` passed with 0 errors)
+- [x] Compiled comprehensive handoff report (`handoff.md`)
+- [x] Delivered verdict: APPROVE

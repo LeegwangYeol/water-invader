@@ -1,20 +1,19 @@
-# Progress - teamwork_preview_challenger_m1_2
+# Progress - Challenger 2 (Milestone M1 Faction System & Multi-Directional Combat Core)
 
-Last visited: 2026-08-25T14:04:50+09:00
+Last visited: 2026-08-26T20:05:00+09:00
 
-## Status
-Empirical adversarial stress verification of Milestone 1 completed successfully with verdict: APPROVE.
+## Tasks
+- [x] Agent workspace and metadata initialization
+- [x] Investigate codebase, PROJECT.md, and TEST_READY.md
+- [x] Execute Playwright test suite `tests/05_three_way_battle.spec.ts` (PASS: 41/41)
+- [x] Construct empirical stress test harness `tests/adversarial_challenger_m1_faction_combat.ts` (39 tests)
+- [x] Construct companion browser Playwright spec `tests/adversarial_challenger_m1_faction_combat.spec.ts` (PASS: 3/3)
+- [x] Construct isolated reproduction harness `tests/test_ghost_collision_bug.ts` proving corpse collision & multi-kill duplication bug
+- [x] Empirically verify 3 mission components:
+  - [x] Helper AI multi-faction targeting & interception (PASS)
+  - [x] Same-faction friendly fire immunity (PASS)
+  - [x] Inter-faction enemy body collision consistency & mutual damage (CRITICAL BUG FOUND: `VULN-M1-01`)
+- [x] Build check: `npm run build` (PASS)
+- [x] Formulate 5-Component handoff report with verdict `REJECT`
+- [ ] Send handoff message to orchestrator
 
-## Completed Tasks
-- [x] Initialized workspace and briefing
-- [x] Read authoritative requirements (`ORIGINAL_REQUEST.md`, `PROJECT.md`, `QA_SWEEP_REPORT.md`)
-- [x] Executed Playwright multi-wave progression suite: `tests/04_multiwave_progression.spec.ts` (4 passed)
-- [x] Executed QA harvest verification suite: `tests/stress/qa_harvest_verification.spec.ts` (7 passed)
-- [x] Implemented and executed adversarial stress suite: `tests/adversarial_challenger_m1_2.spec.ts` (3 passed)
-  - Wave scaling & boundary invariants across waves 1..50 (`EMP-WAVE-01`)
-  - Stone barricade rigid-body anti-ghosting verification (`EMP-BARRICADE-01`)
-  - Destructible barricade gnawing speed throttling at 0.2x multiplier (`EMP-BARRICADE-02`)
-- [x] Full Playwright regression test run (14 tests passed in 23.4s)
-- [x] TypeScript type checking (`npx tsc --noEmit` -> code 0)
-- [x] Next.js production build (`npm run build` -> code 0)
-- [x] Prepared final handoff report with verdict: APPROVE

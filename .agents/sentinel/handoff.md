@@ -1,50 +1,35 @@
-﻿# Sentinel Completion Handoff
+# Sentinel Final Handoff Report
 
 ## 1. Observation
-- 사용자 요청: 다양한 종횡비(삼성 S25+, iPhone 등)를 가진 모바일 환경에서 터치 X축 조작 시 플레이어가 1:1로 정확하게 추적/중앙 정렬되도록 src/components/game-canvas.tsx의 터치 좌표 매핑을 수정하고, Playwright 기반 다중 디바이스 에뮬레이션 테스트 및 스크린샷 아티팩트를 통한 시각적 증거를 제공.
-- 작업 경로: SWE Light (	eamwork_preview_swe) 경로 배정 후 구현 -> 3라운드 Adversarial Review -> Victory Auditor 독립 감사 수행.
-- Sentinel 독립 감사(	eamwork_preview_victory_auditor): 3단계 감사(타임라인/Diff, 부정행위 탐지, 독립 테스트 및 빌드 실행) 결과 **VICTORY CONFIRMED** 판정 획득.
+The user requested the implementation of a 3-way battle system (Player/Allies vs. Enemies vs. Third Faction) and dynamic, unpredictable enemy reinforcement spawning in Water Invader, along with a subsequent visual update requiring vibrant aquatic visuals and pixel art image loading for enemies and the new Rogue faction.
+All deliverables were orchestrated through a dual-track swarm, independently challenged, verified by forensic auditors, and passed an independent 3-phase Victory Audit.
 
-## 2. Logic Chain & Architecture Tree Structure
+## 2. Logic Chain
+1. **Scope & Decomposition**:
+   - `Faction` enum established (`PLAYER`, `INVADER`, `ROGUE`) with generalized collision matrix (`A !== B`) across all entities and bullets.
+   - Third faction units (`ROGUE_DRONE`, `ROGUE_STALKER`, `ROGUE_MECH`) implemented with dual-targeting AI (`Math.hypot`/`Math.atan2`) hostile to both player and invader factions.
+   - Dynamic Reinforcements Engine created with procedural formation director (`FLANK`, `SPEARHEAD`, `ROGUE_INCURSION`, `3WAY_CLASH`) and tempo scaling (8–15s).
+   - Multi-faction wave clear logic requiring total elimination of all active hostile entities across both Invader and Rogue factions.
+   - Top HUD multi-faction threat counters and incursion warning banners.
+   - Aquatic visual asset integration with pixel art loading (`/public/assets/enemy_squid.jpg`, `enemy_crab.jpg`, `rogue_jellyfish.jpg`) and bioluminescent procedural vector art.
+2. **Adversarial & Forensic Verification**:
+   - Milestone verification gates executed by specialized Reviewers, Challengers (Tier 5 combat & reinforcement stress tests), and Forensic Auditors.
+   - Independent Victory Auditor conducted a blocking 3-phase audit confirming zero cheating/mocking, authentic multi-faction combat, and full build/test compliance.
 
-`
-c:\src\SpaceInvader\
-├── src/components/game-canvas.tsx                 # [핵심 로직] 포인터/터치 1:1 좌표 변환
-│   ├── updateTargetX / PointerEvent Handlers     # clientX -> Logical X (600px) 상대 변위 계산
-│   │   ├── contentWidth = canvas.clientWidth      # CSS 테두리 및 종횡비 독립적 렌더링 폭 추출
-│   │   ├── scaleX = logicalWidth / contentWidth   # DPR 및 CSS 스케일 역보정 비율 산출
-│   │   ├── deltaLogicalX = deltaClientX * scaleX  # 1:1 물리 터치 변위 변환
-│   │   └── player.position.x 클램핑 (0 ~ 550)     # 화면 밖 이탈 방지
-│   └── activePointerIdRef & Event Handlers        # 멀티터치 격리 및 resize/blur/pointercancel 핸들링
-├── tests/
-│   ├── cross_device_touch_verification.spec.ts   # [검증] 5개 모바일 디바이스 뷰포트 프로필 테스트 (30/30 통과)
-│   │   ├── Samsung Galaxy S25+ (412x915, DPR 3.5)
-│   │   ├── iPhone 16 Pro (393x852, DPR 3.0)
-│   │   ├── iPhone 14 (390x844, DPR 3.0)
-│   │   ├── iPhone SE (375x667, DPR 2.0)
-│   │   └── Galaxy Z Fold (375x812, DPR 2.625)
-│   └── mobile_controls_and_touch_evasion.spec.ts # [검증] 회귀/스킬 버튼 충돌 방지 테스트 (10/10 통과)
-└── reports/screenshots/                          # [시각적 아티팩트] 기기별 5종 총 25개 스크린샷
-    ├── samsung_galaxy_s25_plus/ (01~05.png)
-    ├── iphone_16_pro/ (01~05.png)
-    ├── iphone_14/ (01~05.png)
-    ├── iphone_se/ (01~05.png)
-    └── galaxy_z_fold/ (01~05.png)
-`
-
-## 3. Caveats & Edge Cases
-- CSS 보더(예: order-4)가 canvas 요소에 적용되더라도 canvas.clientWidth와 clientLeft를 활용하여 내부 실제 컨텐츠 영역 폭만을 정확히 측정하도록 구현되어 있어 스타일 변경에 안전합니다.
-- 디바이스 회전(orientationchange) 또는 리사이즈 시 포인터 상태를 안전하게 초기화하여 좌표 점프를 방지합니다.
+## 3. Caveats
+- Image assets in `/public/assets/` are loaded asynchronously with instant fallback to procedural bioluminescent vector graphics if image loading is delayed or offline.
+- Performance remains clamped at 60 FPS requestAnimationFrame with rigid boundary clamping and object pooling.
 
 ## 4. Conclusion
-- 모바일 환경에서의 X축 터치 1:1 정밀 좌표 매핑, 멀티터치 격리, 경계 클램핑, 반응형 화면 크기 변경 대응이 완벽히 수정되었습니다.
-- 모든 요구사항이 100% 충족되었으며 독립 승리 감사에서 VICTORY CONFIRMED로 최종 통과되었습니다.
+All acceptance criteria from `ORIGINAL_REQUEST.md` have been fulfilled.
+- **Victory Audit Verdict**: **VICTORY CONFIRMED**
+- **Type Safety**: 0 TypeScript compilation errors (`tsc --noEmit`).
+- **Production Build**: Clean Next.js Turbopack build (`npm run build`).
+- **Test Suite**: 295 / 295 Playwright tests passing (100%).
 
 ## 5. Verification Method
-- Next.js 프로덕션 빌드: 
-pm run build -> Exit Code 0 (컴파일/타입 에러 0건)
-- 크로스 디바이스 테스트: 
-px playwright test tests/cross_device_touch_verification.spec.ts -> 30/30 PASSED
-- 모바일 컨트롤 회귀 테스트: 
-px playwright test tests/mobile_controls_and_touch_evasion.spec.ts -> 10/10 PASSED
-- 시각적 검증: eports/screenshots/ 내 25개 스크린샷 아티팩트 직접 육안 확인 완료
+- Build: `npm run build` (Exit code 0)
+- Target E2E Test Suite: `npx playwright test tests/05_three_way_battle.spec.ts` (41/41 passed)
+- Tier 5 Combat Hardening: `npx playwright test tests/tier5_adversarial_combat.spec.ts` (10/10 passed)
+- Tier 5 Reinforcement Hardening: `npx playwright test tests/tier5_adversarial_reinforcements.spec.ts` (18/18 passed)
+- Full Regression Test Suite: `npx playwright test` (295/295 passed)
