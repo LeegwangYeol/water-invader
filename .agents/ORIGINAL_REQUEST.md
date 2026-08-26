@@ -142,3 +142,31 @@ Investigate enemies with diving or plunging attacks (e.g., Diver type). Ensure t
 - [ ] Code inspection confirms strict `Math.min()` clamping or boundary checks for enemy Y coordinates.
 - [ ] Automated Playwright tests or test bots specifically trigger dive attacks and verify the game state remains stable and does not crash.
 - [ ] Enemies that reach the bottom boundary are handled correctly (e.g., despawned, hit player, or destroyed by barricades).
+
+## 2026-08-26T00:42:13Z
+
+# Teamwork Project Prompt ? Draft
+
+> Status: Launched
+> Goal: Fix and improve mobile left-right movement controls
+> Requested team: Small, focused team
+
+The mobile touch controls for moving the player left and right are currently very finicky and difficult to use. The team must refine the touch/drag sensitivity and responsiveness to make mobile evasion smooth and intuitive.
+
+Working directory: ~/teamwork_projects/water_invader_mobile_controls_fix
+Integrity mode: development
+
+## Requirements
+
+### R1. Enhance Mobile Touch Responsiveness
+Analyze the touch/drag event listeners (e.g., onTouchStart, onTouchMove, pointer events) controlling the player in src/components/game-canvas.tsx. Improve the tracking sensitivity, scaling, and deadzones so that dragging the player character horizontally feels smooth, 1:1 responsive, and free of jitter.
+
+### R2. Resolve UI Conflicts
+Ensure that the improved touch area does not conflict with overlay buttons (like Ally, Ultimate, Shop). The movement should only register in the playable canvas area or specifically where intended without accidentally triggering other UI elements.
+
+## Acceptance Criteria
+
+### Verification
+- [ ] Code inspection confirms updated touch logic (e.g., proper delta-X calculation and boundary clamping).
+- [ ] Playwright tests utilizing mobile device emulation confirm that dragging events successfully move the player without getting stuck or dropped.
+- [ ] Automated tests verify that the new control scheme does not break or block interactions with the on-screen UI buttons (Ally/Ultimate).

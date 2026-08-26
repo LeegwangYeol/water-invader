@@ -4,8 +4,11 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\src\\SpaceInvader\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "tests/03_game_mechanics.spec.ts",
-      "tests/water-invader.spec.ts"
+      "tests/01_ui_and_controls.spec.ts",
+      "tests/enemy_y_boundary_and_dive_fixes.spec.ts",
+      "tests/adversarial_challenger_m3_1.spec.ts",
+      "tests/02_rendering_and_vector_art.spec.ts",
+      "tests/03_game_mechanics.spec.ts"
     ],
     "configFile": "C:\\src\\SpaceInvader\\playwright.config.ts",
     "rootDir": "C:/src/SpaceInvader/tests",
@@ -79,6 +82,278 @@
   },
   "suites": [
     {
+      "title": "01_ui_and_controls.spec.ts",
+      "file": "01_ui_and_controls.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "R1: UI & Controls Verification Suite",
+          "file": "01_ui_and_controls.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Page loads properly with Canvas and Menu Overlay",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 951,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:14.133Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b93b26d555c6a51bb42b-0c9e5c4138a6b0550d76",
+              "file": "01_ui_and_controls.spec.ts",
+              "line": 9,
+              "column": 7
+            },
+            {
+              "title": "HOW TO PLAY modal opens, shows controls/mechanics/cheats, and closes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 936,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:15.247Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b93b26d555c6a51bb42b-b90bd83a0b2eea4458f0",
+              "file": "01_ui_and_controls.spec.ts",
+              "line": 38,
+              "column": 7
+            },
+            {
+              "title": "Starting game initializes window.gameManager and transitions HUD & In-Game Controls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1161,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:16.192Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b93b26d555c6a51bb42b-2c07d76fa9151714f5e8",
+              "file": "01_ui_and_controls.spec.ts",
+              "line": 63,
+              "column": 7
+            },
+            {
+              "title": "HUD reflect pure water currency changes and enables ALLY(Q) button",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 922,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:17.368Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b93b26d555c6a51bb42b-9627e101c5dba8c63b16",
+              "file": "01_ui_and_controls.spec.ts",
+              "line": 96,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "02_rendering_and_vector_art.spec.ts",
+      "file": "02_rendering_and_vector_art.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "R1: Canvas Rendering & Vector Graphics Verification Suite",
+          "file": "02_rendering_and_vector_art.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Player Cute Droplet vector rendering and state transitions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 905,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:18.316Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c65cf58c351b47863508-cdf2873ef6aa3ef85f3f",
+              "file": "02_rendering_and_vector_art.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "All 7 Enemy types render procedural vector graphics without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 968,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:19.236Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c65cf58c351b47863508-462e9370de65f2abfbb0",
+              "file": "02_rendering_and_vector_art.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "Barricades layout and voxel block grid rendering",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 940,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:20.222Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c65cf58c351b47863508-34acacd0ae3eaa6f6cf1",
+              "file": "02_rendering_and_vector_art.spec.ts",
+              "line": 155,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
       "title": "03_game_mechanics.spec.ts",
       "file": "03_game_mechanics.spec.ts",
       "column": 0,
@@ -107,12 +382,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5848,
+                      "duration": 5472,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:42.581Z",
+                      "startTime": "2026-08-26T01:51:21.199Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -141,12 +416,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1702,
+                      "duration": 1539,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:48.624Z",
+                      "startTime": "2026-08-26T01:51:26.687Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -175,12 +450,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1151,
+                      "duration": 1019,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:50.346Z",
+                      "startTime": "2026-08-26T01:51:28.239Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -209,12 +484,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1491,
+                      "duration": 1246,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:51.513Z",
+                      "startTime": "2026-08-26T01:51:29.271Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -243,12 +518,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1049,
+                      "duration": 919,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:53.019Z",
+                      "startTime": "2026-08-26T01:51:30.530Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -277,12 +552,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1036,
+                      "duration": 956,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:54.084Z",
+                      "startTime": "2026-08-26T01:51:31.463Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -311,12 +586,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1082,
+                      "duration": 986,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:55.137Z",
+                      "startTime": "2026-08-26T01:51:32.436Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -345,12 +620,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1116,
+                      "duration": 958,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:56.235Z",
+                      "startTime": "2026-08-26T01:51:33.443Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -368,20 +643,640 @@
       ]
     },
     {
-      "title": "water-invader.spec.ts",
-      "file": "water-invader.spec.ts",
+      "title": "adversarial_challenger_m3_1.spec.ts",
+      "file": "adversarial_challenger_m3_1.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Water Invader E2E Master Verification Suite",
-          "file": "water-invader.spec.ts",
+          "title": "Adversarial Challenger M3-1: F-10 (Aspect Ratio), F-11 (HiDPI / Retina), F-13 (Top HUD Clearance)",
+          "file": "adversarial_challenger_m3_1.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Challenge 1: F-10 Multi-Viewport Aspect Ratio [3/4] Non-Stretching & Dynamic Resizing",
+              "file": "adversarial_challenger_m3_1.spec.ts",
+              "line": 9,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "1.1 Viewport Mobile - iPhone SE (375x667) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1169,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:34.440Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-3347a2c8056cf23d8ef5",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.1 Viewport Mobile - iPhone 14 Pro Max (430x932) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1204,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:35.623Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-76f2f2ddc3192ff9e128",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.1 Viewport Mobile - Narrow (320x800) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1179,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:36.842Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-3054f6a21656d2bafad6",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.1 Viewport Tablet - iPad Mini (768x1024) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1017,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:38.036Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-48d2310f215b524802f4",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.1 Viewport Tablet - iPad Pro (1024x1366) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 988,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:39.067Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-10e770a9a34a2df3be44",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.1 Viewport Desktop - Standard HD (1280x800) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 975,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:40.067Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-e61a72933d9fe39aa214",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.1 Viewport Desktop - Full HD (1920x1080) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 991,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:41.058Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-e7ac27f9f44e58e1aa30",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.1 Viewport Desktop - 2K QHD (2560x1440) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1048,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:42.062Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-fba7168b5e9759cd1227",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.1 Viewport Ultra-Wide - 21:9 (3440x1440) strictly maintains 3:4 canvas aspect ratio without stretching",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1080,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:43.123Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-bc1d34d3616a1d45b425",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 23,
+                  "column": 11
+                },
+                {
+                  "title": "1.2 Dynamic continuous viewport resizing during active gameplay preserves aspect ratio and physics",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1112,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:44.218Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-cbc5fa0604b9892065c0",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 52,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Challenge 2: F-11 DPR Scaling (1, 2, 3, 4) & Pointer Coordinate Mapping Accuracy",
+              "file": "adversarial_challenger_m3_1.spec.ts",
+              "line": 93,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "2.1 Buffer dimensions and DPR scaling across DPR = 1, 2, 3, 4",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 848,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:45.344Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-8254fe5f7ef480d4e153",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 94,
+                  "column": 9
+                },
+                {
+                  "title": "2.2 Mathematical accuracy of Pointer coordinate transformation and Deadzone mechanics",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 965,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:46.204Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-8d7101ac00d31fc6ad5e",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 126,
+                  "column": 9
+                },
+                {
+                  "title": "2.3 Extreme pointer coordinate stress: boundary clamping & subpixel inputs",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 923,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:47.181Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-c60ff0a4807ed404882e",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 228,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Challenge 3: F-13 Top HUD Safe Zone & Spawning Occlusion Adversarial Suite",
+              "file": "adversarial_challenger_m3_1.spec.ts",
+              "line": 284,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "3.1 Full 20-wave formation sweep guarantees min Y >= 80 and Boss Y >= 90",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 970,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:48.116Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-31eaa78c5cb25eea1ef2",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 285,
+                  "column": 9
+                },
+                {
+                  "title": "3.2 Enemy reinforcements spawn at Y >= 80",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 925,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:49.099Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-5fc181243a464407863c",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 325,
+                  "column": 9
+                },
+                {
+                  "title": "3.3 Boss battle spatial layout & Boss HP Bar safe separation verification",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 911,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:50.037Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-ecd5469102c3e1ea4e97",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 353,
+                  "column": 9
+                },
+                {
+                  "title": "3.4 Center column unobstructed corridor verification for formations and boss",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 915,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-08-26T01:51:50.961Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "3f4cc259887bcc91c63b-459b39aacd2bc8087efb",
+                  "file": "adversarial_challenger_m3_1.spec.ts",
+                  "line": 391,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "enemy_y_boundary_and_dive_fixes.spec.ts",
+      "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Enemy Y-Axis Boundary & Dive Mechanic Fixes Suite (R1 & R2)",
+          "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "Full Life-cycle: Menu -> In-game -> Combat -> Reinforcement -> Boss -> Game Over",
+              "title": "R1-01: Strict Math.min clamping of Y-axis coordinates for all standard enemy types",
               "ok": true,
               "tags": [],
               "tests": [
@@ -396,12 +1291,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2028,
+                      "duration": 947,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-25T12:50:57.374Z",
+                      "startTime": "2026-08-26T01:51:51.909Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -409,9 +1304,655 @@
                   "status": "expected"
                 }
               ],
-              "id": "2c561389e21ec9c94dfb-3eee5d46bdc7c9838461",
-              "file": "water-invader.spec.ts",
-              "line": 9,
+              "id": "e9144e0da96330d39607-f061109efbfb427295f5",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "R1-02: Zigzag enemy horizontal oscillation while strictly clamped at bottom Y bound",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 921,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:52.868Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-7d1158e2e5a58ba19830",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 48,
+              "column": 7
+            },
+            {
+              "title": "R2-01: Diver plunge attack trigger, safe trajectory acceleration, and boundary containment",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 910,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:53.802Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-2b16d737f7926b7a8bdb",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "R2-02: Diver crashing into destructible barricade deals 20 crash damage and is destroyed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 936,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:54.727Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-3d8a9e3f7b59eb6ff67c",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 123,
+              "column": 7
+            },
+            {
+              "title": "R2-03: Diver crashing into indestructible stone barricade is destroyed with 0 damage to barricade",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 947,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:55.677Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-f1bb6375cb1848240a6d",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 153,
+              "column": 7
+            },
+            {
+              "title": "R2-04: Diver ramming player damages player and destroys diver",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 955,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:56.637Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-3d75d1a876cbc0622725",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 180,
+              "column": 7
+            },
+            {
+              "title": "R2-05: Enemy reaching bottom boundary is gracefully despawned with breach penalty",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 920,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:57.603Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-8e48cecef9b41b7a7573",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 212,
+              "column": 7
+            },
+            {
+              "title": "R2-06: Robustness under extreme / NaN inputs and missing parameters",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 918,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:58.536Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-975249041bdc5c45f4f4",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 244,
+              "column": 7
+            },
+            {
+              "title": "R2-07: NaN canvas dimensions and invalid speed multipliers do not corrupt positions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 928,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:51:59.470Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-9c1bc0aba5e383689a5f",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 293,
+              "column": 7
+            },
+            {
+              "title": "R2-08: Diver does NOT trigger downward dive when player is above the diver",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 929,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:00.411Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-dea37278ac07e8316f41",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 326,
+              "column": 7
+            },
+            {
+              "title": "R2-09: Multiple simultaneous divers under fluctuating deltaTimes (240 FPS to lag spikes)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 918,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:01.350Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-2c3ce05579e512b8c023",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 348,
+              "column": 7
+            },
+            {
+              "title": "R2-10: Diver with NaN constructor coordinates or during dive recovers to finite values and despawns gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 959,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:02.282Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-00bf98f132f5d1153dea",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 393,
+              "column": 7
+            },
+            {
+              "title": "R2-11: Negative initial coordinates and negative speed impulses are clamped to upper boundary (Y >= 0)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 910,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:03.256Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-57c851c479c79097e33e",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 429,
+              "column": 7
+            },
+            {
+              "title": "R2-12: Massive lag spike (deltaTime = 0.5s) is capped to 0.1s timestep inside Enemy.update",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 929,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:04.178Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-17828c569ad59d32b638",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 458,
+              "column": 7
+            },
+            {
+              "title": "R2-13: Enemy ramming player resets combo to 0 and updates score UI",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 941,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:05.118Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-388c47666640d6da36f9",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 482,
+              "column": 7
+            },
+            {
+              "title": "R2-14: Splitter mini-enemies spawn strictly inside canvas boundaries at extreme edges",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 965,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:06.076Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-4d92afa000d8c536d878",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 512,
+              "column": 7
+            },
+            {
+              "title": "R3-15: Boss and Splitter size re-clamping immediately in constructor at extreme boundaries",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 939,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:07.052Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-03d378347e091910faf8",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 548,
+              "column": 7
+            },
+            {
+              "title": "R3-16: Defense breach penalty strictly resets player combo to 0 and updates score UI",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 954,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:08.004Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-993b7b30d6150cee0c86",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 576,
+              "column": 7
+            },
+            {
+              "title": "R3-17: Diver horizontal bounds containment and trajectory stability during plunge",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 931,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:08.971Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-fe5b4b8c6291d9bd07d9",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 603,
+              "column": 7
+            },
+            {
+              "title": "R3-18: 1000-Frame continuous stress across all enemy movement patterns with zero NaN and zero out-of-bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 908,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-26T01:52:09.916Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e9144e0da96330d39607-5e535b453e260529e93c",
+              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
+              "line": 632,
               "column": 7
             }
           ]
@@ -421,9 +1962,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-25T12:50:37.870Z",
-    "duration": 22349.204,
-    "expected": 9,
+    "startTime": "2026-08-26T01:51:10.994Z",
+    "duration": 60402.062000000005,
+    "expected": 52,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

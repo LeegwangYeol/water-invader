@@ -1,49 +1,50 @@
-# Sentinel Handoff Report â€” Enemy Y-Axis Boundary & Dive Movement Fixes (VICTORY CONFIRMED)
+# Sentinel Handoff: Mobile Controls Fix and Enhancement
 
-## Observation
-- Received user request to fix enemy Y-axis boundary and dive movement bugs (R1: Strict Y-axis clamping via `Math.min()`, R2: Safe dive mechanics and collision/breach handling without breaking state) with a small, focused team.
-- Request recorded verbatim in `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md` (timestamp: 2026-08-25T11:44:08Z).
-- Routed to SWE Light Path (`teamwork_preview_swe`, conv ID: `da57cf43-68c1-484f-84cc-af0bbeda0ea5`).
-- SWE Light executed 4 rounds: Implementer R0 -> Reviewer R1 -> Reviewer R2 -> Reviewer R3.
-- Independent Sentinel Victory Auditor (`teamwork_preview_victory_auditor`, conv ID: `6a76334a-8209-4385-ad12-5bec4fb79164`) executed a blocking 3-phase audit and delivered: **VICTORY CONFIRMED**.
+## 1. Observation
+- »ç¿ëÀÚ ¿äÃ» (2026-08-26T00:42:13Z): Water Invader ¸ğ¹ÙÀÏ È¯°æ¿¡¼­ÀÇ ÁÂ¿ì ÀÌµ¿ ÅÍÄ¡ ÄÁÆ®·Ñ(°¨µµ, 1:1 ¹İÀÀ¼º, ÁöÅÍ/Å»¶ô ¹æÁö) °³¼± ¹× »ó´Ü/ÇÏ´Ü UI ¿À¹ö·¹ÀÌ(ALLY, ULT, SHOP, HUD)¿ÍÀÇ Ãæµ¹ ÇØ°á.
+- ½ÇÇà °æ·Î: ¼Ò±Ô¸ğ ÁıÁß ÆÀ ¹× ´ÜÀÏ ±â´É °³¼± ¿ä±¸¿¡ µû¶ó SWE Light (	eamwork_preview_swe) °æ·Î·Î ¶ó¿ìÆÃ.
+- ¿ÀÄÉ½ºÆ®·¹ÀÌÅÍ ¹× 3È¸Â÷ Àû´ëÀû ¸®ºä¾î ¶ó¿îµå °ÅÃÄ ÄÚµå º¯°æ ¹× ¸ğ¹ÙÀÏ Àü¿ë Playwright Å×½ºÆ® ½´Æ® ±¸¼º ¿Ï·á.
+- µ¶¸³ ½Â¸® °¨»ç°ü(	eamwork_preview_victory_auditor)ÀÇ 3´Ü°è °¨»ç °á°ú **VICTORY CONFIRMED** ÃÖÁ¾ È¹µæ.
 
-## Logic Chain
-```
-[Sentinel Execution & Verification Flow Tree]
-â”œâ”€â”€ 1. Request Logging & Routing
-â”‚   â”œâ”€â”€ Logged verbatim to .agents/ORIGINAL_REQUEST.md
-â”‚   â””â”€â”€ Routed to SWE Light: teamwork_preview_swe (small focused team)
-â”œâ”€â”€ 2. SWE Light Sequential Loop
-â”‚   â”œâ”€â”€ Round 0 (Implementer): Initial working diff for Y-clamping, dive trajectory & 8 core tests [PASS]
-â”‚   â”œâ”€â”€ Round 1 (Reviewer): NaN coordinate guard, finite speedMultiplier, downward-only dive condition [PASS]
-â”‚   â”œâ”€â”€ Round 2 (Reviewer): Lag-spike dt capping (dt <= 0.1s) to prevent tunneling, 2-sided coordinate clamping [PASS]
-â”‚   â””â”€â”€ Round 3 (Reviewer): Post-dimension assignment re-clamping for all types, Diver X-containment, 20 test suite [PASS]
-â”œâ”€â”€ 3. Independent Post-Victory Audit (Blocking)
-â”‚   â”œâ”€â”€ Phase A: Timeline & Provenance Audit -> PASS
-â”‚   â”œâ”€â”€ Phase B: Integrity & Anti-Mocking Inspection -> PASS
-â”‚   â”œâ”€â”€ Phase C: Independent Test Suite Execution:
-â”‚   â”‚   â”œâ”€â”€ 20/20 Playwright tests passed (tests/enemy_y_boundary_and_dive_fixes.spec.ts) [PASS]
-â”‚   â”‚   â”œâ”€â”€ 9/9 Regression tests passed (03_game_mechanics + water-invader) [PASS]
-â”‚   â”‚   â””â”€â”€ npm run build (Next.js 16.3.1 Turbopack) succeeded with 0 errors [PASS]
-â”‚   â””â”€â”€ Verdict: VICTORY CONFIRMED
-â””â”€â”€ 4. Mandatory Sentinel Teardown
-    â”œâ”€â”€ Cancelled Crons (task-21, task-23)
-    â””â”€â”€ Terminated Subagents (manage_subagents kill_all)
-```
+## 2. Logic Chain & Architecture Tree
+`	ree
+Water Invader Mobile Controls Architecture
+¦§¦¡¦¡ Canvas Touch Drag Pipeline (src/components/game-canvas.tsx)
+¦¢   ¦§¦¡¦¡ Pointer Down (handleCanvasPointerDown)
+¦¢   ¦¢   ¦§¦¡¦¡ Pointer Lock Check (activePointerIdRef °ËÁõ -> º¸Á¶ ÅÍÄ¡ °£¼· Â÷´Ü)
+¦¢   ¦¢   ¦§¦¡¦¡ Pointer Capture (setPointerCapture µî·Ï -> Äµ¹ö½º ¿ÜºÎ µå·¡±× À¯Áö)
+¦¢   ¦¢   ¦§¦¡¦¡ State Init (activePointerIdRef, lastPointerXRef ±â·Ï, isDraggingRef = true)
+¦¢   ¦¢   ¦¦¦¡¦¡ Auto Fire Trigger (gameManager.handleKeyDown(' '))
+¦¢   ¦§¦¡¦¡ Pointer Move (handleCanvasPointerMove)
+¦¢   ¦¢   ¦§¦¡¦¡ Active Pointer Filter (e.pointerId === activePointerIdRef)
+¦¢   ¦¢   ¦¦¦¡¦¡ updateTargetX (1:1 Delta º¯È¯)
+¦¢   ¦¢       ¦§¦¡¦¡ scaleX = logicalWidth (600) / rect.width
+¦¢   ¦¢       ¦§¦¡¦¡ deltaLogicalX = (e.clientX - lastPointerX) * scaleX
+¦¢   ¦¢       ¦§¦¡¦¡ Boundary Clamping: player.position.x = Math.max(0, Math.min(550, newX))
+¦¢   ¦¢       ¦¦¦¡¦¡ Velocity Decoupling: isMovingLeft/Right = false (ÀÚÀ² ÀÌµ¿ °£¼· Á¦°Å)
+¦¢   ¦¦¦¡¦¡ Pointer Up / Cancel / Blur (handleCanvasPointerUp / visibilitychange / blur)
+¦¢       ¦§¦¡¦¡ Release Capture (releasePointerCapture)
+¦¢       ¦§¦¡¦¡ State Reset (activePointerIdRef = null, isDraggingRef = false)
+¦¢       ¦¦¦¡¦¡ Clear Flags (isShooting = false, isMovingLeft/Right = false)
+¦¦¦¡¦¡ UI Overlay Isolation Pipeline
+    ¦§¦¡¦¡ Top HUD (.pointer-events-none »óÀ§ ÄÁÅ×ÀÌ³Ê)
+    ¦¢   ¦¦¦¡¦¡ MUTE Button (.pointer-events-auto ºĞ¸® Àû¿ë)
+    ¦¦¦¡¦¡ Bottom Action Controls (ALLY, ULT, FIRE)
+        ¦§¦¡¦¡ e.preventDefault() & e.stopPropagation() ÀÌº¥Æ® ÀüÆÄ Â÷´Ü
+        ¦¦¦¡¦¡ Key Action Trigger (q, e, ' ')
+`
 
-## Caveats
-- All 7 enemy types (NORMAL, ZIGZAG, BOSS, SNIPER, DIVER, SHIELDED, SPLITTER) strictly enforce two-sided coordinate clamping `Math.max(0, Math.min(position.y, canvasHeight - size.height))`.
-- Diver plunge attack velocity is contained within `[0, canvasHeight + 50]` and safely triggers bottom boundary breach despawning or barricade/player destruction without hanging state or NaN values.
-- Delta time is capped at `0.1s` (`clampedDt = Math.min(deltaTime, 0.1)`) to guarantee physics stability even under severe browser frame drops.
+## 3. Caveats
+- ºê¶ó¿ìÀú³ª Å×½ºÆ® ÇÁ·¹ÀÓ¿öÅ© È¯°æ¿¡ µû¶ó setPointerCapture API°¡ ¹ÌÁö¿øµÉ ¼ö ÀÖÀ¸¹Ç·Î 	ry-catch ¾ÈÀü ·¡ÆÛ°¡ Àû¿ëµÇ¾î ÀÖ½À´Ï´Ù.
+- Äµ¹ö½º ¹ÛÀ¸·Î ÅÍÄ¡°¡ ÀÌÅ»ÇÏ°Å³ª ¹é±×¶ó¿îµå ÀüÈ¯(isibilitychange, lur) ½Ã ctivePointerIdRef ¹× ÀÌµ¿ ÇÃ·¡±×°¡ ¾ÈÀüÇÏ°Ô ÃÊ±âÈ­µÇµµ·Ï º¸È£µÇ¾î ÀÖ½À´Ï´Ù.
 
-## Conclusion
-- All acceptance criteria in `ORIGINAL_REQUEST.md` have been met, rigorously reviewed across 3 adversarial rounds, and independently confirmed by the Victory Auditor.
-- Project status is complete.
+## 4. Conclusion
+¸ğ¹ÙÀÏ ÅÍÄ¡ Á¶ÀÛ °¨µµ °³¼± ¹× ¿À¹ö·¹ÀÌ UI °İ¸® ¿ä±¸»çÇ×ÀÌ ¿Ïº®È÷ ÇØ°áµÇ¾úÀ¸¸ç, ÀüÃ¼ Å×½ºÆ® ½ºÀ§Æ® 62°³ Åë°ú ¹× ÇÁ·Î´ö¼Ç ºôµå ¹«°á¼ºÀÌ µ¶¸³ °¨»ç°üÀ» ÅëÇØ °øÀÎµÇ¾ú½À´Ï´Ù.
 
-## Verification Method
-- Independent Victory Audit Phase C:
-  * `npx playwright test tests/enemy_y_boundary_and_dive_fixes.spec.ts` -> 20/20 passed (34.2s).
-  * `npx playwright test tests/03_game_mechanics.spec.ts tests/water-invader.spec.ts` -> 9/9 passed.
-  * `npm run build` -> 0 TypeScript / Turbopack errors.
-
-
+## 5. Verification Method
+- Next.js ºôµå: 
+pm run build (0 ¿¡·¯)
+- ¸ğ¹ÙÀÏ ÄÁÆ®·Ñ Àü¿ë Å×½ºÆ®: 
+px playwright test tests/mobile_controls_and_touch_evasion.spec.ts (10/10 Åë°ú)
+- ÀüÃ¼ È¸±Í Å×½ºÆ®: 
+px playwright test tests/01_ui_and_controls.spec.ts tests/enemy_y_boundary_and_dive_fixes.spec.ts tests/adversarial_challenger_m3_1.spec.ts tests/02_rendering_and_vector_art.spec.ts tests/03_game_mechanics.spec.ts (52/52 Åë°ú)
