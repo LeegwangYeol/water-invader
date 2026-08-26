@@ -206,16 +206,24 @@ export default function GameCanvas() {
         game.clearKeys();
       }
     };
+    const handleResize = () => {
+      // Re-anchor pointer drag on resize / orientation change so layout changes don't cause coordinate delta jump
+      lastPointerXRef.current = null;
+    };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('blur', handleBlur);
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       game.stopGame();
     };
@@ -261,13 +269,23 @@ export default function GameCanvas() {
 
   const updateTargetX = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current || !gameManagerRef.current) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-    if (rect.width <= 0) return;
+    if (!Number.isFinite(e.clientX)) return;
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width <= 0 || !Number.isFinite(rect.width) || !Number.isFinite(rect.left)) return;
+
+    // Use clientWidth & clientLeft to account for border/padding and exact canvas drawing content box
+    const clientLeft = canvas.clientLeft || 0;
+    const contentWidth = canvas.clientWidth > 0 ? canvas.clientWidth : (rect.width - clientLeft * 2);
+    if (contentWidth <= 0 || !Number.isFinite(contentWidth)) return;
 
     // Use logical width (600) for DPI-independent 1:1 displacement
     const logicalWidth = gameManagerRef.current.logicalWidth;
-    const scaleX = logicalWidth / rect.width;
-    const targetX = (e.clientX - rect.left) * scaleX;
+    const scaleX = logicalWidth / contentWidth;
+    if (!Number.isFinite(scaleX) || scaleX <= 0) return;
+
+    const targetX = (e.clientX - (rect.left + clientLeft)) * scaleX;
     const player = gameManagerRef.current.player;
     if (!player) return;
 
@@ -276,13 +294,17 @@ export default function GameCanvas() {
 
     // If actively dragging, apply smooth responsive relative delta displacement
     if (isDraggingRef.current) {
-      if (lastPointerXRef.current !== null) {
+      if (lastPointerXRef.current !== null && Number.isFinite(lastPointerXRef.current)) {
         const deltaClientX = e.clientX - lastPointerXRef.current;
-        const deltaLogicalX = deltaClientX * scaleX;
-        const newX = player.position.x + deltaLogicalX;
-        const minX = 0;
-        const maxX = logicalWidth - player.size.width;
-        player.position.x = Math.max(minX, Math.min(maxX, newX));
+        if (Number.isFinite(deltaClientX)) {
+          const deltaLogicalX = deltaClientX * scaleX;
+          const newX = player.position.x + deltaLogicalX;
+          const minX = 0;
+          const maxX = logicalWidth - player.size.width;
+          if (Number.isFinite(newX)) {
+            player.position.x = Math.max(minX, Math.min(maxX, newX));
+          }
+        }
       }
       lastPointerXRef.current = e.clientX;
       // In drag mode, player position is directly controlled by finger; reset velocity flags
@@ -290,7 +312,7 @@ export default function GameCanvas() {
       player.isMovingRight = false;
     } else {
       // Fallback directional steering for non-drag move events (e.g. synthetic pointermove)
-      if (Math.abs(targetX - playerCenter) > deadzone) {
+      if (Number.isFinite(targetX) && Math.abs(targetX - playerCenter) > deadzone) {
         if (targetX < playerCenter) {
           player.isMovingLeft = true;
           player.isMovingRight = false;
@@ -320,7 +342,7 @@ export default function GameCanvas() {
     }
 
     activePointerIdRef.current = e.pointerId;
-    lastPointerXRef.current = e.clientX;
+    lastPointerXRef.current = Number.isFinite(e.clientX) ? e.clientX : null;
     isDraggingRef.current = true;
 
     // Start auto-firing on canvas touch
@@ -425,7 +447,6 @@ export default function GameCanvas() {
           onPointerMove={handleCanvasPointerMove}
           onPointerUp={handleCanvasPointerUp}
           onPointerCancel={handleCanvasPointerUp}
-          onPointerLeave={handleCanvasPointerUp}
           ref={canvasRef}
           width={600}
           height={800}

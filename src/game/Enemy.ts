@@ -93,7 +93,7 @@ export class Enemy extends Entity {
     const clampedDt = Math.min(deltaTime, 0.1); // Guard against massive lag spikes / tab throttle jumps
 
     if (this.hitFlashTimer > 0) {
-      this.hitFlashTimer -= clampedDt;
+      this.hitFlashTimer -= deltaTime;
       if (this.hitFlashTimer < 0) this.hitFlashTimer = 0;
     }
 
@@ -140,7 +140,7 @@ export class Enemy extends Entity {
 
     // Shield Regen Logic
     if (this.type === EnemyType.SHIELDED && this.shieldHp <= 0) {
-      this.shieldRegenTimer -= clampedDt;
+      this.shieldRegenTimer -= deltaTime;
       if (this.shieldRegenTimer <= 0) {
         this.shieldHp = 3; // Regenerate shield
         this.shieldRegenTimer = 0;

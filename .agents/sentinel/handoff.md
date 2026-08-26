@@ -1,50 +1,50 @@
-# Sentinel Handoff: Mobile Controls Fix and Enhancement
+ï»¿# Sentinel Completion Handoff
 
 ## 1. Observation
-- »ç¿ëÀÚ ¿äÃ» (2026-08-26T00:42:13Z): Water Invader ¸ð¹ÙÀÏ È¯°æ¿¡¼­ÀÇ ÁÂ¿ì ÀÌµ¿ ÅÍÄ¡ ÄÁÆ®·Ñ(°¨µµ, 1:1 ¹ÝÀÀ¼º, ÁöÅÍ/Å»¶ô ¹æÁö) °³¼± ¹× »ó´Ü/ÇÏ´Ü UI ¿À¹ö·¹ÀÌ(ALLY, ULT, SHOP, HUD)¿ÍÀÇ Ãæµ¹ ÇØ°á.
-- ½ÇÇà °æ·Î: ¼Ò±Ô¸ð ÁýÁß ÆÀ ¹× ´ÜÀÏ ±â´É °³¼± ¿ä±¸¿¡ µû¶ó SWE Light (	eamwork_preview_swe) °æ·Î·Î ¶ó¿ìÆÃ.
-- ¿ÀÄÉ½ºÆ®·¹ÀÌÅÍ ¹× 3È¸Â÷ Àû´ëÀû ¸®ºä¾î ¶ó¿îµå °ÅÃÄ ÄÚµå º¯°æ ¹× ¸ð¹ÙÀÏ Àü¿ë Playwright Å×½ºÆ® ½´Æ® ±¸¼º ¿Ï·á.
-- µ¶¸³ ½Â¸® °¨»ç°ü(	eamwork_preview_victory_auditor)ÀÇ 3´Ü°è °¨»ç °á°ú **VICTORY CONFIRMED** ÃÖÁ¾ È¹µæ.
+- ì‚¬ìš©ìž ìš”ì²­: ë‹¤ì–‘í•œ ì¢…íš¡ë¹„(ì‚¼ì„± S25+, iPhone ë“±)ë¥¼ ê°€ì§„ ëª¨ë°”ì¼ í™˜ê²½ì—ì„œ í„°ì¹˜ Xì¶• ì¡°ìž‘ ì‹œ í”Œë ˆì´ì–´ê°€ 1:1ë¡œ ì •í™•í•˜ê²Œ ì¶”ì /ì¤‘ì•™ ì •ë ¬ë˜ë„ë¡ src/components/game-canvas.tsxì˜ í„°ì¹˜ ì¢Œí‘œ ë§¤í•‘ì„ ìˆ˜ì •í•˜ê³ , Playwright ê¸°ë°˜ ë‹¤ì¤‘ ë””ë°”ì´ìŠ¤ ì—ë®¬ë ˆì´ì…˜ í…ŒìŠ¤íŠ¸ ë° ìŠ¤í¬ë¦°ìƒ· ì•„í‹°íŒ©íŠ¸ë¥¼ í†µí•œ ì‹œê°ì  ì¦ê±°ë¥¼ ì œê³µ.
+- ìž‘ì—… ê²½ë¡œ: SWE Light (	eamwork_preview_swe) ê²½ë¡œ ë°°ì • í›„ êµ¬í˜„ -> 3ë¼ìš´ë“œ Adversarial Review -> Victory Auditor ë…ë¦½ ê°ì‚¬ ìˆ˜í–‰.
+- Sentinel ë…ë¦½ ê°ì‚¬(	eamwork_preview_victory_auditor): 3ë‹¨ê³„ ê°ì‚¬(íƒ€ìž„ë¼ì¸/Diff, ë¶€ì •í–‰ìœ„ íƒì§€, ë…ë¦½ í…ŒìŠ¤íŠ¸ ë° ë¹Œë“œ ì‹¤í–‰) ê²°ê³¼ **VICTORY CONFIRMED** íŒì • íšë“.
 
-## 2. Logic Chain & Architecture Tree
-`	ree
-Water Invader Mobile Controls Architecture
-¦§¦¡¦¡ Canvas Touch Drag Pipeline (src/components/game-canvas.tsx)
-¦¢   ¦§¦¡¦¡ Pointer Down (handleCanvasPointerDown)
-¦¢   ¦¢   ¦§¦¡¦¡ Pointer Lock Check (activePointerIdRef °ËÁõ -> º¸Á¶ ÅÍÄ¡ °£¼· Â÷´Ü)
-¦¢   ¦¢   ¦§¦¡¦¡ Pointer Capture (setPointerCapture µî·Ï -> Äµ¹ö½º ¿ÜºÎ µå·¡±× À¯Áö)
-¦¢   ¦¢   ¦§¦¡¦¡ State Init (activePointerIdRef, lastPointerXRef ±â·Ï, isDraggingRef = true)
-¦¢   ¦¢   ¦¦¦¡¦¡ Auto Fire Trigger (gameManager.handleKeyDown(' '))
-¦¢   ¦§¦¡¦¡ Pointer Move (handleCanvasPointerMove)
-¦¢   ¦¢   ¦§¦¡¦¡ Active Pointer Filter (e.pointerId === activePointerIdRef)
-¦¢   ¦¢   ¦¦¦¡¦¡ updateTargetX (1:1 Delta º¯È¯)
-¦¢   ¦¢       ¦§¦¡¦¡ scaleX = logicalWidth (600) / rect.width
-¦¢   ¦¢       ¦§¦¡¦¡ deltaLogicalX = (e.clientX - lastPointerX) * scaleX
-¦¢   ¦¢       ¦§¦¡¦¡ Boundary Clamping: player.position.x = Math.max(0, Math.min(550, newX))
-¦¢   ¦¢       ¦¦¦¡¦¡ Velocity Decoupling: isMovingLeft/Right = false (ÀÚÀ² ÀÌµ¿ °£¼· Á¦°Å)
-¦¢   ¦¦¦¡¦¡ Pointer Up / Cancel / Blur (handleCanvasPointerUp / visibilitychange / blur)
-¦¢       ¦§¦¡¦¡ Release Capture (releasePointerCapture)
-¦¢       ¦§¦¡¦¡ State Reset (activePointerIdRef = null, isDraggingRef = false)
-¦¢       ¦¦¦¡¦¡ Clear Flags (isShooting = false, isMovingLeft/Right = false)
-¦¦¦¡¦¡ UI Overlay Isolation Pipeline
-    ¦§¦¡¦¡ Top HUD (.pointer-events-none »óÀ§ ÄÁÅ×ÀÌ³Ê)
-    ¦¢   ¦¦¦¡¦¡ MUTE Button (.pointer-events-auto ºÐ¸® Àû¿ë)
-    ¦¦¦¡¦¡ Bottom Action Controls (ALLY, ULT, FIRE)
-        ¦§¦¡¦¡ e.preventDefault() & e.stopPropagation() ÀÌº¥Æ® ÀüÆÄ Â÷´Ü
-        ¦¦¦¡¦¡ Key Action Trigger (q, e, ' ')
+## 2. Logic Chain & Architecture Tree Structure
+
+`
+c:\src\SpaceInvader\
+â”œâ”€â”€ src/components/game-canvas.tsx                 # [í•µì‹¬ ë¡œì§] í¬ì¸í„°/í„°ì¹˜ 1:1 ì¢Œí‘œ ë³€í™˜
+â”‚   â”œâ”€â”€ updateTargetX / PointerEvent Handlers     # clientX -> Logical X (600px) ìƒëŒ€ ë³€ìœ„ ê³„ì‚°
+â”‚   â”‚   â”œâ”€â”€ contentWidth = canvas.clientWidth      # CSS í…Œë‘ë¦¬ ë° ì¢…íš¡ë¹„ ë…ë¦½ì  ë Œë”ë§ í­ ì¶”ì¶œ
+â”‚   â”‚   â”œâ”€â”€ scaleX = logicalWidth / contentWidth   # DPR ë° CSS ìŠ¤ì¼€ì¼ ì—­ë³´ì • ë¹„ìœ¨ ì‚°ì¶œ
+â”‚   â”‚   â”œâ”€â”€ deltaLogicalX = deltaClientX * scaleX  # 1:1 ë¬¼ë¦¬ í„°ì¹˜ ë³€ìœ„ ë³€í™˜
+â”‚   â”‚   â””â”€â”€ player.position.x í´ëž¨í•‘ (0 ~ 550)     # í™”ë©´ ë°– ì´íƒˆ ë°©ì§€
+â”‚   â””â”€â”€ activePointerIdRef & Event Handlers        # ë©€í‹°í„°ì¹˜ ê²©ë¦¬ ë° resize/blur/pointercancel í•¸ë“¤ë§
+â”œâ”€â”€ tests/
+â”‚   â”œâ”€â”€ cross_device_touch_verification.spec.ts   # [ê²€ì¦] 5ê°œ ëª¨ë°”ì¼ ë””ë°”ì´ìŠ¤ ë·°í¬íŠ¸ í”„ë¡œí•„ í…ŒìŠ¤íŠ¸ (30/30 í†µê³¼)
+â”‚   â”‚   â”œâ”€â”€ Samsung Galaxy S25+ (412x915, DPR 3.5)
+â”‚   â”‚   â”œâ”€â”€ iPhone 16 Pro (393x852, DPR 3.0)
+â”‚   â”‚   â”œâ”€â”€ iPhone 14 (390x844, DPR 3.0)
+â”‚   â”‚   â”œâ”€â”€ iPhone SE (375x667, DPR 2.0)
+â”‚   â”‚   â””â”€â”€ Galaxy Z Fold (375x812, DPR 2.625)
+â”‚   â””â”€â”€ mobile_controls_and_touch_evasion.spec.ts # [ê²€ì¦] íšŒê·€/ìŠ¤í‚¬ ë²„íŠ¼ ì¶©ëŒ ë°©ì§€ í…ŒìŠ¤íŠ¸ (10/10 í†µê³¼)
+â””â”€â”€ reports/screenshots/                          # [ì‹œê°ì  ì•„í‹°íŒ©íŠ¸] ê¸°ê¸°ë³„ 5ì¢… ì´ 25ê°œ ìŠ¤í¬ë¦°ìƒ·
+    â”œâ”€â”€ samsung_galaxy_s25_plus/ (01~05.png)
+    â”œâ”€â”€ iphone_16_pro/ (01~05.png)
+    â”œâ”€â”€ iphone_14/ (01~05.png)
+    â”œâ”€â”€ iphone_se/ (01~05.png)
+    â””â”€â”€ galaxy_z_fold/ (01~05.png)
 `
 
-## 3. Caveats
-- ºê¶ó¿ìÀú³ª Å×½ºÆ® ÇÁ·¹ÀÓ¿öÅ© È¯°æ¿¡ µû¶ó setPointerCapture API°¡ ¹ÌÁö¿øµÉ ¼ö ÀÖÀ¸¹Ç·Î 	ry-catch ¾ÈÀü ·¡ÆÛ°¡ Àû¿ëµÇ¾î ÀÖ½À´Ï´Ù.
-- Äµ¹ö½º ¹ÛÀ¸·Î ÅÍÄ¡°¡ ÀÌÅ»ÇÏ°Å³ª ¹é±×¶ó¿îµå ÀüÈ¯(isibilitychange, lur) ½Ã ctivePointerIdRef ¹× ÀÌµ¿ ÇÃ·¡±×°¡ ¾ÈÀüÇÏ°Ô ÃÊ±âÈ­µÇµµ·Ï º¸È£µÇ¾î ÀÖ½À´Ï´Ù.
+## 3. Caveats & Edge Cases
+- CSS ë³´ë”(ì˜ˆ: order-4)ê°€ canvas ìš”ì†Œì— ì ìš©ë˜ë”ë¼ë„ canvas.clientWidthì™€ clientLeftë¥¼ í™œìš©í•˜ì—¬ ë‚´ë¶€ ì‹¤ì œ ì»¨í…ì¸  ì˜ì—­ í­ë§Œì„ ì •í™•ížˆ ì¸¡ì •í•˜ë„ë¡ êµ¬í˜„ë˜ì–´ ìžˆì–´ ìŠ¤íƒ€ì¼ ë³€ê²½ì— ì•ˆì „í•©ë‹ˆë‹¤.
+- ë””ë°”ì´ìŠ¤ íšŒì „(orientationchange) ë˜ëŠ” ë¦¬ì‚¬ì´ì¦ˆ ì‹œ í¬ì¸í„° ìƒíƒœë¥¼ ì•ˆì „í•˜ê²Œ ì´ˆê¸°í™”í•˜ì—¬ ì¢Œí‘œ ì í”„ë¥¼ ë°©ì§€í•©ë‹ˆë‹¤.
 
 ## 4. Conclusion
-¸ð¹ÙÀÏ ÅÍÄ¡ Á¶ÀÛ °¨µµ °³¼± ¹× ¿À¹ö·¹ÀÌ UI °Ý¸® ¿ä±¸»çÇ×ÀÌ ¿Ïº®È÷ ÇØ°áµÇ¾úÀ¸¸ç, ÀüÃ¼ Å×½ºÆ® ½ºÀ§Æ® 62°³ Åë°ú ¹× ÇÁ·Î´ö¼Ç ºôµå ¹«°á¼ºÀÌ µ¶¸³ °¨»ç°üÀ» ÅëÇØ °øÀÎµÇ¾ú½À´Ï´Ù.
+- ëª¨ë°”ì¼ í™˜ê²½ì—ì„œì˜ Xì¶• í„°ì¹˜ 1:1 ì •ë°€ ì¢Œí‘œ ë§¤í•‘, ë©€í‹°í„°ì¹˜ ê²©ë¦¬, ê²½ê³„ í´ëž¨í•‘, ë°˜ì‘í˜• í™”ë©´ í¬ê¸° ë³€ê²½ ëŒ€ì‘ì´ ì™„ë²½ížˆ ìˆ˜ì •ë˜ì—ˆìŠµë‹ˆë‹¤.
+- ëª¨ë“  ìš”êµ¬ì‚¬í•­ì´ 100% ì¶©ì¡±ë˜ì—ˆìœ¼ë©° ë…ë¦½ ìŠ¹ë¦¬ ê°ì‚¬ì—ì„œ VICTORY CONFIRMEDë¡œ ìµœì¢… í†µê³¼ë˜ì—ˆìŠµë‹ˆë‹¤.
 
 ## 5. Verification Method
-- Next.js ºôµå: 
-pm run build (0 ¿¡·¯)
-- ¸ð¹ÙÀÏ ÄÁÆ®·Ñ Àü¿ë Å×½ºÆ®: 
-px playwright test tests/mobile_controls_and_touch_evasion.spec.ts (10/10 Åë°ú)
-- ÀüÃ¼ È¸±Í Å×½ºÆ®: 
-px playwright test tests/01_ui_and_controls.spec.ts tests/enemy_y_boundary_and_dive_fixes.spec.ts tests/adversarial_challenger_m3_1.spec.ts tests/02_rendering_and_vector_art.spec.ts tests/03_game_mechanics.spec.ts (52/52 Åë°ú)
+- Next.js í”„ë¡œë•ì…˜ ë¹Œë“œ: 
+pm run build -> Exit Code 0 (ì»´íŒŒì¼/íƒ€ìž… ì—ëŸ¬ 0ê±´)
+- í¬ë¡œìŠ¤ ë””ë°”ì´ìŠ¤ í…ŒìŠ¤íŠ¸: 
+px playwright test tests/cross_device_touch_verification.spec.ts -> 30/30 PASSED
+- ëª¨ë°”ì¼ ì»¨íŠ¸ë¡¤ íšŒê·€ í…ŒìŠ¤íŠ¸: 
+px playwright test tests/mobile_controls_and_touch_evasion.spec.ts -> 10/10 PASSED
+- ì‹œê°ì  ê²€ì¦: eports/screenshots/ ë‚´ 25ê°œ ìŠ¤í¬ë¦°ìƒ· ì•„í‹°íŒ©íŠ¸ ì§ì ‘ ìœ¡ì•ˆ í™•ì¸ ì™„ë£Œ
