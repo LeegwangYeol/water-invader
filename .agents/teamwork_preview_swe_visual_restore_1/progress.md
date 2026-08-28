@@ -1,12 +1,13 @@
 # Progress Tracker
 
-Last visited: 2026-08-28T15:00:00Z
+Last visited: 2026-08-28T15:10:00Z
 
 ## Iteration Status
 Current iteration: 2 / 32
 
 ## Open Issues Ledger
 - [R0] Subjective visual appeal on physical OLED mobile screens under varying ambient brightness.
+- [R1] Minor Robustness Risk: Canvas `roundRect` API polyfill relies on standard browser support; legacy fallback to `fillRect` exists if unsupported.
 
 ## Milestone Checklist
 - [x] Round 0: Implementer (`teamwork_preview_implementer`) — Restore enemy visual rendering & verify (completed: 1aa2f31c-7a9a-4853-91b3-e0e81fdb809d)
@@ -24,4 +25,4 @@ Current iteration: 2 / 32
 - [2026-08-28T14:33:18Z] Dispatched Reviewer R1 (Conv ID: a1597dd7-9cce-4faf-ac4e-327b3567c1e9).
 - [2026-08-28T14:58:53Z] Reviewer R1 completed with 5 new adversarial tests, 464 passing tests across suites, 0 typecheck errors.
 - [2026-08-28T14:59:04Z] Dispatched Reviewer R2 (Conv ID: c6d7469f-84b7-4c59-8e8e-3cb11e379a6a).
-- [2026-08-28T15:00:00Z] Heartbeat check: Reviewer R2 actively executing tests.
+- [2026-08-28T15:10:00Z] Heartbeat check: Reviewer R2 executing test runs.

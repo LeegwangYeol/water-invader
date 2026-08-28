@@ -115,7 +115,7 @@ export class Enemy extends Entity {
       this.canEvade = true;
     } else if (type === EnemyType.ROGUE_MECH) {
       this.faction = Faction.ROGUE;
-      this.color = '#86198f'; // High-Voltage Dark Magenta
+      this.color = '#a21caf'; // High-Voltage Vivid Magenta
       this.size = { width: 56, height: 42 };
       this.speedX = 18 + this.level * 2;
       this.speedY = 5 + this.level;
@@ -1002,13 +1002,13 @@ export class Enemy extends Entity {
       }
     } else if (this.type === EnemyType.ROGUE_MECH) {
       // ----------------------------------------------------------------------
-      // ROGUE MECH: High-Voltage Dark Magenta Armored Juggernaut
+      // ROGUE MECH: High-Voltage Vivid Magenta Armored Juggernaut
       // ----------------------------------------------------------------------
       if (!isFlashing) {
         const grad = ctx.createLinearGradient(cx - w/2, cy - h/2, cx + w/2, cy + h/2);
-        grad.addColorStop(0, '#86198f');
+        grad.addColorStop(0, '#a21caf');
         grad.addColorStop(0.5, '#c026d3');
-        grad.addColorStop(1, '#701a75');
+        grad.addColorStop(1, '#86198f');
         ctx.fillStyle = grad;
       }
 
