@@ -7,7 +7,6 @@ export class Bullet extends Entity {
   public isInterceptable: boolean = false;
   public hasTriggeredNearMiss: boolean = false;
   public hitEntities: Set<Entity> = new Set<Entity>();
-  public hitEntityIds: Set<string> = new Set<string>();
 
   public get isPlayerBullet(): boolean {
     return this.faction === Faction.PLAYER;
@@ -37,8 +36,6 @@ export class Bullet extends Entity {
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
-    ctx.save();
-    
     if (this.faction === Faction.PLAYER) {
       // Player bullet: Bright Cyan with white core / water droplet
       const centerX = this.position.x + this.size.width / 2;
@@ -112,7 +109,7 @@ export class Bullet extends Entity {
       ctx.arc(centerX, centerY, radius * 0.6, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.restore();
+    ctx.globalAlpha = 1.0;
   }
 }
 

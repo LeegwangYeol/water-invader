@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('http://localhost:3000'),
   title: "Water Invader - Save the Earth!",
   description: "A fast-paced retro 8-bit space shooter where you play as a cute water droplet defending against pollution fireballs!",
   openGraph: {

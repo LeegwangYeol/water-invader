@@ -23,6 +23,8 @@ export class GameManager {
   
   private lastTime: number = 0;
   private animationFrameId: number = 0;
+  private accumulator: number = 0;
+  private readonly FIXED_STEP: number = 1 / 60;
   
   // Progression
   public score: number = 0;
@@ -46,9 +48,6 @@ export class GameManager {
   public fps: number = 0;
   private frameCount: number = 0;
   private lastFpsTime: number = 0;
-  
-  public isResting: boolean = false;
-  public waveRestTimer: number = 0;
   
   public readonly logicalWidth: number = 600;
   public readonly logicalHeight: number = 800;
@@ -90,6 +89,7 @@ export class GameManager {
   public pause(): void {
     if (this.state === GameState.PLAYING || this.state === GameState.SHOP) {
       this.isPaused = true;
+      this.accumulator = 0;
       if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
         this.animationFrameId = 0;
@@ -101,6 +101,7 @@ export class GameManager {
   public resume(): void {
     if (this.state === GameState.PLAYING && this.isPaused) {
       this.isPaused = false;
+      this.accumulator = 0;
       this.lastTime = performance.now();
       if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
@@ -134,10 +135,12 @@ export class GameManager {
     }
     this.particles = [];
     this.score = 0;
+    this.currency = 0;
     this.combo = 0;
     this.level = 1;
     this.shakeTimer = 0;
     this.isPaused = false;
+    this.accumulator = 0;
     
     this.reinforcementTimer = 10;
     this.warningTimer = 0;
@@ -169,6 +172,7 @@ export class GameManager {
   public startNextWave() {
     this.state = GameState.PLAYING;
     this.isPaused = false;
+    this.accumulator = 0;
     this.warningTimer = 0;
     this.warningMessage = "";
     this.warningText = "";
@@ -197,6 +201,7 @@ export class GameManager {
     soundManager.init();
     this.state = GameState.PLAYING;
     this.isPaused = false;
+    this.accumulator = 0;
     if (this.onStateChange) this.onStateChange(this.state);
     this.lastTime = performance.now();
     this.loop(this.lastTime);
@@ -312,9 +317,15 @@ export class GameManager {
   private loop = (timestamp: number) => {
     if (this.state === GameState.MENU) return;
 
-    const deltaTime = Math.max(0, (timestamp - this.lastTime) / 1000);
+    let frameTime = Math.max(0, (timestamp - this.lastTime) / 1000);
     this.lastTime = timestamp;
     
+    // Guard against spiral of death on lag spikes or tab switching
+    if (frameTime > 0.1) {
+      frameTime = 0.1;
+    }
+    this.accumulator += frameTime;
+
     // FPS Calculation
     this.frameCount++;
     if (timestamp - this.lastFpsTime >= 1000) {
@@ -323,8 +334,15 @@ export class GameManager {
       this.lastFpsTime = timestamp;
     }
 
-    // Fixed timestep update for physics stability (clamped between 0 and 0.1)
-    this.update(Math.min(deltaTime, 0.1));
+    // Fixed timestep update for deterministic physics stability across 60Hz/120Hz/144Hz
+    while (this.accumulator >= this.FIXED_STEP) {
+      this.update(this.FIXED_STEP);
+      this.accumulator -= this.FIXED_STEP;
+      if (this.state !== GameState.PLAYING) {
+        this.accumulator = 0;
+        break;
+      }
+    }
     this.draw();
 
     this.animationFrameId = requestAnimationFrame(this.loop);
@@ -412,8 +430,14 @@ export class GameManager {
           }
         } else {
           // Accelerated tempo if battle density drops below 3 while wave active
-          const activeHostiles = this.enemies.filter(e => !e.isDead && (e.faction === Faction.INVADER || e.faction === Faction.ROGUE));
-          if (activeHostiles.length > 0 && activeHostiles.length <= 2 && this.reinforcementTimer > 4 && this.warningTimer <= 0) {
+          let activeHostileCount = 0;
+          for (let i = 0; i < this.enemies.length; i++) {
+            const e = this.enemies[i];
+            if (!e.isDead && (e.faction === Faction.INVADER || e.faction === Faction.ROGUE)) {
+              activeHostileCount++;
+            }
+          }
+          if (activeHostileCount > 0 && activeHostileCount <= 2 && this.reinforcementTimer > 4 && this.warningTimer <= 0) {
             this.reinforcementTimer = 2.0;
           }
         }
@@ -462,9 +486,10 @@ export class GameManager {
         } else if (enemy.position.y + enemy.size.height >= this.logicalHeight) {
           enemy.isDead = true;
           this.createExplosion(enemy.position.x + enemy.size.width/2, this.logicalHeight - 10, enemy.color, 15);
-          if (!this.isGodMode) {
+          if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
              this.player.hp -= 1;
              this.player.hitFlashTimer = 0.08;
+             this.player.invincibilityTimer = 1.0;
              soundManager.playPlayerHit();
              this.player.stressLevel = Math.min(100, this.player.stressLevel + 20);
              this.combo = 0;
@@ -489,7 +514,7 @@ export class GameManager {
       this.bullets.forEach(bullet => bullet.update(deltaTime));
       
       // Collision
-      this.checkCollisions();
+      this.checkCollisions(deltaTime);
     }
     
     // Always update visual effects
@@ -498,19 +523,44 @@ export class GameManager {
     }
     this.particles.forEach(particle => particle.update(deltaTime));
     
-    // Cleanup dead entities
-    this.enemies = this.enemies.filter(e => !e.isDead);
-    this.helpers = this.helpers.filter(h => !h.isExpired());
-    this.bullets = this.bullets.filter(b => 
-      !b.isDead && 
-      b.position.y > -50 && 
-      b.position.y < this.logicalHeight + 50 &&
-      b.position.x > -100 &&
-      b.position.x < this.logicalWidth + 100
-    );
+    // In-place compaction for enemies (two-pointer writeIndex)
+    let enemyWriteIdx = 0;
+    for (let i = 0; i < this.enemies.length; i++) {
+      const e = this.enemies[i];
+      if (!e.isDead) {
+        this.enemies[enemyWriteIdx++] = e;
+      }
+    }
+    this.enemies.length = enemyWriteIdx;
+
+    // In-place compaction for helpers
+    let helperWriteIdx = 0;
+    for (let i = 0; i < this.helpers.length; i++) {
+      const h = this.helpers[i];
+      if (!h.isExpired()) {
+        this.helpers[helperWriteIdx++] = h;
+      }
+    }
+    this.helpers.length = helperWriteIdx;
+
+    // In-place compaction for bullets
+    let bulletWriteIdx = 0;
+    for (let i = 0; i < this.bullets.length; i++) {
+      const b = this.bullets[i];
+      if (
+        !b.isDead &&
+        b.position.y > -50 &&
+        b.position.y < this.logicalHeight + 50 &&
+        b.position.x > -100 &&
+        b.position.x < this.logicalWidth + 100
+      ) {
+        this.bullets[bulletWriteIdx++] = b;
+      }
+    }
+    this.bullets.length = bulletWriteIdx;
     
-    // Recycle dead particles into pool
-    let writeIdx = 0;
+    // Recycle dead particles into pool (in-place compaction)
+    let particleWriteIdx = 0;
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
       if (p.isDead) {
@@ -518,16 +568,30 @@ export class GameManager {
           this.particlePool.push(p);
         }
       } else {
-        this.particles[writeIdx++] = p;
+        this.particles[particleWriteIdx++] = p;
       }
     }
-    this.particles.length = writeIdx;
+    this.particles.length = particleWriteIdx;
     
-    this.barricades = this.barricades.filter(b => !b.isDead);
+    // In-place compaction for barricades
+    let barricadeWriteIdx = 0;
+    for (let i = 0; i < this.barricades.length; i++) {
+      const b = this.barricades[i];
+      if (!b.isDead) {
+        this.barricades[barricadeWriteIdx++] = b;
+      }
+    }
+    this.barricades.length = barricadeWriteIdx;
     
     // Multi-Faction Wave Clear Logic: only clears when all hostile Invaders and Rogues are destroyed
-    const activeHostiles = this.enemies.filter(e => !e.isDead && (e.faction === Faction.INVADER || e.faction === Faction.ROGUE));
-    if (this.state === GameState.PLAYING && activeHostiles.length === 0 && this.warningTimer <= 0 && this.pendingReinforcement === null) {
+    let remainingHostiles = 0;
+    for (let i = 0; i < this.enemies.length; i++) {
+      const e = this.enemies[i];
+      if (!e.isDead && (e.faction === Faction.INVADER || e.faction === Faction.ROGUE)) {
+        remainingHostiles++;
+      }
+    }
+    if (this.state === GameState.PLAYING && remainingHostiles === 0 && this.warningTimer <= 0 && this.pendingReinforcement === null) {
       this.state = GameState.SHOP;
       this.warningTimer = 0;
       this.warningMessage = "";
@@ -556,7 +620,7 @@ export class GameManager {
     this.shakeTimer = duration;
   }
 
-  private checkCollisions() {
+  private checkCollisions(deltaTime: number = 1 / 60) {
     // =========================================================================
     // PHASE 1: Bullets vs Barricades, Bullets vs Bullets, Bullets vs Entities
     // =========================================================================
@@ -783,7 +847,7 @@ export class GameManager {
           } else {
             enemy.isGnawing = true;
             if (barricade.type === BarricadeType.DESTRUCTIBLE) {
-              barricade.hp -= 0.1;
+              barricade.hp -= 6.0 * deltaTime;
             } else {
               enemy.position.y = Math.min(enemy.position.y, barricade.position.y - enemy.size.height);
             }
@@ -910,10 +974,7 @@ export class GameManager {
     this.ctx.font = 'bold 12px sans-serif';
     this.ctx.fillStyle = '#ef4444';
     this.ctx.textAlign = 'center';
-    this.ctx.shadowBlur = 8;
-    this.ctx.shadowColor = '#ef4444';
     this.ctx.fillText('⚠️ BOSS: BIO-MECH TITAN ⚠️', this.logicalWidth / 2, barY - 6);
-    this.ctx.shadowBlur = 0;
 
     // Background Frame
     this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
@@ -953,14 +1014,13 @@ export class GameManager {
       }
     }
 
-    // HP Text
+    // HP Text (with fast drop shadow)
     this.ctx.font = 'bold 11px monospace';
-    this.ctx.fillStyle = '#ffffff';
     this.ctx.textAlign = 'center';
-    this.ctx.shadowBlur = 4;
-    this.ctx.shadowColor = '#000000';
+    this.ctx.fillStyle = '#000000';
+    this.ctx.fillText(`${boss.hp} / ${maxHp} HP`, this.logicalWidth / 2 + 1, barY + barH - 3);
+    this.ctx.fillStyle = '#ffffff';
     this.ctx.fillText(`${boss.hp} / ${maxHp} HP`, this.logicalWidth / 2, barY + barH - 4);
-    this.ctx.shadowBlur = 0;
 
     this.ctx.restore();
   }
@@ -984,17 +1044,20 @@ export class GameManager {
     this.ctx.fillStyle = '#0f172a'; // dark slate
     this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
 
-    // Draw scrolling background (Bubbles)
+    // Draw scrolling background (Batched bubbles in single path)
     const time = performance.now() / 1000;
     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    this.ctx.beginPath();
     for (let i = 0; i < 30; i++) {
       const x = (Math.sin(i * 13) * 1000 + time * 10) % this.logicalWidth;
       const y = this.logicalHeight - ((time * 50 * (i % 3 + 1) + i * 90) % this.logicalHeight);
       const size = (i % 4) + 1;
-      this.ctx.beginPath();
-      this.ctx.arc(Math.abs(x), Math.abs(y), size, 0, Math.PI * 2);
-      this.ctx.fill();
+      const absX = Math.abs(x);
+      const absY = Math.abs(y);
+      this.ctx.moveTo(absX + size, absY);
+      this.ctx.arc(absX, absY, size, 0, Math.PI * 2);
     }
+    this.ctx.fill();
 
     // Draw Entities
     this.barricades.forEach(b => b.draw(this.ctx));
@@ -1046,26 +1109,15 @@ export class GameManager {
       this.ctx.fillStyle = isThirdFaction ? '#84cc16' : (this.pendingReinforcement === 'ALLY' ? '#4ade80' : '#ef4444');
       this.ctx.font = 'bold 36px sans-serif';
       this.ctx.textAlign = 'center';
-      this.ctx.shadowBlur = 20;
-      this.ctx.shadowColor = this.ctx.fillStyle;
       
-      // Flash effect
+      // Flash effect with crisp stroked outline
       if (Math.floor(time * 10) % 2 === 0) {
-        this.ctx.fillText(this.warningMessage || this.warningText, this.logicalWidth / 2, this.logicalHeight / 2);
+        const text = this.warningMessage || this.warningText;
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeText(text, this.logicalWidth / 2, this.logicalHeight / 2);
+        this.ctx.fillText(text, this.logicalWidth / 2, this.logicalHeight / 2);
       }
-      this.ctx.shadowBlur = 0;
-    } else if (this.isResting) {
-      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
-      
-      this.ctx.fillStyle = '#38bdf8';
-      this.ctx.font = 'bold 48px sans-serif';
-      this.ctx.textAlign = 'center';
-      this.ctx.fillText(`WAVE ${this.level} CLEARED`, this.logicalWidth / 2, this.logicalHeight / 2 - 20);
-      
-      this.ctx.fillStyle = '#ffffff';
-      this.ctx.font = '24px sans-serif';
-      this.ctx.fillText(`Next wave in ${Math.ceil(this.waveRestTimer)}...`, this.logicalWidth / 2, this.logicalHeight / 2 + 30);
     }
 
     this.ctx.restore();
@@ -1137,10 +1189,14 @@ export class GameManager {
     const k = key.toLowerCase();
     this.keysPressed[k] = false;
 
-    if (k === 'arrowleft' || k === 'a') this.player.isMovingLeft = false;
-    if (k === 'arrowright' || k === 'd') this.player.isMovingRight = false;
+    if (k === 'arrowleft' || k === 'a') {
+      this.player.isMovingLeft = !!(this.keysPressed['arrowleft'] || this.keysPressed['a']);
+    }
+    if (k === 'arrowright' || k === 'd') {
+      this.player.isMovingRight = !!(this.keysPressed['arrowright'] || this.keysPressed['d']);
+    }
     if (k === ' ' || k === 'spacebar' || k === 'space') {
-      this.player.isShooting = false;
+      this.player.isShooting = !!(this.keysPressed[' '] || this.keysPressed['spacebar'] || this.keysPressed['space']);
     }
   }
 

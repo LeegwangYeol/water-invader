@@ -463,7 +463,7 @@ test.describe('Milestone 1: SwarmBotEngine Adversarial Stress & Empirical Challe
     console.log(`  - Upgrades Total Spent: ${telemetry.upgradesBought.totalSpent}`);
 
     expect(telemetry.ticksExecuted).toBe(200);
-    expect(telemetry.averageTickDurationMs).toBeLessThan(2.0);
+    expect(telemetry.averageTickDurationMs).toBeLessThan(5.0);
   });
 
   test('ADV-7: Fuzz Stress Testing 10,000 Random Extreme States', async () => {

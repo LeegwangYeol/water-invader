@@ -177,7 +177,6 @@ export class Player extends Entity {
     
     if (isFlashing) {
       glowColor = '#ffffff';
-      ctx.shadowBlur = 30;
       ctx.shadowColor = '#ffffff';
     } else if (isSuppressed) {
       glowColor = '#94a3b8';
@@ -185,11 +184,6 @@ export class Player extends Entity {
       jitterY = (Math.random() - 0.5) * 4;
     } else if (isStressed) {
       glowColor = '#ef4444';
-    }
-    
-    if (!isFlashing) {
-      ctx.shadowBlur = isStressed ? 25 : 15;
-      ctx.shadowColor = glowColor;
     }
     
     // Breathing/bouncing animation
@@ -201,6 +195,17 @@ export class Player extends Entity {
     const w = this.size.width / 2 + stretch;
     const h = this.size.height / 2 - stretch;
     
+    // Fast Concentric Alpha Halo (eliminating heavy CPU shadowBlur)
+    const baseAlpha = ctx.globalAlpha;
+    ctx.fillStyle = glowColor;
+    ctx.globalAlpha = baseAlpha * (isFlashing ? 0.6 : (isStressed ? 0.35 : 0.2));
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - h - 14);
+    ctx.bezierCurveTo(cx + w + 8, cy - h/2, cx + w + 8, cy + h + 4, cx, cy + h + 4);
+    ctx.bezierCurveTo(cx - w - 8, cy + h + 4, cx - w - 8, cy - h/2, cx, cy - h - 14);
+    ctx.fill();
+    ctx.globalAlpha = baseAlpha;
+
     // Gradient body
     const grad = ctx.createRadialGradient(cx, cy + h/4, 5, cx, cy, Math.max(w, h)*1.5);
     if (isStressed) {
@@ -221,8 +226,6 @@ export class Player extends Entity {
     ctx.bezierCurveTo(cx + w + 5, cy - h/2, cx + w + 5, cy + h, cx, cy + h); // right belly
     ctx.bezierCurveTo(cx - w - 5, cy + h, cx - w - 5, cy - h/2, cx, cy - h - 10); // left belly
     ctx.fill();
-    
-    ctx.shadowBlur = 0;
     
     // White reflection highlight
     ctx.fillStyle = 'rgba(255,255,255,0.4)';

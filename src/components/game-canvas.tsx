@@ -1,29 +1,54 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GameManager } from '../game/GameManager';
 import { GameState } from '../game/types';
 import { soundManager } from '../game/SoundManager';
 
+// ============================================================================
+// Memoized Sub-Components (Prevents DOM diffing on Score / Combo / Timer tick)
+// ============================================================================
+
 interface ShopUpgradePanelProps {
   currency: number;
+  hp: number;
   upgrades: { fireRate: number; multiShot: number; piercing: number };
   onBuyFireRate: () => void;
   onBuyMultiShot: () => void;
   onBuyPiercing: () => void;
+  onRepairTank: () => void;
+  lang: string;
 }
 
-function ShopUpgradePanel({
+export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
   currency,
+  hp,
   upgrades,
   onBuyFireRate,
   onBuyMultiShot,
   onBuyPiercing,
+  onRepairTank,
+  lang,
 }: ShopUpgradePanelProps) {
+  const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
+
   return (
     <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-8 text-white w-full max-w-sm">
       <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center border-b border-slate-600 pb-2">Upgrades (💧 {currency})</h2>
       
+      {/* Tank Repair (+1 HP) */}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <p className="font-bold">{t('탱크 수리 (+1 HP)', 'Repair Tank (+1 HP)')} ({hp}/5)</p>
+          <p className="text-xs sm:text-sm text-slate-400">{t('손상된 정수 탱크 복구', 'Restore water tank hull')}</p>
+        </div>
+        <button 
+          onClick={onRepairTank}
+          disabled={currency < 75 || hp >= 5}
+          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 rounded font-bold transition-colors"
+        >{hp >= 5 ? 'MAX' : '75 💧'}</button>
+      </div>
+
       <div className="flex justify-between items-center mb-4">
         <div>
           <p className="font-bold">Fire Rate (Lv. {upgrades.fireRate})</p>
@@ -61,13 +86,410 @@ function ShopUpgradePanel({
       </div>
     </div>
   );
+});
+
+interface TopHUDProps {
+  score: number;
+  currency: number;
+  wave: number;
+  invaderCount: number;
+  rogueCount: number;
+  hp: number;
+  isMuted: boolean;
+  combo: number;
+  ultimate: number;
+  gameState: GameState;
+  onToggleMute: () => void;
+  lang: string;
 }
+
+export const TopHUD = React.memo(function TopHUD({
+  score,
+  currency,
+  wave,
+  invaderCount,
+  rogueCount,
+  hp,
+  isMuted,
+  combo,
+  ultimate,
+  gameState,
+  onToggleMute,
+  lang,
+}: TopHUDProps) {
+  const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
+
+  return (
+    <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start text-white touch-none z-30 pointer-events-none">
+      <div>
+        <h2 className="text-xl sm:text-2xl font-bold text-blue-400">{t('점수:', 'Score:')} {score}</h2>
+        <p className="text-sm sm:text-base text-blue-200">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
+        {gameState === GameState.PLAYING && (
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <p className="text-sm sm:text-base text-yellow-300 font-bold">WAVE {wave}</p>
+            <div className="flex items-center gap-1.5 ml-1">
+              <span 
+                data-testid="invader-threat-badge" 
+                className="px-2 py-0.5 rounded-full text-xs font-black bg-red-950/80 text-red-400 border border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.4)] flex items-center gap-1 select-none"
+              >
+                👾 {invaderCount}
+              </span>
+              <span 
+                data-testid="rogue-threat-badge" 
+                className="px-2 py-0.5 rounded-full text-xs font-black bg-lime-950/80 text-lime-400 border border-lime-500/60 shadow-[0_0_8px_rgba(132,204,22,0.4)] flex items-center gap-1 select-none"
+              >
+                ⚡ {rogueCount}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="text-right flex flex-col items-end">
+        <div className="flex gap-1 justify-end mb-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className={`w-4 h-4 sm:w-6 sm:h-6 rounded-full ${i < hp ? 'bg-blue-500' : 'bg-gray-600'}`} />
+          ))}
+        </div>
+        {/* Mute button */}
+        <button
+          onClick={onToggleMute}
+          aria-label={isMuted ? 'Unmute Sound' : 'Mute Sound'}
+          className="px-3 py-1 bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded border border-slate-600 transition-colors pointer-events-auto select-none mb-1 z-30"
+        >
+          {isMuted ? '🔇 MUTE' : '🔊 SOUND'}
+        </button>
+        {combo > 1 && (
+          <div className="text-lg sm:text-xl font-bold text-yellow-400 animate-pulse">
+            {combo}x COMBO!
+          </div>
+        )}
+        {/* Ultimate Gauge */}
+        {gameState === GameState.PLAYING && (
+          <div className="mt-2 w-32 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-500 relative">
+            <div 
+              className={`h-full transition-all duration-300 ${ultimate >= 100 ? 'bg-gradient-to-r from-yellow-400 to-red-500 animate-pulse' : 'bg-blue-500'}`}
+              style={{ width: `${ultimate}%` }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
+interface CanvasCoreProps {
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  onPointerDown: (e: React.PointerEvent<HTMLCanvasElement>) => void;
+  onPointerMove: (e: React.PointerEvent<HTMLCanvasElement>) => void;
+  onPointerUp: (e: React.PointerEvent<HTMLCanvasElement>) => void;
+}
+
+export const CanvasCore = React.memo(function CanvasCore({
+  canvasRef,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+}: CanvasCoreProps) {
+  return (
+    <div className="w-full aspect-[3/4]">
+      <canvas
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        ref={canvasRef}
+        className="w-full h-full border-4 border-blue-900 rounded-lg shadow-2xl bg-slate-900 touch-none object-contain select-none"
+      />
+    </div>
+  );
+});
+
+interface MobileControlsProps {
+  currency: number;
+  ultimate: number;
+  onTouchStart: (key: string) => (e: React.TouchEvent | React.MouseEvent | React.PointerEvent) => void;
+  onTouchEnd: (key: string) => (e: React.TouchEvent | React.MouseEvent | React.PointerEvent) => void;
+}
+
+export const MobileControls = React.memo(function MobileControls({
+  currency,
+  ultimate,
+  onTouchStart,
+  onTouchEnd,
+}: MobileControlsProps) {
+  return (
+    <div className="w-full flex justify-between p-4 mt-2 gap-2 sm:gap-4 touch-none">
+      <div className="flex flex-col gap-1 w-1/2">
+        <div className="flex gap-1 h-1/2">
+          <button 
+            className={`flex-1 rounded-xl text-xs font-bold text-white pointer-events-auto touch-none select-none ${currency >= 50 ? 'bg-green-600 active:bg-green-500' : 'bg-slate-700 opacity-50'}`}
+            onPointerDown={onTouchStart('q')}
+            onPointerUp={onTouchEnd('q')}
+            onPointerLeave={onTouchEnd('q')}
+            onPointerCancel={onTouchEnd('q')}
+          >
+            ALLY(Q)
+          </button>
+          <button 
+            className={`flex-1 rounded-xl text-xs font-bold text-white pointer-events-auto touch-none select-none ${ultimate >= 100 ? 'bg-yellow-600 active:bg-yellow-500' : 'bg-slate-700 opacity-50'}`}
+            onPointerDown={onTouchStart('e')}
+            onPointerUp={onTouchEnd('e')}
+            onPointerLeave={onTouchEnd('e')}
+            onPointerCancel={onTouchEnd('e')}
+          >
+            ULT({ultimate}%)
+          </button>
+        </div>
+        <button 
+          className="w-full bg-blue-600/80 active:bg-blue-400 rounded-xl h-1/2 flex items-center justify-center text-xl font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+          onPointerDown={onTouchStart(' ')}
+          onPointerUp={onTouchEnd(' ')}
+          onPointerLeave={onTouchEnd(' ')}
+          onPointerCancel={onTouchEnd(' ')}
+        >
+          FIRE!
+        </button>
+      </div>
+    </div>
+  );
+});
+
+interface MenuOverlayProps {
+  highScore: number;
+  deferredPrompt: any;
+  onStartGame: () => void;
+  onOpenManual: () => void;
+  onInstallClick: () => void;
+}
+
+export const MenuOverlay = React.memo(function MenuOverlay({
+  highScore,
+  deferredPrompt,
+  onStartGame,
+  onOpenManual,
+  onInstallClick,
+}: MenuOverlayProps) {
+  return (
+    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-lg z-20">
+      <h1 className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300 mb-4 tracking-wider uppercase text-center px-4">
+        Water Invader
+      </h1>
+      {highScore > 0 && (
+        <p className="text-xl text-yellow-400 font-bold mb-8">HIGH SCORE: {highScore}</p>
+      )}
+      <div className="flex flex-col gap-4">
+        <button 
+          onClick={onStartGame}
+          className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl sm:text-2xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:scale-105"
+        >
+          START GAME
+        </button>
+        <button 
+          onClick={onOpenManual}
+          className="px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded text-lg transition-all"
+        >
+          HOW TO PLAY
+        </button>
+        {deferredPrompt && (
+          <button 
+            onClick={onInstallClick}
+            className="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            INSTALL APP
+          </button>
+        )}
+      </div>
+    </div>
+  );
+});
+
+interface ManualModalProps {
+  onClose: () => void;
+}
+
+export const ManualModal = React.memo(function ManualModal({
+  onClose,
+}: ManualModalProps) {
+  return (
+    <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center rounded-lg z-30 p-4">
+      <div className="bg-slate-800 p-6 rounded-xl max-w-lg w-full max-h-[90%] overflow-y-auto text-white">
+        <h2 className="text-3xl font-black text-blue-400 mb-6 text-center border-b border-slate-600 pb-4">HOW TO PLAY</h2>
+        
+        <div className="space-y-6">
+          <section>
+            <h3 className="text-xl font-bold text-yellow-400 mb-2">Controls</h3>
+            <ul className="list-disc pl-5 space-y-1 text-slate-300">
+              <li><strong className="text-white">Move:</strong> Left/Right Arrows or A/D keys</li>
+              <li><strong className="text-white">Shoot:</strong> Spacebar</li>
+              <li><strong className="text-white">Ultimate Skill (Heavy Rain):</strong> E or Shift key (Requires 100% Gauge)</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="text-xl font-bold text-yellow-400 mb-2">Game Mechanics</h3>
+            <ul className="list-disc pl-5 space-y-1 text-slate-300">
+              <li>Survive endless waves of enemies! Every 5th wave features a Boss.</li>
+              <li>Collect <strong className="text-blue-300">Pure Water 💧</strong> by defeating enemies.</li>
+              <li>Build up your <strong className="text-yellow-300">Combo</strong> by defeating enemies quickly to multiply your score and currency gain!</li>
+              <li>Taking damage increases your <strong className="text-red-400">Stress & Panic</strong>, which lowers your accuracy and causes your character to visually panic!</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="text-xl font-bold text-yellow-400 mb-2">3-Way Battlefield & Factions</h3>
+            <ul className="list-disc pl-5 space-y-2 text-slate-300 text-sm sm:text-base">
+              <li><strong className="text-cyan-400">Player & Allies (Blue/Green):</strong> Defend the water filtration station and deploy friendly support drones.</li>
+              <li><strong className="text-orange-400">Alien Invaders (Orange/Red):</strong> Original invaders aiming to corrupt the clean water reservoir.</li>
+              <li><strong className="text-lime-400">Rogue Cyber-Faction (Neon Lime):</strong> Autonomous third faction (Drones, Stalkers, Mechs) hostile to BOTH Player and Invaders!</li>
+              <li><strong className="text-yellow-300">Crossfire Tactics:</strong> Lure Invaders and Rogues into fighting each other! Opposing factions destroying each other awards bonus score, pure water, and instant ultimate charge!</li>
+              <li><strong className="text-amber-400">Dynamic Reinforcements:</strong> Beware of sudden Flank Incursions, Spearhead V-Formations, and Rogue Airdrops signaled by alert sirens!</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="text-xl font-bold text-yellow-400 mb-2">Developer Tools (Cheats)</h3>
+            <p className="text-slate-300 mb-2">For testing purposes, the following hotkeys are available:</p>
+            <ul className="list-disc pl-5 space-y-1 text-slate-300">
+              <li><strong className="text-fuchsia-400">F3:</strong> Toggle Debug Overlay (Hitboxes & FPS)</li>
+              <li><strong className="text-green-400">F4:</strong> Toggle God Mode (Invincibility)</li>
+              <li><strong className="text-blue-400">F5:</strong> Add 1000 💧 instantly</li>
+            </ul>
+          </section>
+        </div>
+
+        <button 
+          onClick={onClose}
+          className="mt-8 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl transition-all"
+        >
+          CLOSE
+        </button>
+      </div>
+    </div>
+  );
+});
+
+interface ShopModalProps {
+  currency: number;
+  hp: number;
+  upgrades: { fireRate: number; multiShot: number; piercing: number };
+  onBuyFireRate: () => void;
+  onBuyMultiShot: () => void;
+  onBuyPiercing: () => void;
+  onRepairTank: () => void;
+  onNextWave: () => void;
+  lang: string;
+}
+
+export const ShopModal = React.memo(function ShopModal({
+  currency,
+  hp,
+  upgrades,
+  onBuyFireRate,
+  onBuyMultiShot,
+  onBuyPiercing,
+  onRepairTank,
+  onNextWave,
+  lang,
+}: ShopModalProps) {
+  return (
+    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
+      <h1 className="text-4xl sm:text-5xl font-black text-blue-400 mb-2">WAVE CLEARED</h1>
+      <p className="text-xl sm:text-2xl text-white mb-8">Prepare for next wave!</p>
+      
+      <ShopUpgradePanel
+        currency={currency}
+        hp={hp}
+        upgrades={upgrades}
+        onBuyFireRate={onBuyFireRate}
+        onBuyMultiShot={onBuyMultiShot}
+        onBuyPiercing={onBuyPiercing}
+        onRepairTank={onRepairTank}
+        lang={lang}
+      />
+      
+      <button 
+        onClick={onNextWave}
+        className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-4"
+      >
+        NEXT WAVE
+      </button>
+    </div>
+  );
+});
+
+interface GameOverModalProps {
+  score: number;
+  currency: number;
+  hp: number;
+  gameOverReason: string;
+  upgrades: { fireRate: number; multiShot: number; piercing: number };
+  onBuyFireRate: () => void;
+  onBuyMultiShot: () => void;
+  onBuyPiercing: () => void;
+  onRepairTank: () => void;
+  onPlayAgain: () => void;
+  lang: string;
+}
+
+export const GameOverModal = React.memo(function GameOverModal({
+  score,
+  currency,
+  hp,
+  gameOverReason,
+  upgrades,
+  onBuyFireRate,
+  onBuyMultiShot,
+  onBuyPiercing,
+  onRepairTank,
+  onPlayAgain,
+  lang,
+}: GameOverModalProps) {
+  const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
+
+  return (
+    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
+      <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-2">GAME OVER</h1>
+      {gameOverReason && (
+        <p className="text-lg sm:text-xl text-red-300 font-bold mb-4 text-center">{gameOverReason}</p>
+      )}
+      <p className="text-xl sm:text-2xl text-white mb-8">Final {t('점수:', 'Score:')} {score}</p>
+      
+      <ShopUpgradePanel
+        currency={currency}
+        hp={hp}
+        upgrades={upgrades}
+        onBuyFireRate={onBuyFireRate}
+        onBuyMultiShot={onBuyMultiShot}
+        onBuyPiercing={onBuyPiercing}
+        onRepairTank={onRepairTank}
+        lang={lang}
+      />
+
+      <button 
+        onClick={onPlayAgain}
+        className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all"
+      >
+        PLAY AGAIN
+      </button>
+    </div>
+  );
+});
+
+// ============================================================================
+// Main GameCanvas Component
+// ============================================================================
 
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameManagerRef = useRef<GameManager | null>(null);
   
   const [gameState, setGameState] = useState<GameState>(GameState.MENU);
+  const gameStateRef = useRef<GameState>(gameState);
+  gameStateRef.current = gameState;
+
   const [gameOverReason, setGameOverReason] = useState<string>('');
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
@@ -88,23 +510,23 @@ export default function GameCanvas() {
   const [lang, setLang] = useState('ko');
   const [upgrades, setUpgrades] = useState({ fireRate: 1, multiShot: 1, piercing: 1 });
 
-  const handleToggleMute = () => {
+  const handleToggleMute = useCallback(() => {
     soundManager.init();
     const muted = soundManager.toggleMute();
     setIsMuted(muted);
-  };
+  }, []);
 
-  const handleOpenManual = () => {
+  const handleOpenManual = useCallback(() => {
     gameManagerRef.current?.pause();
     setShowManual(true);
-  };
+  }, []);
 
-  const handleCloseManual = () => {
+  const handleCloseManual = useCallback(() => {
     setShowManual(false);
     if (gameManagerRef.current?.state === GameState.PLAYING) {
       gameManagerRef.current?.resume();
     }
-  };
+  }, []);
 
   useEffect(() => {
     const navLang = navigator.language || 'ko';
@@ -114,8 +536,6 @@ export default function GameCanvas() {
       setLang('ko');
     }
   }, []);
-
-  const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -137,7 +557,7 @@ export default function GameCanvas() {
     };
   }, []);
 
-  const handleInstallClick = async () => {
+  const handleInstallClick = useCallback(async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -145,9 +565,9 @@ export default function GameCanvas() {
         setDeferredPrompt(null);
       }
     }
-  };
+  }, [deferredPrompt]);
 
-  const getSafeStoredHighScore = (): number => {
+  const getSafeStoredHighScore = useCallback((): number => {
     try {
       const saved = localStorage.getItem('waterInvaderHighScore');
       if (!saved) return 0;
@@ -156,11 +576,16 @@ export default function GameCanvas() {
     } catch {
       return 0;
     }
-  };
+  }, []);
 
   useEffect(() => {
     setHighScore(getSafeStoredHighScore());
-  }, []);
+  }, [getSafeStoredHighScore]);
+
+  // Mobile touch & drag evasion control refs
+  const activePointerIdRef = useRef<number | null>(null);
+  const lastPointerXRef = useRef<number | null>(null);
+  const isDraggingRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -168,7 +593,9 @@ export default function GameCanvas() {
     const canvas = canvasRef.current;
     const game = new GameManager(canvas);
     gameManagerRef.current = game;
-    (window as any).gameManager = game;
+    if (typeof window !== 'undefined') {
+      (window as any).gameManager = game;
+    }
     
     game.onStateChange = (state) => {
       setGameState(state);
@@ -217,6 +644,11 @@ export default function GameCanvas() {
         lastPointerXRef.current = null;
         isDraggingRef.current = false;
         game.clearKeys();
+      } else {
+        // Ensure AudioContext resumes if sound is active upon returning to tab
+        if (!soundManager.isMuted) {
+          soundManager.init();
+        }
       }
     };
     const handleResize = () => {
@@ -239,48 +671,72 @@ export default function GameCanvas() {
       window.removeEventListener('orientationchange', handleResize);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       game.stopGame();
+      gameManagerRef.current = null;
+      if (typeof window !== 'undefined') {
+        (window as any).gameManager = null;
+      }
     };
-  }, []);
+  }, [getSafeStoredHighScore]);
 
-  const startGame = () => {
+  const startGame = useCallback(() => {
     gameManagerRef.current?.init();
     if (gameManagerRef.current) {
       setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
+      if (gameManagerRef.current.player) {
+        setHp(gameManagerRef.current.player.hp);
+      }
     }
     gameManagerRef.current?.startGame();
-  };
+  }, []);
 
-  const buyFireRate = () => {
+  const buyFireRate = useCallback(() => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradeFireRate();
       setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
     }
-  };
+  }, []);
 
-  const buyMultiShot = () => {
+  const buyMultiShot = useCallback(() => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradeMultiShot();
       setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
     }
-  };
+  }, []);
 
-  const buyPiercing = () => {
+  const buyPiercing = useCallback(() => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradePiercing();
       setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
     }
-  };
+  }, []);
 
-  // Mobile touch & drag evasion controls
-  const activePointerIdRef = useRef<number | null>(null);
-  const lastPointerXRef = useRef<number | null>(null);
-  const isDraggingRef = useRef<boolean>(false);
+  const repairTank = useCallback(() => {
+    const game = gameManagerRef.current;
+    if (game && game.player) {
+      const maxHp = game.player.maxHp || 5;
+      if (game.currency >= 75 && game.player.hp < maxHp) {
+        game.currency -= 75;
+        game.player.hp = Math.min(maxHp, game.player.hp + 1);
+        soundManager.playPowerUp();
+        (game as any).updateScoreUI?.();
+        if (game.onPlayerHpChange) {
+          game.onPlayerHpChange(game.player.hp);
+        }
+        setHp(game.player.hp);
+        setCurrency(game.currency);
+      }
+    }
+  }, []);
 
-  const updateTargetX = (e: React.PointerEvent<HTMLCanvasElement>) => {
+  const startNextWave = useCallback(() => {
+    gameManagerRef.current?.startNextWave();
+  }, []);
+
+  const updateTargetX = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current || !gameManagerRef.current) return;
     if (!Number.isFinite(e.clientX)) return;
 
@@ -338,10 +794,10 @@ export default function GameCanvas() {
         player.isMovingRight = false;
       }
     }
-  };
+  }, []);
 
-  const handleCanvasPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (gameState !== GameState.PLAYING || !canvasRef.current || !gameManagerRef.current) return;
+  const handleCanvasPointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (gameStateRef.current !== GameState.PLAYING || !canvasRef.current || !gameManagerRef.current) return;
     // If another pointer is already actively dragging, ignore secondary touches on canvas
     if (activePointerIdRef.current !== null && activePointerIdRef.current !== e.pointerId) {
       return;
@@ -361,10 +817,10 @@ export default function GameCanvas() {
     // Start auto-firing on canvas touch
     gameManagerRef.current.handleKeyDown(' ');
     updateTargetX(e);
-  };
+  }, [updateTargetX]);
 
-  const handleCanvasPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (gameState !== GameState.PLAYING || !canvasRef.current || !gameManagerRef.current) return;
+  const handleCanvasPointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (gameStateRef.current !== GameState.PLAYING || !canvasRef.current || !gameManagerRef.current) return;
     // Only track the active dragging pointer (or any pointer if not locked)
     if (activePointerIdRef.current !== null && e.pointerId !== activePointerIdRef.current) {
       return;
@@ -372,9 +828,9 @@ export default function GameCanvas() {
     if (e.buttons > 0 || e.pointerType === 'touch' || isDraggingRef.current) {
       updateTargetX(e);
     }
-  };
+  }, [updateTargetX]);
 
-  const handleCanvasPointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+  const handleCanvasPointerUp = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     // Only release if the event corresponds to the active pointer or if no specific pointer is tracked
     if (activePointerIdRef.current === e.pointerId || activePointerIdRef.current === null || e.pointerId === undefined) {
       try {
@@ -396,270 +852,104 @@ export default function GameCanvas() {
         }
       }
     }
-  };
+  }, []);
 
-  const handleTouchStart = (key: string) => (e: React.TouchEvent | React.MouseEvent | React.PointerEvent) => {
-    if (showManual) return;
+  const handleTouchStart = useCallback((key: string) => (e: React.TouchEvent | React.MouseEvent | React.PointerEvent) => {
+    if (showManualRef.current) return;
     e.preventDefault();
     e.stopPropagation();
     gameManagerRef.current?.handleKeyDown(key);
-  };
+  }, []);
 
-  const handleTouchEnd = (key: string) => (e: React.TouchEvent | React.MouseEvent | React.PointerEvent) => {
-    if (showManual) return;
+  const handleTouchEnd = useCallback((key: string) => (e: React.TouchEvent | React.MouseEvent | React.PointerEvent) => {
+    if (showManualRef.current) return;
     e.preventDefault();
     e.stopPropagation();
     gameManagerRef.current?.handleKeyUp(key);
-  };
+  }, []);
 
   return (
     <div className="relative flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
-      {/* Top HUD */}
-      <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start text-white touch-none z-30 pointer-events-none">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-blue-400">{t('점수:', 'Score:')} {score}</h2>
-          <p className="text-sm sm:text-base text-blue-200">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
-          {gameState === GameState.PLAYING && (
-            <div className="flex items-center gap-2 mt-1 flex-wrap">
-              <p className="text-sm sm:text-base text-yellow-300 font-bold">WAVE {wave}</p>
-              <div className="flex items-center gap-1.5 ml-1">
-                <span 
-                  data-testid="invader-threat-badge" 
-                  className="px-2 py-0.5 rounded-full text-xs font-black bg-red-950/80 text-red-400 border border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.4)] flex items-center gap-1 select-none"
-                >
-                  👾 {invaderCount}
-                </span>
-                <span 
-                  data-testid="rogue-threat-badge" 
-                  className="px-2 py-0.5 rounded-full text-xs font-black bg-lime-950/80 text-lime-400 border border-lime-500/60 shadow-[0_0_8px_rgba(132,204,22,0.4)] flex items-center gap-1 select-none"
-                >
-                  ⚡ {rogueCount}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="text-right flex flex-col items-end">
-          <div className="flex gap-1 justify-end mb-2">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className={`w-4 h-4 sm:w-6 sm:h-6 rounded-full ${i < hp ? 'bg-blue-500' : 'bg-gray-600'}`} />
-            ))}
-          </div>
-          {/* Mute button */}
-          <button
-            onClick={handleToggleMute}
-            aria-label={isMuted ? 'Unmute Sound' : 'Mute Sound'}
-            className="px-3 py-1 bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded border border-slate-600 transition-colors pointer-events-auto select-none mb-1 z-30"
-          >
-            {isMuted ? '🔇 MUTE' : '🔊 SOUND'}
-          </button>
-          {combo > 1 && (
-            <div className="text-lg sm:text-xl font-bold text-yellow-400 animate-pulse">
-              {combo}x COMBO!
-            </div>
-          )}
-          {/* Ultimate Gauge */}
-          {gameState === GameState.PLAYING && (
-            <div className="mt-2 w-32 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-500 relative">
-              <div 
-                className={`h-full transition-all duration-300 ${ultimate >= 100 ? 'bg-gradient-to-r from-yellow-400 to-red-500 animate-pulse' : 'bg-blue-500'}`}
-                style={{ width: `${ultimate}%` }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Top HUD (Memoized) */}
+      <TopHUD
+        score={score}
+        currency={currency}
+        wave={wave}
+        invaderCount={invaderCount}
+        rogueCount={rogueCount}
+        hp={hp}
+        isMuted={isMuted}
+        combo={combo}
+        ultimate={ultimate}
+        gameState={gameState}
+        onToggleMute={handleToggleMute}
+        lang={lang}
+      />
 
-      <div className="w-full aspect-[3/4]">
-        <canvas
-          onPointerDown={handleCanvasPointerDown}
-          onPointerMove={handleCanvasPointerMove}
-          onPointerUp={handleCanvasPointerUp}
-          onPointerCancel={handleCanvasPointerUp}
-          ref={canvasRef}
-          width={600}
-          height={800}
-          className="w-full h-full border-4 border-blue-900 rounded-lg shadow-2xl bg-slate-900 touch-none object-contain select-none"
-        />
-      </div>
+      {/* Canvas Viewport (Memoized container, DPR buffer sizing protected) */}
+      <CanvasCore
+        canvasRef={canvasRef}
+        onPointerDown={handleCanvasPointerDown}
+        onPointerMove={handleCanvasPointerMove}
+        onPointerUp={handleCanvasPointerUp}
+      />
 
-      {/* Mobile Controls */}
+      {/* Mobile Controls (Memoized) */}
       {gameState === GameState.PLAYING && (
-        <div className="w-full flex justify-between p-4 mt-2 gap-2 sm:gap-4 touch-none">
-          <div className="flex flex-col gap-1 w-1/2">
-            <div className="flex gap-1 h-1/2">
-              <button 
-                className={`flex-1 rounded-xl text-xs font-bold text-white pointer-events-auto touch-none select-none ${currency >= 50 ? 'bg-green-600 active:bg-green-500' : 'bg-slate-700 opacity-50'}`}
-                onPointerDown={handleTouchStart('q')}
-                onPointerUp={handleTouchEnd('q')}
-                onPointerLeave={handleTouchEnd('q')}
-                onPointerCancel={handleTouchEnd('q')}
-              >
-                ALLY(Q)
-              </button>
-              <button 
-                className={`flex-1 rounded-xl text-xs font-bold text-white pointer-events-auto touch-none select-none ${ultimate >= 100 ? 'bg-yellow-600 active:bg-yellow-500' : 'bg-slate-700 opacity-50'}`}
-                onPointerDown={handleTouchStart('e')}
-                onPointerUp={handleTouchEnd('e')}
-                onPointerLeave={handleTouchEnd('e')}
-                onPointerCancel={handleTouchEnd('e')}
-              >
-                ULT({ultimate}%)
-              </button>
-            </div>
-            <button 
-              className="w-full bg-blue-600/80 active:bg-blue-400 rounded-xl h-1/2 flex items-center justify-center text-xl font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-              onPointerDown={handleTouchStart(' ')}
-              onPointerUp={handleTouchEnd(' ')}
-              onPointerLeave={handleTouchEnd(' ')}
-              onPointerCancel={handleTouchEnd(' ')}
-            >
-              FIRE!
-            </button>
-          </div>
-        </div>
+        <MobileControls
+          currency={currency}
+          ultimate={ultimate}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        />
       )}
 
-      {/* Overlays */}
+      {/* Main Menu Overlay */}
       {gameState === GameState.MENU && (
-        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-lg z-20">
-          <h1 className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300 mb-4 tracking-wider uppercase text-center px-4">
-            Water Invader
-          </h1>
-          {highScore > 0 && (
-            <p className="text-xl text-yellow-400 font-bold mb-8">HIGH SCORE: {highScore}</p>
-          )}
-          <div className="flex flex-col gap-4">
-            <button 
-              onClick={startGame}
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl sm:text-2xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:scale-105"
-            >
-              START GAME
-            </button>
-            <button 
-              onClick={() => handleOpenManual()}
-              className="px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded text-lg transition-all"
-            >
-              HOW TO PLAY
-            </button>
-            {deferredPrompt && (
-              <button 
-                onClick={handleInstallClick}
-                className="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                INSTALL APP
-              </button>
-            )}
-          </div>
-        </div>
+        <MenuOverlay
+          highScore={highScore}
+          deferredPrompt={deferredPrompt}
+          onStartGame={startGame}
+          onOpenManual={handleOpenManual}
+          onInstallClick={handleInstallClick}
+        />
       )}
 
-      {/* Manual Modal */}
+      {/* How To Play Manual Modal */}
       {showManual && (
-        <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center rounded-lg z-30 p-4">
-          <div className="bg-slate-800 p-6 rounded-xl max-w-lg w-full max-h-[90%] overflow-y-auto text-white">
-            <h2 className="text-3xl font-black text-blue-400 mb-6 text-center border-b border-slate-600 pb-4">HOW TO PLAY</h2>
-            
-            <div className="space-y-6">
-              <section>
-                <h3 className="text-xl font-bold text-yellow-400 mb-2">Controls</h3>
-                <ul className="list-disc pl-5 space-y-1 text-slate-300">
-                  <li><strong className="text-white">Move:</strong> Left/Right Arrows or A/D keys</li>
-                  <li><strong className="text-white">Shoot:</strong> Spacebar</li>
-                  <li><strong className="text-white">Ultimate Skill (Heavy Rain):</strong> E or Shift key (Requires 100% Gauge)</li>
-                </ul>
-              </section>
-
-              <section>
-                <h3 className="text-xl font-bold text-yellow-400 mb-2">Game Mechanics</h3>
-                <ul className="list-disc pl-5 space-y-1 text-slate-300">
-                  <li>Survive endless waves of enemies! Every 5th wave features a Boss.</li>
-                  <li>Collect <strong className="text-blue-300">Pure Water 💧</strong> by defeating enemies.</li>
-                  <li>Build up your <strong className="text-yellow-300">Combo</strong> by defeating enemies quickly to multiply your score and currency gain!</li>
-                  <li>Taking damage increases your <strong className="text-red-400">Stress & Panic</strong>, which lowers your accuracy and causes your character to visually panic!</li>
-                </ul>
-              </section>
-
-              <section>
-                <h3 className="text-xl font-bold text-yellow-400 mb-2">3-Way Battlefield & Factions</h3>
-                <ul className="list-disc pl-5 space-y-2 text-slate-300 text-sm sm:text-base">
-                  <li><strong className="text-cyan-400">Player & Allies (Blue/Green):</strong> Defend the water filtration station and deploy friendly support drones.</li>
-                  <li><strong className="text-orange-400">Alien Invaders (Orange/Red):</strong> Original invaders aiming to corrupt the clean water reservoir.</li>
-                  <li><strong className="text-lime-400">Rogue Cyber-Faction (Neon Lime):</strong> Autonomous third faction (Drones, Stalkers, Mechs) hostile to BOTH Player and Invaders!</li>
-                  <li><strong className="text-yellow-300">Crossfire Tactics:</strong> Lure Invaders and Rogues into fighting each other! Opposing factions destroying each other awards bonus score, pure water, and instant ultimate charge!</li>
-                  <li><strong className="text-amber-400">Dynamic Reinforcements:</strong> Beware of sudden Flank Incursions, Spearhead V-Formations, and Rogue Airdrops signaled by alert sirens!</li>
-                </ul>
-              </section>
-
-              <section>
-                <h3 className="text-xl font-bold text-yellow-400 mb-2">Developer Tools (Cheats)</h3>
-                <p className="text-slate-300 mb-2">For testing purposes, the following hotkeys are available:</p>
-                <ul className="list-disc pl-5 space-y-1 text-slate-300">
-                  <li><strong className="text-fuchsia-400">F3:</strong> Toggle Debug Overlay (Hitboxes & FPS)</li>
-                  <li><strong className="text-green-400">F4:</strong> Toggle God Mode (Invincibility)</li>
-                  <li><strong className="text-blue-400">F5:</strong> Add 1000 💧 instantly</li>
-                </ul>
-              </section>
-            </div>
-
-            <button 
-              onClick={handleCloseManual}
-              className="mt-8 w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl transition-all"
-            >
-              CLOSE
-            </button>
-          </div>
-        </div>
+        <ManualModal onClose={handleCloseManual} />
       )}
 
+      {/* Wave Clear Shop Modal */}
       {gameState === GameState.SHOP && (
-        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
-          <h1 className="text-4xl sm:text-5xl font-black text-blue-400 mb-2">WAVE CLEARED</h1>
-          <p className="text-xl sm:text-2xl text-white mb-8">Prepare for next wave!</p>
-          
-          <ShopUpgradePanel
-            currency={currency}
-            upgrades={upgrades}
-            onBuyFireRate={buyFireRate}
-            onBuyMultiShot={buyMultiShot}
-            onBuyPiercing={buyPiercing}
-          />
-          
-          <button 
-            onClick={() => gameManagerRef.current?.startNextWave()}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-4"
-          >
-            NEXT WAVE
-          </button>
-        </div>
+        <ShopModal
+          currency={currency}
+          hp={hp}
+          upgrades={upgrades}
+          onBuyFireRate={buyFireRate}
+          onBuyMultiShot={buyMultiShot}
+          onBuyPiercing={buyPiercing}
+          onRepairTank={repairTank}
+          onNextWave={startNextWave}
+          lang={lang}
+        />
       )}
 
+      {/* Game Over Modal */}
       {gameState === GameState.GAME_OVER && (
-        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
-          <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-2">GAME OVER</h1>
-          {gameOverReason && (
-            <p className="text-lg sm:text-xl text-red-300 font-bold mb-4 text-center">{gameOverReason}</p>
-          )}
-          <p className="text-xl sm:text-2xl text-white mb-8">Final {t('점수:', 'Score:')} {score}</p>
-          
-          <ShopUpgradePanel
-            currency={currency}
-            upgrades={upgrades}
-            onBuyFireRate={buyFireRate}
-            onBuyMultiShot={buyMultiShot}
-            onBuyPiercing={buyPiercing}
-          />
-
-          <button 
-            onClick={startGame}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all"
-          >
-            PLAY AGAIN
-          </button>
-        </div>
+        <GameOverModal
+          score={score}
+          currency={currency}
+          hp={hp}
+          gameOverReason={gameOverReason}
+          upgrades={upgrades}
+          onBuyFireRate={buyFireRate}
+          onBuyMultiShot={buyMultiShot}
+          onBuyPiercing={buyPiercing}
+          onRepairTank={repairTank}
+          onPlayAgain={startGame}
+          lang={lang}
+        />
       )}
     </div>
   );

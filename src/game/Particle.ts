@@ -48,8 +48,6 @@ export class Particle extends Entity {
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
-    ctx.save();
-    
     // Fake Glow (Much faster than shadowBlur)
     ctx.globalAlpha = this.alpha * 0.4;
     ctx.fillStyle = this.color;
@@ -63,6 +61,6 @@ export class Particle extends Entity {
     ctx.arc(this.position.x, this.position.y, this.size.width / 2, 0, Math.PI * 2);
     ctx.fill();
     
-    ctx.restore();
+    ctx.globalAlpha = 1.0;
   }
 }

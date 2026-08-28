@@ -288,7 +288,7 @@ export class Enemy extends Entity {
         }
 
         const bulletSpeed = this.type === EnemyType.ROGUE_DRONE ? 380 : (this.type === EnemyType.ROGUE_MECH ? 280 : 340);
-        const bulletDamage = this.type === EnemyType.ROGUE_MECH ? 3 : (this.type === EnemyType.ROGUE_STALKER ? 2 : 1);
+        const bulletDamage = this.type === EnemyType.ROGUE_MECH ? 2 : (this.type === EnemyType.ROGUE_STALKER ? 2 : 1);
         const piercing = this.type === EnemyType.ROGUE_MECH ? 2 : 1;
 
         const b = new Bullet(spawnX, spawnY, bulletSpeed, bulletDamage, false, piercing);
@@ -370,19 +370,19 @@ export class Enemy extends Entity {
       ctx.arc(cx, cy, w/2 + 7, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(56, 189, 248, ${0.25 + this.shieldHp * 0.12})`;
       ctx.fill();
+      // Outer glow ring (fast concentric stroke)
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+      ctx.stroke();
       ctx.lineWidth = 2.5;
       ctx.strokeStyle = '#38bdf8';
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 10;
       ctx.stroke();
-      ctx.shadowBlur = 0;
     }
     
     const isFlashing = this.hitFlashTimer > 0;
     if (isFlashing) {
       ctx.fillStyle = '#ffffff';
       ctx.shadowColor = '#ffffff';
-      ctx.shadowBlur = 20;
     } else {
       ctx.fillStyle = this.color;
     }
@@ -448,15 +448,16 @@ export class Enemy extends Entity {
         ctx.closePath();
         ctx.fill();
 
-        // Glowing Aquatic Power Core
+        // Glowing Aquatic Power Core (layered concentric alpha halo)
         const corePulse = Math.sin(time * 4) * 3;
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+        ctx.beginPath();
+        ctx.arc(cx, cy + 10, 20 + corePulse, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = '#38bdf8';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(cx, cy + 10, 14 + corePulse, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
 
         // Multi-Cluster Sensor Eyes
         ctx.fillStyle = '#1e293b';
@@ -465,15 +466,17 @@ export class Enemy extends Entity {
         ctx.arc(cx + w/4, cy - 14, 16, 0, Math.PI*2);
         ctx.fill();
 
-        // Fiery Glowing Iris
+        // Fiery Glowing Iris (layered concentric alpha halo)
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.35)';
+        ctx.beginPath();
+        ctx.arc(cx - w/4, cy - 14, 12, 0, Math.PI*2);
+        ctx.arc(cx + w/4, cy - 14, 12, 0, Math.PI*2);
+        ctx.fill();
         ctx.fillStyle = '#fbbf24';
-        ctx.shadowColor = '#fbbf24';
-        ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(cx - w/4, cy - 14, 8, 0, Math.PI*2);
         ctx.arc(cx + w/4, cy - 14, 8, 0, Math.PI*2);
         ctx.fill();
-        ctx.shadowBlur = 0;
 
         ctx.fillStyle = '#ef4444';
         ctx.beginPath();
@@ -517,12 +520,11 @@ export class Enemy extends Entity {
         ctx.closePath();
         ctx.fill();
 
-        // Glowing Cyan Visor
+        // Glowing Cyan Visor (layered alpha halo)
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.4)';
+        ctx.fillRect(cx - 7, cy - 4, 14, 8);
         ctx.fillStyle = '#22d3ee';
-        ctx.shadowColor = '#06b6d4';
-        ctx.shadowBlur = 8;
         ctx.fillRect(cx - 5, cy - 2, 10, 4);
-        ctx.shadowBlur = 0;
 
         // Ion Thruster Plume
         ctx.fillStyle = '#a3e635';
@@ -563,14 +565,15 @@ export class Enemy extends Entity {
         ctx.closePath();
         ctx.fill();
 
-        // Glowing Amber Sensor Scanner
+        // Glowing Amber Sensor Scanner (layered concentric halo)
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy - 2, 11, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = '#f59e0b';
-        ctx.shadowColor = '#f59e0b';
-        ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.ellipse(cx, cy - 2, 7, 3, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
 
         // Twin Thrusters
         ctx.fillStyle = '#84cc16';
@@ -605,14 +608,13 @@ export class Enemy extends Entity {
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(cx - w/3, cy - h/3, (w * 2) / 3, (h * 2) / 3);
 
-        // Multi-Spectrum Laser Visor
+        // Multi-Spectrum Laser Visor (layered halo)
+        ctx.fillStyle = 'rgba(132, 204, 22, 0.4)';
+        ctx.fillRect(cx - 12, cy - 7, 24, 9);
         ctx.fillStyle = '#84cc16';
-        ctx.shadowColor = '#84cc16';
-        ctx.shadowBlur = 8;
         ctx.fillRect(cx - 10, cy - 5, 20, 5);
         ctx.fillStyle = '#ef4444';
         ctx.fillRect(cx - 3, cy - 4, 6, 3);
-        ctx.shadowBlur = 0;
 
         // Thruster vents
         ctx.fillStyle = '#06b6d4';
@@ -664,14 +666,15 @@ export class Enemy extends Entity {
         ctx.quadraticCurveTo(cx + 12, cy - h/2 - 8, cx, cy - h/2 - 12);
         ctx.stroke();
 
-        // Glowing Bioluminescent Lure Bulb
+        // Glowing Bioluminescent Lure Bulb (layered concentric halo)
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+        ctx.beginPath();
+        ctx.arc(cx, cy - h/2 - 12, 8, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = '#38bdf8';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(cx, cy - h/2 - 12, 4.5, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
 
         // Concentrated Sniper Targeting Eye
         ctx.fillStyle = '#22d3ee';
@@ -696,14 +699,15 @@ export class Enemy extends Entity {
       ctx.fill();
 
       if (!isFlashing) {
-        // Glowing Amber Predator Eye
+        // Glowing Amber Predator Eye (layered concentric halo)
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.4)';
+        ctx.beginPath();
+        ctx.arc(cx, cy - 2, 7, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = '#fbbf24';
-        ctx.shadowColor = '#fbbf24';
-        ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.arc(cx, cy - 2, 4, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
 
         // Blazing Rocket Flame
         ctx.fillStyle = '#fde047';
@@ -733,14 +737,15 @@ export class Enemy extends Entity {
       ctx.fill();
 
       if (!isFlashing) {
-        // Electric Nucleus Spark
+        // Electric Nucleus Spark (layered concentric halo)
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(cx, cy, 4, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
       }
     } else if (this.type === EnemyType.SPLITTER) {
       // Toxic Bio-Anemone Dual Nucleus (Vivid Poison Emerald)
@@ -758,15 +763,17 @@ export class Enemy extends Entity {
       ctx.fill();
 
       if (!isFlashing) {
-        // Glowing Radioactive Spore Pearls
+        // Glowing Radioactive Spore Pearls (layered concentric halo)
+        ctx.fillStyle = 'rgba(132, 204, 22, 0.4)';
+        ctx.beginPath();
+        ctx.arc(cx - 7, cy, 7, 0, Math.PI*2);
+        ctx.arc(cx + 7, cy + 3, 7, 0, Math.PI*2);
+        ctx.fill();
         ctx.fillStyle = '#bef264';
-        ctx.shadowColor = '#84cc16';
-        ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.arc(cx - 7, cy, 4, 0, Math.PI*2);
         ctx.arc(cx + 7, cy + 3, 4, 0, Math.PI*2);
         ctx.fill();
-        ctx.shadowBlur = 0;
       }
     } else if (this.type === EnemyType.SHIELDED) {
       // Armored Nautilus / Turtle (Cyan & Jade Green Carapace)
