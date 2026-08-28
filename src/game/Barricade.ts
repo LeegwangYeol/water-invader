@@ -25,6 +25,16 @@ export class Barricade extends Entity {
     this.blocks = new Array(this.cols * this.rows).fill(true);
   }
 
+  public takeDamage(amount: number): void {
+    if (this.type === BarricadeType.DESTRUCTIBLE) {
+      this.hp -= amount;
+      if (this.hp <= 0) {
+        this.hp = 0;
+        this.isDead = true;
+      }
+    }
+  }
+
   // We override hp setter or just update blocks in update() based on HP
   public update(deltaTime: number): void {
     if (this.type === BarricadeType.DESTRUCTIBLE) {
