@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # BRIEFING — 2026-08-28T11:45:00Z
 
 ## Mission
@@ -8,10 +9,24 @@ Conduct a comprehensive bug hunt and performance optimization pass on the Water 
 - Working directory: /Users/a7111/src/water-invader/.agents/sentinel
 - Orchestrator: 2dbaa4bc-bb66-4f3e-aeaf-933f9e0c7780 (teamwork_preview_orchestrator_bughunt_opt_1)
 - Victory Auditor: b30074de-3ce6-45de-a1f0-27b1c79ad815 (teamwork_preview_victory_auditor_sentinel_bughunt_1)
+=======
+# BRIEFING — 2026-08-28T14:19:31Z
+
+## Mission
+Fix Enemy Visual Rollback and restore visual distinctness for enemy types/factions, verify with Playwright E2E tests, and git push.
+
+## 🔒 My Identity
+- Archetype: sentinel
+- Working directory: /Users/user/src/water-invader/.agents/sentinel
+- Orchestrator: d03f8b2c-4ba3-48bb-8b0a-87087671ee1a (teamwork_preview_swe)
+- Victory Auditor: [to be spawned on victory claim]
+- Active Orchestrator: d03f8b2c-4ba3-48bb-8b0a-87087671ee1a
+>>>>>>> c32f90e (test: add adversarial reviewer graphics integrity test suite and verify 100% zero-raster enemy rendering)
 
 ## 🔒 Key Constraints
 - No technical decisions — relay only
 - Victory Audit is MANDATORY before reporting completion
+<<<<<<< HEAD
 - Route selected: General (teamwork_preview_orchestrator)
 - User-defined rule: Verify build (npm run build / npx tsc --noEmit) before git commit/push
 - User-defined rule: Next.js agent rules apply
@@ -25,6 +40,16 @@ Conduct a comprehensive bug hunt and performance optimization pass on the Water 
   - R3 (Automatic Git Commit): Cleanly committed as `c52f0dc2e398c11f2c403b10460271eb15dd9d5a` ("fix & perf: comprehensive bug hunt, rendering optimization, and test expansion").
   - Test Suite: 340 / 340 Playwright automated tests passing (100%), 0 build/type errors.
   - Independent Victory Audit: **VICTORY CONFIRMED**.
+=======
+- Route selected: SWE Light (teamwork_preview_swe)
+- Prompt protection rules strictly enforced
+- Must follow pre-commit build verification rules
+
+## User Context
+- **Last user request**: Single self-contained bug fix and visual restoration for enemy graphics (R1: Fix Enemy Visual Rollback & restore distinct visuals for 3rd faction / Snipers, R2: Playwright tests & git push).
+- **Pending clarifications**: none
+- **Delivered results**: None yet for this iteration.
+>>>>>>> c32f90e (test: add adversarial reviewer graphics integrity test suite and verify 100% zero-raster enemy rendering)
 
 ## Project Status
 - **Phase**: complete
@@ -35,8 +60,19 @@ Conduct a comprehensive bug hunt and performance optimization pass on the Water 
 - **Retry count**: 0
 
 ## Artifact Index
+<<<<<<< HEAD
 - /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md — Verbatim user request with follow-ups
 - /Users/a7111/src/water-invader/.agents/sentinel/BRIEFING.md — Sentinel persistent memory
 - /Users/a7111/src/water-invader/.agents/sentinel/handoff.md — Sentinel handoff report
 - /Users/a7111/src/water-invader/.agents/teamwork_preview_orchestrator_bughunt_opt_1/handoff.md — Orchestrator handoff report
 - /Users/a7111/src/water-invader/.agents/teamwork_preview_victory_auditor_sentinel_bughunt_1/audit_report.md — Victory Auditor audit report
+=======
+- /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md — Verbatim user requests
+- /Users/user/src/water-invader/.agents/sentinel/BRIEFING.md — Sentinel working memory
+- /Users/user/src/water-invader/COLLABORATION.md — Claude collaboration guide
+- /Users/user/src/water-invader/PROJECT.md — Global project architecture
+
+
+
+
+>>>>>>> c32f90e (test: add adversarial reviewer graphics integrity test suite and verify 100% zero-raster enemy rendering)

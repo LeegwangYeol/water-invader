@@ -1,6 +1,7 @@
 # Project: Water Invader — 3-Way Battle System & Dynamic Reinforcements
 
 ## Architecture
+<<<<<<< HEAD
 - **Framework**: Next.js 16.3.1 (App Router), React 19.2.8, Tailwind CSS v4, TypeScript 5
 - **Game Engine**: HTML5 Canvas 2D with procedural vector graphics & bioluminescent aquatic rendering, Web Audio API procedural synthesis, 60 FPS requestAnimationFrame loop
 - **State Machine**: Menu -> Playing (Wave & Reinforcements Loop) -> Shop (Inter-wave Upgrades) -> Game Over
@@ -29,10 +30,32 @@
 | 13 | E2E Opaque-Box Test Suite (Tiers 1-4) | Comprehensive Playwright test suite covering all multi-faction and dynamic spawn features | M_TEST | Dual Track |
 | 14 | 100% E2E Verification & Tier 5 Hardening | Full integration pass and adversarial stress/edge-case verification | M5 | Final Milestone |
 | 15 | Vibrant Aquatic/Deep-Sea Visual Overhaul | Colorful, vivid bioluminescent vector palettes & animated aquatic geometry (replacing dull/black shapes) | M2, M4 | User Update |
+=======
+- **Engine Core**: `src/game/GameManager.ts` (Collision detection, game loop, entity lifecycle, particle explosions).
+- **Entities**:
+  - `src/game/Player.ts`: Projectile firing (single, multi-shot, spread, piercing).
+  - `src/game/Bullet.ts`: Position update, bounding box, faction (`Faction.PLAYER`, `Faction.ENEMY`, `Faction.ROGUE`).
+  - `src/game/Enemy.ts`: 10 enemy types (Invaders, Divers, Snipers, Shielded, Splitters, Rogues, Bosses), dive speed, aggression states, `prevY` tracking for swept collision.
+  - `src/game/Barricade.ts`: Voxel grid structure (6x4 blocks), `takeDamage()`, destructible (Ice / 20 HP) and indestructible (Stone / 35 HP contact-destructible) cover with real-time state synchronization.
+  - `src/game/Helper.ts`: Ally drone roles and projectiles.
+- **E2E Test Harness**: Playwright (`playwright.config.ts`, `tests/`).
+
+## Feature Inventory
+| # | Feature | Description | Milestone | Source | Status |
+|---|---------|-------------|-----------|--------|--------|
+| 1 | Player Projectile Barricade Collision | Player and ally projectiles collide with and are blocked/absorbed by barricades (`isDead = true`, splash particles) | M1 | Survey | DONE |
+| 2 | Friendly Fire Barricade Protection | Player bullets absorbed by barricades without reducing friendly barricade HP | M1 | Survey | DONE |
+| 3 | Comprehensive Enemy Contact Damage | All 10 enemy types deal scaled contact damage to all barricade types via `barricade.takeDamage()` | M2 | Survey | DONE |
+| 4 | Diver High-Speed Crash & Anti-Tunneling | Continuous swept vertical collision prevents high-speed Divers from skipping barricades; deals 20 crash damage and explodes | M2 | Survey | DONE |
+| 5 | Barricade Position Clamping & Destruction | Enemies are held back at barricade boundary while gnawing until barricade is destroyed, voxel blocks degrade proportionally | M2 | Survey | DONE |
+| 6 | E2E Physics Test Suite Upgrade | Add `tests/11_barricade_physics_and_projectile_blocking.spec.ts` & update existing test files asserting old pass-through behavior | M3 | Survey | DONE |
+| 7 | Full System Verification & Git Deployment | `npx tsc --noEmit`, `npm run build`, `npx playwright test`, commit (`8be80af`) and push to remote `origin/master` | M4 | Survey | DONE |
+>>>>>>> c32f90e (test: add adversarial reviewer graphics integrity test suite and verify 100% zero-raster enemy rendering)
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
+<<<<<<< HEAD
 | M_TEST | E2E Testing Suite | Comprehensive test suite (Tiers 1-4) published to `TEST_READY.md` | None | DONE |
 | M1 | Faction & Combat Core | `Faction` enum, `Entity`/`Bullet` tagging, 3-way collision matrix, crossfire scoring, audio synthesis | None | DONE |
 | M2 | Third Faction Units & AI + Aquatic Art | Rogue Drone/Stalker/Mech classes, dual-target AI, vibrant aquatic vector art for all enemies | M1 | DONE |
@@ -49,3 +72,23 @@
 - `src/game/SoundManager.ts`: Procedural Web Audio synthesizers (Rogue lasers, alert sirens, crossfire clashes)
 - `src/components/game-canvas.tsx`: React HUD overlay (threat counters, badges, alert banners, modal updates)
 - `tests/05_three_way_battle.spec.ts`: E2E opaque-box test suite for 3-way battle & dynamic reinforcements
+=======
+| M1 | Player Projectile Barricade Collision | Update `GameManager.ts` bullet-barricade collision handling to block/absorb player bullets with particle feedback | None | DONE |
+| M2 | Comprehensive Enemy Contact Damage & Anti-Tunneling | Implement continuous swept collision for Divers & scaled contact damage with position clamping across all enemy/barricade types | M1 | DONE |
+| M3 | E2E Test Suite Upgrade & Regression Alignment | Create dedicated physics test spec and align existing test files | M1, M2 | DONE |
+| M4 | Final Build Check, E2E Verification & Git Push | Type check, build check, full Playwright suite run, git commit and push | M3 | DONE |
+
+## Code Layout
+- `src/game/GameManager.ts`: Bullet-barricade collision, enemy-barricade collision, particle effects.
+- `src/game/Barricade.ts`: `takeDamage()`, voxel block state management, HP bounds.
+- `src/game/Enemy.ts`: Enemy definitions, movement, diving mechanics, `prevY` tracking.
+- `src/game/Player.ts`: Player firing mechanics.
+- `tests/11_barricade_physics_and_projectile_blocking.spec.ts`: Dedicated test suite for R1 and R2 (15 tests).
+- `tests/adversarial_challenger_r1_player_projectile_blocking.spec.ts`: Dedicated R1 adversarial test suite (14 tests).
+- `tests/adversarial_r2_enemy_contact_and_tunneling.spec.ts`: Dedicated R2 adversarial test suite (10 tests).
+- `tests/09_destructible_barricade_contact.spec.ts`: Aligned test suite.
+- `tests/adversarial_empirical_r1_r2_stress_challenger.spec.ts`: Aligned test suite.
+- `tests/challenger_combat_pacing_stress.spec.ts`: Aligned test suite.
+- `tests/m123_implementation_verification.spec.ts`: Aligned test suite.
+- `tests/adversarial_challenger_m1_overhaul_stress.spec.ts`: Aligned test suite.
+>>>>>>> c32f90e (test: add adversarial reviewer graphics integrity test suite and verify 100% zero-raster enemy rendering)

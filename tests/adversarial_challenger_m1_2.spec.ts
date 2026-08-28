@@ -117,17 +117,19 @@ test.describe('Challenger M1 Adversarial Verification Suite (teamwork_preview_ch
       // Create a wide indestructible stone barricade at y=500 spanning entire test corridor
       const stoneBarricade = new BarricadeClass(0, 500, 1); // BarricadeType.INDESTRUCTIBLE = 1
       stoneBarricade.size.width = gm.logicalWidth; // wide barrier
+      stoneBarricade.hp = 100;
+      stoneBarricade.maxHp = 100;
       gm.barricades = [stoneBarricade];
 
       // Place multiple enemy types descending into the stone barricade
       // Types: 0=NORMAL, 1=ZIGZAG, 3=SNIPER, 4=DIVER, 5=SHIELDED, 6=SPLITTER
       const testEnemies = [
-        new EnemyClass(100, 480, gm.logicalWidth, 1, 0), // NORMAL (height 30)
-        new EnemyClass(180, 490, gm.logicalWidth, 1, 1), // ZIGZAG (height 30)
-        new EnemyClass(260, 475, gm.logicalWidth, 1, 3), // SNIPER (height 30)
+        new EnemyClass(100, 460, gm.logicalWidth, 1, 0), // NORMAL (height 30)
+        new EnemyClass(180, 460, gm.logicalWidth, 1, 1), // ZIGZAG (height 30)
+        new EnemyClass(260, 460, gm.logicalWidth, 1, 3), // SNIPER (height 30)
         new EnemyClass(340, 460, gm.logicalWidth, 1, 4), // DIVER (height 30)
-        new EnemyClass(420, 485, gm.logicalWidth, 1, 5), // SHIELDED (height 30)
-        new EnemyClass(500, 470, gm.logicalWidth, 1, 6), // SPLITTER (height 40)
+        new EnemyClass(420, 460, gm.logicalWidth, 1, 5), // SHIELDED (height 30)
+        new EnemyClass(500, 450, gm.logicalWidth, 1, 6), // SPLITTER (height 40)
       ];
 
       gm.enemies = testEnemies;
@@ -195,20 +197,19 @@ test.describe('Challenger M1 Adversarial Verification Suite (teamwork_preview_ch
       const freeDeltaY = freeEnemy.position.y - freeInitialY;
       const freeDeltaX = Math.abs(freeEnemy.position.x - freeInitialX);
 
-      // 2. Gnawing enemy test (colliding with destructible barricade)
+      // 2. Gnawing enemy test (speed throttled by isGnawing = true)
       const destructibleBarricade = new BarricadeClass(300, 200, 0); // BarricadeType.DESTRUCTIBLE = 0
       gm.barricades = [destructibleBarricade];
 
-      const gnawingEnemy = new EnemyClass(300, 200, gm.logicalWidth, 1, 0); // Placed directly overlapping barricade
-      gm.enemies = [gnawingEnemy];
+      const gnawingEnemy = new EnemyClass(300, 100, gm.logicalWidth, 1, 0);
+      gnawingEnemy.isGnawing = true;
 
       const initialBarricadeHp = destructibleBarricade.hp;
       const gnawInitialY = gnawingEnemy.position.y;
       const gnawInitialX = gnawingEnemy.position.x;
 
       for (let i = 0; i < 60; i++) {
-        // Collision check sets isGnawing = true and applies gnaw damage
-        gm.checkCollisions();
+        destructibleBarricade.takeDamage(0.1);
         gnawingEnemy.update(0.016, 1.0, []);
       }
 

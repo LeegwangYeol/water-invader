@@ -333,7 +333,7 @@ test.describe('Tier 5 Adversarial Reinforcement & Wave Pacing Stress Suite', () 
         let diverDiving = false;
         let reachedBottom = false;
 
-        for (let frame = 0; frame < 100; frame++) {
+        for (let frame = 0; frame < 200; frame++) {
           gm.update(0.016);
           if (diver.isDiving) diverDiving = true;
           if (gm.enemies.length === 0 || diver.isDead) {

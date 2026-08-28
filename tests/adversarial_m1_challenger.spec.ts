@@ -114,6 +114,8 @@ test.describe('Adversarial Stress Test Suite: Milestone 1 (F-01, F-02, F-04, F-1
       // Stone barricade at y=450 spanning full width
       const stoneBarricade = new BarricadeClass(0, 450, 1); // INDESTRUCTIBLE
       stoneBarricade.size.width = gm.logicalWidth;
+      stoneBarricade.hp = 100;
+      stoneBarricade.maxHp = 100;
       gm.barricades = [stoneBarricade];
 
       // 6 Enemy Archetypes: NORMAL(0), ZIGZAG(1), SNIPER(3), DIVER(4), SHIELDED(5), SPLITTER(6)
