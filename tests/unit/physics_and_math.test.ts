@@ -426,3 +426,144 @@ test.describe('Unit Tests: Multi-Shot Trigonometry, Formulas & Multipliers', () 
     expect(calcFireRateLevel(0.1)).toBe(5);
   });
 });
+
+test.describe('Unit Tests: Milestone M1 — Extreme Difficulty Scaling & Piecewise Math (Stage 10+)', () => {
+  test('Piecewise Enemy HP scaling: Waves 1-9 retain onboarding baseline', () => {
+    // Wave 1
+    const normalW1 = new Enemy(100, 100, 720, 1, EnemyType.NORMAL, 960);
+    const zigzagW1 = new Enemy(100, 100, 720, 1, EnemyType.ZIGZAG, 960);
+    const droneW1 = new Enemy(100, 100, 720, 1, EnemyType.ROGUE_DRONE, 960);
+    const stalkerW1 = new Enemy(100, 100, 720, 1, EnemyType.ROGUE_STALKER, 960);
+    const mechW1 = new Enemy(100, 100, 720, 1, EnemyType.ROGUE_MECH, 960);
+
+    expect(normalW1.hp).toBe(1); // 1 + floor(1/3) = 1
+    expect(zigzagW1.hp).toBe(1); // max(1, 1 - 1) = 1
+    expect(droneW1.hp).toBe(1); // max(1, 1 + floor(0/4)) = 1
+    expect(stalkerW1.hp).toBe(2); // 2 + floor(0/2) = 2
+    expect(mechW1.hp).toBe(4); // 4 + floor(0*1.5) = 4
+
+    // Wave 5
+    const bossW5 = new Enemy(100, 100, 720, 5, EnemyType.BOSS, 960);
+    expect(bossW5.hp).toBe(50); // 5 * 10 = 50
+
+    // Wave 9
+    const normalW9 = new Enemy(100, 100, 720, 9, EnemyType.NORMAL, 960);
+    expect(normalW9.hp).toBe(4); // 1 + floor(9/3) = 4
+  });
+
+  test('Piecewise Enemy HP scaling: Stage 10+ accelerated & exponential curves', () => {
+    // Wave 10 Standard Invaders: 4 + (10-9)*6 + floor((10-9)^1.5) = 4 + 6 + 1 = 11 HP
+    const normalW10 = new Enemy(100, 100, 720, 10, EnemyType.NORMAL, 960);
+    const diverW10 = new Enemy(100, 100, 720, 10, EnemyType.DIVER, 960);
+    const zigzagW10 = new Enemy(100, 100, 720, 10, EnemyType.ZIGZAG, 960);
+    const splitterW10 = new Enemy(100, 100, 720, 10, EnemyType.SPLITTER, 960);
+    const sniperW10 = new Enemy(100, 100, 720, 10, EnemyType.SNIPER, 960);
+
+    expect(normalW10.hp).toBe(11);
+    expect(diverW10.hp).toBe(11);
+    expect(zigzagW10.hp).toBe(11);
+    expect(splitterW10.hp).toBe(11);
+    expect(sniperW10.hp).toBe(11);
+
+    // Wave 10 Shielded: hp = 8 + 1*4 = 12, shield = 6 + 1*3 = 9
+    const shieldedW10 = new Enemy(100, 100, 720, 10, EnemyType.SHIELDED, 960);
+    expect(shieldedW10.hp).toBe(12);
+    expect(shieldedW10.shieldHp).toBe(9);
+    expect(shieldedW10.maxShieldHp).toBe(9);
+
+    // Wave 10 Rogues
+    const droneW10 = new Enemy(100, 100, 720, 10, EnemyType.ROGUE_DRONE, 960);
+    const stalkerW10 = new Enemy(100, 100, 720, 10, EnemyType.ROGUE_STALKER, 960);
+    const mechW10 = new Enemy(100, 100, 720, 10, EnemyType.ROGUE_MECH, 960);
+
+    expect(droneW10.hp).toBe(6); // 3 + 1*3 = 6
+    expect(stalkerW10.hp).toBe(11); // 6 + 1*5 = 11
+    expect(mechW10.hp).toBe(25); // 15 + 1*10 = 25
+
+    // Wave 20 Rogue Mech: 15 + (20-9)*10 = 125 HP
+    const mechW20 = new Enemy(100, 100, 720, 20, EnemyType.ROGUE_MECH, 960);
+    expect(mechW20.hp).toBe(125);
+
+    // Boss Scaling: 50 + level*25 + floor((level-5)^2 * 2.5)
+    // Wave 10 Boss: 50 + 250 + floor(25 * 2.5) = 300 + 62 = 362 HP
+    const bossW10 = new Enemy(100, 100, 720, 10, EnemyType.BOSS, 960);
+    expect(bossW10.hp).toBe(362);
+
+    // Wave 15 Boss: 50 + 375 + floor(100 * 2.5) = 425 + 250 = 675 HP
+    const bossW15 = new Enemy(100, 100, 720, 15, EnemyType.BOSS, 960);
+    expect(bossW15.hp).toBe(675);
+
+    // Wave 20 Boss: 50 + 500 + floor(225 * 2.5) = 550 + 562 = 1112 HP
+    const bossW20 = new Enemy(100, 100, 720, 20, EnemyType.BOSS, 960);
+    expect(bossW20.hp).toBe(1112);
+  });
+
+  test('Attack tempo and firing cooldown: Stage 10+ rapid tempo vs Wave 1-9', () => {
+    const enemyW1 = new Enemy(100, 100, 720, 1, EnemyType.NORMAL, 960);
+    const enemyW10 = new Enemy(100, 100, 720, 10, EnemyType.NORMAL, 960);
+
+    // Initial fire timers
+    expect((enemyW1 as any).fireTimer).toBeGreaterThanOrEqual(1.0);
+    expect((enemyW1 as any).fireTimer).toBeLessThanOrEqual(4.0);
+
+    expect((enemyW10 as any).fireTimer).toBeGreaterThanOrEqual(0.8);
+    expect((enemyW10 as any).fireTimer).toBeLessThanOrEqual(1.5);
+  });
+
+  test('Projectile speed scaling: Stage 10+ scales linearly from 250 to 400 px/s', () => {
+    // Wave 10: 250 + min(150, 0) = 250
+    const enemyW10 = new Enemy(100, 100, 720, 10, EnemyType.NORMAL, 960);
+    (enemyW10 as any).fireTimer = 0;
+    const bulletW10 = enemyW10.fire();
+    expect(bulletW10).not.toBeNull();
+    expect(Math.abs(bulletW10!.velocity.y)).toBe(250);
+
+    // Wave 15: 250 + min(150, 5 * 15 = 75) = 325
+    const enemyW15 = new Enemy(100, 100, 720, 15, EnemyType.NORMAL, 960);
+    (enemyW15 as any).fireTimer = 0;
+    const bulletW15 = enemyW15.fire();
+    expect(bulletW15).not.toBeNull();
+    expect(Math.abs(bulletW15!.velocity.y)).toBe(325);
+
+    // Wave 20: 250 + min(150, 10 * 15 = 150) = 400
+    const enemyW20 = new Enemy(100, 100, 720, 20, EnemyType.NORMAL, 960);
+    (enemyW20 as any).fireTimer = 0;
+    const bulletW20 = enemyW20.fire();
+    expect(bulletW20).not.toBeNull();
+    expect(Math.abs(bulletW20!.velocity.y)).toBe(400);
+  });
+
+  test('Elite 2-Damage Projectile Scaling: Elites deal 2 damage at Stage 10+', () => {
+    // Stage 10+ Elites: Sniper, Boss, Rogue Stalker, Rogue Mech
+    const sniperW10 = new Enemy(100, 100, 720, 10, EnemyType.SNIPER, 960);
+    (sniperW10 as any).fireTimer = 0;
+    const bulletSniper = sniperW10.fire();
+    expect(bulletSniper?.damage).toBe(2);
+
+    const bossW10 = new Enemy(100, 100, 720, 10, EnemyType.BOSS, 960);
+    (bossW10 as any).fireTimer = 0;
+    const bulletBoss = bossW10.fire();
+    expect(bulletBoss?.damage).toBe(2);
+
+    const stalkerW10 = new Enemy(100, 100, 720, 10, EnemyType.ROGUE_STALKER, 960);
+    (stalkerW10 as any).fireTimer = 0;
+    const bulletStalker = stalkerW10.fire();
+    expect(bulletStalker?.damage).toBe(2);
+
+    const mechW10 = new Enemy(100, 100, 720, 10, EnemyType.ROGUE_MECH, 960);
+    (mechW10 as any).fireTimer = 0;
+    const bulletMech = mechW10.fire();
+    expect(bulletMech?.damage).toBe(2);
+
+    // Stage 10+ Standard: Normal, Drone deal 1 damage
+    const normalW10 = new Enemy(100, 100, 720, 10, EnemyType.NORMAL, 960);
+    (normalW10 as any).fireTimer = 0;
+    const bulletNormal = normalW10.fire();
+    expect(bulletNormal?.damage).toBe(1);
+
+    const droneW10 = new Enemy(100, 100, 720, 10, EnemyType.ROGUE_DRONE, 960);
+    (droneW10 as any).fireTimer = 0;
+    const bulletDrone = droneW10.fire();
+    expect(bulletDrone?.damage).toBe(1);
+  });
+});

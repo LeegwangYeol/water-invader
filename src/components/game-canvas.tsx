@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GameManager } from '../game/GameManager';
-import { GameState } from '../game/types';
+import { GameState, CrisisState } from '../game/types';
 import { soundManager } from '../game/SoundManager';
 
 // ============================================================================
@@ -501,6 +501,7 @@ export default function GameCanvas() {
   const [invaderCount, setInvaderCount] = useState(0);
   const [rogueCount, setRogueCount] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
+  const [crisisState, setCrisisState] = useState<CrisisState | null>(null);
   
   const [showManual, setShowManual] = useState(false);
   const showManualRef = useRef(false);
@@ -621,6 +622,9 @@ export default function GameCanvas() {
     game.onPlayerHpChange = setHp;
     game.onUpgradesChange = (newUpgrades) => {
       setUpgrades(newUpgrades);
+    };
+    game.onCrisisEvent = (crisis) => {
+      setCrisisState(crisis ? { ...crisis } : null);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -893,6 +897,46 @@ export default function GameCanvas() {
         onPointerMove={handleCanvasPointerMove}
         onPointerUp={handleCanvasPointerUp}
       />
+
+      {/* Crisis Warning Banner Overlay */}
+      {gameState === GameState.PLAYING && crisisState && crisisState.warningTimer > 0 && (
+        <div
+          data-testid="crisis-warning-banner"
+          className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-red-500/90 shadow-[inset_0_0_60px_rgba(239,68,68,0.7)] animate-pulse rounded-lg bg-red-950/40 backdrop-blur-[2px]"
+        >
+          <div className="bg-red-950/95 border-2 border-red-500 px-6 py-4 rounded-xl text-center shadow-[0_0_30px_rgba(239,68,68,0.8)] max-w-md mx-4">
+            <div className="text-red-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-1 flex items-center justify-center gap-2">
+              <span>🚨</span> EMERGENCY CRISIS DETECTED <span>🚨</span>
+            </div>
+            <div className="text-white font-black text-lg sm:text-2xl text-red-100 tracking-wide">
+              {crisisState.bannerText || crisisState.activeCrisis}
+            </div>
+            <div className="text-amber-400 font-black text-xs sm:text-sm mt-2 animate-bounce">
+              IMMINENT THREAT ARRIVAL: {crisisState.warningTimer.toFixed(1)}s
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EMP Suppression Visual Indicator */}
+      {gameState === GameState.PLAYING && crisisState && crisisState.empSuppressionActive && (
+        <div
+          data-testid="emp-suppression-badge"
+          className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-4 py-1.5 rounded-full bg-cyan-950/90 border border-cyan-400 text-cyan-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-pulse select-none"
+        >
+          <span>⚡</span> WEAPONS SUPPRESSED (EMP ACTIVE) <span>⚡</span>
+        </div>
+      )}
+
+      {/* Toxic Acid Storm Indicator */}
+      {gameState === GameState.PLAYING && crisisState && crisisState.activeCrisis === 'ACID_STORM' && crisisState.warningTimer <= 0 && (
+        <div
+          data-testid="acid-storm-badge"
+          className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-4 py-1.5 rounded-full bg-lime-950/90 border border-lime-400 text-lime-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(132,204,22,0.6)] animate-pulse select-none"
+        >
+          <span>☣️</span> TOXIC ACID STORM ACTIVE <span>☣️</span>
+        </div>
+      )}
 
       {/* Mobile Controls (Memoized) */}
       {gameState === GameState.PLAYING && (

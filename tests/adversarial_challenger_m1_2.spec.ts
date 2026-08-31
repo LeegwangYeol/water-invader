@@ -89,8 +89,13 @@ test.describe('Challenger M1 Adversarial Verification Suite (teamwork_preview_ch
       expect(r.rows).toBeGreaterThanOrEqual(3);
 
       if (r.isBossWave) {
-        expect(r.enemyCount).toBe(1);
-        expect(r.bossHp).toBe(r.wave * 10);
+        if (r.wave < 10) {
+          expect(r.enemyCount).toBe(1);
+          expect(r.bossHp).toBe(r.wave * 10);
+        } else {
+          expect(r.enemyCount).toBeGreaterThanOrEqual(1);
+          expect(r.bossHp).toBeGreaterThanOrEqual(250);
+        }
       } else {
         // Grid capped at 5 rows x 8 cols = 40 enemies max
         expect(r.enemyCount).toBeGreaterThanOrEqual(18); // 3x6 = 18 min

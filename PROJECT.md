@@ -1,94 +1,64 @@
-# Project: Water Invader — 3-Way Battle System & Dynamic Reinforcements
+# Project: Water Invader — Extreme Difficulty Scaling & Emergency Crises (Stage 10+)
 
 ## Architecture
-<<<<<<< HEAD
 - **Framework**: Next.js 16.3.1 (App Router), React 19.2.8, Tailwind CSS v4, TypeScript 5
 - **Game Engine**: HTML5 Canvas 2D with procedural vector graphics & bioluminescent aquatic rendering, Web Audio API procedural synthesis, 60 FPS requestAnimationFrame loop
-- **State Machine**: Menu -> Playing (Wave & Reinforcements Loop) -> Shop (Inter-wave Upgrades) -> Game Over
-- **Multi-Faction Architecture**:
-  - `Faction.PLAYER`: Player ship (Pristine Water Droplet `#38bdf8`) and summoned Helpers (Fighter, Repairer, Tank).
-  - `Faction.INVADER`: Toxic Sea Invaders (Bioluminescent Octopus `#f97316`, Coral Bio-Mech Titan `#dc2626`/`#f43f5e`, Electric Deep-Sea Angler `#a855f7`, Toxic Piranha Diver `#ef4444`/`#f59e0b`, Crystal Armored Turtle `#06b6d4`, Toxic Anemone `#22c55e`).
-  - `Faction.ROGUE`: Cybernetic Marine Raiders (Cyber Jellyfish Drone `#84cc16`/`#a3e635`, Abyssal Stalker Ray `#10b981`/`#f59e0b`, Heavy Coral Dreadnought `#eab308`/`#84cc16`).
-  - **Collision Matrix**: Projectile of Faction A damages and collides with any Entity of Faction B if `A !== B`.
-  - **Dynamic Event Director**: Replaces static grid wave spawning with procedural formations, flank incursions, unpredictable rogue drops, and adaptive pacing.
-
-## Feature Inventory
-| # | Feature | Description | Milestone | Source |
-|---|---------|-------------|-----------|--------|
-| 1 | Faction Enum & Entity Tagging | Define `Faction` enum (`PLAYER`, `INVADER`, `ROGUE`) on `Entity`, `Enemy`, `Helper`, `Bullet` | M1 | Survey |
-| 2 | Multi-Faction Projectile Model | Bullets carry `faction`, unique vector rendering (Cyan/Orange/Neon Lime), and backward-compatible `isPlayerBullet` getter | M1 | Survey |
-| 3 | 3-Way Collision & Combat Resolution | Bullets damage any entity of different faction (`A !== B`), support crossfire bullet interception, scoring, and particles | M1 | Survey |
-| 4 | Audio Synthesis for 3rd Faction & Crossfire | Web Audio API synthesizers: `playThirdFactionWarning()`, `playRogueShoot()`, `playCrossfireHit()` | M1 | Survey |
-| 5 | Rogue Unit Archetypes & Vector Art | Implement Rogue Drone, Rogue Stalker, and Rogue Mech with neon lime/amber procedural silhouettes and thrusters | M2 | Survey |
-| 6 | 3-Way Dynamic AI & Dual-Targeting | Rogue units identify and attack closest/highest-threat targets among both Player/Helpers and Invaders | M2 | Survey |
-| 7 | Dynamic Formations Engine | Procedural wave entries: V-formation spearheads, flank incursions (left/right), and dual-flank pincer spawns | M3 | Survey |
-| 8 | Unpredictable Mid-Wave Incursions | Procedural mid-combat reinforcement drops (Rogue airdrops, Invader surprise flanks) based on battle tempo | M3 | Survey |
-| 9 | Multi-Faction Wave Clear Logic | Wave clears only when both hostile factions (Invaders + Rogues) are completely eliminated | M3 | Survey |
-| 10 | Multi-Faction HUD Indicators | Top HUD display showing active counts for both Invader and Rogue factions alongside Player status | M4 | Survey |
-| 11 | Incursion Alert Banners & Alerts | Animated fullscreen warning banners for 3rd Faction Incursion and 3-Way Crossfire | M4 | Survey |
-| 12 | How to Play Modal Update | Updated modal explaining 3-Way Battlefield dynamics, crossfire tactics, and rogue faction behaviors | M4 | Survey |
-| 13 | E2E Opaque-Box Test Suite (Tiers 1-4) | Comprehensive Playwright test suite covering all multi-faction and dynamic spawn features | M_TEST | Dual Track |
-| 14 | 100% E2E Verification & Tier 5 Hardening | Full integration pass and adversarial stress/edge-case verification | M5 | Final Milestone |
-| 15 | Vibrant Aquatic/Deep-Sea Visual Overhaul | Colorful, vivid bioluminescent vector palettes & animated aquatic geometry (replacing dull/black shapes) | M2, M4 | User Update |
-=======
-- **Engine Core**: `src/game/GameManager.ts` (Collision detection, game loop, entity lifecycle, particle explosions).
-- **Entities**:
-  - `src/game/Player.ts`: Projectile firing (single, multi-shot, spread, piercing).
-  - `src/game/Bullet.ts`: Position update, bounding box, faction (`Faction.PLAYER`, `Faction.ENEMY`, `Faction.ROGUE`).
-  - `src/game/Enemy.ts`: 10 enemy types (Invaders, Divers, Snipers, Shielded, Splitters, Rogues, Bosses), dive speed, aggression states, `prevY` tracking for swept collision.
-  - `src/game/Barricade.ts`: Voxel grid structure (6x4 blocks), `takeDamage()`, destructible (Ice / 20 HP) and indestructible (Stone / 35 HP contact-destructible) cover with real-time state synchronization.
-  - `src/game/Helper.ts`: Ally drone roles and projectiles.
-- **E2E Test Harness**: Playwright (`playwright.config.ts`, `tests/`).
+- **State Machine**: Menu -> Playing (Wave, Incursions & Crisis Director Loop) -> Shop (Inter-wave Upgrades) -> Game Over
+- **Difficulty & Threat Scaling Engine**:
+  - Piecewise exponential HP, speed, projectile velocity, and attack tempo scaling starting from Stage 10 (`level >= 10`).
+  - Waves 1–9 preserve onboarding baseline ($HP = 1 + \lfloor\text{level}/3\rfloor$).
+  - Stage 10+ scales enemy HP aggressively ($HP = 4 + (\text{level}-9) \times 6 + \lfloor(\text{level}-9)^{1.5}\rfloor$) so normal enemies reach $10\sim 25\text{ HP}$, armored reach $20\sim 50\text{ HP}$, and Stage 10+ bosses reach $250\sim 800\text{ HP}$ escorted by dedicated minion fleets.
+  - Elite projectiles deal 2 damage (threatening a 5 HP max-upgrade player in 3 hits) with rapid fire cooldowns ($0.8\sim 1.5\text{s}$) and multi-directional spread bursts.
+- **Dynamic Crisis Events Director (Stage 10+)**:
+  - Unpredictable crisis triggers starting from Stage 10:
+    1. *Titan Bio-Mech Escort Horde*: Heavy boss dreadnought escorted by 4 Shielded and 4 Diver units.
+    2. *Toxic Acid Storm Hazard*: Screen-filling environmental hazard barrage requiring tactical maneuvering.
+    3. *Swarm Diver Blitz*: Coordinated high-speed pincer dive attacks.
+    4. *EMP Overcharge Disruption*: Temporary weapon suppression combined with rapid hostile beam sweeps.
+    5. *3-Way Total War Incursion*: Massive dual-flank chaotic clash between Invader and Rogue legions.
+  - Full-screen animated HUD warning banners and multi-tone Web Audio siren alarms.
+  - Robust wave transition safety: all crisis units register under `Faction.INVADER` or `Faction.ROGUE` ensuring zero soft-locks with `remainingHostiles === 0`.
+- **Simulation & Empirical Balancing Engine**:
+  - Headless Monte Carlo mathematical combat simulator (`scripts/simulate_balance.ts`) for rapid curve optimization.
+  - Autonomous Playwright AI bot playtester (`scripts/run_benchmark.ts`) capturing real-time telemetry (win rate, player DPS vs incoming DPS, EHP depletion, clear times).
+- **Verification & Deployment Pipeline**:
+  - Playwright E2E test suite (355+ tests) verifying all gameplay mechanics, crisis lifecycle, and mathematical balancing bounds.
+  - Mandatory strict pre-commit verification: `npx tsc --noEmit` + `npm run build` with 0 errors.
+  - Automated Git commit and push to remote repository.
 
 ## Feature Inventory
 | # | Feature | Description | Milestone | Source | Status |
 |---|---------|-------------|-----------|--------|--------|
-| 1 | Player Projectile Barricade Collision | Player and ally projectiles collide with and are blocked/absorbed by barricades (`isDead = true`, splash particles) | M1 | Survey | DONE |
-| 2 | Friendly Fire Barricade Protection | Player bullets absorbed by barricades without reducing friendly barricade HP | M1 | Survey | DONE |
-| 3 | Comprehensive Enemy Contact Damage | All 10 enemy types deal scaled contact damage to all barricade types via `barricade.takeDamage()` | M2 | Survey | DONE |
-| 4 | Diver High-Speed Crash & Anti-Tunneling | Continuous swept vertical collision prevents high-speed Divers from skipping barricades; deals 20 crash damage and explodes | M2 | Survey | DONE |
-| 5 | Barricade Position Clamping & Destruction | Enemies are held back at barricade boundary while gnawing until barricade is destroyed, voxel blocks degrade proportionally | M2 | Survey | DONE |
-| 6 | E2E Physics Test Suite Upgrade | Add `tests/11_barricade_physics_and_projectile_blocking.spec.ts` & update existing test files asserting old pass-through behavior | M3 | Survey | DONE |
-| 7 | Full System Verification & Git Deployment | `npx tsc --noEmit`, `npm run build`, `npx playwright test`, commit (`8be80af`) and push to remote `origin/master` | M4 | Survey | DONE |
->>>>>>> c32f90e (test: add adversarial reviewer graphics integrity test suite and verify 100% zero-raster enemy rendering)
+| 1 | Stage 10+ Exponential Enemy HP Scaling | Piecewise scaling in `Enemy.ts` preserving Waves 1–9 while scaling Stage 10+ normal enemies to 10–25+ HP and Rogues to 20–45+ HP | M1 | Survey (R1) | DONE |
+| 2 | High-Tier Boss Scaling & Escort Formations | Boss HP scales to 250–800+ HP for Stage 10+ with procedural minion escort legions (Shielded, Snipers, Divers) | M1 | Survey (R1) | DONE |
+| 3 | Stage 10+ Projectile Density & Attack Tempo | Enemy firing cooldown reduced to 0.8–1.5s, projectile speed increased to 250–400 px/s with multi-spread salvos | M1 | Survey (R1) | DONE |
+| 4 | Elite 2-Damage Threats & Homing Aggression | Elite enemy projectiles deal 2 damage, testing player evasion and barricade cover | M1 | Survey (R1) | DONE |
+| 5 | Crisis Director & Event State Machine | Scripted Crisis Director in `GameManager.ts` managing triggers, active event state, and enemy spawns | M2 | Survey (R2) | DONE |
+| 6 | 5 Distinct Emergency Wave Archetypes | Titan Escort Horde, Toxic Acid Storm, Swarm Diver Blitz, EMP Disruption, and 3-Way Total War | M2 | Survey (R2) | DONE |
+| 7 | Fullscreen Warning Banners & Siren Audio | Strobed HUD visual banners and procedural Web Audio multi-tone alarm synthesis | M2 | Survey (R2) | DONE |
+| 8 | Headless Monte Carlo Combat Simulator | `scripts/simulate_balance.ts` measuring win rate, time-to-clear, and player EHP vs enemy DPS curves | M3 | Survey (R3) | DONE |
+| 9 | Autonomous Playwright Bot Telemetry | `scripts/run_benchmark.ts` bot playtester collecting browser-based real-time telemetry logs | M3 | Survey (R3) | DONE |
+| 10 | E2E Crisis & Difficulty Test Suite | `tests/12_extreme_difficulty_and_crises.spec.ts` testing Stage 10+ scaling, crisis lifecycle, and audio/visual cues | M4 | Survey (R4) | DONE |
+| 11 | Typecheck, Production Build & Deployment | `npx tsc --noEmit`, `npm run build`, full Playwright test pass, git commit and push | M5 | Survey (R4) | IN_PROGRESS |
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-<<<<<<< HEAD
-| M_TEST | E2E Testing Suite | Comprehensive test suite (Tiers 1-4) published to `TEST_READY.md` | None | DONE |
-| M1 | Faction & Combat Core | `Faction` enum, `Entity`/`Bullet` tagging, 3-way collision matrix, crossfire scoring, audio synthesis | None | DONE |
-| M2 | Third Faction Units & AI + Aquatic Art | Rogue Drone/Stalker/Mech classes, dual-target AI, vibrant aquatic vector art for all enemies | M1 | DONE |
-| M3 | Dynamic Reinforcements Engine | Dynamic formation generator, unpredictable mid-wave incursions, wave clear conditions | M1, M2 | DONE |
-| M4 | UI/HUD & Visual Feedback | Multi-faction threat badges, warning banners, updated How-to-Play modal | M1, M2, M3 | DONE |
-| M5 | 100% E2E Test Pass & Hardening | Verify 100% pass on Tiers 1-4 E2E tests, followed by Tier 5 adversarial hardening | M_TEST, M1, M2, M3, M4 | DONE |
+| M1 | Extreme Difficulty Scaling Engine | Implement Stage 10+ piecewise exponential HP, boss scaling with escort fleets, projectile density/speed, and 2-damage elite shots in `Enemy.ts` and `GameManager.ts` | None | DONE |
+| M2 | Emergency Waves & Crisis Events Director | Implement `CrisisDirector`, 5 emergency crisis event archetypes, warning banners, audio alerts, and wave transition safety | M1 | DONE |
+| M3 | Data-Driven Simulation Harness & Empirical Balancing | Create `scripts/simulate_balance.ts` and run autonomous bot telemetry in `scripts/run_benchmark.ts` to log and prove balance | M1, M2 | DONE |
+| M4 | E2E Testing Suite Expansion & Hardening | Expand Playwright test suite with `tests/12_extreme_difficulty_and_crises.spec.ts` covering all R1–R3 features | M1, M2, M3 | DONE |
+| M5 | 100% Verification, Production Build & Git Push | Typecheck (`npx tsc --noEmit`), build check (`npm run build`), full Playwright test suite execution, Git commit and push | M1, M2, M3, M4 | IN_PROGRESS |
 
 ## Code Layout
-- `src/game/types.ts`: `Faction`, `EnemyType`, `GameState`, `Vector2D`, `Size`, `Rect`
-- `src/game/Entity.ts`: Base entity class with `faction`
-- `src/game/Bullet.ts`: Multi-faction bullet styling, damage, piercing, and hit tracking
-- `src/game/Enemy.ts`: Standard Invaders + Rogue unit implementations with vibrant aquatic/bioluminescent rendering
-- `src/game/GameManager.ts`: Game loop, multi-faction collision coordinator, dynamic reinforcement director, wave state
-- `src/game/SoundManager.ts`: Procedural Web Audio synthesizers (Rogue lasers, alert sirens, crossfire clashes)
-- `src/components/game-canvas.tsx`: React HUD overlay (threat counters, badges, alert banners, modal updates)
-- `tests/05_three_way_battle.spec.ts`: E2E opaque-box test suite for 3-way battle & dynamic reinforcements
-=======
-| M1 | Player Projectile Barricade Collision | Update `GameManager.ts` bullet-barricade collision handling to block/absorb player bullets with particle feedback | None | DONE |
-| M2 | Comprehensive Enemy Contact Damage & Anti-Tunneling | Implement continuous swept collision for Divers & scaled contact damage with position clamping across all enemy/barricade types | M1 | DONE |
-| M3 | E2E Test Suite Upgrade & Regression Alignment | Create dedicated physics test spec and align existing test files | M1, M2 | DONE |
-| M4 | Final Build Check, E2E Verification & Git Push | Type check, build check, full Playwright suite run, git commit and push | M3 | DONE |
-
-## Code Layout
-- `src/game/GameManager.ts`: Bullet-barricade collision, enemy-barricade collision, particle effects.
-- `src/game/Barricade.ts`: `takeDamage()`, voxel block state management, HP bounds.
-- `src/game/Enemy.ts`: Enemy definitions, movement, diving mechanics, `prevY` tracking.
-- `src/game/Player.ts`: Player firing mechanics.
-- `tests/11_barricade_physics_and_projectile_blocking.spec.ts`: Dedicated test suite for R1 and R2 (15 tests).
-- `tests/adversarial_challenger_r1_player_projectile_blocking.spec.ts`: Dedicated R1 adversarial test suite (14 tests).
-- `tests/adversarial_r2_enemy_contact_and_tunneling.spec.ts`: Dedicated R2 adversarial test suite (10 tests).
-- `tests/09_destructible_barricade_contact.spec.ts`: Aligned test suite.
-- `tests/adversarial_empirical_r1_r2_stress_challenger.spec.ts`: Aligned test suite.
-- `tests/challenger_combat_pacing_stress.spec.ts`: Aligned test suite.
-- `tests/m123_implementation_verification.spec.ts`: Aligned test suite.
-- `tests/adversarial_challenger_m1_overhaul_stress.spec.ts`: Aligned test suite.
->>>>>>> c32f90e (test: add adversarial reviewer graphics integrity test suite and verify 100% zero-raster enemy rendering)
+- `src/game/types.ts`: `Faction`, `EnemyType`, `GameState`, `CrisisType`, `CrisisState`, `Vector2D`, `Size`, `Rect`
+- `src/game/Entity.ts`: Base entity class with `faction`, collision boxes, and hit processing
+- `src/game/Enemy.ts`: Standard Invaders + Rogue units, piecewise difficulty scaling formulas, attack timers, rush kinematics
+- `src/game/Player.ts`: Player weapons, stats, fire rates, stress overdrive, and upgrades
+- `src/game/GameManager.ts`: Core game loop, collision matrix, wave progression, Crisis Director, and rendering overlays
+- `src/game/SoundManager.ts`: Procedural Web Audio synthesizers (crisis sirens, laser barrages, explosion audio)
+- `src/components/game-canvas.tsx`: React HUD overlay (threat counters, crisis banners, health/shield indicators)
+- `scripts/simulate_balance.ts`: Headless Monte Carlo mathematical combat balance simulation script
+- `scripts/run_benchmark.ts`: Autonomous Playwright bot gameplay simulation and telemetry extractor
+- `tests/12_extreme_difficulty_and_crises.spec.ts`: Dedicated E2E test suite for Stage 10+ difficulty scaling and emergency crisis events
+- `tests/`: Full regression suite (355+ tests)

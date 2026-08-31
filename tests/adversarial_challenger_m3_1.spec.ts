@@ -314,7 +314,11 @@ test.describe('Adversarial Challenger M3-1: F-10 (Aspect Ratio), F-11 (HiDPI / R
       for (const rec of waveSweep) {
         if (rec.isBossWave) {
           expect(rec.minY).toBeGreaterThanOrEqual(90);
-          expect(rec.count).toBe(1);
+          if (rec.wave < 10) {
+            expect(rec.count).toBe(1);
+          } else {
+            expect(rec.count).toBeGreaterThanOrEqual(1);
+          }
         } else {
           expect(rec.minY).toBeGreaterThanOrEqual(80);
           expect(rec.count).toBeGreaterThan(0);

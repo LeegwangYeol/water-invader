@@ -40,3 +40,28 @@ export enum EnemyType {
   ROGUE_STALKER = 8,
   ROGUE_MECH = 9
 }
+
+export type CrisisType = 'TITAN_HORDE' | 'ACID_STORM' | 'SWARM_BLITZ' | 'EMP_DISRUPTION' | 'TOTAL_WAR';
+
+export interface HazardProjectile {
+  x: number;
+  y: number;
+  radius: number;
+  speedY: number;
+  speedX?: number;
+  damage: number;
+  color?: string;
+  isDead?: boolean;
+}
+
+export interface CrisisState {
+  activeCrisis: CrisisType | null;
+  timer: number;
+  duration: number;
+  warningTimer: number;
+  bannerText: string | null;
+  hazardProjectiles?: HazardProjectile[];
+  empSuppressionActive?: boolean;
+  empTimer?: number;
+}
+

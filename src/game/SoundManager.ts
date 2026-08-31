@@ -335,6 +335,98 @@ export class SoundManager {
     osc.start();
     osc.stop(now + 0.18);
   }
+
+  public playCrisisAlarm() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sawtooth';
+    const now = this.audioCtx.currentTime;
+
+    // Multi-tone dramatic crisis siren (960Hz -> 640Hz -> 1200Hz -> 720Hz -> 480Hz)
+    osc.frequency.setValueAtTime(960, now);
+    osc.frequency.linearRampToValueAtTime(640, now + 0.18);
+    osc.frequency.linearRampToValueAtTime(1200, now + 0.36);
+    osc.frequency.linearRampToValueAtTime(720, now + 0.54);
+    osc.frequency.linearRampToValueAtTime(480, now + 0.72);
+
+    gainNode.gain.setValueAtTime(0.24, now);
+    gainNode.gain.setValueAtTime(0.24, now + 0.54);
+    gainNode.gain.linearRampToValueAtTime(0.01, now + 0.75);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.75);
+  }
+
+  public playEmpDisruptionSound() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sawtooth';
+    const now = this.audioCtx.currentTime;
+
+    // Low-frequency electrical hum and static sweep (60Hz -> 380Hz -> 40Hz)
+    osc.frequency.setValueAtTime(60, now);
+    osc.frequency.exponentialRampToValueAtTime(380, now + 0.15);
+    osc.frequency.exponentialRampToValueAtTime(40, now + 0.45);
+
+    gainNode.gain.setValueAtTime(0.22, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.45);
+  }
+
+  public playAcidStormSound() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'triangle';
+    const now = this.audioCtx.currentTime;
+
+    // Sizzling / splashing hazard pitch sweep (1400Hz -> 220Hz)
+    osc.frequency.setValueAtTime(1400, now);
+    osc.frequency.exponentialRampToValueAtTime(220, now + 0.22);
+
+    gainNode.gain.setValueAtTime(0.18, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.22);
+  }
 }
 
 // Singleton instance export

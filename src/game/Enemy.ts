@@ -39,6 +39,7 @@ export class Enemy extends Entity {
   public isDiving: boolean = false;
   public prevY: number = 0;
   public shieldHp: number = 0;
+  public maxShieldHp: number = 0;
   public shieldRegenTimer: number = 0;
   public level: number = 1;
   public canvasHeight: number = 960;
@@ -64,7 +65,6 @@ export class Enemy extends Entity {
     this.position.y = Math.max(0, Math.min(validY, this.canvasHeight - this.size.height));
     this.level = Number.isFinite(level) && level >= 1 ? Math.floor(level) : 1;
     this.type = type;
-    this.hp = 1 + Math.floor(this.level / 3);
 
     // Stage 10+ Aggression Activation
     if (this.level >= 10) {
@@ -74,60 +74,127 @@ export class Enemy extends Entity {
       this.rushChargeTimer = Math.random() * 2.0 + 1.0;
     }
     
-    if (type === EnemyType.ZIGZAG) {
-      this.color = '#eab308'; // Yellow
-      this.speedX += this.level * 10 + 50; // faster
-      this.hp = Math.max(1, this.hp - 1); // squishier
-    } else if (type === EnemyType.BOSS) {
-      this.color = '#dc2626'; // Dark red
-      this.size.width = 150;
-      this.size.height = 100;
-      this.hp = this.level * 10;
-      this.speedX += this.level * 2;
-    } else if (type === EnemyType.SNIPER) {
-      this.color = '#a855f7'; // Purple
-      this.speedX = 20; // slow
-      this.hp = Math.max(1, this.hp - 1);
-    } else if (type === EnemyType.DIVER) {
-      this.color = '#ef4444'; // Red
-      this.speedX += this.level * 8;
-    } else if (type === EnemyType.SHIELDED) {
-      this.color = '#64748b'; // Slate
-      this.shieldHp = 3;
-    } else if (type === EnemyType.SPLITTER) {
-      this.color = '#22c55e'; // Green
-      this.size = { width: 50, height: 40 }; // slightly bigger
-    } else if (type === EnemyType.ROGUE_DRONE) {
-      this.faction = Faction.ROGUE;
-      this.color = '#d946ef'; // Electric Magenta
-      this.size = { width: 36, height: 28 };
-      this.speedX = 50 + this.level * 6;
-      this.speedY = 10 + this.level * 2;
-      this.hp = Math.max(1, 1 + Math.floor((this.level - 1) / 4));
-      this.canEvade = true;
-    } else if (type === EnemyType.ROGUE_STALKER) {
-      this.faction = Faction.ROGUE;
-      this.color = '#c026d3'; // Ultraviolet / Vivid Fuchsia
-      this.size = { width: 44, height: 32 };
-      this.speedX = 30 + this.level * 4;
-      this.speedY = 8 + this.level * 2;
-      this.hp = 2 + Math.floor((this.level - 1) / 2);
-      this.canEvade = true;
-    } else if (type === EnemyType.ROGUE_MECH) {
-      this.faction = Faction.ROGUE;
-      this.color = '#a21caf'; // High-Voltage Vivid Magenta
-      this.size = { width: 56, height: 42 };
-      this.speedX = 18 + this.level * 2;
-      this.speedY = 5 + this.level;
-      this.hp = 4 + Math.floor((this.level - 1) * 1.5); // Rebalanced: Base 4 HP
+    // Piecewise Enemy HP and Stats Scaling
+    if (this.level < 10) {
+      // Baseline Scaling (Waves 1-9)
+      this.hp = 1 + Math.floor(this.level / 3);
+
+      if (type === EnemyType.ZIGZAG) {
+        this.color = '#eab308'; // Yellow
+        this.speedX += this.level * 10 + 50; // faster
+        this.hp = Math.max(1, this.hp - 1); // squishier
+      } else if (type === EnemyType.BOSS) {
+        this.color = '#dc2626'; // Dark red
+        this.size.width = 150;
+        this.size.height = 100;
+        this.hp = this.level * 10;
+        this.speedX += this.level * 2;
+      } else if (type === EnemyType.SNIPER) {
+        this.color = '#a855f7'; // Purple
+        this.speedX = 20; // slow
+        this.hp = Math.max(1, this.hp - 1);
+      } else if (type === EnemyType.DIVER) {
+        this.color = '#ef4444'; // Red
+        this.speedX += this.level * 8;
+      } else if (type === EnemyType.SHIELDED) {
+        this.color = '#64748b'; // Slate
+        this.shieldHp = 3;
+      } else if (type === EnemyType.SPLITTER) {
+        this.color = '#22c55e'; // Green
+        this.size = { width: 50, height: 40 }; // slightly bigger
+      } else if (type === EnemyType.ROGUE_DRONE) {
+        this.faction = Faction.ROGUE;
+        this.color = '#d946ef'; // Electric Magenta
+        this.size = { width: 36, height: 28 };
+        this.speedX = 50 + this.level * 6;
+        this.speedY = 10 + this.level * 2;
+        this.hp = Math.max(1, 1 + Math.floor((this.level - 1) / 4));
+        this.canEvade = true;
+      } else if (type === EnemyType.ROGUE_STALKER) {
+        this.faction = Faction.ROGUE;
+        this.color = '#c026d3'; // Ultraviolet / Vivid Fuchsia
+        this.size = { width: 44, height: 32 };
+        this.speedX = 30 + this.level * 4;
+        this.speedY = 8 + this.level * 2;
+        this.hp = 2 + Math.floor((this.level - 1) / 2);
+        this.canEvade = true;
+      } else if (type === EnemyType.ROGUE_MECH) {
+        this.faction = Faction.ROGUE;
+        this.color = '#a21caf'; // High-Voltage Vivid Magenta
+        this.size = { width: 56, height: 42 };
+        this.speedX = 18 + this.level * 2;
+        this.speedY = 5 + this.level;
+        this.hp = 4 + Math.floor((this.level - 1) * 1.5); // Rebalanced: Base 4 HP
+      } else {
+        this.color = '#f97316'; // Orange/Fire
+        this.speedX += this.level * 5;
+        this.canEvade = false;
+      }
     } else {
-      this.color = '#f97316'; // Orange/Fire
-      this.speedX += this.level * 5;
-      this.canEvade = false;
+      // Stage 10+ Extreme Difficulty Scaling
+      const standardHp = 4 + (this.level - 9) * 6 + Math.floor(Math.pow(this.level - 9, 1.5));
+      this.hp = standardHp;
+
+      if (type === EnemyType.ZIGZAG) {
+        this.color = '#eab308'; // Yellow
+        this.speedX += this.level * 10 + 50; // faster
+        this.hp = standardHp;
+      } else if (type === EnemyType.BOSS) {
+        this.color = '#dc2626'; // Dark red
+        this.size.width = 150;
+        this.size.height = 100;
+        this.hp = 50 + this.level * 25 + Math.floor(Math.pow(this.level - 5, 2) * 2.5);
+        this.speedX += this.level * 2;
+      } else if (type === EnemyType.SNIPER) {
+        this.color = '#a855f7'; // Purple
+        this.speedX = 20; // slow
+        this.hp = standardHp;
+      } else if (type === EnemyType.DIVER) {
+        this.color = '#ef4444'; // Red
+        this.speedX += this.level * 8;
+        this.hp = standardHp;
+      } else if (type === EnemyType.SHIELDED) {
+        this.color = '#64748b'; // Slate
+        this.hp = 8 + (this.level - 9) * 4;
+        this.shieldHp = 6 + (this.level - 9) * 3;
+      } else if (type === EnemyType.SPLITTER) {
+        this.color = '#22c55e'; // Green
+        this.size = { width: 50, height: 40 }; // slightly bigger
+        this.hp = standardHp;
+      } else if (type === EnemyType.ROGUE_DRONE) {
+        this.faction = Faction.ROGUE;
+        this.color = '#d946ef'; // Electric Magenta
+        this.size = { width: 36, height: 28 };
+        this.speedX = 50 + this.level * 6;
+        this.speedY = 10 + this.level * 2;
+        this.hp = 3 + (this.level - 9) * 3;
+        this.canEvade = true;
+      } else if (type === EnemyType.ROGUE_STALKER) {
+        this.faction = Faction.ROGUE;
+        this.color = '#c026d3'; // Ultraviolet / Vivid Fuchsia
+        this.size = { width: 44, height: 32 };
+        this.speedX = 30 + this.level * 4;
+        this.speedY = 8 + this.level * 2;
+        this.hp = 6 + (this.level - 9) * 5;
+        this.canEvade = true;
+      } else if (type === EnemyType.ROGUE_MECH) {
+        this.faction = Faction.ROGUE;
+        this.color = '#a21caf'; // High-Voltage Vivid Magenta
+        this.size = { width: 56, height: 42 };
+        this.speedX = 18 + this.level * 2;
+        this.speedY = 5 + this.level;
+        this.hp = 15 + (this.level - 9) * 10;
+      } else {
+        this.color = '#f97316'; // Orange/Fire
+        this.speedX += this.level * 5;
+        this.hp = standardHp;
+        this.canEvade = false;
+      }
     }
     
+    this.maxShieldHp = this.shieldHp;
     this.maxHp = this.hp;
-    this.fireTimer = Math.random() * 3 + 1; // Staggered initial firing timer
+    this.fireTimer = this.level >= 10 ? (Math.random() * 0.7 + 0.8) : (Math.random() * 3 + 1);
 
     // Re-clamp position in case type-specific size altered dimensions
     const maxX = Math.max(0, this.canvasWidth - this.size.width);
@@ -219,7 +286,7 @@ export class Enemy extends Entity {
     if (this.type === EnemyType.SHIELDED && this.shieldHp <= 0) {
       this.shieldRegenTimer -= deltaTime;
       if (this.shieldRegenTimer <= 0) {
-        this.shieldHp = 3; // Regenerate shield
+        this.shieldHp = this.maxShieldHp || (this.level >= 10 ? 6 + (this.level - 9) * 3 : 3); // Regenerate shield
         this.shieldRegenTimer = 0;
       }
     }
@@ -292,16 +359,21 @@ export class Enemy extends Entity {
 
     if (this.fireTimer <= 0) {
       // Reset timer
-      if (this.type === EnemyType.BOSS) {
-        this.fireTimer = Math.random() * 2 + 0.5;
-      } else if (this.type === EnemyType.ROGUE_DRONE) {
-        this.fireTimer = Math.random() * 2.0 + 2.5; // 2.5 ~ 4.5s
-      } else if (this.type === EnemyType.ROGUE_STALKER) {
-        this.fireTimer = Math.random() * 2.0 + 3.0; // 3.0 ~ 5.0s
-      } else if (this.type === EnemyType.ROGUE_MECH) {
-        this.fireTimer = Math.random() * 2.0 + 3.5; // 3.5 ~ 5.5s
+      if (this.level >= 10) {
+        const minCooldown = Math.max(0.4, 0.8 - (this.level - 10) * 0.02);
+        this.fireTimer = Math.random() * 0.7 + minCooldown;
       } else {
-        this.fireTimer = Math.random() * 3 + 2;
+        if (this.type === EnemyType.BOSS) {
+          this.fireTimer = Math.random() * 2 + 0.5;
+        } else if (this.type === EnemyType.ROGUE_DRONE) {
+          this.fireTimer = Math.random() * 2.0 + 2.5; // 2.5 ~ 4.5s
+        } else if (this.type === EnemyType.ROGUE_STALKER) {
+          this.fireTimer = Math.random() * 2.0 + 3.0; // 3.0 ~ 5.0s
+        } else if (this.type === EnemyType.ROGUE_MECH) {
+          this.fireTimer = Math.random() * 2.0 + 3.5; // 3.5 ~ 5.5s
+        } else {
+          this.fireTimer = Math.random() * 3 + 2;
+        }
       }
       
       const spawnX = this.position.x + this.size.width / 2 - 3;
@@ -336,13 +408,24 @@ export class Enemy extends Entity {
           }
         }
 
-        const bulletSpeed = this.type === EnemyType.ROGUE_DRONE 
-          ? (this.level <= 2 ? 300 : 360) 
-          : (this.type === EnemyType.ROGUE_MECH ? (this.level <= 2 ? 240 : 280) : (this.level <= 2 ? 280 : 320));
-        const bulletDamage = this.type === EnemyType.ROGUE_MECH 
-          ? (this.level <= 3 ? 2 : 3) 
-          : (this.type === EnemyType.ROGUE_STALKER ? (this.level <= 2 ? 1 : 2) : 1);
-        const piercing = this.type === EnemyType.ROGUE_MECH ? (this.level <= 3 ? 1 : 2) : 1;
+        let bulletSpeed: number;
+        let bulletDamage: number;
+        let piercing: number;
+
+        if (this.level >= 10) {
+          bulletSpeed = 250 + Math.min(150, (this.level - 10) * 15);
+          const isElite = this.type === EnemyType.ROGUE_STALKER || this.type === EnemyType.ROGUE_MECH;
+          bulletDamage = isElite ? 2 : 1;
+          piercing = this.type === EnemyType.ROGUE_MECH ? 2 : 1;
+        } else {
+          bulletSpeed = this.type === EnemyType.ROGUE_DRONE 
+            ? (this.level <= 2 ? 300 : 360) 
+            : (this.type === EnemyType.ROGUE_MECH ? (this.level <= 2 ? 240 : 280) : (this.level <= 2 ? 280 : 320));
+          bulletDamage = this.type === EnemyType.ROGUE_MECH 
+            ? (this.level <= 3 ? 2 : 3) 
+            : (this.type === EnemyType.ROGUE_STALKER ? (this.level <= 2 ? 1 : 2) : 1);
+          piercing = this.type === EnemyType.ROGUE_MECH ? (this.level <= 3 ? 1 : 2) : 1;
+        }
 
         const b = new Bullet(spawnX, spawnY, bulletSpeed, bulletDamage, false, piercing);
         b.faction = Faction.ROGUE;
@@ -364,8 +447,19 @@ export class Enemy extends Entity {
       }
 
       // Invader Faction
-      const bulletSpeed = this.type === EnemyType.BOSS ? 300 : 200;
-      const b = new Bullet(spawnX, spawnY, bulletSpeed, 1, false);
+      let bulletSpeed: number;
+      let bulletDamage: number;
+
+      if (this.level >= 10) {
+        bulletSpeed = 250 + Math.min(150, (this.level - 10) * 15);
+        const isElite = this.type === EnemyType.SNIPER || this.type === EnemyType.BOSS;
+        bulletDamage = isElite ? 2 : 1;
+      } else {
+        bulletSpeed = this.type === EnemyType.BOSS ? 300 : 200;
+        bulletDamage = 1;
+      }
+
+      const b = new Bullet(spawnX, spawnY, bulletSpeed, bulletDamage, false);
       b.faction = this.faction;
 
       if (this.type === EnemyType.SNIPER) {
@@ -397,7 +491,7 @@ export class Enemy extends Entity {
           const dx = targetCenter.x - spawnX;
           const dy = targetCenter.y - spawnY;
           const angle = Math.atan2(dy, dx);
-          const speed = 400; // sniper bullets are fast
+          const speed = this.level >= 10 ? Math.max(400, bulletSpeed + 50) : 400; // sniper bullets are fast
           b.velocity.x = Math.cos(angle) * speed;
           b.velocity.y = Math.sin(angle) * speed;
         }

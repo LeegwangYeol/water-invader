@@ -1,4 +1,4 @@
-import { GameState, Faction } from './types';
+import { GameState, Faction, CrisisType, CrisisState, HazardProjectile } from './types';
 import { Player } from './Player';
 import { Enemy, EnemyType } from './Enemy';
 import { Bullet } from './Bullet';
@@ -42,6 +42,20 @@ export class GameManager {
   public warningText: string = "WARNING! ENEMY REINFORCEMENTS!";
   public pendingReinforcement: 'ENEMY' | 'ALLY' | 'FLANK' | 'SPEARHEAD' | 'ROGUE_INCURSION' | '3WAY_CLASH' | string | null = null;
   
+  // Emergency Waves & Crisis Events Director (Stage 10+)
+  public crisisState: CrisisState = {
+    activeCrisis: null,
+    timer: 0,
+    duration: 0,
+    warningTimer: 0,
+    bannerText: null,
+    hazardProjectiles: [],
+    empSuppressionActive: false,
+    empTimer: 0,
+  };
+  public crisisTimer: number = 0;
+  public hazardProjectiles: HazardProjectile[] = [];
+  
   // Debugging & Developer Tools
   public isDebugMode: boolean = false;
   public isGodMode: boolean = false;
@@ -61,6 +75,7 @@ export class GameManager {
   public onScoreChange?: (score: number, currency: number, combo: number, wave: number, ultimateGauge: number, invaderCount?: number, rogueCount?: number) => void;
   public onPlayerHpChange?: (hp: number) => void;
   public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number }) => void;
+  public onCrisisEvent?: (crisis: CrisisState | null) => void;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -148,6 +163,20 @@ export class GameManager {
     this.warningText = "WARNING! ENEMY REINFORCEMENTS!";
     this.pendingReinforcement = null;
     
+    this.crisisState = {
+      activeCrisis: null,
+      timer: 0,
+      duration: 0,
+      warningTimer: 0,
+      bannerText: null,
+      hazardProjectiles: [],
+      empSuppressionActive: false,
+      empTimer: 0,
+    };
+    this.crisisTimer = 6.0;
+    this.hazardProjectiles = [];
+    if (this.onCrisisEvent) this.onCrisisEvent(null);
+    
     this.spawnBarricades();
     this.spawnWave();
     
@@ -177,6 +206,19 @@ export class GameManager {
     this.warningMessage = "";
     this.warningText = "";
     this.pendingReinforcement = null;
+    this.crisisState = {
+      activeCrisis: null,
+      timer: 0,
+      duration: 0,
+      warningTimer: 0,
+      bannerText: null,
+      hazardProjectiles: [],
+      empSuppressionActive: false,
+      empTimer: 0,
+    };
+    this.crisisTimer = 6.0 + Math.random() * 4.0;
+    this.hazardProjectiles = [];
+    if (this.onCrisisEvent) this.onCrisisEvent(null);
     this.level++;
     this.spawnWave();
     this.updateScoreUI();
@@ -220,6 +262,38 @@ export class GameManager {
       // Boss wave (F-13: spawn Y lowered to 90)
       const boss = new Enemy(this.logicalWidth / 2 - 75, 90, this.logicalWidth, this.level, EnemyType.BOSS, this.logicalHeight);
       this.enemies.push(boss);
+
+      if (this.level >= 10) {
+        // Stage 10+ Boss Escort Legions (4-8 accompanying minions: Shielded, Snipers, and Divers)
+        const escortCount = Math.min(8, 4 + Math.floor((this.level - 10) / 5) * 2);
+        const escortTypes = [
+          EnemyType.SHIELDED,
+          EnemyType.SNIPER,
+          EnemyType.DIVER,
+          EnemyType.SHIELDED,
+          EnemyType.SNIPER,
+          EnemyType.DIVER,
+          EnemyType.SHIELDED,
+          EnemyType.DIVER
+        ];
+
+        const leftCount = Math.ceil(escortCount / 2);
+        const rightCount = Math.floor(escortCount / 2);
+
+        for (let i = 0; i < leftCount; i++) {
+          const type = escortTypes[i % escortTypes.length];
+          const x = Math.max(10, (this.logicalWidth / 2 - 85) - (i + 1) * 55);
+          const y = 90 + (i % 2) * 50;
+          this.enemies.push(new Enemy(x, y, this.logicalWidth, this.level, type, this.logicalHeight));
+        }
+
+        for (let i = 0; i < rightCount; i++) {
+          const type = escortTypes[(i + leftCount) % escortTypes.length];
+          const x = Math.min(this.logicalWidth - 55, (this.logicalWidth / 2 + 85) + i * 55);
+          const y = 90 + (i % 2) * 50;
+          this.enemies.push(new Enemy(x, y, this.logicalWidth, this.level, type, this.logicalHeight));
+        }
+      }
       return;
     }
 
@@ -312,6 +386,156 @@ export class GameManager {
       soundManager.playThirdFactionWarning();
     }
     this.updateScoreUI();
+  }
+
+  public triggerCrisis(type?: CrisisType) {
+    if (this.state !== GameState.PLAYING) return;
+    
+    const crisisOptions: CrisisType[] = ['TITAN_HORDE', 'ACID_STORM', 'SWARM_BLITZ', 'EMP_DISRUPTION', 'TOTAL_WAR'];
+    const chosenType = type || crisisOptions[Math.floor(Math.random() * crisisOptions.length)];
+
+    let banner = '';
+    let duration = 8.0;
+    if (chosenType === 'TITAN_HORDE') {
+      banner = 'EMERGENCY CRISIS: TITAN BIO-MECH ESCORT HORDE!';
+      duration = 10.0;
+    } else if (chosenType === 'ACID_STORM') {
+      banner = 'EMERGENCY CRISIS: TOXIC ACID STORM HAZARD!';
+      duration = 10.0;
+    } else if (chosenType === 'SWARM_BLITZ') {
+      banner = 'EMERGENCY CRISIS: SWARM DIVER BLITZ!';
+      duration = 8.0;
+    } else if (chosenType === 'EMP_DISRUPTION') {
+      banner = 'EMERGENCY CRISIS: EMP WEAPON DISRUPTION!';
+      duration = 3.5;
+    } else if (chosenType === 'TOTAL_WAR') {
+      banner = 'EMERGENCY CRISIS: 3-WAY TOTAL WAR INCURSION!';
+      duration = 12.0;
+    }
+
+    this.crisisState = {
+      activeCrisis: chosenType,
+      timer: duration,
+      duration: duration,
+      warningTimer: 2.0,
+      bannerText: banner,
+      hazardProjectiles: [],
+      empSuppressionActive: false,
+      empTimer: 0,
+    };
+    this.hazardProjectiles = [];
+
+    this.warningMessage = banner;
+    this.warningText = banner;
+    this.warningTimer = 2.0;
+
+    this.triggerScreenShake(1.0);
+    soundManager.playCrisisAlarm();
+
+    if (this.onCrisisEvent) {
+      this.onCrisisEvent({ ...this.crisisState });
+    }
+  }
+
+  private activateCrisisEffect(type: CrisisType) {
+    if (type === 'TITAN_HORDE') {
+      // 1. TITAN_HORDE: Heavy boss dreadnought escorted by 4 Shielded and 4 Diver units
+      const boss = new Enemy(this.logicalWidth / 2 - 75, 80, this.logicalWidth, this.level, EnemyType.BOSS, this.logicalHeight);
+      boss.hp = Math.max(boss.hp, 250);
+      boss.maxHp = boss.hp;
+      this.enemies.push(boss);
+
+      for (let i = 0; i < 4; i++) {
+        const sx = 40 + i * ((this.logicalWidth - 120) / 3);
+        const shielded = new Enemy(sx, 145, this.logicalWidth, this.level, EnemyType.SHIELDED, this.logicalHeight);
+        this.enemies.push(shielded);
+      }
+      for (let i = 0; i < 4; i++) {
+        const dx = 50 + i * ((this.logicalWidth - 140) / 3);
+        const diver = new Enemy(dx, 195, this.logicalWidth, this.level, EnemyType.DIVER, this.logicalHeight);
+        this.enemies.push(diver);
+      }
+      this.triggerScreenShake(0.9);
+      soundManager.playThirdFactionWarning();
+    } else if (type === 'ACID_STORM') {
+      // 2. ACID_STORM: Environmental falling toxic projectile barrage across the screen
+      soundManager.playAcidStormSound();
+      this.triggerScreenShake(0.6);
+      this.hazardProjectiles = [];
+    } else if (type === 'SWARM_BLITZ') {
+      // 3. SWARM_BLITZ: Coordinated high-speed pincer dive attacks with rapid movement
+      for (let i = 0; i < 4; i++) {
+        const leftDiver = new Enemy(15, 60 + i * 40, this.logicalWidth, this.level + 1, EnemyType.DIVER, this.logicalHeight);
+        leftDiver.speedX = 65 + this.level * 3;
+        const rightDiver = new Enemy(this.logicalWidth - 55, 60 + i * 40, this.logicalWidth, this.level + 1, EnemyType.DIVER, this.logicalHeight);
+        rightDiver.speedX = -65 - this.level * 3;
+        this.enemies.push(leftDiver, rightDiver);
+      }
+      for (let i = 0; i < 3; i++) {
+        const centerZig = new Enemy(this.logicalWidth / 2 - 60 + i * 60, 50, this.logicalWidth, this.level + 1, EnemyType.ZIGZAG, this.logicalHeight);
+        this.enemies.push(centerZig);
+      }
+      this.triggerScreenShake(0.8);
+      soundManager.playCrisisAlarm();
+    } else if (type === 'EMP_DISRUPTION') {
+      // 4. EMP_DISRUPTION: Temporary weapon suppression (2.5s) with rapid hostile beam sweeps
+      soundManager.playEmpDisruptionSound();
+      this.crisisState.empSuppressionActive = true;
+      this.crisisState.empTimer = 2.5;
+      if (this.player) {
+        this.player.isShooting = false;
+        this.player.suppressionLevel = 100;
+      }
+      const sniper1 = new Enemy(50, 75, this.logicalWidth, this.level + 1, EnemyType.SNIPER, this.logicalHeight);
+      const sniper2 = new Enemy(this.logicalWidth - 90, 75, this.logicalWidth, this.level + 1, EnemyType.SNIPER, this.logicalHeight);
+      const stalker1 = new Enemy(this.logicalWidth / 2 - 50, 85, this.logicalWidth, this.level + 1, EnemyType.ROGUE_STALKER, this.logicalHeight);
+      const stalker2 = new Enemy(this.logicalWidth / 2 + 10, 85, this.logicalWidth, this.level + 1, EnemyType.ROGUE_STALKER, this.logicalHeight);
+      this.enemies.push(sniper1, sniper2, stalker1, stalker2);
+      this.triggerScreenShake(0.7);
+    } else if (type === 'TOTAL_WAR') {
+      // 5. TOTAL_WAR: Massive dual-flank chaotic clash between Invader (10+) and Rogue (10+) legions
+      // Left Flank (Invaders): 11 units
+      for (let i = 0; i < 4; i++) {
+        const invader = new Enemy(30 + (i % 2) * 50, 70 + Math.floor(i / 2) * 45, this.logicalWidth, this.level + 1, EnemyType.SNIPER, this.logicalHeight);
+        invader.faction = Faction.INVADER;
+        this.enemies.push(invader);
+      }
+      for (let i = 0; i < 4; i++) {
+        const diver = new Enemy(30 + (i % 2) * 50, 160 + Math.floor(i / 2) * 45, this.logicalWidth, this.level + 1, EnemyType.DIVER, this.logicalHeight);
+        diver.faction = Faction.INVADER;
+        this.enemies.push(diver);
+      }
+      for (let i = 0; i < 3; i++) {
+        const shielded = new Enemy(30 + i * 45, 250, this.logicalWidth, this.level + 1, EnemyType.SHIELDED, this.logicalHeight);
+        shielded.faction = Faction.INVADER;
+        this.enemies.push(shielded);
+      }
+
+      // Right Flank (Rogues): 11 units
+      for (let i = 0; i < 4; i++) {
+        const drone = new Enemy(this.logicalWidth - 120 + (i % 2) * 50, 70 + Math.floor(i / 2) * 45, this.logicalWidth, this.level + 1, EnemyType.ROGUE_DRONE, this.logicalHeight);
+        drone.faction = Faction.ROGUE;
+        this.enemies.push(drone);
+      }
+      for (let i = 0; i < 4; i++) {
+        const stalker = new Enemy(this.logicalWidth - 120 + (i % 2) * 50, 160 + Math.floor(i / 2) * 45, this.logicalWidth, this.level + 1, EnemyType.ROGUE_STALKER, this.logicalHeight);
+        stalker.faction = Faction.ROGUE;
+        this.enemies.push(stalker);
+      }
+      for (let i = 0; i < 3; i++) {
+        const mech = new Enemy(this.logicalWidth - 150 + i * 50, 250, this.logicalWidth, this.level + 1, EnemyType.ROGUE_MECH, this.logicalHeight);
+        mech.faction = Faction.ROGUE;
+        this.enemies.push(mech);
+      }
+
+      this.triggerScreenShake(1.2);
+      soundManager.playThirdFactionWarning();
+    }
+
+    this.updateScoreUI();
+    if (this.onCrisisEvent) {
+      this.onCrisisEvent({ ...this.crisisState });
+    }
   }
 
   private loop = (timestamp: number) => {
@@ -441,6 +665,133 @@ export class GameManager {
             this.reinforcementTimer = 2.0;
           }
         }
+      }
+
+      // Emergency Waves & Crisis Director Logic (Stage 10+)
+      if (this.crisisState.warningTimer > 0) {
+        this.crisisState.warningTimer -= deltaTime;
+        if (this.crisisState.warningTimer <= 0) {
+          this.crisisState.warningTimer = 0;
+          if (this.crisisState.activeCrisis) {
+            this.activateCrisisEffect(this.crisisState.activeCrisis);
+          }
+        }
+      } else if (this.crisisState.activeCrisis !== null) {
+        this.crisisState.timer -= deltaTime;
+
+        // Handle EMP weapon suppression
+        if (this.crisisState.empTimer && this.crisisState.empTimer > 0) {
+          this.crisisState.empTimer -= deltaTime;
+          if (this.player && this.crisisState.empSuppressionActive) {
+            this.player.isShooting = false;
+            this.player.suppressionLevel = Math.max(this.player.suppressionLevel, 90);
+          }
+          if (this.crisisState.empTimer <= 0) {
+            this.crisisState.empSuppressionActive = false;
+            this.crisisState.empTimer = 0;
+            if (this.onCrisisEvent) this.onCrisisEvent({ ...this.crisisState });
+          }
+        }
+
+        // Handle Acid Storm hazard projectile generation
+        if (this.crisisState.activeCrisis === 'ACID_STORM') {
+          if (Math.random() < 0.4) {
+            const count = 1 + Math.floor(Math.random() * 2);
+            for (let k = 0; k < count; k++) {
+              const hz: HazardProjectile = {
+                x: 20 + Math.random() * (this.logicalWidth - 40),
+                y: -15,
+                radius: 5 + Math.random() * 4,
+                speedY: 220 + Math.random() * 120,
+                speedX: (Math.random() - 0.5) * 40,
+                damage: 1,
+                color: '#a3e635'
+              };
+              this.hazardProjectiles.push(hz);
+            }
+          }
+        }
+
+        if (this.crisisState.timer <= 0) {
+          this.crisisState.activeCrisis = null;
+          this.crisisState.bannerText = null;
+          this.crisisState.empSuppressionActive = false;
+          if (this.onCrisisEvent) this.onCrisisEvent(null);
+        }
+      } else if (this.level >= 10) {
+        this.crisisTimer -= deltaTime;
+        if (this.crisisTimer <= 0 && this.enemies.length > 0 && this.warningTimer <= 0 && this.pendingReinforcement === null) {
+          this.triggerCrisis();
+          this.crisisTimer = 16.0 + Math.random() * 8.0;
+        }
+      }
+
+      // Update and collide hazard projectiles (Acid Storm)
+      if (this.hazardProjectiles.length > 0) {
+        for (let i = 0; i < this.hazardProjectiles.length; i++) {
+          const hz = this.hazardProjectiles[i];
+          if (hz.isDead) continue;
+          hz.y += hz.speedY * deltaTime;
+          if (hz.speedX) hz.x += hz.speedX * deltaTime;
+
+          // Player collision
+          if (this.player && !this.isGodMode && this.player.invincibilityTimer <= 0) {
+            const px = this.player.position.x;
+            const py = this.player.position.y;
+            const pw = this.player.size.width;
+            const ph = this.player.size.height;
+            if (
+              hz.x + hz.radius >= px &&
+              hz.x - hz.radius <= px + pw &&
+              hz.y + hz.radius >= py &&
+              hz.y - hz.radius <= py + ph
+            ) {
+              hz.isDead = true;
+              this.player.hp -= hz.damage;
+              this.player.hitFlashTimer = 0.08;
+              this.player.invincibilityTimer = 1.0;
+              soundManager.playPlayerHit();
+              soundManager.playAcidStormSound();
+              this.createExplosion(hz.x, hz.y, '#84cc16', 15);
+              this.triggerScreenShake(0.3);
+              if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+              if (this.player.hp <= 0) {
+                this.gameOver("정수기가 산성 폭풍에 부식되었습니다. (체력 소진)");
+              }
+            }
+          }
+
+          // Barricade collision
+          for (const b of this.barricades) {
+            if (
+              !b.isDead &&
+              hz.x >= b.position.x &&
+              hz.x <= b.position.x + b.size.width &&
+              hz.y >= b.position.y &&
+              hz.y <= b.position.y + b.size.height
+            ) {
+              hz.isDead = true;
+              if (b.type === BarricadeType.DESTRUCTIBLE) {
+                b.hp -= 2;
+              }
+              this.createExplosion(hz.x, hz.y, '#a3e635', 6);
+              break;
+            }
+          }
+
+          if (hz.y > this.logicalHeight + 30) {
+            hz.isDead = true;
+          }
+        }
+
+        let hzWrite = 0;
+        for (let i = 0; i < this.hazardProjectiles.length; i++) {
+          if (!this.hazardProjectiles[i].isDead) {
+            this.hazardProjectiles[hzWrite++] = this.hazardProjectiles[i];
+          }
+        }
+        this.hazardProjectiles.length = hzWrite;
+        this.crisisState.hazardProjectiles = this.hazardProjectiles;
       }
 
       // Entities
@@ -591,11 +942,24 @@ export class GameManager {
         remainingHostiles++;
       }
     }
-    if (this.state === GameState.PLAYING && remainingHostiles === 0 && this.warningTimer <= 0 && this.pendingReinforcement === null) {
+    if (
+      this.state === GameState.PLAYING &&
+      remainingHostiles === 0 &&
+      this.warningTimer <= 0 &&
+      this.pendingReinforcement === null &&
+      this.crisisState.warningTimer <= 0 &&
+      (this.crisisState.activeCrisis === null || (this.crisisState.activeCrisis !== 'ACID_STORM' || this.crisisState.timer <= 0))
+    ) {
       this.state = GameState.SHOP;
       this.warningTimer = 0;
       this.warningMessage = "";
       this.warningText = "";
+      this.crisisState.activeCrisis = null;
+      this.crisisState.warningTimer = 0;
+      this.crisisState.bannerText = null;
+      this.crisisState.empSuppressionActive = false;
+      this.hazardProjectiles = [];
+      if (this.onCrisisEvent) this.onCrisisEvent(null);
       if (this.onStateChange) this.onStateChange(this.state);
       this.pause();
     }
@@ -1066,6 +1430,40 @@ export class GameManager {
     this.enemies.forEach(e => e.draw(this.ctx));
     this.bullets.forEach(b => b.draw(this.ctx));
     this.particles.forEach(p => p.draw(this.ctx));
+
+    // Hazard Projectiles (Acid Storm)
+    if (this.hazardProjectiles.length > 0) {
+      for (const hz of this.hazardProjectiles) {
+        if (hz.isDead) continue;
+        this.ctx.save();
+        this.ctx.fillStyle = hz.color || '#a3e635';
+        this.ctx.beginPath();
+        this.ctx.arc(hz.x, hz.y, hz.radius, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Hazard core sizzle
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.beginPath();
+        this.ctx.arc(hz.x, hz.y, hz.radius * 0.4, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.restore();
+      }
+    }
+
+    // EMP Disruption Visual Static Sweep
+    if (this.crisisState.empSuppressionActive) {
+      this.ctx.save();
+      this.ctx.strokeStyle = 'rgba(34, 211, 238, 0.25)';
+      this.ctx.lineWidth = 1.5;
+      for (let i = 0; i < 4; i++) {
+        const lineY = (time * 400 + i * 200) % this.logicalHeight;
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, lineY);
+        this.ctx.lineTo(this.logicalWidth, lineY);
+        this.ctx.stroke();
+      }
+      this.ctx.restore();
+    }
 
     // Boss HP Bar (F-14)
     const activeBoss = this.enemies.find(e => e.type === EnemyType.BOSS && !e.isDead);

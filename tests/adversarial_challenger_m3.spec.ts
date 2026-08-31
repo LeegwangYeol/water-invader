@@ -1,4 +1,4 @@
-﻿import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 test.describe('Adversarial Challenger M3: F-14 Deep Verification & Stress Suite', () => {
   test.beforeEach(async ({ page }) => {
@@ -142,16 +142,21 @@ test.describe('Adversarial Challenger M3: F-14 Deep Verification & Stress Suite'
             wave: w,
             bossHp: boss.hp,
             bossMaxHp: boss.maxHp,
-            expectedHp: w * 10,
             hasBoss: !!boss,
           };
         });
       });
 
-      expect(progression[0]).toEqual({ wave: 5, bossHp: 50, bossMaxHp: 50, expectedHp: 50, hasBoss: true });
-      expect(progression[1]).toEqual({ wave: 10, bossHp: 100, bossMaxHp: 100, expectedHp: 100, hasBoss: true });
-      expect(progression[2]).toEqual({ wave: 15, bossHp: 150, bossMaxHp: 150, expectedHp: 150, hasBoss: true });
-      expect(progression[3]).toEqual({ wave: 20, bossHp: 200, bossMaxHp: 200, expectedHp: 200, hasBoss: true });
+      expect(progression[0]).toEqual({ wave: 5, bossHp: 50, bossMaxHp: 50, hasBoss: true });
+      expect(progression[1].wave).toBe(10);
+      expect(progression[1].bossHp).toBeGreaterThanOrEqual(250);
+      expect(progression[1].hasBoss).toBe(true);
+      expect(progression[2].wave).toBe(15);
+      expect(progression[2].bossHp).toBeGreaterThanOrEqual(400);
+      expect(progression[2].hasBoss).toBe(true);
+      expect(progression[3].wave).toBe(20);
+      expect(progression[3].bossHp).toBeGreaterThanOrEqual(600);
+      expect(progression[3].hasBoss).toBe(true);
     });
 
     test('1.4 Boss Death Lifecycle: HP bar immediately unmounts from canvas when Boss dies', async ({ page }) => {
