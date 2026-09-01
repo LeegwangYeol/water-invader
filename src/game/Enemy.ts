@@ -397,7 +397,7 @@ export class Enemy extends Entity {
 
         // Evaluate distance to active enemies (crossfire targets)
         for (const e of allEnemies) {
-          if (!e.isDead && e !== this) {
+          if (!e.isDead && e.faction !== this.faction) {
             const ex = e.position.x + e.size.width / 2;
             const ey = e.position.y + e.size.height / 2;
             const dist = Math.hypot(ex - spawnX, ey - spawnY);
@@ -466,39 +466,46 @@ export class Enemy extends Entity {
       b.shooter = this;
       b.hitEntities.add(this);
 
-      if (this.type === EnemyType.SNIPER) {
-        b.isInterceptable = true;
-        
-        let targetCenter: Vector2D | null = null;
-        let minDistance = Infinity;
+      let targetCenter: Vector2D | null = null;
+      let minDistance = Infinity;
 
-        if (playerPos && Number.isFinite(playerPos.x) && Number.isFinite(playerPos.y)) {
-          const px = playerPos.x + 25;
-          const py = playerPos.y + 20;
-          minDistance = Math.hypot(px - spawnX, py - spawnY);
+      if (playerPos && Number.isFinite(playerPos.x) && Number.isFinite(playerPos.y)) {
+        const px = playerPos.x + 25;
+        const py = playerPos.y + 20;
+        minDistance = Math.hypot(px - spawnX, py - spawnY);
+        // Only snipers actively target the player
+        if (this.type === EnemyType.SNIPER) {
           targetCenter = { x: px, y: py };
         }
+      }
 
-        for (const e of allEnemies) {
-          if (!e.isDead && e !== this) {
-            const ex = e.position.x + e.size.width / 2;
-            const ey = e.position.y + e.size.height / 2;
-            const dist = Math.hypot(ex - spawnX, ey - spawnY);
-            if (dist < minDistance) {
-              minDistance = dist;
-              targetCenter = { x: ex, y: ey };
-            }
+      // Check for enemies of a different faction
+      for (const e of allEnemies) {
+        if (!e.isDead && e.faction !== this.faction) {
+          const ex = e.position.x + e.size.width / 2;
+          const ey = e.position.y + e.size.height / 2;
+          const dist = Math.hypot(ex - spawnX, ey - spawnY);
+          // If the enemy is closer than the current minDistance (which is the player's distance)
+          if (dist < minDistance) {
+            minDistance = dist;
+            targetCenter = { x: ex, y: ey };
           }
         }
+      }
 
-        if (targetCenter) {
-          const dx = targetCenter.x - spawnX;
-          const dy = targetCenter.y - spawnY;
-          const angle = Math.atan2(dy, dx);
-          const speed = this.level >= 10 ? Math.max(400, bulletSpeed + 50) : (this.type === EnemyType.SNIPER ? 400 : bulletSpeed);
-          b.velocity.x = Math.cos(angle) * speed;
-          b.velocity.y = Math.sin(angle) * speed;
-        }
+      if (this.type === EnemyType.SNIPER) {
+        b.isInterceptable = true;
+      }
+
+      if (targetCenter) {
+        const dx = targetCenter.x - spawnX;
+        const dy = targetCenter.y - spawnY;
+        const angle = Math.atan2(dy, dx);
+        const speed = this.type === EnemyType.SNIPER 
+          ? (this.level >= 10 ? Math.max(400, bulletSpeed + 50) : 400) 
+          : bulletSpeed;
+        b.velocity.x = Math.cos(angle) * speed;
+        b.velocity.y = Math.sin(angle) * speed;
       }
       
       return b;
