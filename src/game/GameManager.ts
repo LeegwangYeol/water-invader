@@ -6,6 +6,8 @@ import { Particle } from './Particle';
 import { Barricade, BarricadeType } from './Barricade';
 import { Helper, HelperType } from './Helper';
 import { soundManager } from './SoundManager';
+import { EndGameCrisis } from './crisis/EndGameCrisis';
+import { CrisisArchetype, CrisisPhase, EndGameCrisisState } from './crisis/types';
 
 export class GameManager {
   private canvas: HTMLCanvasElement;
@@ -56,6 +58,11 @@ export class GameManager {
   public crisisTimer: number = 0;
   public hazardProjectiles: HazardProjectile[] = [];
   
+  // End-Game Crisis Incursion Engine (Stage 15+)
+  public endGameCrisis: EndGameCrisis | null = null;
+  public hasEndGameCrisisOccurred: boolean = false;
+  public endGameCrisisDefeatedHandled: boolean = false;
+
   // Debugging & Developer Tools
   public isDebugMode: boolean = false;
   public isGodMode: boolean = false;
@@ -76,6 +83,7 @@ export class GameManager {
   public onPlayerHpChange?: (hp: number) => void;
   public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number }) => void;
   public onCrisisEvent?: (crisis: CrisisState | null) => void;
+  public onEndGameCrisisEvent?: (crisis: EndGameCrisisState | null) => void;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -179,6 +187,13 @@ export class GameManager {
     this.hazardProjectiles = [];
     if (this.onCrisisEvent) this.onCrisisEvent(null);
     
+    this.endGameCrisis = null;
+    this.endGameCrisisDefeatedHandled = false;
+    if (resetScoreAndCash) {
+      this.hasEndGameCrisisOccurred = false;
+    }
+    if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
+
     this.spawnBarricades();
     this.spawnWave();
     
@@ -221,6 +236,9 @@ export class GameManager {
     this.crisisTimer = 6.0 + Math.random() * 4.0;
     this.hazardProjectiles = [];
     if (this.onCrisisEvent) this.onCrisisEvent(null);
+    this.endGameCrisis = null;
+    this.endGameCrisisDefeatedHandled = false;
+    if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
     this.level++;
     this.spawnWave();
     this.updateScoreUI();
@@ -257,6 +275,44 @@ export class GameManager {
       this.animationFrameId = 0;
     }
     this.clearKeys();
+  }
+
+  public triggerEndGameCrisis(archetype?: CrisisArchetype): EndGameCrisis {
+    this.hasEndGameCrisisOccurred = true;
+    this.enemies = []; // Clear standard hostiles for existential crisis encounter
+    this.endGameCrisis = new EndGameCrisis(this.logicalWidth, this.logicalHeight);
+    this.endGameCrisisDefeatedHandled = false;
+
+    this.endGameCrisis.callbacks = {
+      onPhaseChange: (_phase, _prevPhase) => {
+        if (this.onEndGameCrisisEvent && this.endGameCrisis) {
+          this.onEndGameCrisisEvent(this.endGameCrisis.getState());
+        }
+      },
+      onDefeated: (_arch) => {
+        if (this.onEndGameCrisisEvent && this.endGameCrisis) {
+          this.onEndGameCrisisEvent(this.endGameCrisis.getState());
+        }
+      },
+      onRiftDestroyed: (riftIndex, _remaining) => {
+        const rx = riftIndex === 0 ? 90 : this.logicalWidth - 90;
+        this.createExplosion(rx, 210, '#c084fc', 30, 2.0);
+        this.triggerScreenShake(0.6);
+        if (this.onEndGameCrisisEvent && this.endGameCrisis) {
+          this.onEndGameCrisisEvent(this.endGameCrisis.getState());
+        }
+      },
+    };
+
+    this.endGameCrisis.startIncursion(archetype, soundManager);
+    soundManager.playCrisisCataclysmSiren();
+    this.triggerScreenShake(1.5);
+
+    if (this.onEndGameCrisisEvent) {
+      this.onEndGameCrisisEvent(this.endGameCrisis.getState());
+    }
+
+    return this.endGameCrisis;
   }
 
   private spawnWave() {
@@ -297,6 +353,15 @@ export class GameManager {
         }
       }
       return;
+    }
+
+    // Stage 15+ End-Game Crisis Trigger Evaluation on non-boss waves
+    if (this.level >= 15 && !this.endGameCrisis && !this.hasEndGameCrisisOccurred) {
+      const isPityTrigger = this.level >= 18;
+      const isRandomTrigger = Math.random() < 0.30;
+      if (isPityTrigger || isRandomTrigger) {
+        this.triggerEndGameCrisis();
+      }
     }
 
     const rows = Math.min(5, 3 + Math.floor(this.level / 4));
@@ -583,6 +648,49 @@ export class GameManager {
         this.bullets.push(...newBullets);
       }
       
+      // End-Game Crisis Incursion & Combat Update
+      if (this.endGameCrisis && this.endGameCrisis.isActive) {
+        this.endGameCrisis.update(deltaTime, this.player, this.bullets, this.particles, soundManager);
+
+        // Sovereign body direct contact with player
+        if (
+          this.endGameCrisis.sovereign &&
+          !this.endGameCrisis.sovereign.isDead &&
+          this.player &&
+          !this.isGodMode &&
+          this.player.invincibilityTimer <= 0
+        ) {
+          if (this.endGameCrisis.sovereign.checkCollision(this.player)) {
+            this.player.hp -= 1;
+            this.player.hitFlashTimer = 0.08;
+            this.player.invincibilityTimer = 1.0;
+            soundManager.playPlayerHit();
+            this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
+            this.combo = 0;
+            this.updateScoreUI();
+            this.createExplosion(this.player.position.x, this.player.position.y, '#ef4444', 10);
+            this.triggerScreenShake(0.5);
+            if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+            if (this.player.hp <= 0) this.gameOver("정수기가 파괴되었습니다. (체력 소진)");
+          }
+        }
+
+        // Defeat resolution: grant massive victory bonus (+2000 score, +500 cash)
+        if (this.endGameCrisis.isDefeated()) {
+          if (!this.endGameCrisisDefeatedHandled) {
+            this.endGameCrisisDefeatedHandled = true;
+            this.score += 2000;
+            this.currency += 500;
+            this.combo += 10;
+            this.comboTimer = 5.0;
+            this.updateScoreUI();
+            this.createExplosion(this.logicalWidth / 2, 200, '#fbbf24', 120, 3.0);
+            this.triggerScreenShake(1.2);
+            soundManager.playVictory();
+          }
+        }
+      }
+
       // Combo timer
       if (this.combo > 0) {
         this.comboTimer -= deltaTime;
@@ -944,9 +1052,13 @@ export class GameManager {
         remainingHostiles++;
       }
     }
+
+    const isEndGameCrisisEngaged = this.endGameCrisis !== null && !this.endGameCrisis.isDefeated();
+
     if (
       this.state === GameState.PLAYING &&
       remainingHostiles === 0 &&
+      !isEndGameCrisisEngaged &&
       this.warningTimer <= 0 &&
       this.pendingReinforcement === null &&
       this.crisisState.warningTimer <= 0 &&
@@ -961,6 +1073,11 @@ export class GameManager {
       this.crisisState.bannerText = null;
       this.crisisState.empSuppressionActive = false;
       this.hazardProjectiles = [];
+      if (this.endGameCrisis && this.endGameCrisis.isDefeated()) {
+        this.endGameCrisis = null;
+        this.endGameCrisisDefeatedHandled = false;
+        if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
+      }
       if (this.onCrisisEvent) this.onCrisisEvent(null);
       if (this.onStateChange) this.onStateChange(this.state);
       this.pause();
@@ -992,6 +1109,25 @@ export class GameManager {
     // =========================================================================
     for (let i = 0; i < this.bullets.length; i++) {
       const bullet = this.bullets[i];
+      if (bullet.isDead) continue;
+
+      // 1.0 Bullet vs End-Game Crisis Entities (Rifts & Sovereign Body)
+      if (this.endGameCrisis && this.endGameCrisis.isActive && bullet.faction === Faction.PLAYER) {
+        if (this.endGameCrisis.handleBulletCollision(bullet, (scoreGain) => {
+          this.score += scoreGain;
+          this.combo++;
+          this.comboTimer = 2.5;
+          this.player.stressLevel = Math.min(100, this.player.stressLevel + 5);
+          this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 2.0);
+          this.updateScoreUI();
+        })) {
+          soundManager.playEnemyHit();
+          this.createExplosion(bullet.position.x, bullet.position.y, '#c084fc', 6);
+          if (this.onEndGameCrisisEvent) {
+            this.onEndGameCrisisEvent(this.endGameCrisis.getState());
+          }
+        }
+      }
       if (bullet.isDead) continue;
 
       // 1.1 Bullet vs Barricades (Destructible & Indestructible Cover)
@@ -1471,6 +1607,11 @@ export class GameManager {
     const activeBoss = this.enemies.find(e => e.type === EnemyType.BOSS && !e.isDead);
     if (activeBoss) {
       this.drawBossHpBar(activeBoss);
+    }
+
+    // End-Game Crisis Entity Vector Art & Multi-Segment Boss HUD
+    if (this.endGameCrisis && this.endGameCrisis.isActive) {
+      this.endGameCrisis.draw(this.ctx, this.logicalWidth, this.logicalHeight);
     }
     
     // Debug Overlay

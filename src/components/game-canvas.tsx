@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GameManager } from '../game/GameManager';
-import { GameState, CrisisState } from '../game/types';
+import { GameState, CrisisState, EndGameCrisisState, CrisisPhase } from '../game/types';
 import { soundManager } from '../game/SoundManager';
 
 // ============================================================================
@@ -502,6 +502,7 @@ export default function GameCanvas() {
   const [rogueCount, setRogueCount] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [crisisState, setCrisisState] = useState<CrisisState | null>(null);
+  const [endGameCrisisState, setEndGameCrisisState] = useState<EndGameCrisisState | null>(null);
   
   const [showManual, setShowManual] = useState(false);
   const showManualRef = useRef(false);
@@ -625,6 +626,9 @@ export default function GameCanvas() {
     };
     game.onCrisisEvent = (crisis) => {
       setCrisisState(crisis ? { ...crisis } : null);
+    };
+    game.onEndGameCrisisEvent = (crisis) => {
+      setEndGameCrisisState(crisis ? { ...crisis } : null);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -897,6 +901,44 @@ export default function GameCanvas() {
         onPointerMove={handleCanvasPointerMove}
         onPointerUp={handleCanvasPointerUp}
       />
+
+      {/* Stellaris-Style End-Game Crisis Warning Banner Overlay */}
+      {gameState === GameState.PLAYING && endGameCrisisState && (endGameCrisisState.phase === CrisisPhase.INCURSION || endGameCrisisState.warningTimer > 0) && (
+        <div
+          data-testid="endgame-crisis-warning-banner"
+          className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-purple-500/90 shadow-[inset_0_0_80px_rgba(168,85,247,0.8)] animate-pulse rounded-lg bg-purple-950/50 backdrop-blur-[3px]"
+        >
+          <div className="bg-slate-950/95 border-2 border-purple-500 px-6 py-5 rounded-2xl text-center shadow-[0_0_40px_rgba(168,85,247,0.9)] max-w-lg mx-4">
+            <div className="text-purple-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-1 flex items-center justify-center gap-2">
+              <span>⚡</span> STELLARIS-STYLE END-GAME CRISIS INCURSION <span>⚡</span>
+            </div>
+            <div className="text-white font-black text-xl sm:text-2xl text-purple-100 tracking-wider my-1">
+              {endGameCrisisState.bannerText || 'DIMENSIONAL WARP CONVERGENCE IMMINENT'}
+            </div>
+            <div className="text-amber-400 font-black text-xs sm:text-sm mt-2 animate-bounce">
+              WARP CONVERGENCE IN: {endGameCrisisState.warningTimer.toFixed(1)}s
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stellaris-Style End-Game Crisis Active Badge Indicator */}
+      {gameState === GameState.PLAYING && endGameCrisisState && endGameCrisisState.isActive && endGameCrisisState.phase !== CrisisPhase.INCURSION && endGameCrisisState.phase !== CrisisPhase.DEFEATED && (
+        <div
+          data-testid="endgame-crisis-active-badge"
+          className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-5 py-1.5 rounded-full bg-purple-950/95 border-2 border-purple-400 text-purple-200 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.7)] animate-pulse select-none"
+        >
+          <span>🌌</span>
+          <span>
+            {endGameCrisisState.phase === CrisisPhase.PHASE_1_SHIELD
+              ? 'PHASE 1: DIMENSIONAL SHIELD ACTIVE'
+              : endGameCrisisState.phase === CrisisPhase.PHASE_2_HULL
+              ? 'PHASE 2: SOVEREIGN HULL EXPOSED'
+              : `PHASE 3: CORE OVERDRIVE (${Math.ceil(endGameCrisisState.enrageTimer)}s)`}
+          </span>
+          <span>🌌</span>
+        </div>
+      )}
 
       {/* Crisis Warning Banner Overlay */}
       {gameState === GameState.PLAYING && crisisState && crisisState.warningTimer > 0 && (

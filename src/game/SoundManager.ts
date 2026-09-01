@@ -427,6 +427,130 @@ export class SoundManager {
     osc.start();
     osc.stop(now + 0.22);
   }
+
+  public playCrisisCataclysmSiren() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sawtooth';
+    const now = this.audioCtx.currentTime;
+
+    // Dramatic 5-tone descending cataclysm alarm (1100Hz -> 880Hz -> 660Hz -> 440Hz -> 220Hz)
+    osc.frequency.setValueAtTime(1100, now);
+    osc.frequency.linearRampToValueAtTime(880, now + 0.2);
+    osc.frequency.linearRampToValueAtTime(660, now + 0.4);
+    osc.frequency.linearRampToValueAtTime(440, now + 0.6);
+    osc.frequency.linearRampToValueAtTime(220, now + 0.85);
+
+    gainNode.gain.setValueAtTime(0.25, now);
+    gainNode.gain.setValueAtTime(0.25, now + 0.6);
+    gainNode.gain.linearRampToValueAtTime(0.01, now + 0.9);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.9);
+  }
+
+  public playDarkMatterBeam() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sawtooth';
+    const now = this.audioCtx.currentTime;
+
+    // Resonant deep frequency modulation (120Hz -> 320Hz -> 80Hz)
+    osc.frequency.setValueAtTime(120, now);
+    osc.frequency.exponentialRampToValueAtTime(320, now + 0.15);
+    osc.frequency.exponentialRampToValueAtTime(80, now + 0.35);
+
+    gainNode.gain.setValueAtTime(0.2, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.35);
+  }
+
+  public playDimensionalRiftPulse() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sine';
+    const now = this.audioCtx.currentTime;
+
+    // Ethereal phase warp sweep (300Hz -> 950Hz -> 180Hz)
+    osc.frequency.setValueAtTime(300, now);
+    osc.frequency.exponentialRampToValueAtTime(950, now + 0.2);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.5);
+
+    gainNode.gain.setValueAtTime(0.18, now);
+    gainNode.gain.linearRampToValueAtTime(0.01, now + 0.5);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.5);
+  }
+
+  public playSingularityCollapse() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sawtooth';
+    const now = this.audioCtx.currentTime;
+
+    // Massive implosion rumble: High pitch sweep in -> massive sub-bass rumble out (600Hz -> 50Hz -> 20Hz)
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+    osc.frequency.exponentialRampToValueAtTime(20, now + 0.7);
+
+    gainNode.gain.setValueAtTime(0.28, now);
+    gainNode.gain.setValueAtTime(0.28, now + 0.2);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.7);
+  }
 }
 
 // Singleton instance export
