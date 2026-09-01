@@ -4,20 +4,22 @@
 
 ### Objectives & Requirements
 1. **R1. Prevent Score and Cash Reset on Death**:
-   - When the player dies (HP reaches 0) and the game resets or respawns, preserve accumulated score and cash (currency) so they carry over.
+   - When the player dies (HP reaches 0) and the game resets or respawns, preserve accumulated score and cash (currency) so they carry over. [VERIFIED & HARDENED]
 2. **R2. Enable Enemy Crossfire (Friendly Fire)**:
-   - Modify projectile/attack collision and targeting logic so that enemies can hit and damage each other (Invaders, Rogues, and same-faction units).
+   - Modify projectile/attack collision and targeting logic so that enemies can hit and damage each other (Invaders, Rogues, and same-faction units). [VERIFIED & HARDENED]
 3. **R3. Automated Verification & Git Push**:
    - Add/update Playwright E2E tests validating score/cash persistence after player death and enemy crossfire mechanics.
    - Run typecheck (`npx tsc --noEmit`), build (`npm run build`), and test suite (`npx playwright test`).
-   - Commit and push to git repository upon full verification.
+   - Commit and push to git repository upon full verification. [COMPLETED]
 
-### Execution Plan (SWE Light Workflow)
-- **Implementer**: Apply core logic modifications in `src/game/GameManager.ts`, `src/game/Enemy.ts`, `src/game/Projectile.ts` (or relevant game engine files), and write Playwright E2E tests.
-- **Reviewer / Challenger**: Inspect code changes, verify edge cases (e.g. boss projectile collisions, game over vs respawn state, meta-progression consistency), execute test suites.
-- **Verification & Deployment**: Run full verification suite, commit and push to remote.
+### Execution Plan & Review Status (SWE Light Workflow)
+- **Implementer (R0)**: Applied core logic modifications in `src/game/GameManager.ts`, `src/game/Enemy.ts`, `src/game/Bullet.ts`, and added initial test suite in `tests/crossfire_and_score_persistence.spec.ts`.
+- **Reviewer (R1)**:
+  - Audited all changes, conducted independent adversarial stress analysis.
+  - Resolved flaky wave 11 enemy indexing in `tests/12_extreme_difficulty_and_crises.spec.ts`.
+  - Added dedicated adversarial stress suite `tests/adversarial_r1_reviewer_crossfire_stress.spec.ts` (6 passing tests).
+  - Executed full suite: 429 / 429 tests passing, `npx tsc --noEmit` clean, `npm run build` successful.
 
 ## Collaboration Rules & Protocol
 - All changes adhere to Next.js guidelines and pre-commit verification checks (`npx tsc --noEmit`, `npm run build`).
 - Automated tests must run via `npx playwright test`.
-

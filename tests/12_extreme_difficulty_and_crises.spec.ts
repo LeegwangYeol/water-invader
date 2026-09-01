@@ -682,7 +682,8 @@ test.describe('Milestone M4: Extreme Difficulty Scaling & Emergency Crisis Suite
       // Advance to Wave 11
       gm.startNextWave();
       const wave11Level = gm.level; // 11
-      const wave11EnemyHp = gm.enemies[0]?.hp; // 18
+      const normalEnemy = gm.enemies.find((e: any) => e.type === 0) || gm.enemies[0];
+      const wave11EnemyHp = normalEnemy?.hp; // 18
 
       return {
         wave9EnemyCount,
