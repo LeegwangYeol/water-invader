@@ -19,7 +19,13 @@
   - Resolved flaky wave 11 enemy indexing in `tests/12_extreme_difficulty_and_crises.spec.ts`.
   - Added dedicated adversarial stress suite `tests/adversarial_r1_reviewer_crossfire_stress.spec.ts` (6 passing tests).
   - Executed full suite: 429 / 429 tests passing, `npx tsc --noEmit` clean, `npm run build` successful.
+- **Reviewer (R2)**:
+  - Conducted deep adversarial verification across barricade penetration, helper drone crossfire absorption, post-death shop upgrade currency persistence, and mid-air bullet interception.
+  - Added dedicated 6-test suite `tests/adversarial_r2_reviewer_deep_crossfire.spec.ts` (6 passing tests).
+  - Hardened `tests/adversarial_challenger_m1_m2_stress.spec.ts` against post-activation crossfire diver attrition.
+  - Executed full test suite: 435 / 435 tests passing across 44 spec files, `npx tsc --noEmit` clean, `npm run build` successful.
 
 ## Collaboration Rules & Protocol
 - All changes adhere to Next.js guidelines and pre-commit verification checks (`npx tsc --noEmit`, `npm run build`).
 - Automated tests must run via `npx playwright test`.
+

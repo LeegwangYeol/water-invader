@@ -84,8 +84,8 @@ test.describe('Adversarial Stress Harness: Milestone M1 & M2 (Stage 10+ Scaling 
         gm.triggerCrisis('TITAN_HORDE');
         const enemiesBeforeTitan = gm.enemies.length;
 
-        // Advance 2.2s (132 frames) to complete warning and trigger active Titan Horde
-        for (let f = 0; f < 132; f++) gm.update(1 / 60);
+        // Advance 2.02s (121 frames) to complete warning and trigger active Titan Horde spawn
+        for (let f = 0; f < 121; f++) gm.update(1 / 60);
 
         const titanBoss = gm.enemies.find((e: any) => e.type === 2); // BOSS = 2
         const shieldedCount = gm.enemies.filter((e: any) => e.type === 5).length; // SHIELDED = 5
