@@ -873,7 +873,7 @@ export default function GameCanvas() {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
+    <div className="relative flex flex-col items-center justify-center w-full max-w-[800px] mx-auto">
       {/* Top HUD (Memoized) */}
       <TopHUD
         score={score}

@@ -44,7 +44,7 @@ test.describe('Adversarial Challenger M3-1: F-10 (Aspect Ratio), F-11 (HiDPI / R
           expect(canvasRatio).toBeGreaterThanOrEqual(0.73);
           expect(canvasRatio).toBeLessThanOrEqual(0.77);
           // Verify canvas width does not exceed max-w-2xl container (672px + margin)
-          expect(canvasBox.width).toBeLessThanOrEqual(672 + 20);
+          expect(canvasBox.width).toBeLessThanOrEqual(800 + 20);
         }
       });
     }
