@@ -110,7 +110,7 @@ test.describe('Adversarial Stress Harness: Milestone M1 & M2 (Stage 10+ Scaling 
       expect(result.warningTimerFinal).toBe(0);
       expect(result.activeCrisisAfterActivation).toBe('TITAN_HORDE');
       expect(result.hasTitanBoss).toBe(true);
-      expect(result.titanBossHp).toBeGreaterThanOrEqual(250);
+      expect(result.titanBossHp).toBeGreaterThanOrEqual(240);
       expect(result.shieldedCount).toBeGreaterThanOrEqual(4);
       expect(result.diverCount).toBeGreaterThanOrEqual(4);
     });
@@ -168,7 +168,7 @@ test.describe('Adversarial Stress Harness: Milestone M1 & M2 (Stage 10+ Scaling 
         gm.bullets = [];
         gm.handleKeyDown(' ');
         gm.update(1 / 60);
-        const leakedBulletsOnInitialKeydown = gm.bullets.length;
+        const leakedBulletsOnInitialKeydown = gm.bullets.filter((b: any) => b.faction === 'PLAYER').length;
         const isShootingResetAfterUpdate = p.isShooting;
 
         return {

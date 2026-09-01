@@ -222,3 +222,62 @@ Verify that the rendering logic compiles and doesn't break existing tests using 
 - [ ] Running `npx playwright test` passes without errors.
 - [ ] Changes are successfully committed to Git and pushed to the remote repository.
 >>>>>>> c32f90e (test: add adversarial reviewer graphics integrity test suite and verify 100% zero-raster enemy rendering)
+
+## Follow-up — 2026-08-31T09:15:47Z
+
+This is a massive difficulty rebalancing and event scripting update for the Next.js "Water Invader" project. Use a very large team of agents.
+
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Extreme Difficulty Scaling (Stage 10+)
+The player currently becomes nearly invincible at max level. Drastically rebalance the game so that Stage 10 onwards poses a severe and legitimate threat to a fully upgraded player. Adjust enemy HP, damage, speed, and spawn numbers to match the player's max-level firepower.
+
+### R2. Emergency Waves & Crises
+Introduce massive enemy hordes and unpredictable "Emergency Waves" or severe crisis events starting from Stage 10. These crises must create a significant sense of danger and require the player to actively manage the overwhelming threat.
+
+### R3. Data-Driven Balancing
+Run simulations and gather game logs/data to empirically tune the difficulty. Ensure the balance is challenging but mathematically possible.
+
+### R4. Automated Verification & Git Push
+Develop and test all changes using a very large team of agents. Run and pass the Playwright E2E test suite to verify the logic and balance constraints. Once tests pass, commit the changes and push them to the repository.
+
+## Acceptance Criteria
+
+### Gameplay Mechanics
+- [ ] Enemy scaling logic is mathematically proven (via simulation logs) to threaten a max-level player from Stage 10 onwards.
+- [ ] At least one new "Emergency Crisis" event is triggered during Stage 10+ gameplay, overwhelming the screen with threats.
+
+### Quality & Deployment
+- [ ] Running `npx playwright test` passes without errors.
+- [ ] Changes are successfully committed to Git and pushed to the remote repository.
+
+## Follow-up — 2026-09-01T08:21:49+09:00
+
+This is a bug fix and feature tweak for the Next.js "Water Invader" project. This is a single self-contained fix; keep it small and focused.
+
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Prevent Score and Cash Reset on Death
+Currently, when the player dies, their accumulated score and cash (currency) are reset or lost. Modify the game logic so that the score and cash are preserved and carry over after the player dies/respawns.
+
+### R2. Enable Enemy Crossfire (Friendly Fire)
+Modify the collision and targeting logic so that enemies can hit and damage each other. The main enemy faction should not just exclusively target the player; their projectiles or attacks should also be capable of hitting other enemies (e.g., 3rd faction units or even their own).
+
+### R3. Automated Verification & Git Push
+Verify that the changes compile and don't break existing logic using the Playwright E2E suite. Add or update tests to explicitly check that cash/score persist after death and that enemies can damage each other. Once verified, commit the changes and push them to the repository.
+
+## Acceptance Criteria
+
+### Gameplay Mechanics
+- [ ] Score and cash values remain intact after the player's HP reaches 0 and the game resets/respawns.
+- [ ] Enemy projectiles/attacks successfully inflict damage on other enemies upon collision.
+
+### Quality & Deployment
+- [ ] Running `npx playwright test` passes without errors.
+- [ ] Changes are successfully committed to Git and pushed to the remote repository.

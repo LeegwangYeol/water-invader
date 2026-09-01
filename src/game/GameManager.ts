@@ -125,7 +125,7 @@ export class GameManager {
     }
   }
 
-  public init() {
+  public init(resetScoreAndCash: boolean = false) {
     if (!this.player) {
       this.player = new Player(this.logicalWidth, this.logicalHeight);
     } else {
@@ -149,8 +149,10 @@ export class GameManager {
       }
     }
     this.particles = [];
-    this.score = 0;
-    this.currency = 0;
+    if (resetScoreAndCash) {
+      this.score = 0;
+      this.currency = 0;
+    }
     this.combo = 0;
     this.level = 1;
     this.shakeTimer = 0;
@@ -1039,11 +1041,11 @@ export class GameManager {
       }
       if (intercepted) continue;
 
-      // 1.3 Bullet vs Enemies (Invaders & Rogues)
+      // 1.3 Bullet vs Enemies (Invaders, Rogues, and Friendly Fire Crossfire)
       for (const enemy of this.enemies) {
         if (enemy.isDead) continue;
-        if (bullet.faction === enemy.faction) continue; // Friendly fire immunity
         if (bullet.hitEntities.has(enemy)) continue;
+        if (bullet.shooter === enemy) continue;
 
         if (bullet.checkCollision(enemy)) {
           bullet.hitEntities.add(enemy);

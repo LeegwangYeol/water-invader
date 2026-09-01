@@ -249,6 +249,9 @@ test.describe('Adversarial Reviewer R2: Visual Rendering Pipeline Stress & Bound
       const gm = (window as any).gameManager;
       const initialPoolSize = gm.particles?.length || 0;
 
+      gm.enemies = [];
+      gm.bullets = [];
+
       // Spawn 100 explosions
       for (let i = 0; i < 100; i++) {
         gm.createExplosion(200 + (i % 20) * 10, 300, '#38bdf8', 25);

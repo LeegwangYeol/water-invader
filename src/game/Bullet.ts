@@ -7,6 +7,7 @@ export class Bullet extends Entity {
   public isInterceptable: boolean = false;
   public hasTriggeredNearMiss: boolean = false;
   public hitEntities: Set<Entity> = new Set<Entity>();
+  public shooter?: Entity;
 
   public get isPlayerBullet(): boolean {
     return this.faction === Faction.PLAYER;

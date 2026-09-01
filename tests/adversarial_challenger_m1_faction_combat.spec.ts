@@ -80,7 +80,7 @@ test.describe('Challenger M1 Adversarial Multi-Faction Verification Suite (teamw
     expect(result.tankTargetMatchesLowestHostile).toBe(true);
   });
 
-  test('EMP-FRIENDLY-FIRE-01: Absolute Same-Faction Friendly Fire Immunity across 3 Factions', async ({ page }) => {
+  test('EMP-FRIENDLY-FIRE-01: Enemy Crossfire & Friendly Fire and Player Self-Immunity', async ({ page }) => {
     const result = await page.evaluate(() => {
       const gm = (window as any).gameManager;
       const EnemyClass = gm.enemies[0].constructor;
@@ -137,15 +137,13 @@ test.describe('Challenger M1 Adversarial Multi-Faction Verification Suite (teamw
       };
     });
 
-    // Verify 0 friendly damage taken
+    // Player takes 0 damage from own bullets
     expect(result.playerHp).toBe(5);
-    expect(result.invaderHp).toBe(5);
-    expect(result.rogueHp).toBe(5);
-
-    // Verify bullets are not consumed by allies
     expect(result.playerBulletsSurviving).toBe(30);
-    expect(result.invaderBulletsSurviving).toBe(30);
-    expect(result.rogueBulletsSurviving).toBe(30);
+
+    // Invader & Rogue take friendly fire from their respective projectiles
+    expect(result.invaderHp).toBeLessThanOrEqual(0);
+    expect(result.rogueHp).toBeLessThanOrEqual(0);
   });
 
   test('EMP-BODY-COLLISION-01: Inter-Faction Enemy-vs-Enemy Physical Body Collision & Mutual Damage', async ({ page }) => {

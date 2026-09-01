@@ -395,9 +395,9 @@ export class Enemy extends Entity {
           targetCenter = { x: px, y: py };
         }
 
-        // Evaluate distance to active Invader enemies
+        // Evaluate distance to active enemies (crossfire targets)
         for (const e of allEnemies) {
-          if (!e.isDead && e.faction === Faction.INVADER) {
+          if (!e.isDead && e !== this) {
             const ex = e.position.x + e.size.width / 2;
             const ey = e.position.y + e.size.height / 2;
             const dist = Math.hypot(ex - spawnX, ey - spawnY);
@@ -429,6 +429,8 @@ export class Enemy extends Entity {
 
         const b = new Bullet(spawnX, spawnY, bulletSpeed, bulletDamage, false, piercing);
         b.faction = Faction.ROGUE;
+        b.shooter = this;
+        b.hitEntities.add(this);
         b.color = '#d946ef'; // Electric Magenta
 
         if (this.type === EnemyType.ROGUE_STALKER) {
@@ -461,6 +463,8 @@ export class Enemy extends Entity {
 
       const b = new Bullet(spawnX, spawnY, bulletSpeed, bulletDamage, false);
       b.faction = this.faction;
+      b.shooter = this;
+      b.hitEntities.add(this);
 
       if (this.type === EnemyType.SNIPER) {
         b.isInterceptable = true;
@@ -476,7 +480,7 @@ export class Enemy extends Entity {
         }
 
         for (const e of allEnemies) {
-          if (!e.isDead && e.faction === Faction.ROGUE) {
+          if (!e.isDead && e !== this) {
             const ex = e.position.x + e.size.width / 2;
             const ey = e.position.y + e.size.height / 2;
             const dist = Math.hypot(ex - spawnX, ey - spawnY);
@@ -491,7 +495,7 @@ export class Enemy extends Entity {
           const dx = targetCenter.x - spawnX;
           const dy = targetCenter.y - spawnY;
           const angle = Math.atan2(dy, dx);
-          const speed = this.level >= 10 ? Math.max(400, bulletSpeed + 50) : 400; // sniper bullets are fast
+          const speed = this.level >= 10 ? Math.max(400, bulletSpeed + 50) : (this.type === EnemyType.SNIPER ? 400 : bulletSpeed);
           b.velocity.x = Math.cos(angle) * speed;
           b.velocity.y = Math.sin(angle) * speed;
         }

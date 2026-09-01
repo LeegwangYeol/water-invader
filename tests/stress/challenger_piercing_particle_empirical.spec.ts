@@ -142,6 +142,7 @@ test.describe('Challenger Empirical Verification: G-01 Piercing & G-04 Particle 
         e.speedX = 0;
         e.speedY = 0;
         e.canEvade = false;
+        e.fireTimer = 9999;
       });
 
       gm.enemies = [enemy1, enemy2, enemy3, enemy4];
@@ -251,7 +252,9 @@ test.describe('Challenger Empirical Verification: G-01 Piercing & G-04 Particle 
     const result = await page.evaluate(() => {
       const gm = (window as any).gameManager;
 
-      // Clear existing particles
+      // Clear existing particles and enemies
+      gm.enemies = [];
+      gm.bullets = [];
       gm.particles = [];
       (gm as any).particlePool = [];
 
@@ -310,6 +313,8 @@ test.describe('Challenger Empirical Verification: G-01 Piercing & G-04 Particle 
     const result = await page.evaluate(() => {
       const gm = (window as any).gameManager;
 
+      gm.enemies = [];
+      gm.bullets = [];
       gm.particles = [];
       (gm as any).particlePool = [];
 
@@ -362,6 +367,8 @@ test.describe('Challenger Empirical Verification: G-01 Piercing & G-04 Particle 
   test('G-04 [EMPIRICAL 3]: Reused particles reinitialize state correctly without NaN or stale velocity', async ({ page }) => {
     const result = await page.evaluate(() => {
       const gm = (window as any).gameManager;
+      gm.enemies = [];
+      gm.bullets = [];
       gm.particles = [];
       (gm as any).particlePool = [];
 

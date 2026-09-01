@@ -241,7 +241,7 @@ test.describe('Tier 5 Adversarial Combat Hardening Suite (Milestone M5)', () => 
       expect(result.bulletIsDead).toBe(true);
     });
 
-    test('T5.4 [Piercing] Rogue Mech piercing bullet damages Invaders & ignores friendly Rogues with exact charge conservation', async ({ page }) => {
+    test('T5.4 [Piercing] Rogue Mech piercing bullet damages both Invaders & friendly Rogues with exact charge conservation', async ({ page }) => {
       const result = await page.evaluate(() => {
         const gm = (window as any).gameManager;
         const EnemyClass = (window as any).Enemy || gm.enemies[0].constructor;
@@ -252,10 +252,10 @@ test.describe('Tier 5 Adversarial Combat Hardening Suite (Milestone M5)', () => 
         gm.bullets = [];
 
         // Lineup along Y axis:
-        // Y=150: Invader 1 (Hostile to Rogue) -> Takes 2 damage, piercing: 3 -> 2
-        // Y=220: Rogue Drone (Friendly to Rogue) -> IMMUNE, piercing: stays 2
-        // Y=290: Invader 2 (Hostile to Rogue) -> Takes 2 damage, piercing: 2 -> 1
-        // Y=360: Invader 3 (Hostile to Rogue) -> Takes 2 damage, piercing: 1 -> 0 (bullet dies)
+        // Y=150: Invader 1 -> Takes 2 damage, piercing: 3 -> 2
+        // Y=220: Rogue Drone -> Takes 2 damage (friendly fire), piercing: 2 -> 1
+        // Y=290: Invader 2 -> Takes 2 damage, piercing: 1 -> 0 (bullet dies)
+        // Y=360: Invader 3 -> Untouched as piercing was exhausted on the 3rd entity
 
         const invader1 = new EnemyClass(200, 150, gm.logicalWidth, 1, 0, gm.logicalHeight);
         invader1.faction = FactionEnum.INVADER;
@@ -299,13 +299,13 @@ test.describe('Tier 5 Adversarial Combat Hardening Suite (Milestone M5)', () => 
 
       // Invader 1 damaged (-2)
       expect(result.invader1Hp).toBe(3);
-      // Rogue Drone IMMUNE (friendly fire immunity)
-      expect(result.rogueDroneHp).toBe(5);
+      // Rogue Drone damaged (-2) via friendly fire
+      expect(result.rogueDroneHp).toBe(3);
       // Invader 2 damaged (-2)
       expect(result.invader2Hp).toBe(3);
-      // Invader 3 damaged (-2)
-      expect(result.invader3Hp).toBe(3);
-      // 3 hostile enemies hit -> piercing reduced from 3 to 0 -> bullet dies
+      // Invader 3 untouched because piercing exhausted after 3 entities
+      expect(result.invader3Hp).toBe(5);
+      // 3 enemies hit -> piercing reduced from 3 to 0 -> bullet dies
       expect(result.hitEntitiesSize).toBe(3);
       expect(result.finalPiercing).toBe(0);
       expect(result.bulletIsDead).toBe(true);

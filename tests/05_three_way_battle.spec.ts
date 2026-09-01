@@ -263,7 +263,7 @@ test.describe('Milestone M_TEST: 3-Way Battle System & Dynamic Reinforcements', 
       expect(result.bulletDead).toBe(true);
     });
 
-    test('T1.7 [Hostility] Same-faction immunity: bullets do not damage entities in identical faction', async ({ page }) => {
+    test('T1.7 [Hostility] Enemy crossfire & friendly fire: enemy bullets damage same-faction enemies while player is immune to player bullets', async ({ page }) => {
       const result = await page.evaluate(() => {
         const gm = (window as any).gameManager;
         const EnemyClass = gm.enemies[0].constructor;
@@ -311,13 +311,13 @@ test.describe('Milestone M_TEST: 3-Way Battle System & Dynamic Reinforcements', 
         };
       });
 
-      // Invader should not be damaged by Invader bullet
-      expect(result.invaderHp).toBe(5);
-      expect(result.invaderBulletDead).toBe(false);
+      // Invader should be damaged by Invader bullet (friendly fire)
+      expect(result.invaderHp).toBe(3);
+      expect(result.invaderBulletDead).toBe(true);
 
-      // Rogue should not be damaged by Rogue bullet
-      expect(result.rogueHp).toBe(5);
-      expect(result.rogueBulletDead).toBe(false);
+      // Rogue should be damaged by Rogue bullet (friendly fire)
+      expect(result.rogueHp).toBe(3);
+      expect(result.rogueBulletDead).toBe(true);
 
       // Player should not be damaged by Player bullet
       expect(result.playerHp).toBe(result.initialPlayerHp);
