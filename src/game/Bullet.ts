@@ -37,80 +37,128 @@ export class Bullet extends Entity {
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
+    ctx.save();
     if (this.faction === Faction.PLAYER) {
-      // Player bullet: Bright Cyan with white core / water droplet
+      // -----------------------------------------------------------------
+      // Player Bullet: High-Contrast Pure Water Spear
+      // -----------------------------------------------------------------
       const centerX = this.position.x + this.size.width / 2;
-      
-      // Fake glow for player bullet
-      ctx.fillStyle = '#38bdf8';
+      const rx = this.size.width / 2;
+
+      // 1. High-Contrast Black Perimeter Outline
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(centerX, this.position.y + this.size.height - rx, rx + 0.5, 0, Math.PI);
+      ctx.lineTo(centerX, this.position.y - 1);
+      ctx.closePath();
+      ctx.stroke();
+
+      // 2. Outer Glow Halo
       ctx.globalAlpha = 0.5;
-      ctx.beginPath();
-      ctx.arc(centerX, this.position.y + this.size.height - 3, this.size.width * 0.8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw as a water drop
-      ctx.globalAlpha = 1.0;
       ctx.fillStyle = '#38bdf8';
       ctx.beginPath();
-      ctx.arc(centerX, this.position.y + this.size.height, this.size.width / 2, 0, Math.PI);
-      ctx.moveTo(this.position.x, this.position.y + this.size.height);
-      ctx.lineTo(centerX, this.position.y);
-      ctx.lineTo(this.position.x + this.size.width, this.position.y + this.size.height);
+      ctx.arc(centerX, this.position.y + this.size.height - rx, this.size.width * 0.9, 0, Math.PI * 2);
       ctx.fill();
 
-      // White core highlight
-      ctx.fillStyle = '#ffffff';
-      ctx.globalAlpha = 0.8;
+      // 3. Bright Cyan Droplet Body
+      ctx.globalAlpha = 1.0;
+      ctx.fillStyle = '#00e5ff';
       ctx.beginPath();
-      ctx.arc(centerX, this.position.y + this.size.height * 0.6, this.size.width * 0.25, 0, Math.PI * 2);
+      ctx.arc(centerX, this.position.y + this.size.height - rx, rx, 0, Math.PI);
+      ctx.lineTo(centerX, this.position.y);
+      ctx.closePath();
       ctx.fill();
+
+      // 4. Solid White Core Highlight
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(centerX, this.position.y + this.size.height * 0.6, this.size.width * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+
     } else if (this.faction === Faction.ROGUE) {
-      // Rogue bullet: Neon Lime (#84cc16) outer glow with bright Amber (#fef08a / #f59e0b) inner core
+      // -----------------------------------------------------------------
+      // Rogue Bullet: 4-Tier Neon Lime / Amber Energy Orb
+      // -----------------------------------------------------------------
       const centerX = this.position.x + this.size.width / 2;
       const centerY = this.position.y + this.size.height / 2;
       const radius = this.size.width / 2;
 
-      // Fake Glow Outer
+      // Tier 1: 1.5px Black Perimeter Stroke Outline
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius + 1.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Tier 2: Outer Glow
       ctx.globalAlpha = 0.6;
       ctx.fillStyle = '#84cc16';
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 1.6, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius * 1.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Mid glow
-      ctx.globalAlpha = 0.85;
+      // Tier 3: Saturated Shell (Lime & Amber Ring)
+      ctx.globalAlpha = 1.0;
+      ctx.fillStyle = '#84cc16';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.fillStyle = '#f59e0b';
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 1.0, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius * 0.65, 0, Math.PI * 2);
       ctx.fill();
 
-      // Inner bright amber/yellow core
-      ctx.globalAlpha = 1.0;
-      ctx.fillStyle = '#fef08a';
+      // Tier 4: White-Hot Core
+      ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 0.5, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius * 0.35, 0, Math.PI * 2);
       ctx.fill();
+
     } else {
-      // Enemy/Invader bullet (Intense glowing orb: red/orange or purple for sniper/interceptable)
+      // -----------------------------------------------------------------
+      // Invader / Boss / Sniper Bullet: 4-Tier High-Contrast Plasma Bolt
+      // -----------------------------------------------------------------
       const centerX = this.position.x + this.size.width / 2;
       const centerY = this.position.y + this.size.height / 2;
       const radius = this.size.width / 2;
-      
-      // Fake Glow Outer
+      const shellColor = this.isInterceptable ? '#a855f7' : (this.color || '#ef4444');
+
+      // Tier 1: 1.5px Black Perimeter Stroke Outline
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius + 1.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Tier 2: Outer Glow
       ctx.globalAlpha = 0.5;
-      ctx.fillStyle = this.isInterceptable ? '#a855f7' : (this.color || '#ef4444');
+      ctx.fillStyle = shellColor;
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius * 1.5, 0, Math.PI * 2);
       ctx.fill();
-      
-      // Inner bright core
+
+      // Tier 3: Saturated Color Shell
       ctx.globalAlpha = 1.0;
-      ctx.fillStyle = this.isInterceptable ? '#f3e8ff' : '#ffffff';
+      ctx.fillStyle = shellColor;
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 0.6, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (this.isInterceptable) {
+        ctx.strokeStyle = '#f3e8ff';
+        ctx.lineWidth = 1.0;
+        ctx.stroke();
+      }
+
+      // Tier 4: Solid White Core
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius * 0.45, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.globalAlpha = 1.0;
+    ctx.restore();
   }
 }
 

@@ -12,6 +12,7 @@ export class Player extends Entity {
   public baseFireRate: number = 0.5; // seconds between shots
   public multiShot: number = 1; // number of projectiles
   public piercing: number = 1; // new weapon upgrade
+  public hasAcidShield: boolean = false; // Acid Rain immunity shield
   public ultimateGauge: number = 0; // 0 to 100
   
   // Dynamic mechanics
@@ -291,6 +292,26 @@ export class Player extends Entity {
       ctx.lineTo(cx - 5, cy + 5);
       ctx.lineTo(cx, cy + 15);
       ctx.stroke();
+    }
+
+    // Acid Shield Protective Canopy Arc
+    if (this.hasAcidShield) {
+      const shieldPulse = (Math.sin(this.timeAlive * 4) + 1) * 0.5;
+      ctx.save();
+      ctx.strokeStyle = `rgba(56, 189, 248, ${0.7 + shieldPulse * 0.3})`;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      // Dome arc over the player vessel
+      ctx.arc(cx, cy - 2, w + 10, Math.PI * 1.15, Math.PI * 1.85);
+      ctx.stroke();
+
+      // Hydrophobic shimmer glow
+      ctx.strokeStyle = `rgba(163, 230, 53, ${0.4 + shieldPulse * 0.4})`;
+      ctx.lineWidth = 1.0;
+      ctx.beginPath();
+      ctx.arc(cx, cy - 2, w + 13, Math.PI * 1.2, Math.PI * 1.8);
+      ctx.stroke();
+      ctx.restore();
     }
 
     ctx.restore();

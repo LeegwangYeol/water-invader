@@ -1,4 +1,4 @@
-import { GameState, Faction, CrisisType, CrisisState, HazardProjectile } from './types';
+import { GameState, Faction, CrisisType, CrisisState, HazardProjectile, SolarFlareBeam } from './types';
 import { Player } from './Player';
 import { Enemy, EnemyType } from './Enemy';
 import { Bullet } from './Bullet';
@@ -30,7 +30,7 @@ export class GameManager {
   
   // Progression
   public score: number = 0;
-  public currency: number = 0; // Pure Water
+  public currency: number = 150; // Starter Pure Water allowance
   public combo: number = 0;
   private comboTimer: number = 0;
   public level: number = 1;
@@ -52,11 +52,13 @@ export class GameManager {
     warningTimer: 0,
     bannerText: null,
     hazardProjectiles: [],
+    solarFlares: [],
     empSuppressionActive: false,
     empTimer: 0,
   };
   public crisisTimer: number = 0;
   public hazardProjectiles: HazardProjectile[] = [];
+  public solarFlares: SolarFlareBeam[] = [];
   
   // End-Game Crisis Incursion Engine (Stage 15+)
   public endGameCrisis: EndGameCrisis | null = null;
@@ -81,7 +83,7 @@ export class GameManager {
   public onStateChange?: (state: GameState) => void;
   public onScoreChange?: (score: number, currency: number, combo: number, wave: number, ultimateGauge: number, invaderCount?: number, rogueCount?: number) => void;
   public onPlayerHpChange?: (hp: number) => void;
-  public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number }) => void;
+  public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean }) => void;
   public onCrisisEvent?: (crisis: CrisisState | null) => void;
   public onEndGameCrisisEvent?: (crisis: EndGameCrisisState | null) => void;
 
@@ -133,10 +135,22 @@ export class GameManager {
     }
   }
 
-  public init(resetScoreAndCash: boolean = false) {
+  public init(
+    resetScoreAndCashOrOptions: boolean | { resetScoreAndCash?: boolean; preserveUpgrades?: boolean } = false,
+    preserveUpgrades: boolean = false
+  ) {
+    let resetScoreAndCash = false;
+    let shouldPreserve = preserveUpgrades;
+    if (typeof resetScoreAndCashOrOptions === 'object' && resetScoreAndCashOrOptions !== null) {
+      resetScoreAndCash = !!resetScoreAndCashOrOptions.resetScoreAndCash;
+      shouldPreserve = !!resetScoreAndCashOrOptions.preserveUpgrades;
+    } else if (typeof resetScoreAndCashOrOptions === 'boolean') {
+      resetScoreAndCash = resetScoreAndCashOrOptions;
+    }
+
     if (!this.player) {
       this.player = new Player(this.logicalWidth, this.logicalHeight);
-    } else {
+    } else if (!shouldPreserve) {
       this.player.hp = 3;
       this.player.stressLevel = 0;
       this.player.suppressionLevel = 0;
@@ -147,6 +161,16 @@ export class GameManager {
       this.player.baseFireRate = 0.5;
       this.player.multiShot = 1;
       this.player.piercing = 1;
+      this.player.hasAcidShield = false;
+    } else {
+      // Preserve player upgrades (baseFireRate, multiShot, piercing, maxHp, hp, hasAcidShield)
+      this.player.hp = Math.max(3, this.player.hp);
+      this.player.position.x = this.logicalWidth / 2 - 25;
+      this.player.position.y = this.logicalHeight - 60;
+      this.player.stressLevel = 0;
+      this.player.suppressionLevel = 0;
+      this.player.invincibilityTimer = 0;
+      this.player.ultimateGauge = 0;
     }
     this.clearKeys();
     this.enemies = [];
@@ -159,7 +183,7 @@ export class GameManager {
     this.particles = [];
     if (resetScoreAndCash) {
       this.score = 0;
-      this.currency = 0;
+      this.currency = 150;
     }
     this.combo = 0;
     this.level = 1;
@@ -180,11 +204,13 @@ export class GameManager {
       warningTimer: 0,
       bannerText: null,
       hazardProjectiles: [],
+      solarFlares: [],
       empSuppressionActive: false,
       empTimer: 0,
     };
     this.crisisTimer = 6.0;
     this.hazardProjectiles = [];
+    this.solarFlares = [];
     if (this.onCrisisEvent) this.onCrisisEvent(null);
     
     this.endGameCrisis = null;
@@ -458,7 +484,7 @@ export class GameManager {
   public triggerCrisis(type?: CrisisType) {
     if (this.state !== GameState.PLAYING) return;
     
-    const crisisOptions: CrisisType[] = ['TITAN_HORDE', 'ACID_STORM', 'SWARM_BLITZ', 'EMP_DISRUPTION', 'TOTAL_WAR'];
+    const crisisOptions: CrisisType[] = ['TITAN_HORDE', 'ACID_STORM', 'SWARM_BLITZ', 'EMP_DISRUPTION', 'TOTAL_WAR', 'SOLAR_FLARE'];
     const chosenType = type || crisisOptions[Math.floor(Math.random() * crisisOptions.length)];
 
     let banner = '';
@@ -478,6 +504,9 @@ export class GameManager {
     } else if (chosenType === 'TOTAL_WAR') {
       banner = 'EMERGENCY CRISIS: 3-WAY TOTAL WAR INCURSION!';
       duration = 12.0;
+    } else if (chosenType === 'SOLAR_FLARE') {
+      banner = 'EMERGENCY CRISIS: HIGH-ENERGY SOLAR FLARE SURGE!';
+      duration = 8.0;
     }
 
     this.crisisState = {
@@ -487,10 +516,12 @@ export class GameManager {
       warningTimer: 2.0,
       bannerText: banner,
       hazardProjectiles: [],
+      solarFlares: [],
       empSuppressionActive: false,
       empTimer: 0,
     };
     this.hazardProjectiles = [];
+    this.solarFlares = [];
 
     this.warningMessage = banner;
     this.warningText = banner;
@@ -597,6 +628,16 @@ export class GameManager {
 
       this.triggerScreenShake(1.2);
       soundManager.playThirdFactionWarning();
+    } else if (type === 'SOLAR_FLARE') {
+      // 6. SOLAR_FLARE: High-energy vertical warning telegraphs that ignite into sweeping plasma columns
+      soundManager.playCrisisAlarm();
+      this.triggerScreenShake(0.8);
+      this.solarFlares = [
+        { x: 50 + Math.random() * 80, width: 70, chargeTimer: 1.2, chargeDuration: 1.2, activeTimer: 1.5, activeDuration: 1.5, damageDealt: false, isDead: false },
+        { x: 230 + Math.random() * 80, width: 70, chargeTimer: 1.8, chargeDuration: 1.8, activeTimer: 1.5, activeDuration: 1.5, damageDealt: false, isDead: false },
+        { x: 410 + Math.random() * 80, width: 70, chargeTimer: 2.4, chargeDuration: 2.4, activeTimer: 1.5, activeDuration: 1.5, damageDealt: false, isDead: false },
+      ];
+      this.crisisState.solarFlares = this.solarFlares;
     }
 
     this.updateScoreUI();
@@ -822,6 +863,22 @@ export class GameManager {
           }
         }
 
+        // Handle Solar Flare dynamic spawns during active crisis
+        if (this.crisisState.activeCrisis === 'SOLAR_FLARE' && this.crisisState.timer > 2.0) {
+          if (this.solarFlares.filter(f => !f.isDead).length < 2 && Math.random() < 0.04) {
+            this.solarFlares.push({
+              x: 30 + Math.random() * (this.logicalWidth - 110),
+              width: 70,
+              chargeTimer: 1.2,
+              chargeDuration: 1.2,
+              activeTimer: 1.5,
+              activeDuration: 1.5,
+              damageDealt: false,
+              isDead: false,
+            });
+          }
+        }
+
         if (this.crisisState.timer <= 0) {
           this.crisisState.activeCrisis = null;
           this.crisisState.bannerText = null;
@@ -857,16 +914,22 @@ export class GameManager {
               hz.y - hz.radius <= py + ph
             ) {
               hz.isDead = true;
-              this.player.hp -= hz.damage;
-              this.player.hitFlashTimer = 0.08;
-              this.player.invincibilityTimer = 1.0;
-              soundManager.playPlayerHit();
-              soundManager.playAcidStormSound();
-              this.createExplosion(hz.x, hz.y, '#84cc16', 15);
-              this.triggerScreenShake(0.3);
-              if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
-              if (this.player.hp <= 0) {
-                this.gameOver("정수기가 산성 폭풍에 부식되었습니다. (체력 소진)");
+              if (this.player.hasAcidShield) {
+                // Acid Shield Active: Neutralize droplet, spawn spark/splash particles & play deflection sound
+                soundManager.playShieldDeflect();
+                this.createExplosion(hz.x, hz.y, '#38bdf8', 10);
+              } else {
+                this.player.hp -= hz.damage;
+                this.player.hitFlashTimer = 0.08;
+                this.player.invincibilityTimer = 1.0;
+                soundManager.playPlayerHit();
+                soundManager.playAcidStormSound();
+                this.createExplosion(hz.x, hz.y, '#84cc16', 15);
+                this.triggerScreenShake(0.3);
+                if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+                if (this.player.hp <= 0) {
+                  this.gameOver("정수기가 산성 폭풍에 부식되었습니다. (체력 소진)");
+                }
               }
             }
           }
@@ -902,6 +965,50 @@ export class GameManager {
         }
         this.hazardProjectiles.length = hzWrite;
         this.crisisState.hazardProjectiles = this.hazardProjectiles;
+      }
+
+      // Update and collide Solar Flare beams
+      if (this.solarFlares.length > 0) {
+        for (let i = 0; i < this.solarFlares.length; i++) {
+          const flare = this.solarFlares[i];
+          if (flare.isDead) continue;
+
+          if (flare.chargeTimer > 0) {
+            flare.chargeTimer -= deltaTime;
+          } else if (flare.activeTimer > 0) {
+            flare.activeTimer -= deltaTime;
+            
+            // Solar flare beam hits player
+            if (this.player && !this.isGodMode && this.player.invincibilityTimer <= 0 && !flare.damageDealt) {
+              const px = this.player.position.x;
+              const pw = this.player.size.width;
+              if (px + pw >= flare.x && px <= flare.x + flare.width) {
+                flare.damageDealt = true;
+                this.player.hp -= 1;
+                this.player.hitFlashTimer = 0.08;
+                this.player.invincibilityTimer = 1.0;
+                soundManager.playPlayerHit();
+                this.createExplosion(px + pw / 2, this.player.position.y + 10, '#f59e0b', 20);
+                this.triggerScreenShake(0.4);
+                if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+                if (this.player.hp <= 0) {
+                  this.gameOver("정수기가 고에너지 태양 플레어에 소멸되었습니다. (체력 소진)");
+                }
+              }
+            }
+          } else {
+            flare.isDead = true;
+          }
+        }
+
+        let sfWrite = 0;
+        for (let i = 0; i < this.solarFlares.length; i++) {
+          if (!this.solarFlares[i].isDead) {
+            this.solarFlares[sfWrite++] = this.solarFlares[i];
+          }
+        }
+        this.solarFlares.length = sfWrite;
+        this.crisisState.solarFlares = this.solarFlares;
       }
 
       // Entities
@@ -1569,21 +1676,84 @@ export class GameManager {
     this.bullets.forEach(b => b.draw(this.ctx));
     this.particles.forEach(p => p.draw(this.ctx));
 
-    // Hazard Projectiles (Acid Storm)
+    // Hazard Projectiles (Acid Storm) - Directional Toxic Teardrops with crisp black border
     if (this.hazardProjectiles.length > 0) {
       for (const hz of this.hazardProjectiles) {
         if (hz.isDead) continue;
         this.ctx.save();
-        this.ctx.fillStyle = hz.color || '#a3e635';
+        
+        // 1. Black outer perimeter stroke (1.5px) for high contrast
+        this.ctx.strokeStyle = '#000000';
+        this.ctx.lineWidth = 1.5;
         this.ctx.beginPath();
-        this.ctx.arc(hz.x, hz.y, hz.radius, 0, Math.PI * 2);
+        this.ctx.arc(hz.x, hz.y + hz.radius * 0.4, hz.radius, 0, Math.PI);
+        this.ctx.lineTo(hz.x, hz.y - hz.radius * 1.5);
+        this.ctx.closePath();
+        this.ctx.stroke();
+
+        // 2. Saturated Toxic Acid Body
+        this.ctx.fillStyle = hz.color || '#a3e635';
         this.ctx.fill();
 
-        // Hazard core sizzle
+        // 3. Sizzling White Core Highlight
         this.ctx.fillStyle = '#ffffff';
         this.ctx.beginPath();
-        this.ctx.arc(hz.x, hz.y, hz.radius * 0.4, 0, Math.PI * 2);
+        this.ctx.arc(hz.x, hz.y + hz.radius * 0.3, hz.radius * 0.35, 0, Math.PI * 2);
         this.ctx.fill();
+
+        // 4. Trailing Sizzle Vapor
+        this.ctx.fillStyle = 'rgba(163, 230, 53, 0.4)';
+        this.ctx.beginPath();
+        this.ctx.arc(hz.x, hz.y - hz.radius * 1.8, hz.radius * 0.4, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.restore();
+      }
+    }
+
+    // Solar Flare Hazards
+    if (this.solarFlares.length > 0) {
+      for (const flare of this.solarFlares) {
+        if (flare.isDead) continue;
+        this.ctx.save();
+        if (flare.chargeTimer > 0) {
+          // Warning telegraph vertical indicator
+          const chargeProgress = 1 - (flare.chargeTimer / flare.chargeDuration);
+          const pulse = (Math.sin(chargeProgress * Math.PI * 6) + 1) * 0.5;
+          this.ctx.fillStyle = `rgba(245, 158, 11, ${0.12 + pulse * 0.20})`;
+          this.ctx.fillRect(flare.x, 0, flare.width, this.logicalHeight);
+
+          // Crisp dashed warning telegraph edges
+          this.ctx.strokeStyle = `rgba(239, 68, 68, ${0.6 + pulse * 0.4})`;
+          this.ctx.lineWidth = 2;
+          this.ctx.setLineDash([8, 6]);
+          this.ctx.beginPath();
+          this.ctx.moveTo(flare.x, 0);
+          this.ctx.lineTo(flare.x, this.logicalHeight);
+          this.ctx.moveTo(flare.x + flare.width, 0);
+          this.ctx.lineTo(flare.x + flare.width, this.logicalHeight);
+          this.ctx.stroke();
+          this.ctx.setLineDash([]);
+        } else if (flare.activeTimer > 0) {
+          // Active roaring plasma column
+          const flareAlpha = Math.min(1.0, flare.activeTimer / 0.3);
+          
+          // Outer blazing aura
+          const grad = this.ctx.createLinearGradient(flare.x, 0, flare.x + flare.width, 0);
+          grad.addColorStop(0, `rgba(239, 68, 68, ${0.3 * flareAlpha})`);
+          grad.addColorStop(0.2, `rgba(245, 158, 11, ${0.85 * flareAlpha})`);
+          grad.addColorStop(0.5, `rgba(255, 255, 255, ${0.95 * flareAlpha})`);
+          grad.addColorStop(0.8, `rgba(245, 158, 11, ${0.85 * flareAlpha})`);
+          grad.addColorStop(1, `rgba(239, 68, 68, ${0.3 * flareAlpha})`);
+
+          this.ctx.fillStyle = grad;
+          this.ctx.fillRect(flare.x, 0, flare.width, this.logicalHeight);
+
+          // Black high contrast border edges
+          this.ctx.strokeStyle = '#000000';
+          this.ctx.lineWidth = 1.5;
+          this.ctx.strokeRect(flare.x, 0, flare.width, this.logicalHeight);
+        }
         this.ctx.restore();
       }
     }
@@ -1641,12 +1811,17 @@ export class GameManager {
       this.ctx.fillText(`Barricades: ${this.barricades.length}`, 10, 95);
     }
     
-    // UI overlays that shouldn't shake
+    // UI overlays that shouldn't shake (Calibrated 0.10-0.12 fill alpha with crisp perimeter stroke)
     if (this.warningTimer > 0) {
       const isThirdFaction = (this.warningMessage || this.warningText).includes('ROGUE') || (this.warningMessage || this.warningText).includes('THIRD') || (this.warningMessage || this.warningText).includes('3-WAY');
-      this.ctx.fillStyle = isThirdFaction ? 'rgba(132, 204, 22, 0.25)' : (this.pendingReinforcement === 'ALLY' ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.3)');
+      this.ctx.fillStyle = isThirdFaction ? 'rgba(132, 204, 22, 0.10)' : (this.pendingReinforcement === 'ALLY' ? 'rgba(34, 197, 94, 0.10)' : 'rgba(239, 68, 68, 0.12)');
       this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
       
+      // Crisp 4px perimeter border stroke
+      this.ctx.strokeStyle = isThirdFaction ? 'rgba(132, 204, 22, 0.8)' : (this.pendingReinforcement === 'ALLY' ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)');
+      this.ctx.lineWidth = 4;
+      this.ctx.strokeRect(2, 2, this.logicalWidth - 4, this.logicalHeight - 4);
+
       this.ctx.fillStyle = isThirdFaction ? '#84cc16' : (this.pendingReinforcement === 'ALLY' ? '#4ade80' : '#ef4444');
       this.ctx.font = 'bold 36px sans-serif';
       this.ctx.textAlign = 'center';
@@ -1741,12 +1916,13 @@ export class GameManager {
     }
   }
 
-  public getUpgrades(): { fireRate: number; multiShot: number; piercing: number } {
+  public getUpgrades(): { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean } {
     const fireRateLevel = this.player ? Math.min(5, Math.max(1, Math.round((0.5 - this.player.baseFireRate) / 0.1) + 1)) : 1;
     return {
       fireRate: fireRateLevel,
       multiShot: this.player ? this.player.multiShot : 1,
       piercing: this.player ? this.player.piercing : 1,
+      hasAcidShield: this.player ? !!this.player.hasAcidShield : false,
     };
   }
 
@@ -1758,9 +1934,9 @@ export class GameManager {
   
   // Upgrades
   public upgradeFireRate() {
-    if (this.currency >= 50 && this.player.fireRate > 0.1) {
+    if (this.currency >= 50 && this.getUpgrades().fireRate < 5) {
       this.currency -= 50;
-      this.player.fireRate = Math.max(0.1, this.player.fireRate - 0.1);
+      this.player.fireRate = Math.max(0.1, Number((this.player.fireRate - 0.1).toFixed(2)));
       soundManager.playPowerUp();
       this.updateScoreUI();
       this.updateUpgradesUI();
@@ -1781,6 +1957,16 @@ export class GameManager {
     if (this.currency >= 200 && this.player.piercing < 5) {
       this.currency -= 200;
       this.player.piercing++;
+      soundManager.playPowerUp();
+      this.updateScoreUI();
+      this.updateUpgradesUI();
+    }
+  }
+
+  public upgradeAcidShield() {
+    if (this.currency >= 150 && this.player && !this.player.hasAcidShield) {
+      this.currency -= 150;
+      this.player.hasAcidShield = true;
       soundManager.playPowerUp();
       this.updateScoreUI();
       this.updateUpgradesUI();

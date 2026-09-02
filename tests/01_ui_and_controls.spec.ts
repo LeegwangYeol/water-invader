@@ -96,22 +96,22 @@ test.describe('R1: UI & Controls Verification Suite', () => {
   test('HUD reflect pure water currency changes and enables ALLY(Q) button', async ({ page }) => {
     await page.locator('button', { hasText: 'START GAME' }).click();
 
-    // Check ALLY(Q) initial disabled/dim state (currency is 0 < 50)
+    // Check ALLY(Q) active state with starter 150 pure water allowance (>= 50)
     const allyBtn = page.locator('button', { hasText: 'ALLY(Q)' });
     const initialClass = await allyBtn.getAttribute('class');
-    expect(initialClass).toContain('opacity-50');
+    expect(initialClass).toContain('bg-green-600');
 
     // Add currency via F5 cheat
     await page.keyboard.press('F5');
 
     // Verify currency updated in GameManager and HUD
     const currency = await page.evaluate(() => (window as any).gameManager.currency);
-    expect(currency).toBe(1000);
+    expect(currency).toBe(1150);
 
-    const waterText = page.locator('p', { hasText: /1000/ });
+    const waterText = page.locator('p', { hasText: /1150/ });
     await expect(waterText).toBeVisible();
 
-    // Now ALLY(Q) should be active (bg-green-600)
+    // ALLY(Q) remains active
     const updatedClass = await allyBtn.getAttribute('class');
     expect(updatedClass).toContain('bg-green-600');
   });

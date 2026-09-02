@@ -8,7 +8,7 @@ export class SoundManager {
   }
 
   public init() {
-    if (!this.audioCtx) {
+    if (!this.audioCtx && typeof window !== 'undefined') {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioContextClass) {
         this.audioCtx = new AudioContextClass();
@@ -550,6 +550,35 @@ export class SoundManager {
 
     osc.start();
     osc.stop(now + 0.7);
+  }
+
+  public playShieldDeflect() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sine';
+    const now = this.audioCtx.currentTime;
+
+    // High ping metallic deflect sound (1600Hz -> 800Hz)
+    osc.frequency.setValueAtTime(1600, now);
+    osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+
+    gainNode.gain.setValueAtTime(0.2, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start();
+    osc.stop(now + 0.1);
   }
 }
 

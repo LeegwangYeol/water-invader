@@ -83,18 +83,18 @@ export class EndGameCrisis {
     this.sovereign = new CrisisSovereign(sovereignX, sovereignY, this.archetype, 2500, 1500);
     this.sovereign.setPhase(CrisisPhase.INCURSION);
 
-    // Initialize 2 Flanking Dimensional Rift Anchors (600 HP each)
+    // Initialize 2 Flanking Dimensional Rift Anchors (600 HP each) differentiated per archetype
     const riftLeftX = 50;
     const riftRightX = this.logicalWidth - 130;
     const riftY = 170;
     
-    const leftRift = new DimensionalRift(riftLeftX, riftY, 0, 600);
-    const rightRift = new DimensionalRift(riftRightX, riftY, 1, 600);
+    const leftRift = new DimensionalRift(riftLeftX, riftY, 0, 600, this.archetype);
+    const rightRift = new DimensionalRift(riftRightX, riftY, 1, 600, this.archetype);
     leftRift.setSovereignTarget(this.sovereign.getCoreCenter());
     rightRift.setSovereignTarget(this.sovereign.getCoreCenter());
     
     this.riftAnchors = [leftRift, rightRift];
-    this.vortexPullIntensity = 0.3;
+    this.vortexPullIntensity = this.archetype === CrisisArchetype.VOID_SOVEREIGN ? 0.3 : 0.1;
 
     if (this.callbacks.onPhaseChange) {
       this.callbacks.onPhaseChange(this.phase, CrisisPhase.DEFEATED);
@@ -142,18 +142,23 @@ export class EndGameCrisis {
 
     const playerPos = player ? player.position : { x: this.logicalWidth / 2, y: this.logicalHeight - 50 };
 
-    // 1. Update Dimensional Rifts
+    // 1. Update Dimensional Rifts / Brood Sacks / Pylons
     let activeRiftsCount = 0;
     for (let i = 0; i < this.riftAnchors.length; i++) {
       const rift = this.riftAnchors[i];
       if (!rift.isDead) {
-        rift.update(deltaTime);
+        const spawned = rift.update(deltaTime, player, bullets);
+        if (spawned.length > 0) {
+          bullets.push(...spawned);
+        }
         activeRiftsCount++;
 
-        // Apply gravitational pull on player & player bullets
-        this.applyRiftGravity(rift, player, bullets, deltaTime);
+        // Apply gravitational pull on player & player bullets for Void Sovereign
+        if (this.archetype === CrisisArchetype.VOID_SOVEREIGN) {
+          this.applyRiftGravity(rift, player, bullets, deltaTime);
+        }
 
-        // Spawn ambient void particles
+        // Spawn ambient particles
         if (Math.random() < 0.3 && particles.length < 400) {
           const center = rift.getSingularityCenter();
           const p = new Particle(center.x + (Math.random() * 20 - 10), center.y + (Math.random() * 20 - 10), rift.color, 0.6);

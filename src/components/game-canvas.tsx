@@ -12,10 +12,11 @@ import { soundManager } from '../game/SoundManager';
 interface ShopUpgradePanelProps {
   currency: number;
   hp: number;
-  upgrades: { fireRate: number; multiShot: number; piercing: number };
+  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean };
   onBuyFireRate: () => void;
   onBuyMultiShot: () => void;
   onBuyPiercing: () => void;
+  onBuyAcidShield?: () => void;
   onRepairTank: () => void;
   lang: string;
 }
@@ -27,6 +28,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
   onBuyFireRate,
   onBuyMultiShot,
   onBuyPiercing,
+  onBuyAcidShield,
   onRepairTank,
   lang,
 }: ShopUpgradePanelProps) {
@@ -73,7 +75,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
         >{upgrades.multiShot >= 5 ? 'MAX' : '100 💧'}</button>
       </div>
       
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-4">
         <div>
           <p className="font-bold">Piercing (Lv. {upgrades.piercing})</p>
           <p className="text-xs sm:text-sm text-slate-400">Bullets penetrate enemies</p>
@@ -83,6 +85,19 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
           disabled={currency < 200 || upgrades.piercing >= 5}
           className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
         >{upgrades.piercing >= 5 ? 'MAX' : '200 💧'}</button>
+      </div>
+
+      {/* Acid Shield / 내산성 코팅 */}
+      <div className="flex justify-between items-center">
+        <div>
+          <p className="font-bold">{t('내산성 코팅 (ACID SHIELD)', 'Acid Shield Coating')}</p>
+          <p className="text-xs sm:text-sm text-slate-400">{t('산성 폭풍의 유독성 물방울을 무효화합니다', 'Neutralize toxic acid storm droplets')}</p>
+        </div>
+        <button 
+          onClick={onBuyAcidShield}
+          disabled={currency < 150 || !!upgrades.hasAcidShield}
+          className="px-4 py-2 bg-lime-600 hover:bg-lime-500 disabled:bg-slate-700 rounded font-bold transition-colors"
+        >{upgrades.hasAcidShield ? t('보유중', 'OWNED') : '150 💧'}</button>
       </div>
     </div>
   );
@@ -258,6 +273,7 @@ interface MenuOverlayProps {
   highScore: number;
   deferredPrompt: any;
   onStartGame: () => void;
+  onOpenShop: () => void;
   onOpenManual: () => void;
   onInstallClick: () => void;
 }
@@ -266,6 +282,7 @@ export const MenuOverlay = React.memo(function MenuOverlay({
   highScore,
   deferredPrompt,
   onStartGame,
+  onOpenShop,
   onOpenManual,
   onInstallClick,
 }: MenuOverlayProps) {
@@ -283,6 +300,12 @@ export const MenuOverlay = React.memo(function MenuOverlay({
           className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl sm:text-2xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:scale-105"
         >
           START GAME
+        </button>
+        <button 
+          onClick={onOpenShop}
+          className="px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded text-lg transition-all shadow-[0_0_15px_rgba(245,158,11,0.5)] hover:scale-105"
+        >
+          ARMORY / SHOP (정비소)
         </button>
         <button 
           onClick={onOpenManual}
@@ -374,12 +397,14 @@ export const ManualModal = React.memo(function ManualModal({
 interface ShopModalProps {
   currency: number;
   hp: number;
-  upgrades: { fireRate: number; multiShot: number; piercing: number };
+  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean };
   onBuyFireRate: () => void;
   onBuyMultiShot: () => void;
   onBuyPiercing: () => void;
+  onBuyAcidShield?: () => void;
   onRepairTank: () => void;
   onNextWave: () => void;
+  isPreGame?: boolean;
   lang: string;
 }
 
@@ -390,14 +415,22 @@ export const ShopModal = React.memo(function ShopModal({
   onBuyFireRate,
   onBuyMultiShot,
   onBuyPiercing,
+  onBuyAcidShield,
   onRepairTank,
   onNextWave,
+  isPreGame,
   lang,
 }: ShopModalProps) {
+  const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
+
   return (
     <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
-      <h1 className="text-4xl sm:text-5xl font-black text-blue-400 mb-2">WAVE CLEARED</h1>
-      <p className="text-xl sm:text-2xl text-white mb-8">Prepare for next wave!</p>
+      <h1 className="text-4xl sm:text-5xl font-black text-blue-400 mb-2">
+        {isPreGame ? t('정비소 / 무기고', 'ARMORY & WORKSHOP') : t('웨이브 클리어', 'WAVE CLEARED')}
+      </h1>
+      <p className="text-xl sm:text-2xl text-white mb-8">
+        {isPreGame ? t('출격 전 무기와 방어막을 업그레이드하세요!', 'Prepare weapons & shields before deploying!') : t('다음 웨이브를 준비하세요!', 'Prepare for next wave!')}
+      </p>
       
       <ShopUpgradePanel
         currency={currency}
@@ -406,6 +439,7 @@ export const ShopModal = React.memo(function ShopModal({
         onBuyFireRate={onBuyFireRate}
         onBuyMultiShot={onBuyMultiShot}
         onBuyPiercing={onBuyPiercing}
+        onBuyAcidShield={onBuyAcidShield}
         onRepairTank={onRepairTank}
         lang={lang}
       />
@@ -414,7 +448,7 @@ export const ShopModal = React.memo(function ShopModal({
         onClick={onNextWave}
         className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-4"
       >
-        NEXT WAVE
+        {isPreGame ? t('웨이브 1 출격', 'DEPLOY TO WAVE 1') : t('다음 웨이브', 'NEXT WAVE')}
       </button>
     </div>
   );
@@ -425,10 +459,11 @@ interface GameOverModalProps {
   currency: number;
   hp: number;
   gameOverReason: string;
-  upgrades: { fireRate: number; multiShot: number; piercing: number };
+  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean };
   onBuyFireRate: () => void;
   onBuyMultiShot: () => void;
   onBuyPiercing: () => void;
+  onBuyAcidShield?: () => void;
   onRepairTank: () => void;
   onPlayAgain: () => void;
   lang: string;
@@ -443,6 +478,7 @@ export const GameOverModal = React.memo(function GameOverModal({
   onBuyFireRate,
   onBuyMultiShot,
   onBuyPiercing,
+  onBuyAcidShield,
   onRepairTank,
   onPlayAgain,
   lang,
@@ -464,6 +500,7 @@ export const GameOverModal = React.memo(function GameOverModal({
         onBuyFireRate={onBuyFireRate}
         onBuyMultiShot={onBuyMultiShot}
         onBuyPiercing={onBuyPiercing}
+        onBuyAcidShield={onBuyAcidShield}
         onRepairTank={onRepairTank}
         lang={lang}
       />
@@ -510,7 +547,8 @@ export default function GameCanvas() {
 
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [lang, setLang] = useState('ko');
-  const [upgrades, setUpgrades] = useState({ fireRate: 1, multiShot: 1, piercing: 1 });
+  const [upgrades, setUpgrades] = useState({ fireRate: 1, multiShot: 1, piercing: 1, hasAcidShield: false });
+  const [isPreGameShop, setIsPreGameShop] = useState(false);
 
   const handleToggleMute = useCallback(() => {
     soundManager.init();
@@ -687,7 +725,8 @@ export default function GameCanvas() {
   }, [getSafeStoredHighScore]);
 
   const startGame = useCallback(() => {
-    gameManagerRef.current?.init();
+    setIsPreGameShop(false);
+    gameManagerRef.current?.init(false, true);
     if (gameManagerRef.current) {
       setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
@@ -696,6 +735,18 @@ export default function GameCanvas() {
       }
     }
     gameManagerRef.current?.startGame();
+  }, []);
+
+  const handleOpenPreGameShop = useCallback(() => {
+    if (gameManagerRef.current) {
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+      if (gameManagerRef.current.player) {
+        setHp(gameManagerRef.current.player.hp);
+      }
+    }
+    setIsPreGameShop(true);
+    setGameState(GameState.SHOP);
   }, []);
 
   const buyFireRate = useCallback(() => {
@@ -717,6 +768,14 @@ export default function GameCanvas() {
   const buyPiercing = useCallback(() => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradePiercing();
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+    }
+  }, []);
+
+  const buyAcidShield = useCallback(() => {
+    if (gameManagerRef.current) {
+      gameManagerRef.current.upgradeAcidShield();
       setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
     }
@@ -906,7 +965,7 @@ export default function GameCanvas() {
       {gameState === GameState.PLAYING && endGameCrisisState && (endGameCrisisState.phase === CrisisPhase.INCURSION || endGameCrisisState.warningTimer > 0) && (
         <div
           data-testid="endgame-crisis-warning-banner"
-          className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-purple-500/90 shadow-[inset_0_0_80px_rgba(168,85,247,0.8)] animate-pulse rounded-lg bg-purple-950/50 backdrop-blur-[3px]"
+          className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-purple-500/90 shadow-[inset_0_0_80px_rgba(168,85,247,0.8)] animate-pulse rounded-lg bg-purple-950/40"
         >
           <div className="bg-slate-950/95 border-2 border-purple-500 px-6 py-5 rounded-2xl text-center shadow-[0_0_40px_rgba(168,85,247,0.9)] max-w-lg mx-4">
             <div className="text-purple-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-1 flex items-center justify-center gap-2">
@@ -944,7 +1003,7 @@ export default function GameCanvas() {
       {gameState === GameState.PLAYING && crisisState && crisisState.warningTimer > 0 && (
         <div
           data-testid="crisis-warning-banner"
-          className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-red-500/90 shadow-[inset_0_0_60px_rgba(239,68,68,0.7)] animate-pulse rounded-lg bg-red-950/40 backdrop-blur-[2px]"
+          className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-red-500/90 shadow-[inset_0_0_60px_rgba(239,68,68,0.7)] animate-pulse rounded-lg bg-red-950/30"
         >
           <div className="bg-red-950/95 border-2 border-red-500 px-6 py-4 rounded-xl text-center shadow-[0_0_30px_rgba(239,68,68,0.8)] max-w-md mx-4">
             <div className="text-red-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-1 flex items-center justify-center gap-2">
@@ -996,6 +1055,7 @@ export default function GameCanvas() {
           highScore={highScore}
           deferredPrompt={deferredPrompt}
           onStartGame={startGame}
+          onOpenShop={handleOpenPreGameShop}
           onOpenManual={handleOpenManual}
           onInstallClick={handleInstallClick}
         />
@@ -1015,8 +1075,10 @@ export default function GameCanvas() {
           onBuyFireRate={buyFireRate}
           onBuyMultiShot={buyMultiShot}
           onBuyPiercing={buyPiercing}
+          onBuyAcidShield={buyAcidShield}
           onRepairTank={repairTank}
-          onNextWave={startNextWave}
+          onNextWave={isPreGameShop ? startGame : startNextWave}
+          isPreGame={isPreGameShop}
           lang={lang}
         />
       )}
@@ -1032,6 +1094,7 @@ export default function GameCanvas() {
           onBuyFireRate={buyFireRate}
           onBuyMultiShot={buyMultiShot}
           onBuyPiercing={buyPiercing}
+          onBuyAcidShield={buyAcidShield}
           onRepairTank={repairTank}
           onPlayAgain={startGame}
           lang={lang}

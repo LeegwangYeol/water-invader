@@ -1,66 +1,42 @@
-# Project: Water Invader — Stellaris-Style End-Game Crisis System (Stage 15+)
+# Project: Water Invader QoL & Event Gameplay Update
 
 ## Architecture
-- **Framework**: Next.js 16.3.1 (App Router), React 19.2.8, Tailwind CSS v4, TypeScript 5
-- **Game Engine**: HTML5 Canvas 2D with procedural vector graphics, Web Audio API procedural synthesis, 60Hz fixed-timestep accumulator loop (`FIXED_STEP = 1/60`).
-- **State Machine**: Menu -> Playing (Wave, Incursions, Crisis Director & End-Game Crisis Loop) -> Shop (Inter-wave Upgrades) -> Game Over
-- **Stellaris-Style End-Game Crisis Architecture**:
-  - **Existential Multi-Phase Cataclysm**: Fundamentally distinct from standard 500–1,000 HP bosses. The Crisis commands an effective health pool of **5,200 EHP** (2x 600 HP Rifts + 2,500 HP Hull + 1,500 HP Core Overdrive with 35s enrage clock) spread across 3 discrete phases, invulnerability shrouds, dimensional anchors, and dynamic reality-bending mechanics.
-  - **Random Stage 15+ Incursion Engine**:
-    - Trigger condition: Evaluated in `spawnWave()` on non-boss waves (`this.level % 5 !== 0 && this.level >= 15`).
-    - Probability: 30% non-deterministic roll per wave with pity guard guarantee at Wave 18.
-    - Warning Sequence: 3.0s cataclysm siren, chromatic aberration / dimensional distortion, HUD cataclysm banner.
-  - **The 3 Crisis Archetypes**:
-    1. *The Abyssal Singularity / Void Sovereign* (Psionic Warp Crisis): Ethereal extra-dimensional invader flanked by 2 Dimensional Rift Anchors (600 HP each). Core Sovereign is 100% invulnerable until both anchors fall; Phase 2 fires Dark-Matter Beams and Gravitational Wave Auras; Phase 3 triggers Cosmic Core Collapse with 35s enrage countdown and radial Nova bullet hell.
-    2. *The Bio-Swarm Leviathan* (Bio-Swarm Crisis): Corrupted apex bio-mechanical kraken with regenerative chitin (25 HP/s out of combat), spore tendril spirals, and diving bio-larvae swarms.
-    3. *The Cybernetic Exterminator Matrix* (Machine Matrix Crisis): Sentient rogue purification AI with 1,500 HP Frontal Deflector Matrix reflecting 50% projectiles, orbital sweeping railguns, and periodic EMP shockwaves.
-  - **Clean Module Boundaries**: Encapsulated in `src/game/crisis/` (`EndGameCrisis.ts`, `DimensionalRift.ts`, `CrisisSovereign.ts`, `types.ts`) with clear TypeScript interface contracts (`ICrisisEntity`, `ICrisisRift`, `EndGameCrisisState`).
-  - **Wave Transition Safety**: Integrated into `GameManager.update()` and `spawnWave()` ensuring `isEndGameCrisisActive` prevents premature SHOP transition until Crisis resolution, with zero soft-locks.
-- **Dual Track Orchestration**:
-  - **Track 1: E2E Testing & Empirical Simulation Track**:
-    - Stage 15 Mock & Random Trigger Test: `tests/13_endgame_crisis_stage15.spec.ts` (9/9 passed)
-    - Mathematical Proof & Automated Simulation Test: `tests/unit/endgame_crisis_simulation.test.ts` (6/6 passed, proving Crisis survives $\ge 15.0\text{s}$ against max player DPS).
-    - Full regression run of all 529 tests passed (100%) and published `TEST_READY.md`.
-  - **Track 2: Implementation Track**:
-    - M1: Crisis Models, Entity Classes & Procedural Vector Visuals (DONE)
-    - M2: Combat Behaviors, Reality-Bending Mechanics & Stage 15+ Incursion Engine (DONE)
-    - M3: Empirical Balancing via Monte Carlo Simulation Calibration & Mathematical Proof (DONE)
-    - M4: Full E2E & Unit Test Integration (Tiers 1-4) (DONE)
-    - M5: Adversarial Hardening (Tier 5), Pre-Commit Check, Git Commit & Push (DONE)
+Water Invader is a Next.js / TypeScript web application powered by HTML5 Canvas and React state management.
+- `src/game/GameManager.ts`: Master game engine loop, state machine, entity management, crisis director, hazard loop, and shop transaction handlers.
+- `src/game/Player.ts`: Player entity model, upgrade properties (fireRate, multiShot, piercing, hp, maxHp, hasAcidShield, etc.), movement, and canvas rendering.
+- `src/game/Bullet.ts`: Bullet entity model across all factions (Player, Invader, Rogue, Boss), projectile motion, and layered 4-tier "Halo Sandwich" canvas rendering.
+- `src/game/crisis/`: Modular End-Game Cataclysm Boss orchestrator (`EndGameCrisis.ts`) and data types (`types.ts`, `DimensionalRift.ts`).
+- `src/components/game-canvas.tsx`: React UI overlay manager (MenuOverlay with Armory/Shop button, ShopModal, PauseModal, GameOverModal, Crisis Warning Banners, HUD).
+- `src/game/types.ts`: Core data structures, GameState, CrisisType (including `SOLAR_FLARE`), HazardProjectile, SolarFlareBeam.
+- `tests/`: Headless Playwright unit simulations (`tests/unit/*.test.ts`) and end-to-end integration specs (`tests/*.spec.ts`).
 
 ## Feature Inventory
-| # | Feature | Description | Milestone | Source | Status |
-|---|---------|-------------|-----------|--------|--------|
-| 1 | Stage 15+ Random Crisis Incursion Engine | Evaluates 30% roll upon `level >= 15` in `spawnWave()` on non-boss waves with pity trigger at Stage 18 | M2 | Survey (R2) | DONE |
-| 2 | Incursion Alert & Procedural Cataclysm Audio | 3.0s cataclysm warning sequence with red/purple chromatic distortion and Web Audio 5-tone descending alarm | M1 | Survey (R1) | DONE |
-| 3 | Tri-Phase End-Game Crisis Entity System | Multi-phase entity hierarchy in `src/game/crisis/` with distinct phase transitions (Anchors -> Hull -> Core Overdrive) | M1 | Survey (R1) | DONE |
-| 4 | Dimensional Rift Anchors & Invulnerability Shroud | Flanking rift anchors providing 100% damage immunity to sovereign core until destroyed | M2 | Survey (R1) | DONE |
-| 5 | Reality-Bending Combat Mechanics | Gravitational vortex pulls, bullet-bending auras, EMP shockwaves, and rotating deflector shields | M2 | Survey (R1) | DONE |
-| 6 | Crisis HUD Boss Bar & Status Indicators | Dedicated multi-segment crisis health bar, phase badges, and active hazard warnings | M1 | Survey (R1) | DONE |
-| 7 | Wave Clear & Soft-Lock Prevention Guard | `GameManager.update()` wave completion guards preventing transition while Crisis is alive | M2 | Survey (R2) | DONE |
-| 8 | Headless Mathematical Combat Balance Model | Formal simulation scripts & formulas proving 5,200 EHP withstands 150+ player DPS for $\ge 30.6\text{s}$ | M3 | Survey (R3) | DONE |
-| 9 | Playwright Stage 15 Mock & Random Trigger Test | `tests/13_endgame_crisis_stage15.spec.ts` mocking Stage 15 and verifying random triggers without game crashes | Test Track (M4) | Survey (Acceptance) | DONE |
-| 10 | Mathematical Proof & Simulation Unit Test | `tests/unit/endgame_crisis_simulation.test.ts` formally proving player max DPS bounds and Crisis survivability | Test Track (M4) | Survey (Acceptance) | DONE |
-| 11 | Tier 5 Adversarial Coverage Hardening | White-box stress tests against edge cases (boundary clamping, rapid kill, EMP overlap, multi-penetration) | M5 | Survey (Quality) | DONE |
-| 12 | Pre-Commit Verification & Git Push | Type-check (`npx tsc --noEmit`), build (`npm run build`), full 529 test verification, commit and push | M5 | Survey (Deployment) | DONE |
+| # | Feature | Description | Milestone | Source |
+|---|---------|-------------|-----------|--------|
+| F1 | Acid Rain Counterplay | Deployable umbrella / purchasable Acid Shield upgrade in Shop that neutralizes acid rain droplet damage upon player contact. | M1 | Survey (Explorer 1) |
+| F2 | Event Background Visibility & High-Contrast Projectiles | 4-tier "Halo Sandwich" projectile outline rendering, hazard teardrop geometry with black borders, calibrated background tint alphas, backdrop-blur removal. | M2 | Survey (Explorer 2) |
+| F3 | Expand Crisis Variety | New intermediate crisis (`SOLAR_FLARE` laser telegraphs & beams) and distinct End-Game Phase 1 boss anchor mechanics (Bio Brood Sacks & EMP Pylons). | M3 | Survey (Explorer 1, 3) |
+| F4 | Pre-Game Shop Access & State Persistence | Main Menu Armory/Shop button, starter pure water, and `GameManager.init({ preserveUpgrades: true })` state preservation into Wave 1. | M4 | Survey (Explorer 3) |
+| F5 | Comprehensive Automated Testing Track | Dedicated unit tests & Playwright E2E test suite covering F1, F2, F3, F4 and full system regressions. | M5 | Survey (Explorer 1, 2, 3) |
+| F6 | Build Verification, Commit & Push | Zero TypeScript errors (`npx tsc --noEmit`), production build (`npm run build`), clean git commit & push. | M6 | Pre-commit Rules |
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| M1 | Crisis Types, Entities & Vector Visuals | Implement `src/game/crisis/` entity classes, vector rendering, audio synthesis in `SoundManager.ts`, and types in `types.ts` | None | DONE |
-| M2 | Crisis Incursion Engine & Combat Mechanics | Implement Stage 15+ random trigger, multi-phase state machine, dimensional rifts, reality-bending auras, and `GameManager.ts` integration | M1 | DONE |
-| M3 | Empirical Balancing & Simulation Calibration | Calibrate health pools, damage values, and attack tempos in `scripts/simulate_balance.ts` and crisis configs to guarantee intended survival curves | M1, M2 | DONE |
-| M4 | E2E Testing Suite & Mathematical Verification | Implement `tests/13_endgame_crisis_stage15.spec.ts` and `tests/unit/endgame_crisis_simulation.test.ts`, publish `TEST_READY.md`, pass 100% tests | M1, M2, M3 | DONE |
-| M5 | Adversarial Hardening, Build & Git Push | Adversarial challenger review (Tier 5), full 529 regression pass, `npx tsc --noEmit`, `npm run build`, Git commit and push | M1, M2, M3, M4 | DONE |
+| M1 | Acid Rain Counterplay | Implement Acid Shield upgrade, shop purchase item, hazard deflection logic, and deflection SFX/VFX in `Player.ts`, `GameManager.ts`, `game-canvas.tsx`. | None | DONE |
+| M2 | Visual Contrast & Projectile Outline | Implement high-contrast black border strokes and layered halos in `Bullet.ts`, hazard teardrop rendering, and alpha tuning in `GameManager.ts`, `game-canvas.tsx`. | None | DONE |
+| M3 | Crisis Variety Expansion | Add `SOLAR_FLARE` crisis in `types.ts` & `GameManager.ts`, and diversify End-Game Phase 1 anchors in `EndGameCrisis.ts`. | None | DONE |
+| M4 | Pre-Game Shop Access | Add Armory/Shop to `MenuOverlay`, update `GameManager.init()` with `preserveUpgrades`, hook shop modal transitions before Wave 1. | M1 | DONE |
+| M5 | E2E Testing & Verification Track | Implement automated tests (`tests/unit/acid_rain_counterplay.test.ts`, `tests/unit/pregame_shop_persistence.test.ts`, `tests/unit/crisis_variety_expansion.test.ts`, `tests/13_qol_and_crisis_mechanics.spec.ts`), run full test suite. | M1, M2, M3, M4 | DONE |
+| M6 | Pre-Commit Build, Git Commit & Push | Run pre-commit build verification, commit changes, and push to remote repository. | M5 | IN_PROGRESS |
 
 ## Code Layout
-- `src/game/types.ts`: Core game types, `EnemyType`, `Faction`, `GameState`
-- `src/game/crisis/types.ts`: Crisis specific enums, interfaces, and state structures
-- `src/game/crisis/EndGameCrisis.ts`: Coordinator managing crisis lifecycle, phases, and entity updates
-- `src/game/crisis/CrisisSovereign.ts`: Vector-rendered screen-filling crisis dreadnought entity
-- `src/game/crisis/DimensionalRift.ts`: Dimensional rift anchor entities generating shielding and void swarms
-- `src/game/GameManager.ts`: Main loop, Stage 15+ incursion evaluation, collision routing, and wave completion guards
-- `src/game/SoundManager.ts`: Web Audio procedural cataclysm sirens, dark-matter beam hums, and dimensional warp SFX
-- `scripts/simulate_balance.ts`: Headless Monte Carlo combat balance simulator
-- `tests/13_endgame_crisis_stage15.spec.ts`: Playwright Stage 15 mock & random incursion test (9 tests)
-- `tests/unit/endgame_crisis_simulation.test.ts`: Headless mathematical proof & empirical survivability test (6 tests)
+- `src/game/Player.ts`: Player model & acid shield property.
+- `src/game/Bullet.ts`: Projectile rendering with black outline.
+- `src/game/GameManager.ts`: Engine loop, shop upgrades, hazard collision, solar flare crisis logic, `init()` preserve upgrades.
+- `src/game/crisis/EndGameCrisis.ts`: Cataclysm boss phase 1 anchor behaviors.
+- `src/game/crisis/DimensionalRift.ts`: Phase 1 anchor models (Singularity Rifts, Bio-Brood Sacks, EMP Pylons).
+- `src/game/types.ts`: Crisis types, HazardProjectile, SolarFlareBeam, ItemUpgrade definitions.
+- `src/components/game-canvas.tsx`: Pre-game Armory/Shop UI trigger, ShopModal upgrade cards, backdrop blur removal.
+- `tests/unit/`: Headless Playwright unit test specs.
+- `tests/`: End-to-end Playwright test specs.

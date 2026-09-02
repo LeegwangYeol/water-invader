@@ -41,7 +41,7 @@ export enum EnemyType {
   ROGUE_MECH = 9
 }
 
-export type CrisisType = 'TITAN_HORDE' | 'ACID_STORM' | 'SWARM_BLITZ' | 'EMP_DISRUPTION' | 'TOTAL_WAR';
+export type CrisisType = 'TITAN_HORDE' | 'ACID_STORM' | 'SWARM_BLITZ' | 'EMP_DISRUPTION' | 'TOTAL_WAR' | 'SOLAR_FLARE';
 
 export interface HazardProjectile {
   x: number;
@@ -54,6 +54,17 @@ export interface HazardProjectile {
   isDead?: boolean;
 }
 
+export interface SolarFlareBeam {
+  x: number;
+  width: number;
+  chargeTimer: number;
+  chargeDuration: number;
+  activeTimer: number;
+  activeDuration: number;
+  damageDealt: boolean;
+  isDead: boolean;
+}
+
 export interface CrisisState {
   activeCrisis: CrisisType | null;
   timer: number;
@@ -61,6 +72,7 @@ export interface CrisisState {
   warningTimer: number;
   bannerText: string | null;
   hazardProjectiles?: HazardProjectile[];
+  solarFlares?: SolarFlareBeam[];
   empSuppressionActive?: boolean;
   empTimer?: number;
 }
