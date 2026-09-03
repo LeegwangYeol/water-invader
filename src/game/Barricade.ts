@@ -18,7 +18,7 @@ export class Barricade extends Entity {
   constructor(x: number, y: number, type: BarricadeType) {
     super(x, y, 60, 40);
     this.type = type;
-    this.maxHp = type === BarricadeType.DESTRUCTIBLE ? 20 : 1; // Buffed HP to 20 so it degrades smoothly
+    this.maxHp = 20; // 20 HP structural integrity for all barricades (destructible & indestructible)
     this.hp = this.maxHp;
     this.color = type === BarricadeType.DESTRUCTIBLE ? '#38bdf8' : '#94a3b8'; // Sky blue (ice) vs Slate (stone)
     
@@ -35,26 +35,33 @@ export class Barricade extends Entity {
     }
   }
 
-  // We override hp setter or just update blocks in update() based on HP
+  // Bidirectional voxel block synchronization
   public update(deltaTime: number): void {
-    if (this.type === BarricadeType.DESTRUCTIBLE) {
-      // Calculate how many blocks should be active based on HP ratio
-      const targetActiveBlocks = Math.ceil((this.hp / this.maxHp) * (this.cols * this.rows));
-      let currentActive = this.blocks.filter(b => b).length;
-      
-      // Destroy random blocks until we match the target
-      while (currentActive > targetActiveBlocks && currentActive > 0) {
-        const activeIndices = this.blocks.map((b, i) => b ? i : -1).filter(i => i !== -1);
-        if (activeIndices.length > 0) {
-          const randomIndex = activeIndices[Math.floor(Math.random() * activeIndices.length)];
-          this.blocks[randomIndex] = false;
+    const targetActiveBlocks = Math.round((Math.max(0, this.hp) / this.maxHp) * this.blocks.length);
+    let currentActive = this.blocks.filter(b => b).length;
+    if (currentActive > targetActiveBlocks) {
+      // Deactivate blocks on damage
+      while (currentActive > targetActiveBlocks) {
+        const idx = Math.floor(Math.random() * this.blocks.length);
+        if (this.blocks[idx]) {
+          this.blocks[idx] = false;
           currentActive--;
         }
       }
-      
-      if (this.hp <= 0) {
-        this.isDead = true;
+    } else if (currentActive < targetActiveBlocks) {
+      // Reconstruct blocks on healing/repair
+      while (currentActive < targetActiveBlocks) {
+        const idx = Math.floor(Math.random() * this.blocks.length);
+        if (!this.blocks[idx]) {
+          this.blocks[idx] = true;
+          currentActive++;
+        }
       }
+    }
+
+    if (this.hp <= 0) {
+      this.hp = 0;
+      this.isDead = true;
     }
   }
 

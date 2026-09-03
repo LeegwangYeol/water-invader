@@ -41,7 +41,8 @@ export enum EnemyType {
   ROGUE_MECH = 9,
   ROGUE_GOLIATH = 10,
   ROGUE_PHANTOM = 11,
-  ROGUE_CARRIER = 12
+  ROGUE_CARRIER = 12,
+  SABOTEUR = 13
 }
 
 export type CrisisType = 'TITAN_HORDE' | 'ACID_STORM' | 'SWARM_BLITZ' | 'EMP_DISRUPTION' | 'TOTAL_WAR' | 'SOLAR_FLARE';

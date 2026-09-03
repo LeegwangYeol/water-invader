@@ -24,6 +24,7 @@ export class Enemy extends Entity {
   private canvasWidth: number;
   public type: EnemyType = EnemyType.NORMAL;
   public isGnawing: boolean = false;
+  public gnawedThisFrame: boolean = false;
   public hitFlashTimer: number = 0;
   
   // Movement pattern
@@ -82,6 +83,7 @@ export class Enemy extends Entity {
     return (
       this.isMidTier ||
       this.type === EnemyType.SNIPER ||
+      this.type === EnemyType.SABOTEUR ||
       this.type === EnemyType.ROGUE_STALKER ||
       this.type === EnemyType.ROGUE_MECH ||
       this.type === EnemyType.ROGUE_GOLIATH ||
@@ -192,6 +194,13 @@ export class Enemy extends Entity {
         this.hp = 12;
         this.shieldHp = 6;
         this.isMidTier = true;
+      } else if (type === EnemyType.SABOTEUR) {
+        this.color = '#ea580c'; // Hazard Orange
+        this.size = { width: 36, height: 32 };
+        this.speedX = 45;
+        this.speedY = 30;
+        this.hp = 6 + Math.floor((this.level - 1) / 5);
+        this.canEvade = false;
       } else {
         this.color = '#f97316'; // Orange/Fire
         this.speedX += this.level * 5;
@@ -279,6 +288,13 @@ export class Enemy extends Entity {
         this.hp = 30 + Math.min(15, (this.level - 10) * 3); // 30–45 HP
         this.shieldHp = 8; // 8 Shield HP
         this.isMidTier = true;
+      } else if (type === EnemyType.SABOTEUR) {
+        this.color = '#ea580c'; // Hazard Orange
+        this.size = { width: 36, height: 32 };
+        this.speedX = 45;
+        this.speedY = 30;
+        this.hp = 6 + Math.floor((this.level - 1) / 5);
+        this.canEvade = false;
       } else {
         this.color = '#f97316'; // Orange/Fire
         this.speedX += this.level * 5;
@@ -298,9 +314,10 @@ export class Enemy extends Entity {
     this.position.y = Math.max(0, Math.min(this.position.y, maxY));
   }
 
-  public update(deltaTime: number, speedMultiplier: number = 1.0, bullets: Bullet[] = [], playerPos?: Vector2D, allEnemies: Enemy[] = []): void {
+  public update(deltaTime: number, speedMultiplier: number = 1.0, bullets: Bullet[] = [], playerPos?: Vector2D, allEnemies: Enemy[] = [], barricades: any[] = []): void {
     if (!Number.isFinite(deltaTime) || deltaTime < 0) return;
     this.prevY = this.position.y;
+    this.gnawedThisFrame = false;
     const clampedDt = Math.min(deltaTime, 0.1); // Guard against massive lag spikes / tab throttle jumps
 
     if (this.hitFlashTimer > 0) {
@@ -331,6 +348,84 @@ export class Enemy extends Entity {
     const rushMod = this.isAggressive ? this.rushVelocityModifier : 1.0;
     const currentSpeedX = this.speedX * validSpeedMultiplier * gnawMultiplier;
     const currentSpeedY = this.speedY * validSpeedMultiplier * gnawMultiplier * rushMod;
+
+    // Barricade Saboteur AI: Target living central barricades (1 & 2), then flanks (0 & 3)
+    if (this.type === EnemyType.SABOTEUR) {
+      let targetBarricade: any = null;
+      if (barricades && barricades.length > 0) {
+        // Living central barricades (index 1 & 2)
+        const central = [barricades[1], barricades[2]].filter(b => b && !b.isDead && b.hp > 0);
+        if (central.length > 0) {
+          // Sort by closest distance to Saboteur's center
+          central.sort((a, b) => {
+            const distA = Math.abs((a.position.x + a.size.width / 2) - (this.position.x + this.size.width / 2));
+            const distB = Math.abs((b.position.x + b.size.width / 2) - (this.position.x + this.size.width / 2));
+            return distA - distB;
+          });
+          targetBarricade = central[0];
+        } else {
+          // Living flank barricades (index 0 & 3)
+          const flanks = [barricades[0], barricades[3]].filter(b => b && !b.isDead && b.hp > 0);
+          if (flanks.length > 0) {
+            flanks.sort((a, b) => {
+              const distA = Math.abs((a.position.x + a.size.width / 2) - (this.position.x + this.size.width / 2));
+              const distB = Math.abs((b.position.x + b.size.width / 2) - (this.position.x + this.size.width / 2));
+              return distA - distB;
+            });
+            targetBarricade = flanks[0];
+          }
+        }
+      }
+
+      if (targetBarricade) {
+        const targetCenterX = targetBarricade.position.x + targetBarricade.size.width / 2;
+        const myCenterX = this.position.x + this.size.width / 2;
+        const dx = targetCenterX - myCenterX;
+
+        // Lateral movement: steer X towards target barricade center at speed 45 px/s
+        if (Math.abs(dx) > 1) {
+          const stepX = Math.sign(dx) * Math.min(Math.abs(dx), 45 * clampedDt * validSpeedMultiplier);
+          this.position.x += stepX;
+        }
+
+        const latchY = targetBarricade.position.y - this.size.height + 2;
+        const horizontalContact = this.position.x < targetBarricade.position.x + targetBarricade.size.width &&
+                                  this.position.x + this.size.width > targetBarricade.position.x;
+
+        // When in contact with the barricade
+        if (horizontalContact && this.position.y >= latchY - 2) {
+          // Clamp Y: latch onto top edge
+          this.position.y = latchY;
+          this.isGnawing = true;
+          targetBarricade.hp = Math.max(0, targetBarricade.hp - 12.0 * deltaTime);
+          this.gnawedThisFrame = true;
+          if (targetBarricade.hp <= 0) {
+            targetBarricade.hp = 0;
+            targetBarricade.isDead = true;
+            this.isGnawing = false;
+          }
+        } else {
+          this.isGnawing = false;
+          // Vertical movement: descend at 30 px/s towards barricade
+          this.position.y += 30 * clampedDt * validSpeedMultiplier;
+          if (horizontalContact && this.position.y >= latchY) {
+            this.position.y = latchY;
+            this.isGnawing = true;
+          }
+        }
+      } else {
+        // Fallback when all barricades are destroyed: continue descent
+        this.isGnawing = false;
+        this.position.y += 30 * clampedDt * validSpeedMultiplier;
+      }
+
+      // Strict boundaries
+      const maxX = Math.max(0, this.canvasWidth - this.size.width);
+      const maxY = Math.max(0, this.canvasHeight - this.size.height);
+      this.position.x = Math.max(0, Math.min(this.position.x, maxX));
+      this.position.y = Math.max(0, Math.min(this.position.y, maxY));
+      return;
+    }
 
     // Diver Logic: Safe trajectory & dive trigger (target must be below the diver)
     if (this.type === EnemyType.DIVER && playerPos && Number.isFinite(playerPos.x) && Number.isFinite(playerPos.y)) {
@@ -690,7 +785,7 @@ export class Enemy extends Entity {
   }
 
   public fire(playerPos?: Vector2D, allEnemies: Enemy[] = []): Bullet | null {
-    if (this.isDiving) return null; // divers don't shoot while diving
+    if (this.isDiving || this.type === EnemyType.SABOTEUR) return null; // divers and saboteurs don't shoot bullets
 
     if (this.fireTimer <= 0) {
       // Rogue Faction Dual-Targeting AI
@@ -1806,6 +1901,122 @@ export class Enemy extends Entity {
         ctx.beginPath();
         ctx.arc(cx, cy, 5, 0, Math.PI * 2);
         ctx.fill();
+      }
+    } else if (this.type === EnemyType.SABOTEUR) {
+      // ----------------------------------------------------------------------
+      // SABOTEUR: Sapper / Rotary Acid Borer (Hazard Orange & Chevron Stripes)
+      // ----------------------------------------------------------------------
+      if (!isFlashing) {
+        const grad = ctx.createLinearGradient(cx, cy - h/2, cx, cy + h/2);
+        grad.addColorStop(0, '#f97316'); // Bright Orange
+        grad.addColorStop(0.5, '#ea580c'); // Hazard Orange
+        grad.addColorStop(1, '#9a3412'); // Dark Rust Orange
+        ctx.fillStyle = grad;
+      }
+
+      // Tapered heavy armored carapace pointing down towards barricades
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + h/2);
+      ctx.lineTo(cx + w/2, cy + h/6);
+      ctx.lineTo(cx + w/2 - 3, cy - h/2);
+      ctx.lineTo(cx - w/2 + 3, cy - h/2);
+      ctx.lineTo(cx - w/2, cy + h/6);
+      ctx.closePath();
+      ctx.fill();
+
+      if (!isFlashing) {
+        // Dark iron armor plating dorsal ridge
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.moveTo(cx - 8, cy - h/2 + 2);
+        ctx.lineTo(cx + 8, cy - h/2 + 2);
+        ctx.lineTo(cx + 6, cy + 2);
+        ctx.lineTo(cx - 6, cy + 2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Warning Hazard Chevron Stripes across dorsal ridge
+        ctx.fillStyle = '#facc15'; // Hazard yellow
+        for (let i = 0; i < 3; i++) {
+          const yOff = cy - h/2 + 6 + i * 7;
+          ctx.beginPath();
+          ctx.moveTo(cx, yOff + 3);
+          ctx.lineTo(cx + 6, yOff - 2);
+          ctx.lineTo(cx + 6, yOff);
+          ctx.lineTo(cx, yOff + 5);
+          ctx.lineTo(cx - 6, yOff);
+          ctx.lineTo(cx - 6, yOff - 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // Lateral Pulsating Acid Spray / Sacs
+        const acidPulse = Math.sin(time * 10) * 1.5;
+        ctx.fillStyle = '#84cc16'; // Neon acid lime
+        ctx.beginPath();
+        ctx.ellipse(cx - w/2 + 5, cy - 2, 3 + acidPulse * 0.5, 6, Math.PI / 8, 0, Math.PI * 2);
+        ctx.ellipse(cx + w/2 - 5, cy - 2, 3 + acidPulse * 0.5, 6, -Math.PI / 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pulsating acid droplet spray when gnawing
+        if (this.isGnawing) {
+          ctx.fillStyle = 'rgba(132, 204, 22, 0.7)';
+          for (let p = 0; p < 4; p++) {
+            const sprayAngle = ((p - 1.5) * 0.5) + Math.sin(time * 20 + p) * 0.2;
+            const sprayDist = 12 + Math.sin(time * 25 + p) * 6;
+            ctx.beginPath();
+            ctx.arc(cx + Math.sin(sprayAngle) * sprayDist, cy + h/2 + Math.cos(sprayAngle) * 6, 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // Animated Dual Rotating Saw Blades at the front snout
+        const sawRotation = time * 24;
+        const bladeOffsets = [-8, 8];
+        for (const bx of bladeOffsets) {
+          ctx.save();
+          ctx.translate(cx + bx, cy + h/2);
+          ctx.rotate(sawRotation * (bx > 0 ? 1 : -1));
+
+          // Saw blade disk
+          ctx.fillStyle = this.isGnawing ? '#fef08a' : '#94a3b8'; // Incandescent glowing teeth when gnawing
+          ctx.beginPath();
+          ctx.arc(0, 0, 6, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Jagged tungsten saw teeth
+          ctx.strokeStyle = this.isGnawing ? '#f59e0b' : '#475569';
+          ctx.lineWidth = 1.5;
+          const teethCount = 6;
+          for (let t = 0; t < teethCount; t++) {
+            const tAngle = (t * Math.PI * 2) / teethCount;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(tAngle) * 4, Math.sin(tAngle) * 4);
+            ctx.lineTo(Math.cos(tAngle + 0.3) * 8, Math.sin(tAngle + 0.3) * 8);
+            ctx.stroke();
+          }
+
+          // Hub rivet
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.arc(0, 0, 2, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        // Incandescent glowing teeth in the central maw when gnawing
+        if (this.isGnawing) {
+          ctx.fillStyle = '#fef08a'; // White-hot glow
+          ctx.shadowColor = '#ea580c';
+          ctx.shadowBlur = 10;
+          ctx.beginPath();
+          ctx.moveTo(cx - 5, cy + h/2 - 2);
+          ctx.lineTo(cx, cy + h/2 + 5);
+          ctx.lineTo(cx + 5, cy + h/2 - 2);
+          ctx.closePath();
+          ctx.fill();
+        }
       }
     } else if (this.faction === Faction.ROGUE) {
       // Generic Cyber Rogue Delta

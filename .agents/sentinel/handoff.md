@@ -1,40 +1,73 @@
-# Sentinel Handoff Report: Major Feature Expansion Launch
+# Sentinel Handoff Report: Continue vs Restart Option on Death
 
-## Observation
-- The user submitted a new request for the Next.js "Water Invader" project:
-  1. R1: Dynamic Backgrounds & Threat Signifiers (background change every 10 stages, visual shift on Boss/Elite/crisis).
-  2. R2: Allied Reinforcements with Roles & UI (massive allied reinforcement events, visible HP bars, clear role indicators for Medic, Repair Bot, Fighter).
-  3. R3: Barricade Saboteurs & Repair Mechanics (new enemy targeting barricades, wave full restore or Repair Bot priority repair).
-  4. Team requirement: Use a very large team of agents.
-  5. Acceptance criteria: Playwright tests pass cleanly, build succeeds, and changes are committed and pushed to git.
-- The request was recorded verbatim in `.agents/ORIGINAL_REQUEST.md` under timestamp `## 2026-09-03T15:37:41Z`.
-- The task was evaluated per the Routing Decision Table:
-  - Not Document Review (no document supplied for critique).
-  - Not Math / Proof (gameplay feature expansion, not formal mathematics).
-  - Not SWE Light (multi-part feature expansion; explicit request for a very large team).
-  - Selected Route: **General** (`teamwork_preview_orchestrator`).
+- **Archetype**: Sentinel (`user_liaison`, `sentinel_reporter`, `dispatcher`, `task_router`)
+- **Workspace**: `/Users/user/src/water-invader`
+- **Working Directory**: `/Users/user/src/water-invader/.agents/sentinel`
+- **Orchestrator**: SWE Light Orchestrator (`b4b4411d-380b-41d9-a004-e82ee8c046a7`)
+- **Auditor**: Sentinel Victory Auditor (`39b8ff4a-c17d-4f6d-8af0-79b6443ec5b7`)
+- **Verdict**: **VICTORY CONFIRMED**
+- **Git Commit**: `6d9b588` (Pushed to `origin/master`)
 
-## Logic Chain
-1. **Routing and Dispatch**:
-   - The multi-part feature expansion with R1, R2, R3 and explicit request for a large team of agents is routed to `teamwork_preview_orchestrator`.
-   - Orchestrator `fd67f473-0f7b-401a-90c3-a0cae3f3ba82` was spawned under working directory `/Users/user/src/water-invader/.agents/orchestrator_expansion_2/`.
-2. **Sentinel Crons Established**:
-   - Cron 1 (Progress Reporting, `*/8 * * * *`): Task `e047ca5c-667e-42d8-aa5c-b737e38a8d2a/task-37`.
-   - Cron 2 (Liveness Check, `*/10 * * * *`): Task `e047ca5c-667e-42d8-aa5c-b737e38a8d2a/task-39`.
-3. **Collaboration & Pre-Commit Governance**:
-   - Claude collaboration workflow mandates creating/updating `COLLABORATION.md` and keeping `PROJECT.md` in sync.
-   - User approval rule and pre-commit build verification rules relayed to the orchestrator.
-4. **Independent Victory Audit Guarantee**:
-   - As Sentinel, completion will not be declared until an independent victory auditor verifies all acceptance criteria.
+---
 
-## Caveats
-- Orchestrator must ensure all existing regression tests (including late-game homing missiles, swarms, 3rd faction, and continue/restart options) continue to pass without regressions.
-- Barricade repair mechanics must properly synchronize with existing barricade damage states and render smoothly.
+## 1. Observation
 
-## Conclusion
-- Major Feature Expansion project has been successfully initialized, recorded, routed, and dispatched to `teamwork_preview_orchestrator` (`fd67f473-0f7b-401a-90c3-a0cae3f3ba82`). Crons are actively monitoring progress and liveness.
+1. **User Request & Scope**:
+   - Single self-contained feature: Continue vs Restart Option on Death.
+   - Requirement R1: When player dies, display two options on Game Over UI:
+     * "Continue" (이어하기): Revives player at current wave, keeping score, currency, and purchased upgrades.
+     * "Restart from Beginning" (처음부터 시작): Full reset to Wave 1, score 0, currency 150, base stats.
+   - Requirement R2: Automated Playwright E2E verification confirming both options function accurately, followed by git commit and push.
 
-## Verification Method
-- `.agents/ORIGINAL_REQUEST.md` updated with verbatim request.
-- `.agents/sentinel/BRIEFING.md` updated with orchestrator ID and cron task IDs.
-- Subagent active status verified via `manage_subagents` / `manage_task`.
+2. **Implementation Delivered**:
+   - `src/game/GameManager.ts`:
+     * Implemented `continueGame()`: Revives player (HP >= 3, invincibility 1.5s), clears active hostile/friendly projectiles and drones, respawns barricades, maintains `this.level`, `this.score`, `this.currency`, and upgrades, and starts wave.
+     * Implemented `restartFromBeginning()`: Re-initializes state with full reset, resets score, currency, level, and player upgrades, then starts game.
+     * Synchronized `player.isDead` flag and guarded against crisis lockouts on continue.
+   - `src/components/game-canvas.tsx`:
+     * Updated `GameOverModal` with distinct, interactive buttons for "Continue" (`continue-button`, `이어하기`) and "Restart from Beginning" (`restart-button`, `처음부터 시작`).
+   - `tests/continue_vs_restart_on_death.spec.ts`:
+     * Created comprehensive 14-test Playwright E2E suite covering basic flows, in-game shop persistence, stress/consecutive continues, localization, drone cleanup, crisis interactions, low-FPS death, rapid button spamming, mobile viewports, and audio concurrency.
+
+3. **Audit Results**:
+   - Phase A (Timeline): Commit `6d9b588` verified; `master` fully synced with `origin/master`.
+   - Phase B (Integrity): Validated authentic DOM locators, event handlers, and engine logic with zero mock shortcuts.
+   - Phase C (Independent Execution):
+     * `npm run build`: Turbopack build passed with 0 errors.
+     * `tests/continue_vs_restart_on_death.spec.ts`: 14/14 tests PASSED.
+     * Regression suites (crossfire, state machine, boundary scaling): 27/27 tests PASSED.
+
+---
+
+## 2. Logic Chain
+
+1. **Routing**: Analyzed user request; routed to SWE Light (`teamwork_preview_swe`) per the Routing Decision Table due to explicit single self-contained feature request ("Keep it small and focused").
+2. **SWE Light Loop Execution**:
+   - Dispatched primary implementer (`2dd42671-ea66-405d-bbd9-9e34db754ba5`).
+   - Dispatched Reviewer Round 1 (`aa436b88-d6a5-4675-a2cb-05e31963b456`): remediated score wipe regression, drone leaks, and crisis lockout.
+   - Dispatched Reviewer Round 2 (`2030db7a-74f1-43f5-8ada-0fa7f3592925`): remediated shield-gate absorption and expanded test coverage to 14 scenarios.
+   - Dispatched Reviewer Round 3 (`98c02656-7429-45f9-9eee-52f64c3ee54d`): confirmed zero remaining defects; 100% test pass rate across all suites.
+3. **Git Sync**: Changes committed (`6d9b588`) and pushed to `origin/master`.
+4. **Mandatory Independent Victory Audit**: Spawned `teamwork_preview_victory_auditor` (`39b8ff4a-c17d-4f6d-8af0-79b6443ec5b7`). Auditor conducted 3-phase verification and confirmed `VICTORY CONFIRMED`.
+
+---
+
+## 3. Caveats
+
+- Playwright tests default to port 3000. If other background dev servers run concurrently, ensure `SKIP_WEBSERVER` or port isolation is configured.
+- Mid-crisis Continue restarts the wave with standard enemies rather than saving mid-encounter rift positions (intended game design to avoid unfair player death loops).
+
+---
+
+## 4. Conclusion
+
+The "Continue vs Restart Option on Death" feature is completely implemented, rigorously verified across 3 adversarial review rounds, confirmed with a 14-test automated E2E suite, audited with a VICTORY CONFIRMED verdict, and pushed to remote master.
+
+---
+
+## 5. Verification Method
+
+- Build: `npm run build`
+- Tests: `npx playwright test tests/continue_vs_restart_on_death.spec.ts`
+- Regressions: `npx playwright test tests/crossfire_and_score_persistence.spec.ts tests/bughunt_empirical_edgecases_state_machine.spec.ts tests/adversarial_challenger_m1_2.spec.ts`
+- Git verification: `git log -1` and `git status -uno`

@@ -5,6 +5,7 @@ export class Bullet extends Entity {
   public damage: number;
   public piercing: number;
   public isInterceptable: boolean = false;
+  public ignoreBarricades: boolean = false;
   public hasTriggeredNearMiss: boolean = false;
   public hitEntities: Set<Entity> = new Set<Entity>();
   public shooter?: Entity;

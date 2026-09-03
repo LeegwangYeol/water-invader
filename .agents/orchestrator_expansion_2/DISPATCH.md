@@ -90,4 +90,22 @@ Do NOT wait for user approval again. Immediately proceed to execute the mileston
 - All Phase 0 survey findings are in `.agents/orchestrator_expansion_2/` and `.agents/teamwork_preview_explorer_survey_*`.
 - Unified architecture and specifications are documented in `/Users/user/src/water-invader/PROJECT.md` and `/Users/user/src/water-invader/COLLABORATION.md`.
 - Read your working directory's `BRIEFING.md` and `progress.md`.
-- Dispatch your specialized workers (implementers, test authors, reviewers, challengers, auditors) per your plan.
+
+## 2026-09-03T18:24:22Z
+
+You are the Project Orchestrator for the "Water Invader" feature expansion project.
+Resume in working directory: /Users/user/src/water-invader/.agents/orchestrator_expansion_2/
+
+## CURRENT STATUS
+All 3 milestone workers have successfully finished their implementations and delivered clean handoffs:
+1. M1 (Dynamic Backgrounds & Threat Signifiers): COMPLETE (tests/17_* 6/6 pass, tests/14_* 11/11 pass).
+2. M2 (Allied Reinforcements with Roles & UI): COMPLETE (tests/18_* 5/5 pass).
+3. M3 (Barricade Saboteurs & Repair Mechanics): COMPLETE (tests/19_* 5/5 pass, handoff in .agents/teamwork_preview_worker_m3_exp2/handoff.md).
+
+## REMAINING MILESTONE: M4 (Final Verification, Git Sync & Handoff)
+1. Verify TypeScript types: `npx tsc --noEmit`.
+2. Verify production build: `npm run build`.
+3. Run full expansion Playwright test suite: `npx playwright test tests/17_dynamic_backgrounds_and_threat_signifiers.spec.ts tests/18_allied_reinforcements_and_roles.spec.ts tests/19_barricade_saboteur_and_repair.spec.ts`.
+4. Commit changes to Git with a descriptive message and push to origin/master.
+5. Update `progress.md` and `COLLABORATION.md`.
+6. Write your final `handoff.md` in `.agents/orchestrator_expansion_2/handoff.md` and send completion message to Sentinel.

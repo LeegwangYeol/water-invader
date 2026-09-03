@@ -16,6 +16,7 @@ if (typeof window !== 'undefined') {
   (window as any).Helper = Helper;
   (window as any).HelperType = HelperType;
   (window as any).Faction = Faction;
+  (window as any).EnemyType = EnemyType;
 }
 
 export class GameManager {
@@ -182,6 +183,7 @@ export class GameManager {
       (window as any).Enemy = Enemy;
       (window as any).Helper = Helper;
       (window as any).Faction = Faction;
+      (window as any).EnemyType = EnemyType;
     }
     this.init();
   }
@@ -396,6 +398,18 @@ export class GameManager {
     this.barricades.push(new Barricade(startX + padding * 3, y, BarricadeType.DESTRUCTIBLE));
   }
 
+  public restoreBarricades(): void {
+    if (!this.barricades || this.barricades.length < 4) {
+      this.spawnBarricades();
+      return;
+    }
+    for (const b of this.barricades) {
+      b.hp = b.maxHp;
+      b.isDead = false;
+      b.blocks.fill(true);
+    }
+  }
+
   public startNextWave() {
     this.state = GameState.PLAYING;
     this.isPaused = false;
@@ -425,6 +439,7 @@ export class GameManager {
     if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
     this.emergencyAlliesTriggeredThisWave = false;
     this.level++;
+    this.restoreBarricades();
     this.swarmEchelonsRemaining = (this.level >= 10 && this.level % 5 !== 0) ? (this.level >= 15 ? 2 : 1) : 0;
     this.spawnWave();
     if (this.level > 0 && this.level % 5 === 0) {
@@ -741,7 +756,9 @@ export class GameManager {
         } else if (r === 1 && c % 2 === 0) {
           type = EnemyType.ZIGZAG;
         } else if (specialCount < maxSpecials && Math.random() > 0.85) {
-          const specials = [EnemyType.SNIPER, EnemyType.DIVER, EnemyType.SHIELDED, EnemyType.SPLITTER];
+          const specials = this.level >= 3
+            ? [EnemyType.SNIPER, EnemyType.DIVER, EnemyType.SHIELDED, EnemyType.SPLITTER, EnemyType.SABOTEUR]
+            : [EnemyType.SNIPER, EnemyType.DIVER, EnemyType.SHIELDED, EnemyType.SPLITTER];
           type = specials[Math.floor(Math.random() * specials.length)];
           specialCount++;
         }
@@ -1447,7 +1464,7 @@ export class GameManager {
       const speedMultiplier = Math.min(1.8, Math.max(1.0, 1.0 + (20 - Math.min(20, this.enemies.length)) * 0.04));
       
       this.enemies.forEach(enemy => {
-        enemy.update(deltaTime, speedMultiplier, this.bullets, this.player.position, this.enemies);
+        enemy.update(deltaTime, speedMultiplier, this.bullets, this.player.position, this.enemies, this.barricades);
         const bullet = enemy.fire(this.player.position, this.enemies);
         if (bullet) this.bullets.push(bullet);
         
@@ -2000,7 +2017,9 @@ export class GameManager {
     // =========================================================================
     for (const enemy of this.enemies) {
       if (enemy.isDead) continue;
-      enemy.isGnawing = false;
+      if (enemy.type !== EnemyType.SABOTEUR || !enemy.isGnawing) {
+        enemy.isGnawing = false;
+      }
 
       for (const barricade of this.barricades) {
         if (!barricade.isDead && enemy.checkCollision(barricade)) {
@@ -2012,6 +2031,21 @@ export class GameManager {
               this.createExplosion(enemy.position.x, enemy.position.y, '#94a3b8', 20);
             }
             this.createExplosion(enemy.position.x, enemy.position.y, '#ef4444', 30);
+          } else if (enemy.type === EnemyType.SABOTEUR) {
+            if (enemy.isGnawing) {
+              enemy.position.y = barricade.position.y - enemy.size.height + 2;
+              if (!(enemy as any).gnawedThisFrame) {
+                barricade.hp = Math.max(0, barricade.hp - 12.0 * deltaTime);
+                (enemy as any).gnawedThisFrame = true;
+              }
+              if (barricade.hp <= 0) {
+                barricade.hp = 0;
+                barricade.isDead = true;
+                enemy.isGnawing = false;
+              }
+            } else {
+              enemy.position.y = Math.min(enemy.position.y, barricade.position.y - enemy.size.height);
+            }
           } else {
             enemy.isGnawing = true;
             if (barricade.type === BarricadeType.DESTRUCTIBLE) {
