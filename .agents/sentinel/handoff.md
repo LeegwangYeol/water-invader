@@ -1,73 +1,92 @@
-# Sentinel Handoff Report: Continue vs Restart Option on Death
+# Sentinel Handoff Report: Major Feature Expansion
 
 - **Archetype**: Sentinel (`user_liaison`, `sentinel_reporter`, `dispatcher`, `task_router`)
 - **Workspace**: `/Users/user/src/water-invader`
 - **Working Directory**: `/Users/user/src/water-invader/.agents/sentinel`
-- **Orchestrator**: SWE Light Orchestrator (`b4b4411d-380b-41d9-a004-e82ee8c046a7`)
-- **Auditor**: Sentinel Victory Auditor (`39b8ff4a-c17d-4f6d-8af0-79b6443ec5b7`)
+- **Auditor**: Sentinel Victory Auditor (`75d122bc-457a-4eff-a586-cecd900ee4a8`)
 - **Verdict**: **VICTORY CONFIRMED**
-- **Git Commit**: `6d9b588` (Pushed to `origin/master`)
+- **Git Commit**: `96d4092` (Pushed to `origin/master`)
 
 ---
 
 ## 1. Observation
 
 1. **User Request & Scope**:
-   - Single self-contained feature: Continue vs Restart Option on Death.
-   - Requirement R1: When player dies, display two options on Game Over UI:
-     * "Continue" (이어하기): Revives player at current wave, keeping score, currency, and purchased upgrades.
-     * "Restart from Beginning" (처음부터 시작): Full reset to Wave 1, score 0, currency 150, base stats.
-   - Requirement R2: Automated Playwright E2E verification confirming both options function accurately, followed by git commit and push.
+   - Request: Major feature expansion for Next.js "Water Invader" project with explicit request for a very large team of agents.
+   - Requirement R1: Dynamic Backgrounds & Threat Signifiers (background change every 10 stages, visual shift on Boss/Elite/crisis).
+   - Requirement R2: Allied Reinforcements with Roles & UI (massive reinforcement warp-in events, visible HP bars, clear role indicators for Medic, Repair Bot, Fighter).
+   - Requirement R3: Barricade Saboteurs & Repair Mechanics (new enemy targeting barricades, wave full restore or Repair Bot priority repair).
+   - Quality & Deployment: `npm run build` and `npx playwright test` pass without errors; changes committed and pushed to remote repository.
 
 2. **Implementation Delivered**:
-   - `src/game/GameManager.ts`:
-     * Implemented `continueGame()`: Revives player (HP >= 3, invincibility 1.5s), clears active hostile/friendly projectiles and drones, respawns barricades, maintains `this.level`, `this.score`, `this.currency`, and upgrades, and starts wave.
-     * Implemented `restartFromBeginning()`: Re-initializes state with full reset, resets score, currency, level, and player upgrades, then starts game.
-     * Synchronized `player.isDead` flag and guarded against crisis lockouts on continue.
-   - `src/components/game-canvas.tsx`:
-     * Updated `GameOverModal` with distinct, interactive buttons for "Continue" (`continue-button`, `이어하기`) and "Restart from Beginning" (`restart-button`, `처음부터 시작`).
-   - `tests/continue_vs_restart_on_death.spec.ts`:
-     * Created comprehensive 14-test Playwright E2E suite covering basic flows, in-game shop persistence, stress/consecutive continues, localization, drone cleanup, crisis interactions, low-FPS death, rapid button spamming, mobile viewports, and audio concurrency.
+   - **R1: Dynamic Backgrounds & Threat Signifiers**:
+     * Implemented 5-tier biome background progression in `src/game/GameManager.ts` cycling every 10 stages (Surface Aquifer $\to$ Abyssal Trench $\to$ Bioluminescent Reef $\to$ Toxic Seabed $\to$ Cosmic Void) with procedural vertical gradients and distinct particle physics.
+     * Implemented 4-tier threat signifier system (`NONE`, `ELITE`, `BOSS`, `CRISIS`) with smooth 0.4s ambient hue interpolation and radial perimeter vignettes (Crimson `#dc2626` for Bosses, Magenta `#c026d3` for Elites, Lime/Amber for Crisis events) maintaining $\ge 7:1$ projectile contrast.
+   - **R2: Allied Reinforcements with Roles & UI**:
+     * Implemented allied strike squadron reinforcement warp-in events in `src/game/Helper.ts`, `src/game/GameManager.ts`, and `src/components/game-canvas.tsx`.
+     * Added specialized role AI behaviors:
+       - **Fighter** (`HelperType.FIGHTER = 0`): Priority targeting on Saboteurs and diving hostiles with twin plasma bolts.
+       - **Medic** (`HelperType.MEDIC = 3`): Escort formation near player, restoring player health (`+1 HP` every 3.5s) and relieving suppression.
+       - **Repair Bot** (`HelperType.REPAIRER = 1`): Priority targeting on damaged central barricades with nanite repair beams (+4 HP / 0.4s).
+     * High-contrast overhead UI: $38 \times 5\text{ px}$ dynamic health bars, role badges (`[⚔️ FIGHTER]`, `[💚 MEDIC]`, `[🔧 REPAIR BOT]`), and Squadron Status HUD.
+   - **R3: Barricade Saboteurs & Repair Mechanics**:
+     * Implemented **Barricade Saboteur** enemy (`EnemyType.SABOTEUR = 13`) in `src/game/Enemy.ts`: paths toward central barricades, latches, inflicts 12.0 DPS gnawing damage with custom vector art and rotating tungsten saw drills.
+     * Implemented dual repair counter-mechanics: automatic full barricade restoration in `src/game/GameManager.ts` (`restoreBarricades()` in `startNextWave()`) and active bidirectional voxel block reconstruction in `src/game/Barricade.ts`.
 
 3. **Audit Results**:
-   - Phase A (Timeline): Commit `6d9b588` verified; `master` fully synced with `origin/master`.
-   - Phase B (Integrity): Validated authentic DOM locators, event handlers, and engine logic with zero mock shortcuts.
-   - Phase C (Independent Execution):
-     * `npm run build`: Turbopack build passed with 0 errors.
-     * `tests/continue_vs_restart_on_death.spec.ts`: 14/14 tests PASSED.
-     * Regression suites (crossfire, state machine, boundary scaling): 27/27 tests PASSED.
+   - Phase A (Timeline & Git Forensics): Commit `96d4092` verified on `origin/master`; local and remote branches in exact parity; working tree clean.
+   - Phase B (Integrity & Forensics): PASS (0 shortcuts, 0 hardcoded mocks, 0 stubs; full procedural vector rendering and genuine game engine physics).
+   - Phase C (Independent Test Execution):
+     * `npx tsc --noEmit`: 0 errors (Exit code 0).
+     * `npm run build`: Production build succeeded in 2.5s with all pages static (Exit code 0).
+     * Expansion Suites (`tests/17_*`, `tests/18_*`, `tests/19_*`): 16/16 tests PASSED.
+     * Regression Suites (`continue_vs_restart_on_death`, `crossfire_and_score_persistence`): 22/22 tests PASSED.
+     * Total independent execution: 38/38 tests PASSED (100%).
 
 ---
 
 ## 2. Logic Chain
 
-1. **Routing**: Analyzed user request; routed to SWE Light (`teamwork_preview_swe`) per the Routing Decision Table due to explicit single self-contained feature request ("Keep it small and focused").
-2. **SWE Light Loop Execution**:
-   - Dispatched primary implementer (`2dd42671-ea66-405d-bbd9-9e34db754ba5`).
-   - Dispatched Reviewer Round 1 (`aa436b88-d6a5-4675-a2cb-05e31963b456`): remediated score wipe regression, drone leaks, and crisis lockout.
-   - Dispatched Reviewer Round 2 (`2030db7a-74f1-43f5-8ada-0fa7f3592925`): remediated shield-gate absorption and expanded test coverage to 14 scenarios.
-   - Dispatched Reviewer Round 3 (`98c02656-7429-45f9-9eee-52f64c3ee54d`): confirmed zero remaining defects; 100% test pass rate across all suites.
-3. **Git Sync**: Changes committed (`6d9b588`) and pushed to `origin/master`.
-4. **Mandatory Independent Victory Audit**: Spawned `teamwork_preview_victory_auditor` (`39b8ff4a-c17d-4f6d-8af0-79b6443ec5b7`). Auditor conducted 3-phase verification and confirmed `VICTORY CONFIRMED`.
+1. **Routing & Dispatch**:
+   - Analyzed incoming user request per Routing Decision Table: multi-part major feature expansion with explicit user request for "a very large team of agents".
+   - Routed to **General** (`teamwork_preview_orchestrator`).
+2. **Phase 0 Surveys & User Approval Gate**:
+   - Dispatched 3 parallel Explorers to survey backgrounds/threats, allies/UI, and barricades/saboteurs.
+   - Synthesized findings into unified architecture in `PROJECT.md` and `COLLABORATION.md`.
+   - Strictly respected User Global Rules by pausing at User Approval Gate until explicit user approval ("승인") was granted.
+3. **Execution Tracks**:
+   - Milestone M1: Dynamic Backgrounds & Threat Signifiers (`worker_m1_exp2`, 6/6 tests passing).
+   - Milestone M2: Allied Reinforcements with Roles & UI (`worker_m2_exp2`, 5/5 tests passing).
+   - Milestone M3: Barricade Saboteurs & Repair Mechanics (`worker_m3_exp2`, 5/5 tests passing).
+   - Test Track: Dual-track test authors delivered comprehensive Playwright suites (`tests/17_*`, `tests/18_*`, `tests/19_*`).
+4. **Git Sync**:
+   - Verified `npx tsc --noEmit` and `npm run build` (0 errors).
+   - Committed changes in `96d4092` and pushed to `origin/master`.
+5. **Independent Victory Audit**:
+   - Spawned `teamwork_preview_victory_auditor` (`75d122bc-457a-4eff-a586-cecd900ee4a8`).
+   - Independent 3-phase audit completed with **VICTORY CONFIRMED** verdict.
 
 ---
 
 ## 3. Caveats
 
-- Playwright tests default to port 3000. If other background dev servers run concurrently, ensure `SKIP_WEBSERVER` or port isolation is configured.
-- Mid-crisis Continue restarts the wave with standard enemies rather than saving mid-encounter rift positions (intended game design to avoid unfair player death loops).
+- In `Enemy.fire()`, Saboteurs are dedicated melee sappers and do not fire projectiles; ranged variants can be added in future expansions if desired.
+- Homing missiles ignore friendly barricades (`ignoreBarricades = true`), allowing player projectiles to pass through defensive bunkers to eliminate latched Saboteurs without inflicting friendly fire.
 
 ---
 
 ## 4. Conclusion
 
-The "Continue vs Restart Option on Death" feature is completely implemented, rigorously verified across 3 adversarial review rounds, confirmed with a 14-test automated E2E suite, audited with a VICTORY CONFIRMED verdict, and pushed to remote master.
+All requirements R1, R2, and R3 from the user prompt have been completely implemented, verified with 100% test passing rates across both expansion and regression suites, committed to Git (`96d4092`), synchronized with `origin/master`, and validated with an independent **VICTORY CONFIRMED** audit verdict.
 
 ---
 
 ## 5. Verification Method
 
-- Build: `npm run build`
-- Tests: `npx playwright test tests/continue_vs_restart_on_death.spec.ts`
-- Regressions: `npx playwright test tests/crossfire_and_score_persistence.spec.ts tests/bughunt_empirical_edgecases_state_machine.spec.ts tests/adversarial_challenger_m1_2.spec.ts`
-- Git verification: `git log -1` and `git status -uno`
+- Independent Victory Auditor Report: `/Users/user/src/water-invader/.agents/sentinel_victory_auditor_expansion_2/VICTORY_AUDIT_REPORT.md`
+- Independent Victory Auditor Handoff: `/Users/user/src/water-invader/.agents/sentinel_victory_auditor_expansion_2/handoff.md`
+- Test commands executed independently:
+  * `npx tsc --noEmit`
+  * `npm run build`
+  * `npx playwright test tests/17_dynamic_backgrounds_and_threat_signifiers.spec.ts tests/18_allied_reinforcements_and_roles.spec.ts tests/19_barricade_saboteur_and_repair.spec.ts`
+
