@@ -13,7 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('http://localhost:3000'),
+  metadataBase: new URL(
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'https://water-invader.vercel.app'
+  ),
   title: "Water Invader - Save the Earth!",
   description: "A fast-paced retro 8-bit space shooter where you play as a cute water droplet defending against pollution fireballs!",
   openGraph: {
