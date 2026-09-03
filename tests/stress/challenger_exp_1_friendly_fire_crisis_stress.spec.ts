@@ -665,11 +665,9 @@ test.describe('Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doublin
       // Single physics tick update
       crisis.update(0.05, player, bullets, particles);
 
-      // EMPIRICAL CHALLENGER FINDING:
-      // Due to DimensionalRift.ts line 179 eagerly setting this.isShielding = false upon lethal damage,
-      // the condition `if (rift.isShielding)` in EndGameCrisis.ts line 225 is bypassed before update(),
-      // causing this.callbacks.onRiftDestroyed to be suppressed (received 0 events instead of 2).
-      expect(riftsDestroyedCount).toBe(0);
+      // Because DimensionalRift now preserves isShielding until EndGameCrisis.update() processes the collapse,
+      // this.callbacks.onRiftDestroyed fires cleanly for both destroyed anchors (2 events).
+      expect(riftsDestroyedCount).toBe(2);
 
       // Sovereign barrier collapsed
       expect(crisis.sovereign!.isInvulnerable).toBe(false);
