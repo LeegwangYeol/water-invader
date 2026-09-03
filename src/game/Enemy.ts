@@ -74,6 +74,22 @@ export class Enemy extends Entity {
     return this.size.height;
   }
 
+  public get isBoss(): boolean {
+    return this.type === EnemyType.BOSS;
+  }
+
+  public get isElite(): boolean {
+    return (
+      this.isMidTier ||
+      this.type === EnemyType.SNIPER ||
+      this.type === EnemyType.ROGUE_STALKER ||
+      this.type === EnemyType.ROGUE_MECH ||
+      this.type === EnemyType.ROGUE_GOLIATH ||
+      this.type === EnemyType.ROGUE_PHANTOM ||
+      this.type === EnemyType.ROGUE_CARRIER
+    );
+  }
+
   constructor(x: number, y: number, canvasWidth: number = 720, level: number = 1, type: EnemyType = EnemyType.NORMAL, canvasHeight: number = 960) {
     Enemy.initAssets();
     const validX = Number.isFinite(x) ? x : 0;

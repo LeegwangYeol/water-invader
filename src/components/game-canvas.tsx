@@ -494,7 +494,9 @@ interface GameOverModalProps {
   onBuyAcidShield?: () => void;
   onBuyHomingMissiles?: () => void;
   onRepairTank: () => void;
-  onPlayAgain: () => void;
+  onContinue: () => void;
+  onRestart?: () => void;
+  onPlayAgain?: () => void;
   lang: string;
 }
 
@@ -510,10 +512,13 @@ export const GameOverModal = React.memo(function GameOverModal({
   onBuyAcidShield,
   onBuyHomingMissiles,
   onRepairTank,
+  onContinue,
+  onRestart,
   onPlayAgain,
   lang,
 }: GameOverModalProps) {
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
+  const handleRestart = onRestart || onPlayAgain;
 
   return (
     <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-2 sm:p-4">
@@ -537,12 +542,27 @@ export const GameOverModal = React.memo(function GameOverModal({
           lang={lang}
         />
 
-        <button 
-          onClick={onPlayAgain}
-          className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shrink-0 mb-4"
-        >
-          PLAY AGAIN
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center mt-2 mb-4 w-full max-w-md px-2">
+          <button 
+            data-testid="continue-button"
+            id="continue-btn"
+            onClick={onContinue}
+            className="w-full sm:w-1/2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold rounded-lg text-base sm:text-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] flex flex-col items-center justify-center cursor-pointer"
+          >
+            <span>{t('이어하기', 'Continue')}</span>
+            <span className="text-xs font-normal text-emerald-200 mt-0.5">{t('현재 웨이브 유지 (Continue)', 'Resume current wave')}</span>
+          </button>
+          
+          <button 
+            data-testid="restart-button"
+            id="restart-btn"
+            onClick={handleRestart}
+            className="w-full sm:w-1/2 px-6 py-3.5 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-bold rounded-lg text-base sm:text-lg transition-all shadow-[0_0_15px_rgba(239,68,68,0.4)] flex flex-col items-center justify-center cursor-pointer"
+          >
+            <span>{t('처음부터 시작', 'Restart from Beginning')}</span>
+            <span className="text-xs font-normal text-red-200 mt-0.5">{t('웨이브 1 리셋 (PLAY AGAIN)', 'Reset to Wave 1 (PLAY AGAIN)')}</span>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -573,6 +593,14 @@ export default function GameCanvas() {
   const [isMuted, setIsMuted] = useState(false);
   const [crisisState, setCrisisState] = useState<CrisisState | null>(null);
   const [endGameCrisisState, setEndGameCrisisState] = useState<EndGameCrisisState | null>(null);
+  const [alliedReinforcementBanner, setAlliedReinforcementBanner] = useState<{ active: boolean; text: string }>({ active: false, text: '' });
+  const [squadronStatus, setSquadronStatus] = useState<{ total: number; fighters: number; medics: number; repairers: number; tanks: number }>({
+    total: 0,
+    fighters: 0,
+    medics: 0,
+    repairers: 0,
+    tanks: 0,
+  });
   
   const [showManual, setShowManual] = useState(false);
   const showManualRef = useRef(false);
@@ -701,6 +729,9 @@ export default function GameCanvas() {
     game.onEndGameCrisisEvent = (crisis) => {
       setEndGameCrisisState(crisis ? { ...crisis } : null);
     };
+    game.onAlliedReinforcements = (active, text) => {
+      setAlliedReinforcementBanner({ active, text });
+    };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (showManualRef.current) return;
@@ -758,6 +789,36 @@ export default function GameCanvas() {
     };
   }, [getSafeStoredHighScore]);
 
+  useEffect(() => {
+    if (gameState !== GameState.PLAYING) {
+      setSquadronStatus({ total: 0, fighters: 0, medics: 0, repairers: 0, tanks: 0 });
+      return;
+    }
+    const syncAllies = () => {
+      if (gameManagerRef.current) {
+        const helpers = gameManagerRef.current.helpers || [];
+        setSquadronStatus({
+          total: helpers.length,
+          fighters: helpers.filter(h => h.type === 0).length,
+          medics: helpers.filter(h => h.type === 3).length,
+          repairers: helpers.filter(h => h.type === 1).length,
+          tanks: helpers.filter(h => h.type === 2).length,
+        });
+        if (gameManagerRef.current.alliedReinforcementBannerTimer > 0) {
+          setAlliedReinforcementBanner({
+            active: true,
+            text: gameManagerRef.current.alliedReinforcementBannerText || '✦ MASSIVE ALLIED REINFORCEMENTS ARRIVED! ✦',
+          });
+        } else {
+          setAlliedReinforcementBanner(prev => prev.active ? { active: false, text: '' } : prev);
+        }
+      }
+    };
+    syncAllies();
+    const interval = setInterval(syncAllies, 200);
+    return () => clearInterval(interval);
+  }, [gameState]);
+
   const startGame = useCallback(() => {
     setIsPreGameShop(false);
     gameManagerRef.current?.init(false, true);
@@ -769,6 +830,34 @@ export default function GameCanvas() {
       }
     }
     gameManagerRef.current?.startGame();
+  }, []);
+
+  const continueGame = useCallback(() => {
+    setIsPreGameShop(false);
+    if (gameManagerRef.current) {
+      gameManagerRef.current.continueGame();
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+      setScore(gameManagerRef.current.score);
+      setWave(gameManagerRef.current.level);
+      if (gameManagerRef.current.player) {
+        setHp(gameManagerRef.current.player.hp);
+      }
+    }
+  }, []);
+
+  const restartFromBeginning = useCallback(() => {
+    setIsPreGameShop(false);
+    if (gameManagerRef.current) {
+      gameManagerRef.current.restartFromBeginning();
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+      setScore(gameManagerRef.current.score);
+      setWave(gameManagerRef.current.level);
+      if (gameManagerRef.current.player) {
+        setHp(gameManagerRef.current.player.hp);
+      }
+    }
   }, []);
 
   const handleOpenPreGameShop = useCallback(() => {
@@ -1005,6 +1094,56 @@ export default function GameCanvas() {
           lang={lang}
         />
 
+        {/* Allied Reinforcement Squadron Status HUD */}
+        {gameState === GameState.PLAYING && squadronStatus.total > 0 && (
+          <div
+            data-testid="ally-squadron-hud"
+            className="absolute top-14 left-4 pointer-events-none z-30 px-3 py-1 rounded-lg bg-slate-950/90 border border-emerald-500/80 text-white text-xs font-mono flex items-center gap-2 shadow-[0_0_12px_rgba(34,197,94,0.5)] select-none backdrop-blur-sm"
+          >
+            <span className="font-bold text-emerald-400">🛡️ ALLIES ({squadronStatus.total}):</span>
+            <div className="flex items-center gap-2 text-[11px]">
+              {squadronStatus.fighters > 0 && (
+                <span className="text-green-300 font-semibold flex items-center gap-0.5">
+                  ⚔️ {squadronStatus.fighters}
+                </span>
+              )}
+              {squadronStatus.medics > 0 && (
+                <span className="text-cyan-300 font-semibold flex items-center gap-0.5">
+                  💚 {squadronStatus.medics}
+                </span>
+              )}
+              {squadronStatus.repairers > 0 && (
+                <span className="text-amber-300 font-semibold flex items-center gap-0.5">
+                  🔧 {squadronStatus.repairers}
+                </span>
+              )}
+              {squadronStatus.tanks > 0 && (
+                <span className="text-purple-300 font-semibold flex items-center gap-0.5">
+                  🛡️ {squadronStatus.tanks}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Massive Allied Reinforcements Arrival Banner */}
+        {gameState === GameState.PLAYING && alliedReinforcementBanner.active && (
+          <div
+            data-testid="allied-reinforcement-banner"
+            className="absolute inset-x-4 top-24 pointer-events-none z-30 flex flex-col items-center justify-center border-2 border-emerald-400 shadow-[0_0_30px_rgba(34,197,94,0.8)] animate-pulse rounded-xl bg-slate-950/95 py-3 px-4 text-center"
+          >
+            <div className="text-emerald-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-0.5 flex items-center justify-center gap-2">
+              <span>✦</span> SQUADRON WARP CONVERGENCE <span>✦</span>
+            </div>
+            <div className="text-white font-black text-sm sm:text-base tracking-wide text-emerald-100">
+              {alliedReinforcementBanner.text || '✦ MASSIVE ALLIED REINFORCEMENTS ARRIVED! ✦'}
+            </div>
+            <div className="text-amber-300 font-bold text-[11px] mt-1">
+              [SQUADRON DEPLOYED: FIGHTERS, MEDICS & REPAIR BOTS ON STATION]
+            </div>
+          </div>
+        )}
+
         {/* Stellaris-Style End-Game Crisis Warning Banner Overlay */}
         {gameState === GameState.PLAYING && endGameCrisisState && (endGameCrisisState.phase === CrisisPhase.INCURSION || endGameCrisisState.warningTimer > 0) && (
           <div
@@ -1132,7 +1271,9 @@ export default function GameCanvas() {
             onBuyAcidShield={buyAcidShield}
             onBuyHomingMissiles={buyHomingMissiles}
             onRepairTank={repairTank}
-            onPlayAgain={startGame}
+            onContinue={continueGame}
+            onRestart={restartFromBeginning}
+            onPlayAgain={restartFromBeginning}
             lang={lang}
           />
         )}

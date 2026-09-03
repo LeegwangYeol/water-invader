@@ -97,9 +97,15 @@ test.describe('Challenger M1 Adversarial Verification Suite (teamwork_preview_ch
           expect(r.bossHp).toBeGreaterThanOrEqual(250);
         }
       } else {
-        // Grid capped at 5 rows x 8 cols = 40 enemies max
-        expect(r.enemyCount).toBeGreaterThanOrEqual(18); // 3x6 = 18 min
-        expect(r.enemyCount).toBeLessThanOrEqual(40); // 5x8 = 40 max
+        if (r.wave < 10) {
+          // Grid capped at 5 rows x 8 cols = 40 enemies max
+          expect(r.enemyCount).toBeGreaterThanOrEqual(18); // 3x6 = 18 min
+          expect(r.enemyCount).toBeLessThanOrEqual(40); // 5x8 = 40 max
+        } else {
+          // Stage 10+ Swarm Expansion: 50 to 60 units
+          expect(r.enemyCount).toBeGreaterThanOrEqual(40);
+          expect(r.enemyCount).toBeLessThanOrEqual(60);
+        }
       }
 
       // 3. Boundaries: within logical canvas width [0, 600]

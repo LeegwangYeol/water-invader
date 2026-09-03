@@ -130,3 +130,69 @@ Before committing and pushing the changes, the agent team MUST thoroughly verify
 - [ ] Automated tests confirm the new homing physics and 3rd faction mechanics without error.
 - [ ] `npm run build` and `npx playwright test` pass cleanly.
 - [ ] Changes are pushed to the repository only after unanimous tester verification.
+
+## 2026-09-03T15:09:55Z
+
+This is a single self-contained feature for the Next.js "Water Invader" project. Keep it small and focused.
+
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Continue vs Restart Option on Death
+When the player dies (Game Over), the game should not immediately reset completely or only offer a single restart button. Instead, present the player with two explicit options on the Game Over UI:
+1. "Restart from Beginning" (처음부터 시작) - Resets score, wave, and upgrades, starting from Wave 1.
+2. "Continue" (이어하기) - Revives the player at the current wave, maintaining their current score and purchased upgrades.
+
+### R2. Automated Verification & Git Push
+Verify that the changes compile and don't break existing logic using the Playwright E2E suite. Add or update tests to explicitly check that the two options function correctly (Continuing keeps wave > 1 and upgrades, Restarting resets wave to 1 and upgrades). Once verified, commit the changes and push them to the repository.
+
+## Acceptance Criteria
+
+### Gameplay Mechanics
+- [ ] Game Over screen displays two distinct choices: Restart and Continue.
+- [ ] Selecting "Continue" respawns the player on the current wave with their upgrades intact.
+- [ ] Selecting "Restart" fully resets the game state to Wave 1.
+
+### Quality & Deployment
+- [ ] Running `npm run build` and `npx playwright test` passes without errors.
+- [ ] Changes are successfully committed to Git and pushed to the remote repository.
+
+## 2026-09-03T15:37:41Z
+
+# Teamwork Project Prompt — Draft
+
+> Status: Ready for launch — awaiting user approval
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: A very large team of agents
+
+This is a major feature expansion for the Next.js "Water Invader" project. It introduces dynamic backgrounds, allied reinforcements, new enemy types, and barricade repair mechanics. Use a very large team of agents.
+
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Dynamic Backgrounds & Threat Signifiers
+Every 10 stages (e.g., Wave 10, 20), the game background must change to indicate progression. Additionally, when Elite enemies, Bosses, or high-difficulty events are present, the color scheme or background must visually shift to give the player a distinct impression of heightened danger.
+
+### R2. Allied Reinforcements with Roles & UI
+Introduce massive allied reinforcement events. Allied units must display their remaining health and a clear role indicator (e.g., an icon or text indicating if they are a "Medic", "Repair Bot", or "Fighter"). The UI must make it obvious what function each ally serves.
+
+### R3. Barricade Saboteurs & Repair Mechanics
+Introduce a new enemy type that specifically targets and gnaws away at the central defensive barricades. To counter this, the central barricades must either automatically fully restore at the start of every new wave, or the newly added Allied Repair Bots must prioritize repairing the barricades as their primary action.
+
+## Acceptance Criteria
+
+### Gameplay Mechanics
+- [ ] Reaching a multiple of 10 waves triggers a background change, and Boss/Elite spawns trigger a distinct color/visual shift.
+- [ ] Allied units spawn with visible health bars and role identifiers.
+- [ ] A new enemy successfully attacks and degrades barricades.
+- [ ] Barricades are fully restored per wave or actively repaired by allied bots.
+
+### Quality & Deployment
+- [ ] Running `npm run build` and `npx playwright test` passes without errors, including any new tests written for these mechanics.
+- [ ] Changes are successfully committed to Git and pushed to the remote repository.
+
+

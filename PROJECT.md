@@ -1,68 +1,86 @@
-# Project: Water Invader - Major Late-Game Gameplay Update
+# Project: Water Invader - Feature Expansion (Dynamic Backgrounds, Allied Reinforcements & Barricade Saboteurs)
 
 ## Architecture
-Water Invader is a Next.js / TypeScript arcade space shooter featuring continuous collision detection, dynamic event crises, allied dreadnoughts, and an interactive shop. This major update extends late-game systems past Wave 10:
-- **Weapon System**: Autonomous Homing Missile pod (`HomingMissile extends Bullet`) attached to Player ship, calculating proportional pursuit curves towards nearest Euclidean enemy threats with barricade clearance and splash damage.
-- **Shop & Economy**: Tiered late-game investment array (`HOMING_MISSILE_COSTS = [250, 450, 700, 1000, 1400]`), scaling salvo count (1..3) and damage (3..7), persisting across wave resets and pre-game shop armory.
-- **Swarm Progression**: Two-tier enemy swarm scaling with expanded initial grid (50–60 units) and dynamic streaming echelons (10–14 units) when active enemies drop below 18, capped at 65–70 concurrent on-screen entities.
-- **3rd Faction (`Faction.ROGUE`)**: Mid-tier monsters (Rogue Goliath, Rogue Phase Phantom, Rogue Brood Carrier) with overhead mini-health bars, kinetic shields, phase dash teleports, cluster-split spawns, and 3-way crossfire AI.
-- **Dual-Track Testing Architecture**: Independent requirement-driven opaque-box E2E test suites coupled with white-box unit test suites and adversarial stress testing.
+Water Invader is a Next.js / TypeScript arcade space shooter featuring continuous collision detection, dynamic event crises, allied dreadnoughts, homing missiles, and an interactive shop. This major feature expansion introduces three core systems:
+1. **Dynamic Stage Backgrounds & Threat Signifiers (R1)**:
+   - 5-Tier Biome Progression cycling every 10 stages (`Math.floor((level - 1) / 10)`): Surface Aquifer, Abyssal Trench, Bioluminescent Reef, Toxic Seabed, and Cosmic Void.
+   - Threat Hierarchy (`NONE`, `ELITE`, `BOSS`, `CRISIS`) dynamically driving smooth ($0.4\text{s}$ lerp) radial perimeter threat vignettes (crimson for Bosses, magenta/amber for Elites, theme-tinted for Crises) rendered in Layer 1 before screen shake, maintaining zero GC allocation and $\ge 7:1$ projectile contrast.
+2. **Allied Reinforcements with Roles & UI (R2)**:
+   - Squadron warp-in events (Fighters, Medics, Repair Bots) triggered on wave milestones (every 5 waves) and emergency survival thresholds.
+   - Distinct role behaviors: Fighters target Saboteurs and diving enemies; Medics escort the player and heal $+1\text{ HP}$ (every $3.5\text{s}$); Repair Bots prioritize damaged barricades (+8 HP/s).
+   - Canvas overhead UI ($38\times 5\text{px}$ dynamic health bars, role badges $[⚔️\text{ FIGHTER}]$, $[💚\text{ MEDIC}]$, $[🔧\text{ REPAIR BOT}]$) and React DOM Squadron Status HUD + Arrival Banner.
+3. **Barricade Saboteurs & Repair Mechanics (R3)**:
+   - New enemy `BARRICADE_SABOTEUR` (`EnemyType.SABOTEUR = 13`) targeting central barricades (index 1 & 2), homing in, latching, and dealing $12.0\text{ DPS}$ acid/drill gnaw damage with animated rotary saw teeth.
+   - Dual Counter-Mechanics: Automatic full barricade restoration on wave transition (`startNextWave()`), and active Repair Bot nanite welding with synchronized voxel block reconstruction in `Barricade.update()`.
+   - Dedicated counter-weapon synergy: Player homing missiles explicitly ignore barricades to destroy Saboteurs latched onto cover.
+
+---
 
 ## Feature Inventory
-| # | Feature | Description | Milestone | Source |
-|---|---------|-------------|-----------|--------|
-| 1 | Homing Missile Projectile (`HomingMissile`) | Seeker projectile with proportional angular turning ($\omega=6.2\text{ rad/s}$), CCD, and barricade passthrough | M1 | ORIGINAL_REQUEST §R1 |
-| 2 | Autonomous Missile Salvo Pod | Player wingtip launcher charging on dedicated timer ($2.0\text{s} \to 0.9\text{s}$), firing 1 to 3 missiles | M1 | ORIGINAL_REQUEST §R1 |
-| 3 | Late-Game Tiered Shop Upgrade | Shop upgrade item for Homing Missiles with tiered costs (`[250, 450, 700, 1000, 1400] 💧`) in `game-canvas.tsx` | M1 | ORIGINAL_REQUEST §R1 |
-| 4 | Upgrade State Persistence | `init(false, true)` preserves homing missile unlock level across pre-game and mid-game shop sessions | M1 | ORIGINAL_REQUEST §R1 |
-| 5 | Rocket Ignition Audio FX | Audio synthesizer in `SoundManager.ts` for missile launch and detonation | M1 | ORIGINAL_REQUEST §R1 |
-| 6 | Post-Wave 10 Swarm Grid Expansion | Wave generator expands from 40-cap to 50–60 enemies (up to 6 rows x 10 cols) post-Wave 10 | M2 | ORIGINAL_REQUEST §R2 |
-| 7 | Dynamic Swarm Echelon Streaming | Secondary swarm formations stream in when active enemies $\le 18$, scaling wave casualties to 70–90+ | M2 | ORIGINAL_REQUEST §R2 |
-| 8 | Concurrent Entity Safety Cap | Hard cap of 65–70 concurrent on-screen hostiles to ensure stable 60 FPS performance | M2 | ORIGINAL_REQUEST §R2 |
-| 9 | 3rd Faction Mid-Tier Monsters | Distinct Rogue monsters (Goliath, Phase Phantom, Brood Carrier) with 25–55 HP and unique mechanics | M2 | ORIGINAL_REQUEST §R2 |
-| 10 | Overhead Mini-Health Bars | 40x4px vector health bar with kinetic shield overlay and health ratio gradient | M2 | ORIGINAL_REQUEST §R2 |
-| 11 | 3-Way AI Crossfire & Friendly Fire | Rogue units engage both Invaders and Player, triggering `handleCrossfireKill()` bonuses | M2 | ORIGINAL_REQUEST §R2 |
-| 12 | Solitary Boss Wave 5 Invariant | Strict preservation of Wave 5 solitary boss (1 enemy) to protect test assertions | M2 | ORIGINAL_REQUEST §R2 |
-| 13 | Unit Test Suite for Missiles & Swarms | Unit tests covering seeking geometry, economy tiers, persistence, and swarm caps | M3 | ORIGINAL_REQUEST §R3 |
-| 14 | Playwright E2E Combat Suite | Playwright E2E specs for Homing Missiles (`tests/16_homing_missile_combat.spec.ts`) | M3 | ORIGINAL_REQUEST §R3 |
-| 15 | Playwright E2E Swarm & Faction Suite | Playwright E2E specs for Swarm & 3rd Faction (`tests/16_enemy_swarm_and_third_faction.spec.ts`) | M3 | ORIGINAL_REQUEST §R3 |
-| 16 | Full Regression & Pre-Push Verification | `npm run build`, `npx tsc --noEmit`, `npx playwright test` verification before git commit and push | M3 | ORIGINAL_REQUEST §R3 |
+| # | Feature | Description | Milestone | Source | Status |
+|---|---------|-------------|-----------|--------|--------|
+| 1 | 5-Tier Biome Background Cycle | Surface Aquifer, Abyssal Trench, Bioluminescent Reef, Toxic Seabed, Cosmic Void cycling every 10 stages | M1 | ORIGINAL_REQUEST §R1 | PLANNED |
+| 2 | Boss Threat Signifier Vignette | Radial crimson danger vignette and particle acceleration during Boss encounters | M1 | ORIGINAL_REQUEST §R1 | PLANNED |
+| 3 | Elite Threat Signifier Vignette | Menacing magenta/amber danger vignette when Snipers or Rogue Elites are active | M1 | ORIGINAL_REQUEST §R1 | PLANNED |
+| 4 | Threat Interpolation & Zero-GC Pipeline | 0.4s smooth threatIntensity lerp in Layer 1, 60 FPS zero-allocation | M1 | ORIGINAL_REQUEST §R1 | PLANNED |
+| 5 | Role Hierarchy & Invariants | Preserve `FIGHTER = 0`, `REPAIRER = 1`, `TANK = 2`; introduce `MEDIC = 3` | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
+| 6 | Fighter AI & Targeting | Prioritizes Saboteurs and descending invaders; twin plasma bolts | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
+| 7 | Medic Escort & Healing AI | Escorts player ship, heals player HP (+1 HP every 3.5s) and mitigates suppression | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
+| 8 | Repair Bot Barricade Priority | Prioritizes damaged central barricades, beams repair rays (+8 HP/s) | M2, M3 | ORIGINAL_REQUEST §R2, §R3 | PLANNED |
+| 9 | Overhead Health Bar & Role Badges | 38x5px health bar + [⚔️ FIGHTER], [💚 MEDIC], [🔧 REPAIR BOT] high-contrast badges | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
+| 10 | Squadron HUD & Arrival Banner | On-screen squadron counter and massive reinforcement arrival toast banner | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
+| 11 | Barricade Saboteur Enemy (`SABOTEUR`) | Dedicated siege unit targeting central barricades, 12 DPS acid/drill gnawing | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
+| 12 | Procedural Rotary Saw Vector Art | Procedural vector art for Saboteur with rotating saw blades and acid spark FX | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
+| 13 | Wave Barricade Auto-Restoration | `restoreBarricades()` in `startNextWave()` fully restoring HP and 24 voxel blocks | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
+| 14 | Voxel Reconstruction Sync | Reverse voxel block rebuilding loop in `Barricade.update()` as HP increases | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
+| 15 | Homing Missile Anti-Saboteur Synergy | Homing missiles bypass barricade obstruction to eliminate Saboteurs | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
+| 16 | Playwright E2E Dynamic Background Suite | 7-test suite for biomes, threat shifts, continue/restart persistence, contrast | M4 | ORIGINAL_REQUEST §R1 | PLANNED |
+| 17 | Playwright E2E Allied Reinforcements Suite | Unit, combat, healing, and UI tests for Fighters, Medics, Repair Bots | M4 | ORIGINAL_REQUEST §R2 | PLANNED |
+| 18 | Playwright E2E Barricade Saboteur Suite | Targeting, gnawing damage, active bot repair, and wave restoration tests | M4 | ORIGINAL_REQUEST §R3 | PLANNED |
+| 19 | Full Regression & Pre-Commit Git Sync | `npm run build`, `npx tsc --noEmit`, full Playwright suite, commit & push | M4 | ORIGINAL_REQUEST AC | PLANNED |
+
+---
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| 1 | M1: Homing Missile Weapon System | `src/game/Bullet.ts`, `src/game/Player.ts`, `src/game/GameManager.ts`, `src/components/game-canvas.tsx`, `src/game/SoundManager.ts` | Survey Complete | COMPLETED |
-| 2 | M2: Enemy Swarm & 3rd Faction | `src/game/Enemy.ts`, `src/game/GameManager.ts`, `src/game/types.ts` | Survey Complete | COMPLETED |
-| 3 | M3: Dual-Track Testing & Hardening | `tests/unit/`, `tests/`, Playwright runner, pre-commit/pre-push | M1, M2 | COMPLETED |
+| 0 | M0: Architecture Survey & Discovery | Codebase mapping, render pipeline analysis, gap identification | None | DONE |
+| 1 | M1: Dynamic Backgrounds & Threat Signifiers | `src/game/GameManager.ts`, `src/game/Enemy.ts`, `src/game/types.ts` | M0 | DONE |
+| 2 | M2: Allied Reinforcements with Roles & UI | `src/game/Helper.ts`, `src/game/GameManager.ts`, `src/components/game-canvas.tsx` | M0 | DONE |
+| 3 | M3: Barricade Saboteurs & Repair Mechanics | `src/game/Barricade.ts`, `src/game/Enemy.ts`, `src/game/GameManager.ts` | M0, M2 | IN_PROGRESS |
+| 4 | M4: Dual-Track Verification, E2E Suites & Git Sync | `tests/`, Playwright runner, pre-commit build & push | M1, M2, M3 | PLANNED |
 
+---
 
 ## Interface Contracts
 
-### Player ↔ HomingMissile
-- `Player.homingMissiles: number`: Upgrade level (0 = unpurchased, 1..5 = active tier).
-- `Player.missileTimer: number`: Dedicated reload timer decremented by `deltaTime`.
-- `HomingMissile(x: number, y: number, damage: number)`: Spawned at ship wingtips with initial upward velocity and autonomous target acquisition.
-- `HomingMissile.ignoreBarricades: boolean = true`: Bypasses player barricade collision at $y = 650$.
+### GameManager ↔ Background & Threat State
+- `GameManager.BIOMES: readonly BiomeTheme[]`: Static array of 5 aquatic/cosmic biomes.
+- `GameManager.getCurrentBiome(): BiomeTheme`: Returns active biome based on `Math.floor((level - 1) / 10)`.
+- `GameManager.getThreatState(): ThreatState`: Returns `{ level: ThreatLevel, threatColor: string, threatIntensity: number }`.
+- `Enemy.isBoss: boolean`: Public getter returning `this.type === EnemyType.BOSS`.
+- `Enemy.isElite: boolean`: Public getter returning `isMidTier || type === EnemyType.SNIPER || ...`.
 
-### GameManager ↔ Shop UI
-- `GameManager.getUpgrades()` returns `{ ..., homingMissiles: number }`.
-- `GameManager.upgradeHomingMissiles(): boolean`: Validates currency against `HOMING_MISSILE_COSTS[level]`, deducts currency, increments level, plays audio, updates UI.
-- `GameManager.init(resetScoreAndCash, preserveUpgrades)`: Preserves `homingMissiles` level when `preserveUpgrades === true`.
+### Helper ↔ Roles & UI
+- `HelperType`: Preserves `FIGHTER = 0`, `REPAIRER = 1`, `TANK = 2`; adds `MEDIC = 3`.
+- `Helper.update(deltaTime, barricades, enemies, bullets, player)`: Receives `player` reference for Medic healing and buffs.
+- `Helper.draw(ctx)`: Renders vector chassis, 38x5px health bar, and role badge pill with black stroke outline.
+- `GameManager.triggerMassiveAlliedReinforcements()`: Spawns full strike squadron (2 Fighters, 1 Medic, 1-2 Repair Bots) with hyperspace warp FX.
 
-### Enemy ↔ 3rd Faction
-- `Faction.ROGUE`: Faction identifier for mid-tier monsters.
-- `Enemy.isMidTier: boolean`: Flag enabling overhead health bar rendering and mid-tier stat scaling.
-- `Enemy.shieldHp: number`: Kinetic barrier absorbing damage before base HP.
-- `Enemy.phaseDashCooldown: number`: Timer for horizontal teleport evasion.
-- `Enemy.fire(playerPos, allEnemies)`: Scans for closest target among Player and Invaders; checks line-of-sight friendly-fire suppression for allied Rogues.
+### Barricade ↔ Saboteur & Repair Bot
+- `EnemyType.SABOTEUR = 13`: Siege invader seeking central stone barricades (index 1 & 2).
+- `Barricade.update(deltaTime)`: Synchronizes both block destruction (on damage) and block reconstruction (on repair).
+- `GameManager.restoreBarricades()`: Fully restores all 4 barricade slots and 24 voxel blocks at `startNextWave()`.
+
+---
 
 ## Code Layout
-- `src/game/Entity.ts`: Base entity class with continuous collision detection (CCD).
-- `src/game/Bullet.ts`: Projectile class and `HomingMissile extends Bullet`.
-- `src/game/Player.ts`: Player ship state, controls, primary weapons, and secondary missile salvo launcher.
-- `src/game/Enemy.ts`: Enemy state, AI, swarm movement, mid-tier monsters, overhead health bars.
-- `src/game/GameManager.ts`: Master game loop, wave spawning, collision resolution, shop logic.
-- `src/game/SoundManager.ts`: Web Audio API sound synthesizers.
-- `src/components/game-canvas.tsx`: HUD overlays, React canvas wrapper, `ShopUpgradePanel`.
-- `tests/unit/`: Vitest/Node unit tests for isolated mathematical and state logic.
-- `tests/`: Playwright E2E integration and browser tests.
+- `src/game/Entity.ts`: Base entity class with AABB and Continuous Collision Detection (CCD).
+- `src/game/Barricade.ts`: Voxel grid barricade representation, block destruction & reconstruction.
+- `src/game/Bullet.ts`: Projectile class and `HomingMissile extends Bullet` (with `ignoreBarricades = true`).
+- `src/game/Player.ts`: Player ship state, controls, primary weapons, homing missile pod.
+- `src/game/Enemy.ts`: Enemy state, AI, Saboteur gnaw logic, procedural vector art.
+- `src/game/Helper.ts`: Allied units, roles (Fighter, Medic, Repair Bot), overhead health bars and role badges.
+- `src/game/GameManager.ts`: Game loop, wave spawning, dynamic biomes, threat signifiers, massive reinforcements, collision resolution.
+- `src/components/game-canvas.tsx`: React wrapper, HUD overlays, Squadron Status HUD, Reinforcement banner.
+- `tests/`: Playwright E2E integration test suites.

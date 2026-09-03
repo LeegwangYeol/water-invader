@@ -616,7 +616,7 @@ test.describe('Empirical Verification: State Machine Transitions & Boundary Cond
       expect(wave6State.isPaused).toBe(false);
     });
 
-    test('4.3 Game restart via PLAY AGAIN resets stage, restores HP, persists score/currency and player upgrades', async ({ page }) => {
+    test('4.3 Game restart via Continue vs Restart from Beginning options', async ({ page }) => {
       // 1. Setup upgraded player in wave 3 with score and currency
       await page.evaluate(() => {
         const gm = (window as any).gameManager;
@@ -636,12 +636,11 @@ test.describe('Empirical Verification: State Machine Transitions & Boundary Cond
 
       await expect(page.locator('text=GAME OVER')).toBeVisible();
 
-      // 2. Click PLAY AGAIN
-      await page.locator('button', { hasText: 'PLAY AGAIN' }).click();
+      // 2. Test Continue: keeps wave, upgrades, score, and currency
+      await page.locator('[data-testid="continue-button"]').click();
       await page.waitForTimeout(200);
 
-      // 3. Verify clean session restart
-      const restartState = await page.evaluate(() => {
+      const continueState = await page.evaluate(() => {
         const gm = (window as any).gameManager;
         return {
           state: gm.state,
@@ -659,21 +658,58 @@ test.describe('Empirical Verification: State Machine Transitions & Boundary Cond
         };
       });
 
+      expect(continueState.state).toBe('PLAYING');
+      expect(continueState.isPaused).toBe(false);
+      expect(continueState.level).toBe(3); // Preserved wave
+      expect(continueState.playerHp).toBe(3);
+      expect(continueState.multiShot).toBe(3); // Preserved upgrades
+      expect(continueState.piercing).toBe(2);
+      expect(continueState.hasAcidShield).toBe(true);
+      expect(continueState.score).toBe(2500); // Preserved score
+      expect(continueState.currency).toBe(400); // Preserved currency
+      expect(continueState.enemyCount).toBeGreaterThan(0);
+      expect(continueState.bulletsCount).toBe(0);
+      expect(continueState.hazardCount).toBe(0);
+
+      // 3. Kill player again and test Restart from Beginning
+      await page.evaluate(() => {
+        const gm = (window as any).gameManager;
+        gm.player.hp = 0;
+        (gm as any).gameOver('정수기 재파괴');
+      });
+
+      await expect(page.locator('text=GAME OVER')).toBeVisible();
+      await page.locator('[data-testid="restart-button"]').click();
+      await page.waitForTimeout(200);
+
+      const restartState = await page.evaluate(() => {
+        const gm = (window as any).gameManager;
+        return {
+          state: gm.state,
+          isPaused: gm.isPaused,
+          level: gm.level,
+          score: gm.score,
+          currency: gm.currency,
+          playerHp: gm.player.hp,
+          multiShot: gm.player.multiShot,
+          piercing: gm.player.piercing,
+          hasAcidShield: gm.player.hasAcidShield,
+          enemyCount: gm.enemies.length,
+          bulletsCount: gm.bullets.length,
+        };
+      });
+
       expect(restartState.state).toBe('PLAYING');
       expect(restartState.isPaused).toBe(false);
-      expect(restartState.level).toBe(1);
+      expect(restartState.level).toBe(1); // Reset to wave 1
       expect(restartState.playerHp).toBe(3);
-      // Upgrades preserved
-      expect(restartState.multiShot).toBe(3);
-      expect(restartState.piercing).toBe(2);
-      expect(restartState.hasAcidShield).toBe(true);
-      // Score cleanly reset on Play Again (DEFECT-F1), currency persisted
-      expect(restartState.score).toBe(0);
-      expect(restartState.currency).toBe(400);
-      // Entities cleanly re-initialized
+      expect(restartState.multiShot).toBe(1); // Reset upgrades
+      expect(restartState.piercing).toBe(1);
+      expect(restartState.hasAcidShield).toBe(false);
+      expect(restartState.score).toBe(0); // Reset score
+      expect(restartState.currency).toBe(150); // Reset currency
       expect(restartState.enemyCount).toBeGreaterThan(0);
       expect(restartState.bulletsCount).toBe(0);
-      expect(restartState.hazardCount).toBe(0);
     });
 
     test('4.4 10 consecutive deaths and PLAY AGAIN restarts maintain loop stability and zero entity leakage', async ({ page }) => {

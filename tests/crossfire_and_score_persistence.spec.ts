@@ -13,7 +13,7 @@ test.describe('Crossfire & Score/Cash Persistence Verification Suite', () => {
   // R1: SCORE AND CASH PERSISTENCE ON DEATH
   // =========================================================================
 
-  test('R1.1: Score and Currency persist when player dies and game respawns/restarts via init()', async ({ page }) => {
+  test('R1.1: Score and Currency persist when player dies and game respawns/restarts via continueGame()', async ({ page }) => {
     const result = await page.evaluate(() => {
       const gm = (window as any).gameManager;
       
@@ -30,8 +30,8 @@ test.describe('Crossfire & Score/Cash Persistence Verification Suite', () => {
       const scoreOnDeath = gm.score;
       const currencyOnDeath = gm.currency;
 
-      // Simulate restart / respawn (clicking PLAY AGAIN invokes gm.init())
-      gm.init();
+      // Simulate continue / respawn on current wave
+      gm.continueGame();
       const scoreAfterRespawn = gm.score;
       const currencyAfterRespawn = gm.currency;
       const levelAfterRespawn = gm.level;
@@ -60,12 +60,12 @@ test.describe('Crossfire & Score/Cash Persistence Verification Suite', () => {
     expect(result.scoreAfterRespawn).toBe(750);
     expect(result.currencyAfterRespawn).toBe(125);
     expect(result.playerHpAfterRespawn).toBe(3);
-    expect(result.levelAfterRespawn).toBe(1);
+    expect(result.levelAfterRespawn).toBe(3);
     expect(result.finalScore).toBe(950);
     expect(result.finalCurrency).toBe(155);
   });
 
-  test('R1.2: End-to-End UI check: Score and Pure Water carry over after clicking PLAY AGAIN', async ({ page }) => {
+  test('R1.2: End-to-End UI check: Score and Pure Water carry over after clicking Continue', async ({ page }) => {
     // Accumulate currency and score via console
     await page.evaluate(() => {
       const gm = (window as any).gameManager;
@@ -81,8 +81,8 @@ test.describe('Crossfire & Score/Cash Persistence Verification Suite', () => {
     await expect(page.locator('text=GAME OVER')).toBeVisible();
     await expect(page.locator('text=Final')).toBeVisible();
 
-    // Click PLAY AGAIN
-    await page.click('button:has-text("PLAY AGAIN")');
+    // Click Continue
+    await page.click('button:has-text("Continue")');
 
     // Verify in HUD that the score and currency carried over
     const hudData = await page.evaluate(() => {

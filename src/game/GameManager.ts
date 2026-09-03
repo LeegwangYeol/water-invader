@@ -1,4 +1,4 @@
-import { GameState, Faction, CrisisType, CrisisState, HazardProjectile, SolarFlareBeam } from './types';
+import { GameState, Faction, CrisisType, CrisisState, HazardProjectile, SolarFlareBeam, BiomeTheme, ThreatLevel, ThreatState } from './types';
 import { Player } from './Player';
 import { Enemy, EnemyType } from './Enemy';
 import { Bullet, HomingMissile } from './Bullet';
@@ -11,6 +11,12 @@ import { CrisisArchetype, CrisisPhase, EndGameCrisisState } from './crisis/types
 import { AlliedReinforcements } from './crisis/AlliedReinforcements';
 
 export const HOMING_MISSILE_COSTS = [250, 450, 700, 1000, 1400];
+
+if (typeof window !== 'undefined') {
+  (window as any).Helper = Helper;
+  (window as any).HelperType = HelperType;
+  (window as any).Faction = Faction;
+}
 
 export class GameManager {
   private canvas: HTMLCanvasElement;
@@ -70,6 +76,78 @@ export class GameManager {
   public endGameCrisisDefeatedHandled: boolean = false;
   public alliedReinforcements?: AlliedReinforcements;
 
+  // Allied Reinforcements with Roles & UI (R2)
+  public alliedReinforcementBannerTimer: number = 0;
+  public alliedReinforcementBannerText: string = "";
+  public emergencyAlliesTriggeredThisWave: boolean = false;
+
+  // Dynamic Backgrounds & Threat Signifiers (R1)
+  public threatIntensity: number = 0;
+  public activeThreatLevel: ThreatLevel = 'NONE';
+
+  public static readonly BIOMES: readonly BiomeTheme[] = [
+    {
+      id: 'SURFACE_AQUIFER',
+      nameKo: '표층 대수층 (Surface Aquifer)',
+      nameEn: 'Surface Aquifer',
+      tier: 0,
+      gradientTop: '#071527',
+      gradientBottom: '#0b1d33',
+      particleColor: 'rgba(147, 197, 253, 0.18)',
+      particleSpeedMult: 1.0,
+      particleDirection: 'UP',
+      accentGlow: '#38bdf8',
+    },
+    {
+      id: 'ABYSSAL_TRENCH',
+      nameKo: '심해 해구 (Abyssal Trench)',
+      nameEn: 'Abyssal Trench',
+      tier: 1,
+      gradientTop: '#030712',
+      gradientBottom: '#081026',
+      particleColor: 'rgba(96, 165, 250, 0.14)',
+      particleSpeedMult: 0.8,
+      particleDirection: 'DOWN',
+      accentGlow: '#60a5fa',
+    },
+    {
+      id: 'BIOLUMINESCENT_REEF',
+      nameKo: '생체발광 산호초 (Bioluminescent Reef)',
+      nameEn: 'Bioluminescent Reef',
+      tier: 2,
+      gradientTop: '#05131e',
+      gradientBottom: '#0f222d',
+      particleColor: 'rgba(34, 211, 238, 0.20)',
+      particleSpeedMult: 1.2,
+      particleDirection: 'FLOAT',
+      accentGlow: '#22d3ee',
+    },
+    {
+      id: 'TOXIC_SEABED',
+      nameKo: '오염된 해저 (Toxic Seabed)',
+      nameEn: 'Toxic Seabed',
+      tier: 3,
+      gradientTop: '#06150e',
+      gradientBottom: '#0e2217',
+      particleColor: 'rgba(132, 204, 22, 0.18)',
+      particleSpeedMult: 1.4,
+      particleDirection: 'UP',
+      accentGlow: '#84cc16',
+    },
+    {
+      id: 'COSMIC_VOID',
+      nameKo: '성간 공허 (Cosmic Void)',
+      nameEn: 'Cosmic Void',
+      tier: 4,
+      gradientTop: '#090314',
+      gradientBottom: '#150727',
+      particleColor: 'rgba(216, 180, 254, 0.22)',
+      particleSpeedMult: 1.5,
+      particleDirection: 'FLOAT',
+      accentGlow: '#c084fc',
+    },
+  ];
+
   // Debugging & Developer Tools
   public isDebugMode: boolean = false;
   public isGodMode: boolean = false;
@@ -91,6 +169,7 @@ export class GameManager {
   public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean; homingMissiles: number }) => void;
   public onCrisisEvent?: (crisis: CrisisState | null) => void;
   public onEndGameCrisisEvent?: (crisis: EndGameCrisisState | null) => void;
+  public onAlliedReinforcements?: (active: boolean, text: string) => void;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -152,6 +231,55 @@ export class GameManager {
     }
   }
 
+  public getCurrentBiome(): BiomeTheme {
+    const tier = Math.floor(Math.max(0, this.level) / 10);
+    const index = tier % GameManager.BIOMES.length;
+    return GameManager.BIOMES[index];
+  }
+
+  public updateThreatState(deltaTime: number = 0.016): void {
+    const currentThreat = this.getThreatState();
+    this.activeThreatLevel = currentThreat.level;
+    const targetIntensity = currentThreat.level !== 'NONE' ? 1.0 : 0.0;
+    const lerpRate = deltaTime * 2.5;
+    if (this.threatIntensity < targetIntensity) {
+      this.threatIntensity = Math.min(targetIntensity, this.threatIntensity + lerpRate);
+    } else if (this.threatIntensity > targetIntensity) {
+      this.threatIntensity = Math.max(targetIntensity, this.threatIntensity - lerpRate);
+    }
+  }
+
+  public getThreatState(): ThreatState {
+    const hasBoss = this.enemies.some(e => !e.isDead && e.isBoss) || 
+                    (!!this.endGameCrisis && this.endGameCrisis.isActive && !this.endGameCrisis.isDefeated());
+    const hasCrisis = (this.crisisState.activeCrisis !== null && this.crisisState.timer > 0) || 
+                      this.warningTimer > 0;
+    const hasElite = !hasBoss && this.enemies.some(e => !e.isDead && e.isElite);
+
+    let level: ThreatLevel = 'NONE';
+    let threatColor = 'transparent';
+
+    if (hasBoss) {
+      level = 'BOSS';
+      threatColor = '#dc2626'; // Red
+    } else if (hasCrisis) {
+      level = 'CRISIS';
+      threatColor = this.crisisState.activeCrisis === 'ACID_STORM' ? '#84cc16' : '#f59e0b';
+    } else if (hasElite) {
+      level = 'ELITE';
+      threatColor = '#c026d3'; // Magenta/Purple
+    }
+
+    return {
+      level,
+      hasBoss,
+      hasElite,
+      hasCrisis,
+      threatColor,
+      threatIntensity: this.threatIntensity,
+    };
+  }
+
   public init(
     resetScoreAndCashOrOptions: boolean | { resetScoreAndCash?: boolean; preserveUpgrades?: boolean } = false,
     preserveUpgrades: boolean = false
@@ -182,6 +310,7 @@ export class GameManager {
       this.player.homingMissiles = 0;
     } else {
       // Preserve player upgrades (baseFireRate, multiShot, piercing, maxHp, hp, hasAcidShield, homingMissiles)
+      this.player.isDead = false;
       this.player.hp = Math.max(3, this.player.hp);
       this.player.position.x = this.logicalWidth / 2 - 25;
       this.player.position.y = this.logicalHeight - 60;
@@ -190,18 +319,24 @@ export class GameManager {
       this.player.invincibilityTimer = 0;
       this.player.ultimateGauge = 0;
     }
+    if (this.player) {
+      this.player.isDead = false;
+    }
     this.clearKeys();
     this.enemies = [];
     this.bullets = [];
+    this.helpers = [];
     for (const p of this.particles) {
       if (this.particlePool.length < 500) {
         this.particlePool.push(p);
       }
     }
     this.particles = [];
-    this.score = 0;
     if (resetScoreAndCash) {
+      this.score = 0;
       this.currency = 150;
+    } else if (shouldPreserve) {
+      this.score = 0;
     }
     this.combo = 0;
     this.level = 1;
@@ -231,6 +366,9 @@ export class GameManager {
     this.solarFlares = [];
     if (this.onCrisisEvent) this.onCrisisEvent(null);
     
+    this.threatIntensity = 0;
+    this.activeThreatLevel = 'NONE';
+
     this.endGameCrisis = null;
     this.endGameCrisisDefeatedHandled = false;
     this.alliedReinforcements = undefined;
@@ -285,9 +423,13 @@ export class GameManager {
     this.endGameCrisisDefeatedHandled = false;
     this.alliedReinforcements = undefined;
     if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
+    this.emergencyAlliesTriggeredThisWave = false;
     this.level++;
     this.swarmEchelonsRemaining = (this.level >= 10 && this.level % 5 !== 0) ? (this.level >= 15 ? 2 : 1) : 0;
     this.spawnWave();
+    if (this.level > 0 && this.level % 5 === 0) {
+      this.triggerMassiveAlliedReinforcements();
+    }
     this.updateScoreUI();
     if (this.onStateChange) this.onStateChange(GameState.PLAYING);
     
@@ -324,6 +466,91 @@ export class GameManager {
       this.animationFrameId = 0;
     }
     this.clearKeys();
+  }
+
+  public continueGame(): void {
+    if (!this.player) {
+      this.player = new Player(this.logicalWidth, this.logicalHeight);
+    }
+    this.player.isDead = false;
+    this.player.hp = Math.max(3, this.player.hp);
+    this.player.position.x = this.logicalWidth / 2 - 25;
+    this.player.position.y = this.logicalHeight - 60;
+    this.player.stressLevel = 0;
+    this.player.suppressionLevel = 0;
+    this.player.invincibilityTimer = 1.5;
+    this.player.ultimateGauge = 0;
+
+    this.clearKeys();
+    this.bullets = [];
+    this.enemies = [];
+    this.helpers = [];
+    for (const p of this.particles) {
+      if (this.particlePool.length < 500) {
+        this.particlePool.push(p);
+      }
+    }
+    this.particles = [];
+    this.hazardProjectiles = [];
+    this.solarFlares = [];
+    this.shakeTimer = 0;
+    this.combo = 0;
+
+    this.reinforcementTimer = 10;
+    this.warningTimer = 0;
+    this.warningMessage = "";
+    this.warningText = "";
+    this.pendingReinforcement = null;
+    this.crisisState = {
+      activeCrisis: null,
+      timer: 0,
+      duration: 0,
+      warningTimer: 0,
+      bannerText: null,
+      hazardProjectiles: [],
+      solarFlares: [],
+      empSuppressionActive: false,
+      empTimer: 0,
+    };
+    this.crisisTimer = 6.0 + Math.random() * 4.0;
+    if (this.onCrisisEvent) this.onCrisisEvent(null);
+    if (!this.endGameCrisisDefeatedHandled) {
+      this.hasEndGameCrisisOccurred = false;
+    }
+    this.endGameCrisis = null;
+    this.endGameCrisisDefeatedHandled = false;
+    this.alliedReinforcements = undefined;
+    if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
+
+    this.spawnBarricades();
+    this.swarmEchelonsRemaining = (this.level >= 10 && this.level % 5 !== 0) ? (this.level >= 15 ? 2 : 1) : 0;
+    this.spawnWave();
+
+    this.state = GameState.PLAYING;
+    this.isPaused = false;
+    this.accumulator = 0;
+    if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+    this.updateScoreUI();
+    this.updateUpgradesUI();
+    if (this.onStateChange) this.onStateChange(this.state);
+
+    soundManager.init();
+    this.lastTime = performance.now();
+    if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    if (typeof requestAnimationFrame !== 'undefined') {
+      this.animationFrameId = requestAnimationFrame(this.loop);
+    }
+  }
+
+  public restartFromBeginning(): void {
+    this.init({ resetScoreAndCash: true, preserveUpgrades: false });
+    this.startGame();
+  }
+
+  public restartGame(): void {
+    this.restartFromBeginning();
   }
 
   public triggerEndGameCrisis(archetype?: CrisisArchetype): EndGameCrisis {
@@ -476,7 +703,7 @@ export class GameManager {
       cols = 10;
       paddingX = 52;
       paddingY = 38;
-      startY = 75;
+      startY = 80;
     }
 
     const offsetX = Math.max(15, (this.logicalWidth - ((cols - 1) * paddingX)) / 2);
@@ -854,6 +1081,9 @@ export class GameManager {
   };
 
   public update(deltaTime: number) {
+    // Threat Level & Smooth Intensity Interpolation (R1)
+    this.updateThreatState(deltaTime);
+
     if (this.state === GameState.PLAYING) {
       this.checkSwarmEchelons();
 
@@ -950,14 +1180,15 @@ export class GameManager {
           if (this.pendingReinforcement) {
             if (this.pendingReinforcement === 'ALLY') {
               const count = Math.floor(Math.random() * 3) + 1;
+              const types = [HelperType.FIGHTER, HelperType.MEDIC, HelperType.REPAIRER];
               for (let i = 0; i < count; i++) {
-                const type = Math.floor(Math.random() * 3);
+                const type = types[Math.floor(Math.random() * types.length)];
                 this.helpers.push(new Helper(
                   Math.random() * (this.logicalWidth - 40),
                   this.logicalHeight - 80,
                   this.logicalWidth,
                   this.logicalHeight,
-                  type as HelperType
+                  type
                 ));
                 this.createExplosion(this.logicalWidth / 2, this.logicalHeight - 20, '#4ade80', 20);
               }
@@ -1272,12 +1503,16 @@ export class GameManager {
         }
       });
       
+      const prevPlayerHp = this.player ? this.player.hp : 0;
       this.helpers.forEach(helper => {
-         const newBullets = helper.update(deltaTime, this.barricades, this.enemies, this.bullets);
+         const newBullets = helper.update(deltaTime, this.barricades, this.enemies, this.bullets, this.player);
          if (newBullets && newBullets.length > 0) {
             this.bullets.push(...newBullets);
          }
       });
+      if (this.player && this.player.hp !== prevPlayerHp && this.onPlayerHpChange) {
+         this.onPlayerHpChange(this.player.hp);
+      }
       
       this.barricades.forEach(barricade => barricade.update(deltaTime));
       this.bullets.forEach(bullet => {
@@ -1292,6 +1527,27 @@ export class GameManager {
       this.checkCollisions(deltaTime);
     }
     
+    // Allied reinforcement banner timer
+    if (this.alliedReinforcementBannerTimer > 0) {
+      this.alliedReinforcementBannerTimer -= deltaTime;
+      if (this.alliedReinforcementBannerTimer <= 0) {
+        this.alliedReinforcementBannerTimer = 0;
+        this.alliedReinforcementBannerText = "";
+        if (this.onAlliedReinforcements) {
+          this.onAlliedReinforcements(false, "");
+        }
+      }
+    }
+
+    // Emergency survival threshold check: If player HP <= 1 and defense line compromised
+    if (this.state === GameState.PLAYING && this.player && this.player.hp <= 1 && !this.emergencyAlliesTriggeredThisWave) {
+      const damagedBarricades = this.barricades.filter(b => b.hp < b.maxHp);
+      if (damagedBarricades.length >= 2 || (this.crisisState && this.crisisState.activeCrisis)) {
+        this.emergencyAlliesTriggeredThisWave = true;
+        this.triggerMassiveAlliedReinforcements();
+      }
+    }
+
     // Always update visual effects
     if (this.shakeTimer > 0) {
       this.shakeTimer -= deltaTime;
@@ -1509,8 +1765,9 @@ export class GameManager {
 
           // Shield Handling
           if (enemy.shieldHp > 0) {
-            const shieldDmg = Math.min(enemy.shieldHp, bullet.damage);
-            const remainingDmg = bullet.damage - shieldDmg;
+            const isShieldGate = enemy.type === EnemyType.SHIELDED;
+            const shieldDmg = isShieldGate ? bullet.damage : Math.min(enemy.shieldHp, bullet.damage);
+            const remainingDmg = isShieldGate ? 0 : bullet.damage - shieldDmg;
             enemy.shieldHp -= shieldDmg;
             enemy.hitFlashTimer = 0.08;
             if (isPlayerSource) {
@@ -1896,6 +2153,9 @@ export class GameManager {
   private gameOver(reason: string) {
     this.gameOverReason = reason;
     this.state = GameState.GAME_OVER;
+    if (this.player) {
+      this.player.isDead = true;
+    }
     this.alliedReinforcements = undefined;
     soundManager.playGameOver();
     
@@ -1981,16 +2241,48 @@ export class GameManager {
     const time = performance.now() / 1000;
 
     // =========================================================================
-    // LAYER 1: STATIC BACKGROUND LAYER
-    // Crisis warning background fills, starfield, environmental tint
+    // LAYER 1: STATIC BACKGROUND LAYER (R1 Implementation)
+    // Dynamic Biome vertical gradient, threat signifier vignette, ambient particles
     // (Rendered without screen shake displacement so no unpainted gaps appear)
     // =========================================================================
 
-    // 1.1 Base void fill (dark slate #0f172a)
-    this.ctx.fillStyle = '#0f172a';
+    const biome = this.getCurrentBiome();
+    const threat = this.getThreatState();
+
+    // 1.1 Base Dynamic Biome Vertical Gradient
+    const bgGrad = this.ctx.createLinearGradient(0, 0, 0, this.logicalHeight);
+    bgGrad.addColorStop(0, biome.gradientTop);
+    bgGrad.addColorStop(1, biome.gradientBottom);
+    this.ctx.fillStyle = bgGrad;
     this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
 
-    // 1.2 Crisis warning background fills & environmental tint (DRAWN BEHIND ENTITIES)
+    // 1.2 Dynamic Threat Signifier Radial Vignette (Boss / Elite / Crisis Shift)
+    if (threat.threatIntensity > 0.01) {
+      const pulseSpeed = threat.level === 'BOSS' ? 3.0 : (threat.level === 'CRISIS' ? 2.5 : 1.8);
+      const pulse = (Math.sin(time * pulseSpeed) + 1) * 0.5;
+      const maxAlpha = threat.level === 'BOSS' ? 0.28 : (threat.level === 'CRISIS' ? 0.22 : 0.14);
+      const effectiveAlpha = maxAlpha * threat.threatIntensity * (0.7 + 0.3 * pulse);
+
+      const vig = this.ctx.createRadialGradient(
+        this.logicalWidth / 2, this.logicalHeight / 2, this.logicalHeight * 0.2,
+        this.logicalWidth / 2, this.logicalHeight / 2, this.logicalHeight * 0.65
+      );
+      vig.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      vig.addColorStop(0.7, 'rgba(0, 0, 0, 0.05)');
+      vig.addColorStop(1, threat.threatColor === '#dc2626' 
+        ? `rgba(220, 38, 38, ${effectiveAlpha})`
+        : threat.threatColor === '#84cc16'
+        ? `rgba(132, 204, 22, ${effectiveAlpha})`
+        : threat.threatColor === '#f59e0b'
+        ? `rgba(245, 158, 11, ${effectiveAlpha})`
+        : `rgba(192, 38, 211, ${effectiveAlpha})`
+      );
+
+      this.ctx.fillStyle = vig;
+      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
+    }
+
+    // 1.3 Crisis warning background fills & environmental tint (DRAWN BEHIND ENTITIES)
     if (this.warningTimer > 0) {
       const isThirdFaction = (this.warningMessage || this.warningText).includes('ROGUE') || 
                              (this.warningMessage || this.warningText).includes('THIRD') || 
@@ -2001,7 +2293,7 @@ export class GameManager {
       this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
     }
 
-    // 1.3 Active crisis environmental tint (Acid Storm / EMP)
+    // 1.4 Active crisis environmental tint (Acid Storm / EMP)
     if (this.crisisState.activeCrisis === 'ACID_STORM' && this.crisisState.timer > 0) {
       this.ctx.fillStyle = 'rgba(132, 204, 22, 0.05)';
       this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
@@ -2010,7 +2302,7 @@ export class GameManager {
       this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
     }
 
-    // 1.4 End-Game Crisis ambient radial vignette if in INCURSION phase (DRAWN BEHIND ENTITIES)
+    // 1.5 End-Game Crisis ambient radial vignette if in INCURSION phase (DRAWN BEHIND ENTITIES)
     if (this.endGameCrisis && this.endGameCrisis.isActive && this.endGameCrisis.phase === CrisisPhase.INCURSION) {
       const pulse = (Math.sin(this.endGameCrisis.warningTimer * 8) + 1) / 2;
       const vig = this.ctx.createRadialGradient(
@@ -2023,17 +2315,34 @@ export class GameManager {
       this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
     }
 
-    // 1.5 Starfield / scrolling background bubbles (No shake)
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    // 1.6 Procedural Ambient Biome Particles (Bubbles / Marine Snow / Bio-spores)
+    this.ctx.fillStyle = biome.particleColor;
     this.ctx.beginPath();
-    for (let i = 0; i < 30; i++) {
-      const x = (Math.sin(i * 13) * 1000 + time * 10) % this.logicalWidth;
-      const y = this.logicalHeight - ((time * 50 * (i % 3 + 1) + i * 90) % this.logicalHeight);
-      const size = (i % 4) + 1;
-      const absX = Math.abs(x);
-      const absY = Math.abs(y);
-      this.ctx.moveTo(absX + size, absY);
-      this.ctx.arc(absX, absY, size, 0, Math.PI * 2);
+    const particleCount = 32;
+    for (let i = 0; i < particleCount; i++) {
+      const speed = (i % 3 + 1) * 35 * biome.particleSpeedMult;
+      let x = (Math.sin(i * 17) * 1000 + time * 12) % this.logicalWidth;
+      if (x < 0) x += this.logicalWidth;
+      
+      let y: number;
+      if (biome.particleDirection === 'DOWN') {
+        // Sinking marine snow (Abyssal Trench)
+        y = (time * speed + i * 85) % this.logicalHeight;
+        if (y < 0) y += this.logicalHeight;
+      } else if (biome.particleDirection === 'FLOAT') {
+        // Hovering bio-motes / cosmic dust
+        y = (this.logicalHeight / 2) + Math.sin(time * 0.8 + i) * (this.logicalHeight * 0.45);
+        x = (x + Math.sin(time * 1.2 + i * 2) * 20) % this.logicalWidth;
+        if (x < 0) x += this.logicalWidth;
+      } else {
+        // Rising bubbles (Aquifer & Toxic Seabed)
+        y = this.logicalHeight - ((time * speed + i * 85) % this.logicalHeight);
+        if (y < 0) y += this.logicalHeight;
+      }
+
+      const radius = (i % 4) * 0.8 + 1.2;
+      this.ctx.moveTo(x + radius, y);
+      this.ctx.arc(x, y, radius, 0, Math.PI * 2);
     }
     this.ctx.fill();
 
@@ -2252,6 +2561,56 @@ export class GameManager {
       this.warningMessage = "ALLY SUPPORT SUMMONED!";
       this.warningTimer = 2.0;
       this.updateScoreUI();
+    }
+  }
+
+  public triggerMassiveAlliedReinforcements(): void {
+    // Spawns a full strike squadron: 2 Fighters, 1 Medic, 1 Repair Bot
+    const fighter1 = new Helper(
+      Math.max(20, this.logicalWidth * 0.2 - 20),
+      this.logicalHeight - 80,
+      this.logicalWidth,
+      this.logicalHeight,
+      HelperType.FIGHTER
+    );
+    const fighter2 = new Helper(
+      Math.min(this.logicalWidth - 60, this.logicalWidth * 0.8 - 20),
+      this.logicalHeight - 80,
+      this.logicalWidth,
+      this.logicalHeight,
+      HelperType.FIGHTER
+    );
+    const playerX = this.player ? this.player.position.x : this.logicalWidth / 2;
+    const medic = new Helper(
+      Math.min(this.logicalWidth - 60, Math.max(20, playerX + 45)),
+      this.logicalHeight - 90,
+      this.logicalWidth,
+      this.logicalHeight,
+      HelperType.MEDIC
+    );
+    const repairBot = new Helper(
+      this.logicalWidth / 2 - 20,
+      this.logicalHeight - 110,
+      this.logicalWidth,
+      this.logicalHeight,
+      HelperType.REPAIRER
+    );
+
+    this.helpers.push(fighter1, fighter2, medic, repairBot);
+
+    // Audio & Visual Warp Flare FX
+    soundManager.playPowerUp();
+    this.triggerScreenShake(0.6);
+    this.createExplosion(fighter1.position.x + 20, fighter1.position.y + 15, '#22c55e', 24);
+    this.createExplosion(fighter2.position.x + 20, fighter2.position.y + 15, '#22c55e', 24);
+    this.createExplosion(medic.position.x + 20, medic.position.y + 15, '#06b6d4', 24);
+    this.createExplosion(repairBot.position.x + 20, repairBot.position.y + 15, '#fbbf24', 24);
+
+    // Announcement banner
+    this.alliedReinforcementBannerTimer = 3.0;
+    this.alliedReinforcementBannerText = '✦ MASSIVE ALLIED REINFORCEMENTS ARRIVED! ✦';
+    if (this.onAlliedReinforcements) {
+      this.onAlliedReinforcements(true, this.alliedReinforcementBannerText);
     }
   }
 

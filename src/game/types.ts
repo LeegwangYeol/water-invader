@@ -80,5 +80,31 @@ export interface CrisisState {
   empTimer?: number;
 }
 
+export interface BiomeTheme {
+  id: string;
+  nameKo: string;
+  nameEn: string;
+  tier: number; // 0 for Waves 1-9, 1 for Waves 10-19, etc.
+  gradientTop: string;
+  gradientBottom: string;
+  particleColor: string;
+  particleSpeedMult: number;
+  particleDirection: 'UP' | 'DOWN' | 'FLOAT';
+  accentGlow: string;
+}
+
+export type ThreatLevel = 'NONE' | 'ELITE' | 'BOSS' | 'CRISIS';
+
+export interface ThreatState {
+  level: ThreatLevel;
+  hasBoss: boolean;
+  hasElite: boolean;
+  hasCrisis: boolean;
+  threatColor: string;
+  threatIntensity: number; // 0.0 to 1.0 (smoothly interpolated)
+  description?: string;
+}
+
 export * from './crisis/types';
+
 
