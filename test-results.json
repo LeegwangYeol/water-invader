@@ -4,10 +4,7 @@
       "/Users/user/.nvm/versions/node/v25.8.1/bin/node",
       "/Users/user/src/water-invader/node_modules/.bin/playwright",
       "test",
-      "tests/unit/crisis_expansion_12.test.ts",
-      "tests/unit/crisis_distribution_12.test.ts",
-      "tests/unit/allied_reinforcements.test.ts",
-      "tests/unit/challenger_crisis12_adversarial.test.ts"
+      "tests/adversarial_r3_reviewer_crossfire_stress.spec.ts"
     ],
     "configFile": "/Users/user/src/water-invader/playwright.config.ts",
     "rootDir": "/Users/user/src/water-invader/tests",
@@ -74,24 +71,29 @@
     "updateSourceMethod": "patch",
     "version": "1.62.1",
     "workers": 1,
-    "webServer": null
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
   },
   "suites": [
     {
-      "title": "unit/allied_reinforcements.test.ts",
-      "file": "unit/allied_reinforcements.test.ts",
+      "title": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
+      "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Massive Allied Reinforcements Suite (Aegis Vanguard Command Dreadnought)",
-          "file": "unit/allied_reinforcements.test.ts",
-          "line": 69,
+          "title": "Adversarial R3 Reviewer: Comprehensive Crossfire & Score Persistence Suite",
+          "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
+          "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "REINFORCE-01: Instantiation and procedural Canvas 2D vector drawing sanity across lifecycles",
+              "title": "ADV-R3.1: Multi-Cycle Death & Respawn: Score, Currency & Post-Death Upgrades monotonically persist",
               "ok": true,
               "tags": [],
               "tests": [
@@ -106,12 +108,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 44,
+                      "duration": 1675,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T04:31:09.960Z",
+                      "startTime": "2026-09-03T05:02:41.675Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -119,13 +121,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "61fbfa6e095f3b214cde-fad63233a3b2716735b0",
-              "file": "unit/allied_reinforcements.test.ts",
-              "line": 74,
+              "id": "25f66b17d09ece68292c-fd71c937674b2da00191",
+              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
+              "line": 10,
               "column": 7
             },
             {
-              "title": "REINFORCE-02: Forward heavy plasma cannons fire dual high-velocity bolts targeting Sovereign Core or nearest enemies",
+              "title": "ADV-R3.2: Vertical Column Simultaneous Multi-Fire: Self-Immunity & Progressive Friendly Fire Collisions",
               "ok": true,
               "tags": [],
               "tests": [
@@ -140,12 +142,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 42,
+                      "duration": 1031,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.079Z",
+                      "startTime": "2026-09-03T05:02:43.680Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -153,13 +155,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "61fbfa6e095f3b214cde-f91e86486069dfc76917",
-              "file": "unit/allied_reinforcements.test.ts",
-              "line": 111,
+              "id": "25f66b17d09ece68292c-29f491c5f419a4b598ef",
+              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
+              "line": 95,
               "column": 7
             },
             {
-              "title": "REINFORCE-03: 120px point-defense laser grid vaporizes hostile bullets within perimeter of player and dreadnought",
+              "title": "ADV-R3.3: Splitter Crossfire Elimination Spawns Same-Faction Mini Enemies with Valid State",
               "ok": true,
               "tags": [],
               "tests": [
@@ -174,12 +176,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 14,
+                      "duration": 1001,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.191Z",
+                      "startTime": "2026-09-03T05:02:44.719Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -187,734 +189,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "61fbfa6e095f3b214cde-b29f4ea1dece3ce56c2a",
-              "file": "unit/allied_reinforcements.test.ts",
-              "line": 152,
-              "column": 7
-            },
-            {
-              "title": "REINFORCE-04: Restorative nano-shield aura heals player HP by +1 every 5.0s and alleviates combat stress",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.233Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "61fbfa6e095f3b214cde-179f0e9d81733ba01393",
-              "file": "unit/allied_reinforcements.test.ts",
-              "line": 198,
-              "column": 7
-            },
-            {
-              "title": "REINFORCE-05: 2 Escort interceptors track player in flanking formation and fire suppressing blasters",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.264Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "61fbfa6e095f3b214cde-f1f61465afb79c09ca90",
-              "file": "unit/allied_reinforcements.test.ts",
-              "line": 232,
-              "column": 7
-            },
-            {
-              "title": "REINFORCE-06: Warp-in entry descent and warp-out jump on crisis victory",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.280Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "61fbfa6e095f3b214cde-3021ad5479489d878a99",
-              "file": "unit/allied_reinforcements.test.ts",
-              "line": 267,
-              "column": 7
-            },
-            {
-              "title": "REINFORCE-07: GameManager triggers Allied Reinforcements automatically when entering Phase 2 and orders warp-out on crisis defeat",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 17,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.299Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "61fbfa6e095f3b214cde-a7f0f4ac1530b923f29a",
-              "file": "unit/allied_reinforcements.test.ts",
-              "line": 301,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "unit/challenger_crisis12_adversarial.test.ts",
-      "file": "unit/challenger_crisis12_adversarial.test.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Challenger 2 Empirical Combat & Reinforcements Suite",
-          "file": "unit/challenger_crisis12_adversarial.test.ts",
-          "line": 16,
-          "column": 6,
-          "specs": [
-            {
-              "title": "CHALLENGE-01: Allied forward plasma cannons deal genuine damage to Sovereign Hull, Sovereign Core, and Enemies",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 15,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.369Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-a6c824220de1f7c7fb7c",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 21,
-              "column": 7
-            },
-            {
-              "title": "CHALLENGE-02: 120px point-defense laser grid vaporizes hostile projectiles and preserves player projectiles under 1,000-bullet barrage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.397Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-538f4cf30f77ba43417a",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 106,
-              "column": 7
-            },
-            {
-              "title": "CHALLENGE-03: Restorative nano-shield aura heals player HP by +1 exactly every 5.0s and reduces combat stress / suppression",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 10,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.421Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-ef96523227dbf20097e5",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 185,
-              "column": 7
-            },
-            {
-              "title": "CHALLENGE-04: Escort interceptors maintain formation tracking across violent player maneuvers and fire suppressing blasters",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 11,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.444Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-c2d08be7e9ff943efa83",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 232,
-              "column": 7
-            },
-            {
-              "title": "CHALLENGE-05: Warp-in descent and warp-out departure lifecycle transitions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 11,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.463Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-b48556311d394448f743",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 279,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "Adversarial 5,200 EHP Invariant & High-DPS Load Testing Suite",
-          "file": "unit/challenger_crisis12_adversarial.test.ts",
-          "line": 315,
-          "column": 6,
-          "specs": [
-            {
-              "title": "ADVERSARIAL-01: Sovereign is strictly invulnerable in Phase 1 under 1,000,000 DPS player barrage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 38449,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:10.509Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-630f48bc20b47ca0db5a",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 320,
-              "column": 7
-            },
-            {
-              "title": "ADVERSARIAL-02: Phase 2 activates if and only if both anchors are dead, with strict hull isolation from overkill",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 48,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:48.999Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-26c72d188cf482f1216d",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 364,
-              "column": 7
-            },
-            {
-              "title": "ADVERSARIAL-03: Phase 3 engages exact 35.0s enrage clock and Core absorbs exact 1,500 damage to defeat",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 64,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.055Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-a3ecda35e25fccbc454e",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 409,
-              "column": 7
-            },
-            {
-              "title": "ADVERSARIAL-04: Mathematical proof that encounter absorbs exactly 5,200 total EHP across all 12 archetypes",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 66,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.127Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1f61e21ea1ec6cf12e87-7f54bf691d0cea664542",
-              "file": "unit/challenger_crisis12_adversarial.test.ts",
-              "line": 458,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "unit/crisis_distribution_12.test.ts",
-      "file": "unit/crisis_distribution_12.test.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "12-Crisis Statistical Distribution & Incursion Gating Suite",
-          "file": "unit/crisis_distribution_12.test.ts",
-          "line": 42,
-          "column": 6,
-          "specs": [
-            {
-              "title": "STAT12-01 to STAT12-03: 12,000 Monte Carlo trials satisfy Pearson Chi-Square (df=11, p<0.01) and [850, 1150] per-archetype bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 54,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "--- 12,000 Monte Carlo Spawning Distribution ---\n"
-                        },
-                        {
-                          "text": "  VOID_SOVEREIGN: 1064 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  ABYSSAL_LEVIATHAN: 970 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  CYBERNETIC_EXTERMINATOR: 1006 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  CHRONO_DEVOURER: 989 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  SOLARIS_COLOSSUS: 996 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  NEBULA_PHANTASM: 1020 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  BIOMORPHIC_SWARM: 979 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  SINGULARITY_CORE: 1004 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  NANITE_HARVESTER: 991 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  PSIONIC_SHROUD: 1031 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  GLACIAL_OBLIVION: 989 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "  COSMIC_DEVOURER: 961 (Expected: 1000)\n"
-                        },
-                        {
-                          "text": "Pearson Chi-Square statistic: 8.7100 (Threshold: < 24.725)\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.206Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "0c8de5c8c01faaad2cb3-55dab6c46de8918c7f70",
-              "file": "unit/crisis_distribution_12.test.ts",
-              "line": 47,
-              "column": 7
-            },
-            {
-              "title": "STAT12-04: Incursion gating invariants: Stage 15 has 0% crisis chance, Stage 16 has 30% +- 5%, Stage 18 has 100% pity trigger",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 71,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[STAT12-04] Stage 16 Trigger Rate: 28.70% (287/1000)\n"
-                        },
-                        {
-                          "text": "[STAT12-04] Stage 18 Pity Trigger Rate: 100.00% (1000/1000)\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.266Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "0c8de5c8c01faaad2cb3-a42061c54a2cf08a9c72",
-              "file": "unit/crisis_distribution_12.test.ts",
-              "line": 120,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "unit/crisis_expansion_12.test.ts",
-      "file": "unit/crisis_expansion_12.test.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "12-Crisis Expansion Suite: Comprehensive Archetype, Balance, and State Machine Verification",
-          "file": "unit/crisis_expansion_12.test.ts",
-          "line": 63,
-          "column": 6,
-          "specs": [
-            {
-              "title": "EXP12-01: Verify all 12 distinct CrisisArchetype keys and CRISIS_ARCHETYPE_CONFIGS entries exist with non-empty fields and exact HP values",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 63,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.360Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-835e42947735e0d93d0d",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 68,
-              "column": 7
-            },
-            {
-              "title": "EXP12-02: Strict 5,200 EHP invariant (2x600 + 2500 + 1500 = 5,200) across all 12 archetypes",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 150,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.430Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-06ae12a72b343a3e2c66",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 114,
-              "column": 7
-            },
-            {
-              "title": "EXP12-03: 5-Phase State Machine lifecycle across all 12 archetypes (INCURSION -> PHASE_1_SHIELD -> PHASE_2_HULL -> PHASE_3_CORE -> DEFEATED)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 128,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.589Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-3ac51c41a06875023a7b",
-              "file": "unit/crisis_expansion_12.test.ts",
+              "id": "25f66b17d09ece68292c-5e432ed16ca45b30de59",
+              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
               "line": 162,
               "column": 7
             },
             {
-              "title": "EXP12-04A: BIOMORPHIC_SWARM Chitinous Hatchery Sacs spawn undulating seeker spores",
+              "title": "ADV-R3.4: Crossfire Mid-Air Interception between Hostile Sniper & Rogue Stalker Bullets",
               "ok": true,
               "tags": [],
               "tests": [
@@ -929,12 +210,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5,
+                      "duration": 1054,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.725Z",
+                      "startTime": "2026-09-03T05:02:45.727Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -942,13 +223,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "1a8cf8b097a6d29a7605-7d771c15b0991922ebd9",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 240,
+              "id": "25f66b17d09ece68292c-4f345799435d81a5420d",
+              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
+              "line": 227,
               "column": 7
             },
             {
-              "title": "EXP12-04B: SINGULARITY_CORE Polarized Gravitational Dampeners exert opposing lateral forces",
+              "title": "ADV-R3.5: 60-Unit Heavy 3-Way Crossfire Simulation: Math/Physics Stability & Entity Pool Safety",
               "ok": true,
               "tags": [],
               "tests": [
@@ -963,12 +244,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2,
+                      "duration": 1151,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.736Z",
+                      "startTime": "2026-09-03T05:02:46.787Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -976,247 +257,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "1a8cf8b097a6d29a7605-014e8b5f7206143aaa1c",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 266,
-              "column": 7
-            },
-            {
-              "title": "EXP12-04C: NANITE_HARVESTER Nanite Assembly Fabricators execute mutual 15 HP/s healing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.746Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-fc7e0ddce946e2594a84",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 293,
-              "column": 7
-            },
-            {
-              "title": "EXP12-04D: PSIONIC_SHROUD Telepathic Beacons spawn real psychic bolts and phantom mirage decoys",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 4,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.756Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-52b22da9e0a60e68c5d3",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 321,
-              "column": 7
-            },
-            {
-              "title": "EXP12-04E: GLACIAL_OBLIVION Cryo-Condensers reflect 4 ice splinters when rapid-fired (>6 shots/s)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.780Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-a6be844d7e3c0c773829",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 337,
-              "column": 7
-            },
-            {
-              "title": "EXP12-04F: COSMIC_DEVOURER Astral Siphon Maw regurgitates Dark Star Flares with fire trails",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.799Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-37d76837d5ba641b7df1",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 355,
-              "column": 7
-            },
-            {
-              "title": "EXP12-05: Archetypal Phase 2 and Phase 3 attack pattern execution across all 12 archetypes",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 87,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.825Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-d4120fed5188b08c540d",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 380,
-              "column": 7
-            },
-            {
-              "title": "EXP12-06: Headless Canvas 2D vector drawing sanity across all 12x5 = 60 archetype/phase permutations (zero exceptions)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 72,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:49.979Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-8e0a4199570381996310",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 437,
-              "column": 7
-            },
-            {
-              "title": "EXP12-07: High-velocity player bullet collisions, piercing deduction, and damage gating",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 4,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T04:31:50.058Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "1a8cf8b097a6d29a7605-f87399304c6fc747b4b2",
-              "file": "unit/crisis_expansion_12.test.ts",
-              "line": 471,
+              "id": "25f66b17d09ece68292c-2158d6b238908c0f7416",
+              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
+              "line": 268,
               "column": 7
             }
           ]
@@ -1226,9 +269,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-03T04:31:08.634Z",
-    "duration": 41473.668,
-    "expected": 30,
+    "startTime": "2026-09-03T05:02:38.574Z",
+    "duration": 9499.941,
+    "expected": 5,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

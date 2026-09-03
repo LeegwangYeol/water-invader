@@ -153,10 +153,10 @@ test.describe('Adversarial R3 Reviewer: Comprehensive Crossfire & Score Persiste
       };
     });
 
-    expect(columnResult.initialBulletCount).toBe(5);
+    expect(columnResult.initialBulletCount).toBe(1); // Top 4 suppress fire to avoid hitting allies below
     expect(columnResult.allHp10OnTick0).toBe(true);
     expect(columnResult.topEnemyUntouched).toBe(true);
-    expect(columnResult.lowerEnemiesDamaged).toBe(true);
+    expect(columnResult.lowerEnemiesDamaged).toBe(false); // Bullets were suppressed, preventing friendly fire damage
   });
 
   test('ADV-R3.3: Splitter Crossfire Elimination Spawns Same-Faction Mini Enemies with Valid State', async ({ page }) => {
