@@ -621,10 +621,10 @@ export class Enemy extends Entity {
         }
 
         const isShootingUp = Boolean(targetCenter && targetCenter.y < this.position.y);
-        const spawnX = this.position.x + this.size.width / 2 - 3;
+        const spawnX = this.position.x + this.size.width / 2 - 5;
         const spawnY = isShootingUp ? this.position.y : this.position.y + this.size.height;
-        // Raycast origin aligned exactly with bullet spawn center (centerX = spawnX + 3)
-        const originX = spawnX + 3;
+        // Raycast origin aligned exactly with bullet spawn center (centerX = spawnX + 5)
+        const originX = spawnX + 5;
         const originY = spawnY;
 
         const targetX = targetCenter ? targetCenter.x : originX;
@@ -702,10 +702,10 @@ export class Enemy extends Entity {
       }
 
       // Invader Faction
-      const spawnX = this.position.x + this.size.width / 2 - 3;
+      const spawnX = this.position.x + this.size.width / 2 - 5;
       const spawnY = this.position.y + this.size.height;
-      // Raycast origin aligned exactly with bullet spawn center (centerX = spawnX + 3)
-      const originX = spawnX + 3;
+      // Raycast origin aligned exactly with bullet spawn center (centerX = spawnX + 5)
+      const originX = spawnX + 5;
       const originY = spawnY;
 
       let targetCenter: Vector2D | null = null;

@@ -124,3 +124,26 @@ In response to the urgent user requirement to introduce massive allied reinforce
 - **Deterministic Testing Hook**: Accessible via `GameManager.triggerAlliedReinforcements(): AlliedReinforcements`.
 - **Crisis Victory & Departure**: When the Crisis Sovereign is destroyed, the Dreadnought and Escort Interceptors execute a safe hyperspace warp jump (`warpOut()`).
 
+---
+
+## Current Mission: Comprehensive Testing & Bug-Hunting Pass (30+ Agent Swarm)
+
+### Executive Summary & Strategy
+The user has requested an exhaustive end-to-end testing, simulated stress testing, and bug-hunting pass across the entire Water Invader codebase deploying a very large swarm of specialist agents (30+ agents).
+
+### Coordinated Workstreams:
+1. **Wave & Crisis Mechanics Stress Swarm**:
+   - Stress test all 12 End-Game Crisis archetypes, transitions (Phase 1 -> 2 -> 3 -> Defeat), anchor mechanics, reality distortion shaders, and 5,200 EHP invariant.
+   - Stress test Allied Reinforcements (Aegis Vanguard Dreadnought + Interceptors), point defense laser grid, shield aura, and warp transitions.
+2. **Physics, Collision & Spatial Awareness Swarm**:
+   - Verify enemy friendly-fire avoidance and line-of-sight raycasting.
+   - Detect projectile clipping, bounding box misalignments, and out-of-bounds entity leaks.
+3. **UI, Layout & Responsiveness Swarm**:
+   - Verify canvas scaling across desktop (1920x1080, 1440x900) and mobile/touch viewports (375x667, 390x844, 412x915).
+   - Verify warning backgrounds, pause overlay, pre-game shop modal, HUD elements, and floating combat text.
+4. **Regression, Build & Integrity Verification Swarm**:
+   - Execute and expand Playwright E2E browser tests and unit test suites.
+   - Run type-checking (`npx tsc --noEmit`) and production builds (`npm run build`).
+   - If bugs/anomalies are discovered, implement targeted fixes with regression tests, verify with clean builds, and sync via git.
+
+

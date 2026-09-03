@@ -1,590 +1,442 @@
 import { test, expect } from '@playwright/test';
-import {
-  CrisisArchetype,
-  CrisisPhase,
-  Faction,
-} from '../../src/game/types';
-import { DimensionalRift } from '../../src/game/crisis/DimensionalRift';
-import { CrisisSovereign } from '../../src/game/crisis/CrisisSovereign';
+import { CrisisArchetype, CrisisPhase, CRISIS_ARCHETYPE_CONFIGS } from '../../src/game/crisis/types';
 import { EndGameCrisis } from '../../src/game/crisis/EndGameCrisis';
-import { Bullet } from '../../src/game/Bullet';
+import { CrisisSovereign } from '../../src/game/crisis/CrisisSovereign';
+import { DimensionalRift } from '../../src/game/crisis/DimensionalRift';
 import { Player } from '../../src/game/Player';
+import { Bullet } from '../../src/game/Bullet';
 import { Particle } from '../../src/game/Particle';
+import { GameManager } from '../../src/game/GameManager';
+import { GameState, Faction } from '../../src/game/types';
 
-/**
- * Mock Canvas 2D Context for stress testing draw routines under edge inputs
- */
-function createMockCanvasContext(): CanvasRenderingContext2D {
-  const ctx: any = {
-    save: () => {},
-    restore: () => {},
-    beginPath: () => {},
-    closePath: () => {},
-    moveTo: () => {},
-    lineTo: () => {},
-    arc: () => {},
-    ellipse: () => {},
-    quadraticCurveTo: () => {},
-    bezierCurveTo: () => {},
-    rect: () => {},
-    fillRect: () => {},
-    strokeRect: () => {},
-    fill: () => {},
-    stroke: () => {},
-    fillText: () => {},
-    translate: () => {},
-    rotate: () => {},
-    scale: () => {},
-    createRadialGradient: () => ({
-      addColorStop: () => {},
+function createMockCanvas(): HTMLCanvasElement {
+  return {
+    width: 600,
+    height: 800,
+    getContext: () => ({
+      save: () => {},
+      restore: () => {},
+      beginPath: () => {},
+      closePath: () => {},
+      moveTo: () => {},
+      lineTo: () => {},
+      arc: () => {},
+      ellipse: () => {},
+      rect: () => {},
+      fillRect: () => {},
+      strokeRect: () => {},
+      clearRect: () => {},
+      fill: () => {},
+      stroke: () => {},
+      translate: () => {},
+      rotate: () => {},
+      scale: () => {},
+      fillText: () => {},
+      measureText: () => ({ width: 50 }),
+      createLinearGradient: () => ({ addColorStop: () => {} }),
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+      setLineDash: () => {},
     }),
-    createLinearGradient: () => ({
-      addColorStop: () => {},
-    }),
-    fillStyle: '#000000',
-    strokeStyle: '#000000',
-    lineWidth: 1,
-    globalAlpha: 1.0,
-    font: '10px sans-serif',
-    textAlign: 'left',
-  };
-  return ctx as CanvasRenderingContext2D;
+  } as unknown as HTMLCanvasElement;
 }
 
-test.describe('Empirical Adversarial Stress Test Suite: End-Game Crisis (M1)', () => {
+test.describe('Adversarial Stress Suite: 12 End-Game Crisis Edge Cases & Invariants', () => {
 
   // =========================================================================
-  // 1. DIMENSIONAL RIFT ADVERSARIAL STRESS TESTS
+  // SCENARIO 1: RAPID DAMAGE BURSTS TO ANCHORS AND CORE
   // =========================================================================
 
-  test('ST-R1: DimensionalRift under Extreme DeltaTimes and 10,000 Rapid Updates', () => {
-    const rift = new DimensionalRift(100, 150, 0, 600);
-    rift.setSovereignTarget({ x: 300, y: 150 });
+  test('ADV-01A: Massive single-shot overkill burst on Anchor does not bleed to sibling or Sovereign', () => {
+    const crisis = new EndGameCrisis(600, 800);
+    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
 
-    // Rapid 10,000 micro-step updates
-    for (let i = 0; i < 10000; i++) {
-      rift.update(0.001);
-    }
-    expect(Number.isFinite(rift.position.x)).toBe(true);
-    expect(Number.isFinite(rift.position.y)).toBe(true);
-    expect(Number.isFinite(rift.accretionDiskAngle)).toBe(true);
-    expect(Number.isFinite(rift.pulsePhase)).toBe(true);
+    const [leftAnchor, rightAnchor] = crisis.riftAnchors;
+    const sov = crisis.sovereign!;
 
-    // DeltaTime = 0
-    const prevX = rift.position.x;
-    rift.update(0);
-    expect(rift.position.x).toBe(prevX);
+    // Deliver 10,000 burst damage to Left Anchor (has 600 HP)
+    const dmgDealt = leftAnchor.takeDamage(10000);
+    expect(dmgDealt).toBe(600); // Clamped to actual HP
+    expect(leftAnchor.hp).toBe(0);
+    expect(leftAnchor.isDead).toBe(true);
 
-    // Extreme DeltaTime Spike (1000.0s frame drop)
-    rift.update(1000.0);
-    expect(Number.isFinite(rift.position.x)).toBe(true);
-    expect(Number.isFinite(rift.position.y)).toBe(true);
-
-    // Negative DeltaTime
-    rift.update(-5.0);
-    expect(Number.isFinite(rift.position.x)).toBe(true);
-
-    // Micro DeltaTime (1e-9)
-    rift.update(1e-9);
-    expect(Number.isFinite(rift.position.x)).toBe(true);
-  });
-
-  test('ST-R2: DimensionalRift Damage Boundaries, Overkill & Zero/Negative Amounts', () => {
-    const rift = new DimensionalRift(100, 100, 0, 600);
-
-    // Zero damage
-    const dmg0 = rift.takeDamage(0);
-    expect(dmg0).toBe(0);
-    expect(rift.hp).toBe(600);
-    expect(rift.isDead).toBe(false);
-
-    // Normal damage
-    const dmg1 = rift.takeDamage(250);
-    expect(dmg1).toBe(250);
-    expect(rift.hp).toBe(350);
-
-    // Overkill damage (exceeding remaining HP)
-    const dmgOverkill = rift.takeDamage(99999);
-    expect(dmgOverkill).toBe(350); // Capped at remaining HP
-    expect(rift.hp).toBe(0);
-    expect(rift.isDead).toBe(true);
-
-    // Damage after death
-    const dmgPostDeath = rift.takeDamage(100);
-    expect(dmgPostDeath).toBe(0);
-    expect(rift.hp).toBe(0);
-
-    // Damage when invulnerable
-    const riftInv = new DimensionalRift(100, 100, 1, 600);
-    riftInv.isInvulnerable = true;
-    const dmgInv = riftInv.takeDamage(100);
-    expect(dmgInv).toBe(0);
-    expect(riftInv.hp).toBe(600);
-  });
-
-  test('ST-R3: DimensionalRift Vector Draw Resilience with Degenerate Conduit Vectors', () => {
-    const ctx = createMockCanvasContext();
-    const rift = new DimensionalRift(100, 100, 0, 600);
-
-    // Draw with no target
-    expect(() => rift.draw(ctx)).not.toThrow();
-
-    // Draw with target at exact same coordinates (dist = 0, dx=0, dy=0)
-    rift.setSovereignTarget(rift.getSingularityCenter());
-    expect(() => rift.draw(ctx)).not.toThrow();
-
-    // Draw with target at infinity
-    rift.setSovereignTarget({ x: 1e9, y: 1e9 });
-    expect(() => rift.draw(ctx)).not.toThrow();
-
-    // Draw with flash timer active
-    rift.flashTimer = 0.08;
-    expect(() => rift.draw(ctx)).not.toThrow();
-
-    // Draw when dead
-    rift.isDead = true;
-    expect(() => rift.draw(ctx)).not.toThrow();
-  });
-
-  // =========================================================================
-  // 2. CRISIS SOVEREIGN ADVERSARIAL STRESS TESTS
-  // =========================================================================
-
-  test('ST-S1: CrisisSovereign Rapid Updates, Extreme DeltaTimes & Degenerate Player Positions', () => {
-    const sov = new CrisisSovereign(170, 70, CrisisArchetype.VOID_SOVEREIGN, 2500, 1500);
-
-    // 10,000 rapid updates in Phase 2
-    sov.setPhase(CrisisPhase.PHASE_2_HULL);
-    for (let i = 0; i < 10000; i++) {
-      sov.update(0.001, { x: 300 + Math.sin(i), y: 700 });
-    }
-    expect(Number.isFinite(sov.position.x)).toBe(true);
-    expect(Number.isFinite(sov.position.y)).toBe(true);
-    expect(Number.isFinite(sov.eyeAngle)).toBe(true);
-
-    // Player position exactly at core center (atan2(0, 0))
-    const core = sov.getCoreCenter();
-    sov.update(0.016, { x: core.x, y: core.y });
-    expect(Number.isFinite(sov.eyeAngle)).toBe(true);
-
-    // Player position at extreme coordinates (+-10,000,000)
-    sov.update(0.016, { x: 1e7, y: -1e7 });
-    expect(Number.isFinite(sov.eyeAngle)).toBe(true);
-
-    // Missing player position
-    sov.update(0.016, undefined);
-    expect(Number.isFinite(sov.position.x)).toBe(true);
-
-    // Extreme DeltaTimes: 0, 500s, -1s
-    sov.update(0);
-    sov.update(500.0);
-    sov.update(-1.0);
-    expect(Number.isFinite(sov.position.x)).toBe(true);
-    expect(Number.isFinite(sov.position.y)).toBe(true);
-  });
-
-  test('ST-S2: CrisisSovereign Phase 1 Invulnerability & Multi-Phase Damage Gating', () => {
-    const sov = new CrisisSovereign(170, 70, CrisisArchetype.VOID_SOVEREIGN, 2500, 1500);
-
-    // 1. INCURSION Phase: Damage must be completely ignored
-    sov.setPhase(CrisisPhase.INCURSION);
-    expect(sov.takeDamage(1000)).toBe(0);
+    // Sibling Anchor and Sovereign must remain completely untouched
+    expect(rightAnchor.hp).toBe(600);
+    expect(rightAnchor.isDead).toBe(false);
     expect(sov.hullHp).toBe(2500);
     expect(sov.coreHp).toBe(1500);
-    expect(sov.hp).toBe(4000);
-
-    // 2. PHASE 1 (SHIELD): Must deflect 100% of damage
-    sov.setPhase(CrisisPhase.PHASE_1_SHIELD);
     expect(sov.isInvulnerable).toBe(true);
-    for (let d = 1; d <= 5000; d += 500) {
-      expect(sov.takeDamage(d)).toBe(0);
-      expect(sov.hullHp).toBe(2500);
-      expect(sov.coreHp).toBe(1500);
-    }
-    expect(sov.shieldFlashTimer).toBeGreaterThan(0);
 
-    // 3. PHASE 2 (HULL): Hull absorbs damage; does NOT bleed over into Core in one hit
-    sov.setPhase(CrisisPhase.PHASE_2_HULL);
-    expect(sov.isInvulnerable).toBe(false);
-
-    // Hit with 1,000 damage
-    expect(sov.takeDamage(1000)).toBe(1000);
-    expect(sov.hullHp).toBe(1500);
-    expect(sov.coreHp).toBe(1500);
-    expect(sov.hp).toBe(3000);
-
-    // Hit with massive 50,000 damage - should break Hull (1,500) and trigger Phase 3 without damaging Core
-    const breakHullDmg = sov.takeDamage(50000);
-    expect(breakHullDmg).toBe(1500); // Only takes the remaining 1500 hull HP
-    expect(sov.hullHp).toBe(0);
-    expect(sov.coreHp).toBe(1500); // Core remains intact at full 1500 HP!
-    expect(sov.phase).toBe(CrisisPhase.PHASE_3_CORE);
-    expect(sov.isInvulnerable).toBe(false);
-
-    // 4. PHASE 3 (CORE): Core absorbs damage
-    expect(sov.takeDamage(500)).toBe(500);
-    expect(sov.coreHp).toBe(1000);
-    expect(sov.hp).toBe(1000);
-
-    // Massive hit kills Core
-    expect(sov.takeDamage(9999)).toBe(1000);
-    expect(sov.coreHp).toBe(0);
-    expect(sov.hp).toBe(0);
-    expect(sov.phase).toBe(CrisisPhase.DEFEATED);
-    expect(sov.isDead).toBe(true);
-
-    // 5. DEFEATED Phase: Damage must be 0
-    expect(sov.takeDamage(500)).toBe(0);
+    // Update crisis - must still be in Phase 1 because right anchor is alive
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
   });
 
-  test('ST-S3: Phase 3 Enrage Countdown & Reality Distortion Surge', () => {
-    const sov = new CrisisSovereign(170, 70, CrisisArchetype.CYBERNETIC_EXTERMINATOR, 2500, 1500);
-    sov.setPhase(CrisisPhase.PHASE_3_CORE);
+  test('ADV-01B: Massive single-shot overkill burst on Sovereign Hull does not bleed into Core HP', () => {
+    const crisis = new EndGameCrisis(600, 800);
+    crisis.startIncursion(CrisisArchetype.CYBERNETIC_EXTERMINATOR);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
 
+    // Destroy both anchors to enter Phase 2
+    crisis.riftAnchors[0].takeDamage(600);
+    crisis.riftAnchors[1].takeDamage(600);
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
+
+    const sov = crisis.sovereign!;
+    expect(sov.hullHp).toBe(2500);
+    expect(sov.coreHp).toBe(1500);
+
+    // Deliver 50,000 overkill burst to Hull
+    const hullDmg = sov.takeDamage(50000);
+    expect(hullDmg).toBe(2500);
+    expect(sov.hullHp).toBe(0);
+    expect(sov.phase).toBe(CrisisPhase.PHASE_3_CORE);
+
+    // CRITICAL INVARIANT: Core HP must strictly remain 1,500 HP (zero bleed)
+    expect(sov.coreHp).toBe(1500);
+    expect(sov.isDead).toBe(false);
+
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_3_CORE);
+  });
+
+  test('ADV-01C: Overkill damage truncation on phase boundary: 20 damage discarded on threshold bullet', () => {
+    const crisis = new EndGameCrisis(600, 800);
+    crisis.startIncursion(CrisisArchetype.SOLARIS_COLOSSUS);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
+
+    // Destroy anchors to enter Phase 2
+    crisis.riftAnchors[0].takeDamage(600);
+    crisis.riftAnchors[1].takeDamage(600);
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
+
+    const sov = crisis.sovereign!;
+    // Set Hull to 20 HP
+    sov.hullHp = 20;
+
+    // Fire a 40-damage bullet directly at Sovereign Hull
+    const b = new Bullet(sov.position.x + 50, sov.position.y + 50, -400, 40, true, 1);
+    let recordedScore = 0;
+    crisis.handleBulletCollision(b, (pts) => { recordedScore = pts; });
+
+    // The bullet dealt 20 damage (Math.min(hullHp, 40) = 20)
+    // 20 damage was discarded due to phase clamping!
+    expect(sov.hullHp).toBe(0);
+    expect(recordedScore).toBe(20 * 15); // 300 points
+    expect(sov.phase).toBe(CrisisPhase.PHASE_3_CORE);
+    expect(sov.coreHp).toBe(1500); // Intact at 1500 HP
+  });
+
+  test('ADV-01D: Remediation Verified: Piercing bullet decrements piercing and does not deal multi-hit damage on subsequent frames', () => {
+    const crisis = new EndGameCrisis(600, 800);
+    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
+
+    // Transition to Phase 2
+    crisis.riftAnchors[0].takeDamage(600);
+    crisis.riftAnchors[1].takeDamage(600);
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
+
+    const sov = crisis.sovereign!;
+    // Bullet with piercing = 5, damage = 100
+    const bullet = new Bullet(sov.position.x + 100, sov.position.y + 120, -100, 100, true, 5);
+
+    // Frame 1 collision
+    const hit1 = crisis.handleBulletCollision(bullet);
+    expect(hit1).toBe(true);
+    expect(bullet.hitEntities.has(sov)).toBe(true);
+    expect(sov.hullHp).toBe(2400);
+    expect(bullet.piercing).toBe(4); // REMEDIATION VERIFIED: Piercing decremented by 1!
+
+    // Frame 2 collision: bullet moved slightly but still inside Sovereign hitbox
+    bullet.position.y -= 10;
+    const hit2 = crisis.handleBulletCollision(bullet);
+    expect(hit2).toBe(false); // REMEDIATION VERIFIED: Sovereign does NOT take damage again!
+    expect(sov.hullHp).toBe(2400);
+    expect(bullet.piercing).toBe(4); // Remains 4
+
+    // Frame 3 collision
+    bullet.position.y -= 10;
+    const hit3 = crisis.handleBulletCollision(bullet);
+    expect(hit3).toBe(false);
+    expect(sov.hullHp).toBe(2400);
+  });
+
+  // =========================================================================
+  // SCENARIO 2: TRANSITIONING FROM PHASE 1 TO PHASE 3 INSTANTANEOUSLY
+  // =========================================================================
+
+  test('ADV-02A: Instantaneous Phase 1 -> Phase 2 -> Phase 3 transition in zero ticks via chained bullet strikes', () => {
+    const crisis = new EndGameCrisis(600, 800);
+    const recordedPhases: CrisisPhase[] = [];
+    crisis.callbacks.onPhaseChange = (p) => recordedPhases.push(p);
+
+    crisis.startIncursion(CrisisArchetype.ABYSSAL_LEVIATHAN);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
+
+    // Anchor 0 destroyed
+    crisis.riftAnchors[0].takeDamage(600);
+
+    // Bullet 1 kills Anchor 1 (triggering immediate Phase 2 transition)
+    const anchor1 = crisis.riftAnchors[1];
+    const b1 = new Bullet(anchor1.position.x + 10, anchor1.position.y + 10, -400, 600, true, 1);
+    crisis.handleBulletCollision(b1);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
+
+    // Bullet 2 in the exact same tick strikes Sovereign for 2500 dmg (depleting hull instantly)
+    const sov = crisis.sovereign!;
+    const b2 = new Bullet(sov.position.x + 50, sov.position.y + 50, -400, 2500, true, 1);
+    crisis.handleBulletCollision(b2);
+
+    // Phase 2 lasted zero update ticks, immediately entering Phase 3
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_3_CORE);
+    expect(sov.phase).toBe(CrisisPhase.PHASE_3_CORE);
+    expect(sov.hullHp).toBe(0);
+    expect(sov.coreHp).toBe(1500);
+
+    // Verify all lifecycle phases were dispatched: INCURSION -> PHASE_1_SHIELD -> PHASE_2_HULL -> PHASE_3_CORE
+    expect(recordedPhases).toEqual([
+      CrisisPhase.INCURSION,
+      CrisisPhase.PHASE_1_SHIELD,
+      CrisisPhase.PHASE_2_HULL,
+      CrisisPhase.PHASE_3_CORE
+    ]);
+  });
+
+  test('ADV-02B: Allied Reinforcements spawned via callback even when Phase 2 has zero ticks', () => {
+    const canvas = createMockCanvas();
+    const gm = new GameManager(canvas);
+    gm.state = GameState.PLAYING;
+    gm.level = 16;
+
+    // Use VOID_SOVEREIGN to avoid shifted phase damage reduction
+    const crisis = gm.triggerEndGameCrisis(CrisisArchetype.VOID_SOVEREIGN);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, gm.player, gm.bullets, gm.particles);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
+    expect(gm.alliedReinforcements).toBeUndefined();
+
+    // Kill both anchors and hull in rapid succession in the same frame
+    crisis.riftAnchors[0].takeDamage(600);
+    const b1 = new Bullet(crisis.riftAnchors[1].position.x + 10, crisis.riftAnchors[1].position.y + 10, -400, 600, true, 1);
+    crisis.handleBulletCollision(b1); // Triggers PHASE_2_HULL callback -> spawns allied reinforcements!
+
+    expect(gm.alliedReinforcements).toBeDefined();
+
+    // Immediately deplete hull to enter Phase 3 in zero ticks
+    const b2 = new Bullet(crisis.sovereign!.position.x + 50, crisis.sovereign!.position.y + 50, -400, 2500, true, 1);
+    crisis.handleBulletCollision(b2); // Triggers PHASE_3_CORE
+
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_3_CORE);
+    expect(gm.alliedReinforcements).toBeDefined();
+  });
+
+  test('ADV-02C: Remediation Verified: Crisis phase synchronizes to PHASE_3_CORE when Sovereign is in Phase 3', () => {
+    const crisis = new EndGameCrisis(600, 800);
+    crisis.startIncursion(CrisisArchetype.CHRONO_DEVOURER);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
+
+    // Modify Sovereign phase to PHASE_3_CORE while crisis is in PHASE_1_SHIELD
+    crisis.sovereign!.phase = CrisisPhase.PHASE_3_CORE;
+    crisis.sovereign!.hullHp = 0;
+
+    // Call update
+    crisis.update(0.016, new Player(600, 800), [], []);
+
+    // REMEDIATION VERIFIED: update() properly transitions to PHASE_3_CORE!
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_3_CORE);
+  });
+
+  // =========================================================================
+  // SCENARIO 3: ENRAGE TIMER EXPIRATION BEHAVIOR (enrageTime <= 0)
+  // =========================================================================
+
+  test('ADV-03A: Enrage timer countdown to 0.0s and realityDistortionLevel saturation at 1.0', () => {
+    const crisis = new EndGameCrisis(600, 800);
+    crisis.startIncursion(CrisisArchetype.GLACIAL_OBLIVION);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
+
+    // Destroy anchors and hull properly
+    crisis.riftAnchors[0].takeDamage(600);
+    crisis.riftAnchors[1].takeDamage(600);
+    crisis.update(0.016, new Player(600, 800), [], []); // Enter Phase 2
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
+
+    crisis.sovereign!.takeDamage(2500);
+    crisis.update(0.016, new Player(600, 800), [], []); // Enter Phase 3
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_3_CORE);
+
+    const sov = crisis.sovereign!;
     expect(sov.enrageTimer).toBe(35.0);
     expect(sov.realityDistortionLevel).toBe(0);
 
-    // Advance 20 seconds
-    sov.update(20.0, { x: 300, y: 700 });
-    expect(sov.enrageTimer).toBeCloseTo(15.0, 1);
+    // Advance 34.0 seconds
+    crisis.update(34.0, new Player(600, 800), [], []);
+    expect(sov.enrageTimer).toBeCloseTo(1.0, 1);
     expect(sov.realityDistortionLevel).toBe(0);
 
-    // Advance past 35s enrage limit
-    sov.update(20.0, { x: 300, y: 700 });
+    // Advance past 35.0s enrage limit
+    crisis.update(2.0, new Player(600, 800), [], []);
     expect(sov.enrageTimer).toBe(0);
-    expect(sov.realityDistortionLevel).toBe(1.0); // Enrage triggered!
+    expect(sov.realityDistortionLevel).toBe(1.0);
+
+    // Further updates clamp at 0 and 1.0
+    crisis.update(10.0, new Player(600, 800), [], []);
+    expect(sov.enrageTimer).toBe(0);
+    expect(sov.realityDistortionLevel).toBe(1.0);
   });
 
-  test('ST-S4: CrisisSovereign HUD & Vector Draw Under Edge Canvas Widths', () => {
-    const ctx = createMockCanvasContext();
-    const sov = new CrisisSovereign(170, 70, CrisisArchetype.ABYSSAL_LEVIATHAN, 2500, 1500);
-
-    // Screen widths: normal, ultra-wide, narrow, zero
-    for (const w of [600, 1920, 3840, 200, 50, 0]) {
-      expect(() => sov.drawBossHUD(ctx, w)).not.toThrow();
-    }
-
-    // All archetypes drawing in all phases
-    for (const arch of [
-      CrisisArchetype.VOID_SOVEREIGN,
-      CrisisArchetype.ABYSSAL_LEVIATHAN,
-      CrisisArchetype.CYBERNETIC_EXTERMINATOR,
-    ]) {
-      sov.archetype = arch;
-      for (const p of [
-        CrisisPhase.INCURSION,
-        CrisisPhase.PHASE_1_SHIELD,
-        CrisisPhase.PHASE_2_HULL,
-        CrisisPhase.PHASE_3_CORE,
-        CrisisPhase.DEFEATED,
-      ]) {
-        sov.setPhase(p);
-        sov.flashTimer = 0.08;
-        sov.shieldFlashTimer = 0.12;
-        expect(() => sov.draw(ctx)).not.toThrow();
-      }
-    }
-  });
-
-  // =========================================================================
-  // 3. END-GAME CRISIS COORDINATOR INTEGRATION & STRESS TESTS
-  // =========================================================================
-
-  test('ST-C1: 10,000 Frame Full Loop Simulation with High Particle/Bullet Counts', () => {
+  test('ADV-03B: Anomaly Confirmed: Enrage expiration (enrageTimer <= 0) lacks game-over penalty or attack acceleration', () => {
     const crisis = new EndGameCrisis(600, 800);
-    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
-
-    const player = new Player(600, 800);
-    const bullets: Bullet[] = [];
-    const particles: Particle[] = [];
-
-    // Pre-populate with 200 bullets and 300 particles
-    for (let i = 0; i < 200; i++) {
-      bullets.push(new Bullet(100 + (i % 400), 200 + (i % 400), -300, 10, true));
-    }
-    for (let i = 0; i < 300; i++) {
-      particles.push(new Particle(200, 200, '#ffffff', 1.0));
-    }
-
-    // Run 10,000 updates at 60fps (deltaTime = 0.0166)
-    for (let f = 0; f < 10000; f++) {
-      crisis.update(0.0166, player, bullets, particles);
-    }
-
-    expect(crisis.isCrisisActive()).toBe(true);
-    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
-    expect(Number.isFinite(player.position.x)).toBe(true);
-    expect(Number.isFinite(player.position.y)).toBe(true);
-  });
-
-  test('ST-C2: Strict Phase 1 Damage Absorption & Invulnerability Verification', () => {
-    const crisis = new EndGameCrisis(600, 800);
-    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
-    crisis.update(3.1, new Player(600, 800), [], []); // Finish incursion -> Phase 1
-
-    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
-    expect(crisis.sovereign!.isInvulnerable).toBe(true);
-
-    const sov = crisis.sovereign!;
-    const [riftLeft, riftRight] = crisis.riftAnchors;
-
-    // Direct bullet hit on Sovereign in Phase 1
-    const bSov = new Bullet(sov.position.x + 50, sov.position.y + 50, -400, 500, true);
-    const hitSov = crisis.handleBulletCollision(bSov);
-    expect(hitSov).toBe(true);
-    expect(bSov.isDead).toBe(true);
-    expect(sov.hullHp).toBe(2500); // 0 damage dealt!
-    expect(sov.coreHp).toBe(1500);
-    expect(sov.shieldFlashTimer).toBeGreaterThan(0);
-
-    // Destroy Rift Left (600 HP)
-    const bRiftL = new Bullet(riftLeft.position.x + 10, riftLeft.position.y + 10, -400, 600, true);
-    crisis.handleBulletCollision(bRiftL);
-    expect(riftLeft.isDead).toBe(true);
-
-    // Update coordinator with 1 rift remaining (processes rift destruction and clears isShielding)
+    crisis.startIncursion(CrisisArchetype.SINGULARITY_CORE);
+    crisis.warningTimer = 0;
     crisis.update(0.016, new Player(600, 800), [], []);
-    expect(riftLeft.isShielding).toBe(false);
-    // Sovereign MUST STILL BE INVULNERABLE in Phase 1!
-    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
-    expect(sov.isInvulnerable).toBe(true);
 
-    // Try attacking Sovereign again while Rift Right (600 HP) is still alive (1000 barrage hits)
-    for (let h = 0; h < 1000; h++) {
-      const bSovLoop = new Bullet(sov.position.x + 50, sov.position.y + 50, -400, 999, true);
-      crisis.handleBulletCollision(bSovLoop);
-    }
-    expect(sov.hullHp).toBe(2500); // Still 100% immune!
-
-    // Deal partial damage to Rift Right (300 / 600 HP remaining)
-    const bRiftR1 = new Bullet(riftRight.position.x + 10, riftRight.position.y + 10, -400, 300, true);
-    crisis.handleBulletCollision(bRiftR1);
-    expect(riftRight.hp).toBe(300);
-    expect(riftRight.isDead).toBe(false);
-
-    // Sovereign STILL immune with 1 HP or partial HP on last rift
-    crisis.update(0.016, new Player(600, 800), [], []);
-    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
-    expect(sov.isInvulnerable).toBe(true);
-
-    // Destroy Rift Right (remaining 300 HP)
-    const bRiftR2 = new Bullet(riftRight.position.x + 10, riftRight.position.y + 10, -400, 300, true);
-    crisis.handleBulletCollision(bRiftR2);
-    expect(riftRight.isDead).toBe(true);
-
-    // Now update coordinator -> Transitions to Phase 2 (HULL)!
-    crisis.update(0.016, new Player(600, 800), [], []);
-    expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
-    expect(sov.isInvulnerable).toBe(false);
-
-    // Now Sovereign Hull takes damage!
-    const bSov3 = new Bullet(sov.position.x + 50, sov.position.y + 50, -400, 400, true);
-    crisis.handleBulletCollision(bSov3);
-    expect(sov.hullHp).toBe(2100);
-  });
-
-  test('ST-C3: Gravitational Pull & Bullet Bending Extreme Edge Distances', () => {
-    const crisis = new EndGameCrisis(600, 800);
-    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
-    crisis.update(3.1, new Player(600, 800), [], []);
-
-    const player = new Player(600, 800);
-    const rift = crisis.riftAnchors[0];
-    const riftCenter = rift.getSingularityCenter();
-
-    // 1. Player exactly on rift center (distance = 0)
-    player.position.x = riftCenter.x - player.size.width / 2;
-    player.position.y = riftCenter.y - player.size.height / 2;
-    // Should not throw division by zero due to distSq > 100 guard
-    expect(() => crisis.update(0.1, player, [], [])).not.toThrow();
-    expect(Number.isFinite(player.position.x)).toBe(true);
-
-    // 2. Player very far outside gravitational radius (dist = 10,000)
-    player.position.x = 10000;
-    player.position.y = 10000;
-    crisis.update(0.1, player, [], []);
-    expect(player.position.x).toBe(10000); // Unmoved
-
-    // 3. Bullets: enemy bullets vs player bullets
-    const playerBullet = new Bullet(riftCenter.x + 50, riftCenter.y + 50, -300, 10, true);
-    const enemyBullet = new Bullet(riftCenter.x + 50, riftCenter.y + 50, 300, 10, false);
-    const bullets = [playerBullet, enemyBullet];
-
-    const initialEBX = enemyBullet.position.x;
-    crisis.update(0.1, player, bullets, []);
-
-    // Player bullet bent towards rift
-    expect(playerBullet.position.x).toBeLessThan(riftCenter.x + 50);
-    // Enemy bullet NOT affected by gravity
-    expect(enemyBullet.position.x).toBe(initialEBX);
-  });
-
-  test('ST-C4: Superweapons & Attack Patterns for All 3 Archetypes without Exception', () => {
-    const player = new Player(600, 800);
-
-    for (const arch of [
-      CrisisArchetype.VOID_SOVEREIGN,
-      CrisisArchetype.ABYSSAL_LEVIATHAN,
-      CrisisArchetype.CYBERNETIC_EXTERMINATOR,
-    ]) {
-      const crisis = new EndGameCrisis(600, 800);
-      crisis.startIncursion(arch);
-      crisis.update(3.1, player, [], []); // Enter Phase 1
-
-      const bullets: Bullet[] = [];
-      const particles: Particle[] = [];
-
-      // Force attack execution by advancing beyond attack cooldown (2.5s)
-      crisis.update(2.5, player, bullets, particles);
-
-      // Verify bullets spawned
-      expect(bullets.length).toBeGreaterThan(0);
-      for (const b of bullets) {
-        expect(Number.isFinite(b.position.x)).toBe(true);
-        expect(Number.isFinite(b.position.y)).toBe(true);
-        expect(Number.isFinite(b.velocity.x)).toBe(true);
-        expect(Number.isFinite(b.velocity.y)).toBe(true);
-        expect(b.faction).toBe(Faction.INVADER);
-      }
-    }
-  });
-
-  test('ST-C5: High Piercing Projectile Penetration & Score Multipliers', () => {
-    const crisis = new EndGameCrisis(600, 800);
-    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
-    crisis.update(3.1, new Player(600, 800), [], []);
-
-    // Create a piercing bullet (piercing = 3)
-    const rift = crisis.riftAnchors[0];
-    const piercingBullet = new Bullet(rift.position.x + 10, rift.position.y + 10, -400, 100, true);
-    piercingBullet.piercing = 3;
-
-    let scoreAdded = 0;
-    const hit = crisis.handleBulletCollision(piercingBullet, (pts) => {
-      scoreAdded += pts;
-    });
-
-    expect(hit).toBe(true);
-    // Bullet should not be dead since piercing > 1
-    expect(piercingBullet.isDead).toBe(false);
-    expect(piercingBullet.hitEntities.has(rift)).toBe(true);
-    expect(scoreAdded).toBe(1000); // 100 dmg * 10 = 1000 score
-  });
-
-  test('ST-C6: Full Cataclysm Lifecycle End-to-End under High DPS Simulation', () => {
-    const crisis = new EndGameCrisis(600, 800);
-    const player = new Player(600, 800);
-    const bullets: Bullet[] = [];
-    const particles: Particle[] = [];
-
-    let phaseTransitions: CrisisPhase[] = [];
-    crisis.callbacks.onPhaseChange = (phase) => {
-      phaseTransitions.push(phase);
-    };
-
-    let defeatedArchetype: CrisisArchetype | null = null;
-    crisis.callbacks.onDefeated = (arch) => {
-      defeatedArchetype = arch;
-    };
-
-    // 1. Incursion Trigger
-    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
-    expect(crisis.phase).toBe(CrisisPhase.INCURSION);
-
-    // 2. Incursion Warning (3.0s)
-    crisis.update(3.1, player, bullets, particles);
-    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
-
-    // 3. Destroy Rift 0 (600 HP) and Rift 1 (600 HP)
+    // Transition cleanly to Phase 3
     crisis.riftAnchors[0].takeDamage(600);
     crisis.riftAnchors[1].takeDamage(600);
-    crisis.update(0.016, player, bullets, particles);
-    expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
-
-    // 4. Destroy Hull (2,500 HP)
+    crisis.update(0.016, new Player(600, 800), [], []); // Phase 2
     crisis.sovereign!.takeDamage(2500);
-    crisis.update(0.016, player, bullets, particles);
+    crisis.update(0.016, new Player(600, 800), [], []); // Phase 3
     expect(crisis.phase).toBe(CrisisPhase.PHASE_3_CORE);
 
-    // 5. Destroy Core (1,500 HP)
-    crisis.sovereign!.takeDamage(1500);
-    crisis.update(0.016, player, bullets, particles);
+    // Force enrage timer to 0
+    crisis.sovereign!.enrageTimer = 0;
+    crisis.sovereign!.realityDistortionLevel = 1.0;
+
+    const bullets: Bullet[] = [];
+    const player = new Player(600, 800);
+
+    // Run 5 seconds (300 ticks) at enrageTimer = 0
+    for (let t = 0; t < 300; t++) {
+      crisis.update(1 / 60, player, bullets, []);
+    }
+
+    // ANOMALY FINDING:
+    // 1. Crisis remains active indefinitely; player is NOT wiped.
+    expect(crisis.isActive).toBe(true);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_3_CORE);
+    expect(crisis.sovereign!.coreHp).toBe(1500);
+
+    // 2. Attack interval remains strictly 1.4s (no hyper-dense attack overdrive)
+    // Over 5 seconds with 1.4s cadence: expect ~3-4 attacks fired
+    expect(bullets.length).toBeGreaterThan(0);
+
+    // 3. realityDistortionLevel is 1.0, but unused in rendering or mechanics
+    expect(crisis.sovereign!.realityDistortionLevel).toBe(1.0);
+  });
+
+  // =========================================================================
+  // SCENARIO 4: DEFEATING SOVEREIGN WHILE ANCHORS ALIVE / RE-TRIGGERING INCURSION
+  // =========================================================================
+
+  test('ADV-04A: Remediation Verified: Defeating Sovereign while Anchors alive marks anchors as dead', () => {
+    const crisis = new EndGameCrisis(600, 800);
+    let defeatedReported = false;
+    crisis.callbacks.onDefeated = () => { defeatedReported = true; };
+
+    crisis.startIncursion(CrisisArchetype.PSIONIC_SHROUD);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
+
+    const [leftAnchor, rightAnchor] = crisis.riftAnchors;
+    expect(leftAnchor.hp).toBe(600);
+    expect(rightAnchor.hp).toBe(600);
+
+    // Destroy Sovereign in Phase 1
+    const sov = crisis.sovereign!;
+    sov.hullHp = 0;
+    sov.coreHp = 0;
+    sov.hp = 0;
+    sov.isDead = true;
+
+    // Update crisis
+    crisis.update(0.016, new Player(600, 800), [], []);
+
     expect(crisis.phase).toBe(CrisisPhase.DEFEATED);
     expect(crisis.isDefeated()).toBe(true);
-    expect(defeatedArchetype).toBe(CrisisArchetype.VOID_SOVEREIGN);
+    expect(defeatedReported).toBe(true);
 
-    // Check phase transition sequence
-    expect(phaseTransitions).toContain(CrisisPhase.PHASE_1_SHIELD);
-    expect(phaseTransitions).toContain(CrisisPhase.PHASE_2_HULL);
-    expect(phaseTransitions).toContain(CrisisPhase.PHASE_3_CORE);
-    expect(phaseTransitions).toContain(CrisisPhase.DEFEATED);
+    // REMEDIATION VERIFIED: Anchors are cleanly marked isDead = true!
+    expect(leftAnchor.isDead).toBe(true);
+    expect(rightAnchor.isDead).toBe(true);
 
-    // Check cataclysm explosion particles spawned
-    expect(particles.length).toBeGreaterThanOrEqual(40);
+    // REMEDIATION VERIFIED: getActiveColliders() reports 0 living colliders!
+    const colliders = crisis.getActiveColliders();
+    expect(colliders.length).toBe(0);
   });
 
-  test('ST-C7: Non-Player Bullet and Dead Bullet Collision Rejection', () => {
-    const crisis = new EndGameCrisis(600, 800);
-    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
-    crisis.update(3.1, new Player(600, 800), [], []);
+  test('ADV-04B: Anomaly Confirmed: Re-triggering incursion during active crisis orphans active Allied Reinforcements', () => {
+    const canvas = createMockCanvas();
+    const gm = new GameManager(canvas);
+    gm.state = GameState.PLAYING;
+    gm.level = 16;
 
-    const sov = crisis.sovereign!;
+    // Trigger crisis 1 (Chrono Devourer)
+    const crisis1 = gm.triggerEndGameCrisis(CrisisArchetype.CHRONO_DEVOURER);
+    crisis1.warningTimer = 0;
+    crisis1.update(0.016, gm.player, gm.bullets, gm.particles);
 
-    // 1. Invader Bullet
-    const invaderBullet = new Bullet(sov.position.x + 50, sov.position.y + 50, 400, 50, false);
-    invaderBullet.faction = Faction.INVADER;
-    expect(crisis.handleBulletCollision(invaderBullet)).toBe(false);
+    // Advance crisis 1 to Phase 2 (allied reinforcements spawn)
+    crisis1.riftAnchors[0].takeDamage(600);
+    crisis1.riftAnchors[1].takeDamage(600);
+    crisis1.update(0.016, gm.player, gm.bullets, gm.particles);
+    expect(crisis1.phase).toBe(CrisisPhase.PHASE_2_HULL);
+    expect(gm.alliedReinforcements).toBeDefined();
 
-    // 2. Rogue Bullet
-    const rogueBullet = new Bullet(sov.position.x + 50, sov.position.y + 50, 400, 50, false);
-    rogueBullet.faction = Faction.ROGUE;
-    expect(crisis.handleBulletCollision(rogueBullet)).toBe(false);
+    const originalAllied = gm.alliedReinforcements;
 
-    // 3. Dead Player Bullet
-    const deadBullet = new Bullet(sov.position.x + 50, sov.position.y + 50, -400, 50, true);
-    deadBullet.isDead = true;
-    expect(crisis.handleBulletCollision(deadBullet)).toBe(false);
+    // Now re-trigger crisis 2 (Biomorphic Swarm) while crisis 1 is mid-fight
+    const crisis2 = gm.triggerEndGameCrisis(CrisisArchetype.BIOMORPHIC_SWARM);
+
+    // ANOMALY: GameManager overwrites endGameCrisis without cleaning up AlliedReinforcements
+    expect(gm.endGameCrisis).toBe(crisis2);
+    expect(crisis2.phase).toBe(CrisisPhase.INCURSION);
+
+    // Allied fleet from Crisis 1 is still present on screen during Incursion warning of Crisis 2!
+    expect(gm.alliedReinforcements).toBe(originalAllied);
   });
 
-  test('ST-C8: EndGameCrisis State Snapshot Integrity Across All Phases', () => {
+  test('ADV-04C: Re-calling startIncursion() on same EndGameCrisis instance resets encounter but preserves unreset attackTimer', () => {
     const crisis = new EndGameCrisis(600, 800);
-    crisis.startIncursion(CrisisArchetype.VOID_SOVEREIGN);
+    crisis.startIncursion(CrisisArchetype.NANITE_HARVESTER);
+    crisis.warningTimer = 0;
+    crisis.update(0.016, new Player(600, 800), [], []);
 
-    // Incursion
-    let state = crisis.getState();
-    expect(state.isActive).toBe(true);
-    expect(state.phase).toBe(CrisisPhase.INCURSION);
-    expect(state.shieldIntegrity).toBe(0);
-    expect(state.maxHp).toBe(4000);
-    expect(state.totalHp).toBe(4000);
-
-    // Phase 1 (Shield)
-    crisis.update(3.1, new Player(600, 800), [], []);
-    state = crisis.getState();
-    expect(state.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
-    expect(state.shieldIntegrity).toBe(1.0);
-
-    // Phase 2 (Hull)
+    // Progress to Phase 2
     crisis.riftAnchors[0].takeDamage(600);
     crisis.riftAnchors[1].takeDamage(600);
     crisis.update(0.016, new Player(600, 800), [], []);
-    state = crisis.getState();
-    expect(state.phase).toBe(CrisisPhase.PHASE_2_HULL);
-    expect(state.shieldIntegrity).toBe(0);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
 
-    // Phase 3 (Core)
+    // Progress to Phase 3
     crisis.sovereign!.takeDamage(2500);
     crisis.update(0.016, new Player(600, 800), [], []);
-    state = crisis.getState();
-    expect(state.phase).toBe(CrisisPhase.PHASE_3_CORE);
-    expect(state.totalHp).toBe(1500);
+    expect(crisis.phase).toBe(CrisisPhase.PHASE_3_CORE);
 
-    // Defeated
-    crisis.sovereign!.takeDamage(1500);
-    crisis.update(0.016, new Player(600, 800), [], []);
-    state = crisis.getState();
-    expect(state.phase).toBe(CrisisPhase.DEFEATED);
-    expect(state.totalHp).toBe(0);
-    expect(state.isActive).toBe(false);
+    // Re-call startIncursion directly on the same instance
+    crisis.startIncursion(CrisisArchetype.COSMIC_DEVOURER);
+
+    // Archetype and Phase reset to INCURSION
+    expect(crisis.archetype).toBe(CrisisArchetype.COSMIC_DEVOURER);
+    expect(crisis.phase).toBe(CrisisPhase.INCURSION);
+    expect(crisis.sovereign!.hullHp).toBe(2500);
+    expect(crisis.sovereign!.coreHp).toBe(1500);
+    expect(crisis.riftAnchors.length).toBe(2);
+    expect(crisis.riftAnchors[0].hp).toBe(600);
   });
 });

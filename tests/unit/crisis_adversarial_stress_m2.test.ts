@@ -284,7 +284,8 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
     expect(() => gm.init(false)).not.toThrow();
     expect(gm.player.hp).toBe(3);
     expect(gm.endGameCrisis).toBeNull();
-    expect(gm.score).toBe(1200); // Preserved on soft reset
+    // init() resets score to 0 to prevent score inheritance across runs (DEFECT-F1)
+    expect(gm.score).toBe(0);
     expect(gm.currency).toBe(350);
   });
 

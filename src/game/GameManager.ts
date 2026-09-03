@@ -195,8 +195,8 @@ export class GameManager {
       }
     }
     this.particles = [];
+    this.score = 0;
     if (resetScoreAndCash) {
-      this.score = 0;
       this.currency = 150;
     }
     this.combo = 0;
@@ -230,9 +230,7 @@ export class GameManager {
     this.endGameCrisis = null;
     this.endGameCrisisDefeatedHandled = false;
     this.alliedReinforcements = undefined;
-    if (resetScoreAndCash) {
-      this.hasEndGameCrisisOccurred = false;
-    }
+    this.hasEndGameCrisisOccurred = false;
     if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
 
     this.spawnBarricades();
@@ -275,6 +273,8 @@ export class GameManager {
       empTimer: 0,
     };
     this.crisisTimer = 6.0 + Math.random() * 4.0;
+    this.bullets = [];
+    this.solarFlares = [];
     this.hazardProjectiles = [];
     if (this.onCrisisEvent) this.onCrisisEvent(null);
     this.endGameCrisis = null;
@@ -287,10 +287,12 @@ export class GameManager {
     if (this.onStateChange) this.onStateChange(GameState.PLAYING);
     
     this.lastTime = performance.now();
-    if (this.animationFrameId) {
+    if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
-    this.animationFrameId = requestAnimationFrame(this.loop);
+    if (typeof requestAnimationFrame !== 'undefined') {
+      this.animationFrameId = requestAnimationFrame(this.loop);
+    }
   }
 
   public start() {
@@ -320,6 +322,9 @@ export class GameManager {
   }
 
   public triggerEndGameCrisis(archetype?: CrisisArchetype): EndGameCrisis {
+    if (this.alliedReinforcements && !this.alliedReinforcements.isWarpingOut) {
+      this.alliedReinforcements.warpOut();
+    }
     this.hasEndGameCrisisOccurred = true;
     this.enemies = []; // Clear standard hostiles for existential crisis encounter
     this.endGameCrisis = new EndGameCrisis(this.logicalWidth, this.logicalHeight);
@@ -363,7 +368,24 @@ export class GameManager {
     return this.endGameCrisis;
   }
 
+  public handleCrisisDefeatedRewards(): void {
+    if (!this.endGameCrisisDefeatedHandled) {
+      this.endGameCrisisDefeatedHandled = true;
+      this.score += 2000;
+      this.currency += 500;
+      this.combo += 10;
+      this.comboTimer = 5.0;
+      this.updateScoreUI();
+      this.createExplosion(this.logicalWidth / 2, 200, '#fbbf24', 120, 3.0);
+      this.triggerScreenShake(1.2);
+      soundManager.playVictory();
+    }
+  }
+
   public triggerAlliedReinforcements(): AlliedReinforcements {
+    if (this.alliedReinforcements && this.alliedReinforcements.isActive && !this.alliedReinforcements.isDismissed) {
+      return this.alliedReinforcements;
+    }
     this.alliedReinforcements = new AlliedReinforcements(this.logicalWidth, this.logicalHeight);
     soundManager.playPowerUp();
     this.triggerScreenShake(0.8);
@@ -749,25 +771,16 @@ export class GameManager {
             if (this.player.hp <= 0) this.gameOver("정수기가 파괴되었습니다. (체력 소진)");
           }
         }
+      }
 
-        // Defeat resolution: grant massive victory bonus (+2000 score, +500 cash)
-        if (this.endGameCrisis.isDefeated()) {
-          if (!this.endGameCrisisDefeatedHandled) {
-            this.endGameCrisisDefeatedHandled = true;
-            this.score += 2000;
-            this.currency += 500;
-            this.combo += 10;
-            this.comboTimer = 5.0;
-            this.updateScoreUI();
-            this.createExplosion(this.logicalWidth / 2, 200, '#fbbf24', 120, 3.0);
-            this.triggerScreenShake(1.2);
-            soundManager.playVictory();
-          }
-        }
+      // Defeat resolution: grant massive victory bonus (+2000 score, +500 cash)
+      if (this.endGameCrisis && (this.endGameCrisis.isDefeated() || this.endGameCrisis.phase === CrisisPhase.DEFEATED)) {
+        this.handleCrisisDefeatedRewards();
       }
 
       // Allied Reinforcements (Aegis Vanguard Command Dreadnought) Update
       if (this.alliedReinforcements && this.alliedReinforcements.isActive) {
+        const prevHp = this.player ? this.player.hp : 0;
         const alliedBullets = this.alliedReinforcements.update(
           deltaTime,
           this.player,
@@ -779,9 +792,12 @@ export class GameManager {
         if (alliedBullets && alliedBullets.length > 0) {
           this.bullets.push(...alliedBullets);
         }
+        if (this.player && this.player.hp !== prevHp && this.onPlayerHpChange) {
+          this.onPlayerHpChange(this.player.hp);
+        }
 
         // Safely warp out if crisis has been defeated
-        if (this.endGameCrisis && this.endGameCrisis.isDefeated() && !this.alliedReinforcements.isWarpingOut) {
+        if (this.endGameCrisis && (this.endGameCrisis.isDefeated() || this.endGameCrisis.phase === CrisisPhase.DEFEATED) && !this.alliedReinforcements.isWarpingOut) {
           this.alliedReinforcements.warpOut();
         }
       }
@@ -992,10 +1008,10 @@ export class GameManager {
           for (const b of this.barricades) {
             if (
               !b.isDead &&
-              hz.x >= b.position.x &&
-              hz.x <= b.position.x + b.size.width &&
-              hz.y >= b.position.y &&
-              hz.y <= b.position.y + b.size.height
+              hz.x + hz.radius >= b.position.x &&
+              hz.x - hz.radius <= b.position.x + b.size.width &&
+              hz.y + hz.radius >= b.position.y &&
+              hz.y - hz.radius <= b.position.y + b.size.height
             ) {
               hz.isDead = true;
               if (b.type === BarricadeType.DESTRUCTIBLE) {
@@ -1235,8 +1251,8 @@ export class GameManager {
       this.crisisState.empSuppressionActive = false;
       this.hazardProjectiles = [];
       if (this.endGameCrisis && this.endGameCrisis.isDefeated()) {
+        this.handleCrisisDefeatedRewards();
         this.endGameCrisis = null;
-        this.endGameCrisisDefeatedHandled = false;
         if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
       }
       if (this.onCrisisEvent) this.onCrisisEvent(null);
@@ -1466,6 +1482,7 @@ export class GameManager {
             this.player.stressLevel = Math.min(100, this.player.stressLevel + 40);
             this.player.suppressionLevel = Math.min(100, this.player.suppressionLevel + 20);
             this.combo = 0;
+            this.updateScoreUI();
             if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
 
             if (this.player.hp <= 0) {

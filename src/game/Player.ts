@@ -3,7 +3,8 @@ import { Bullet } from './Bullet';
 import { Faction } from './types';
 
 export class Player extends Entity {
-  private canvasWidth: number;
+  public canvasWidth: number;
+  public canvasHeight: number;
   public speed: number = 300;
   public hp: number = 3;
   public maxHp: number = 5;
@@ -31,6 +32,7 @@ export class Player extends Entity {
   constructor(canvasWidth: number, canvasHeight: number) {
     super(canvasWidth / 2 - 25, canvasHeight - 60, 50, 40);
     this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
     this.faction = Faction.PLAYER;
     this.color = '#3b82f6'; // Blue
   }
@@ -63,10 +65,17 @@ export class Player extends Entity {
       this.position.x += this.speed * deltaTime;
     }
 
-    // Clamp to screen
+    // Clamp and sanitize coordinates
+    if (!Number.isFinite(this.position.x)) this.position.x = (this.canvasWidth - this.size.width) / 2;
+    if (!Number.isFinite(this.position.y)) this.position.y = this.canvasHeight - this.size.height - 20;
+
     if (this.position.x < 0) this.position.x = 0;
     if (this.position.x + this.size.width > this.canvasWidth) {
       this.position.x = this.canvasWidth - this.size.width;
+    }
+    if (this.position.y < 0) this.position.y = 0;
+    if (this.position.y + this.size.height > this.canvasHeight) {
+      this.position.y = this.canvasHeight - this.size.height;
     }
 
     if (this.fireTimer > 0) {
@@ -191,10 +200,17 @@ export class Player extends Entity {
     const bounce = Math.sin(this.timeAlive * 8) * 3;
     const stretch = this.isMovingLeft || this.isMovingRight ? 2 : 0;
     
-    const cx = this.position.x + this.size.width / 2 + jitterX;
-    const cy = this.position.y + this.size.height / 2 + bounce + jitterY;
-    const w = this.size.width / 2 + stretch;
-    const h = this.size.height / 2 - stretch;
+    const posX = Number.isFinite(this.position.x) ? this.position.x : (this.canvasWidth - this.size.width) / 2;
+    const posY = Number.isFinite(this.position.y) ? this.position.y : this.canvasHeight - this.size.height - 20;
+
+    const rawCx = posX + this.size.width / 2 + jitterX;
+    const rawCy = posY + this.size.height / 2 + bounce + jitterY;
+    const cx = Number.isFinite(rawCx) ? rawCx : this.canvasWidth / 2;
+    const cy = Number.isFinite(rawCy) ? rawCy : this.canvasHeight - 50;
+    const rawW = this.size.width / 2 + stretch;
+    const rawH = this.size.height / 2 - stretch;
+    const w = Number.isFinite(rawW) && rawW > 0 ? rawW : this.size.width / 2;
+    const h = Number.isFinite(rawH) && rawH > 0 ? rawH : this.size.height / 2;
     
     // Fast Concentric Alpha Halo (eliminating heavy CPU shadowBlur)
     const baseAlpha = ctx.globalAlpha;

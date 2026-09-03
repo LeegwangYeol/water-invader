@@ -247,8 +247,8 @@ export class EndGameCrisis {
 
       this.sovereign.update(deltaTime, playerPos);
 
-      // Check Phase 2 -> Phase 3 transition
-      if (this.phase === CrisisPhase.PHASE_2_HULL && this.sovereign.phase === CrisisPhase.PHASE_3_CORE) {
+      // Check Phase 3 transition
+      if (this.sovereign.phase === CrisisPhase.PHASE_3_CORE && this.phase !== CrisisPhase.PHASE_3_CORE) {
         this.transitionToPhase(CrisisPhase.PHASE_3_CORE, soundManager);
       }
 
@@ -285,6 +285,9 @@ export class EndGameCrisis {
     } else if (newPhase === CrisisPhase.DEFEATED) {
       this.bannerText = '✦ CATACLYSM AVERTED — CRISIS SOVEREIGN DESTROYED ✦';
       this.isActive = false;
+      for (const anchor of this.riftAnchors) {
+        anchor.isDead = true;
+      }
       if (soundManager) {
         soundManager.playSingularityCollapse();
         soundManager.playVictory();
@@ -459,7 +462,11 @@ export class EndGameCrisis {
     this.attackTimer += deltaTime;
     this.attackPhaseTime += deltaTime;
 
-    const interval = this.phase === CrisisPhase.PHASE_3_CORE ? 1.4 : this.attackCooldown;
+    const isEnraged = this.phase === CrisisPhase.PHASE_3_CORE && this.sovereign && this.sovereign.enrageTimer <= 0;
+    if (isEnraged && this.sovereign) {
+      this.sovereign.realityDistortionLevel = 1.0;
+    }
+    const interval = isEnraged ? 0.7 : (this.phase === CrisisPhase.PHASE_3_CORE ? 1.4 : this.attackCooldown);
 
     if (this.attackTimer >= interval) {
       this.attackTimer = 0;
@@ -479,68 +486,118 @@ export class EndGameCrisis {
 
     switch (this.archetype) {
       case CrisisArchetype.VOID_SOVEREIGN:
-        // Void Lance / Dark Matter Beam & Gravitational Pulse
+        // Void Lance / Dark Matter Beam & Gravitational Pulse or Phase 3 VOID_NOVA
         if (soundManager) soundManager.playDarkMatterBeam();
         
-        // 5-way spread dark-matter bolts from core
-        const angles = [-0.4, -0.2, 0, 0.2, 0.4];
-        for (const ang of angles) {
-          const speed = 220;
-          const bullet = new Bullet(core.x, core.y, Math.cos(ang) * speed, 1, false);
-          bullet.velocity.x = Math.sin(ang) * speed;
-          bullet.color = '#c084fc';
-          bullet.isInterceptable = true;
-          bullets.push(bullet);
-        }
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Phase 3: VOID_NOVA (10-way omnidirectional dark matter starburst)
+          const numBolts = 10;
+          for (let i = 0; i < numBolts; i++) {
+            const ang = (i * Math.PI * 2) / numBolts + this.attackPhaseTime;
+            const speed = 240;
+            const b = new Bullet(core.x, core.y, Math.sin(ang) * speed, 1, false);
+            b.velocity.x = Math.cos(ang) * speed;
+            b.color = '#c084fc';
+            b.isInterceptable = true;
+            bullets.push(b);
+          }
+        } else {
+          // 5-way spread dark-matter bolts from core
+          const angles = [-0.4, -0.2, 0, 0.2, 0.4];
+          for (const ang of angles) {
+            const speed = 220;
+            const bullet = new Bullet(core.x, core.y, Math.cos(ang) * speed, 1, false);
+            bullet.velocity.x = Math.sin(ang) * speed;
+            bullet.color = '#c084fc';
+            bullet.isInterceptable = true;
+            bullets.push(bullet);
+          }
 
-        // Flanking wing bolts
-        const leftB = new Bullet(leftMuzzle.x, leftMuzzle.y, 250, 1, false);
-        leftB.color = '#38bdf8';
-        const rightB = new Bullet(rightMuzzle.x, rightMuzzle.y, 250, 1, false);
-        rightB.color = '#38bdf8';
-        bullets.push(leftB, rightB);
+          // Flanking wing bolts
+          const leftB = new Bullet(leftMuzzle.x, leftMuzzle.y, 250, 1, false);
+          leftB.color = '#38bdf8';
+          const rightB = new Bullet(rightMuzzle.x, rightMuzzle.y, 250, 1, false);
+          rightB.color = '#38bdf8';
+          bullets.push(leftB, rightB);
+        }
         break;
 
       case CrisisArchetype.ABYSSAL_LEVIATHAN:
-        // Spore Spiral & Acidic Barrage
+        // Spore Spiral & Acidic Barrage or Phase 3 BIO_LARVAE_SWARM
         if (soundManager) soundManager.playAcidStormSound();
         
-        // Spiral spore emission
-        const numSpores = 6;
-        for (let i = 0; i < numSpores; i++) {
-          const baseAng = this.attackPhaseTime * 2.0 + (i * Math.PI * 2) / numSpores;
-          const speed = 190;
-          const b = new Bullet(core.x, core.y, Math.sin(baseAng) * speed, 1, false);
-          b.velocity.x = Math.cos(baseAng) * speed;
-          b.color = '#84cc16';
-          b.isInterceptable = true;
-          bullets.push(b);
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Phase 3: BIO_LARVAE_SWARM (dense aimed toxic larvae swarm)
+          const pCenterX = player ? player.position.x + player.size.width / 2 : this.logicalWidth / 2;
+          const pCenterY = player ? player.position.y + player.size.height / 2 : this.logicalHeight - 50;
+          const aimDx = pCenterX - core.x;
+          const aimDy = pCenterY - core.y;
+          const baseAng = Math.atan2(aimDy, aimDx);
+
+          for (let i = -3; i <= 3; i++) {
+            const ang = baseAng + i * 0.18;
+            const speed = 230 + Math.abs(i) * 15;
+            const larva = new Bullet(core.x, core.y, Math.sin(ang) * speed, 1, false);
+            larva.velocity.x = Math.cos(ang) * speed;
+            larva.color = '#84cc16';
+            larva.isInterceptable = true;
+            bullets.push(larva);
+          }
+        } else {
+          // Spiral spore emission
+          const numSpores = 6;
+          for (let i = 0; i < numSpores; i++) {
+            const baseAng = this.attackPhaseTime * 2.0 + (i * Math.PI * 2) / numSpores;
+            const speed = 190;
+            const b = new Bullet(core.x, core.y, Math.sin(baseAng) * speed, 1, false);
+            b.velocity.x = Math.cos(baseAng) * speed;
+            b.color = '#84cc16';
+            b.isInterceptable = true;
+            bullets.push(b);
+          }
         }
         break;
 
       case CrisisArchetype.CYBERNETIC_EXTERMINATOR:
-        // Dual Railguns & EMP Disruption Cascade
+        // Dual Railguns & EMP Disruption Cascade or Phase 3 EMP_CASCADE
         if (soundManager) soundManager.playRogueShoot();
         
-        // High-velocity direct railgun beams from left & right sponsons
-        const rail1 = new Bullet(leftMuzzle.x, leftMuzzle.y, 380, 2, false);
-        rail1.color = '#ef4444';
-        const rail2 = new Bullet(rightMuzzle.x, rightMuzzle.y, 380, 2, false);
-        rail2.color = '#ef4444';
-        
-        // Aimed center cluster shot
-        const pCenterX = player ? player.position.x + player.size.width / 2 : this.logicalWidth / 2;
-        const pCenterY = player ? player.position.y + player.size.height / 2 : this.logicalHeight - 50;
-        const aimDx = pCenterX - core.x;
-        const aimDy = pCenterY - core.y;
-        const aimDist = Math.sqrt(aimDx * aimDx + aimDy * aimDy) || 1;
-        
-        const aimedB = new Bullet(core.x, core.y, (aimDy / aimDist) * 280, 1, false);
-        aimedB.velocity.x = (aimDx / aimDist) * 280;
-        aimedB.color = '#06b6d4';
-        aimedB.isInterceptable = true;
-        
-        bullets.push(rail1, rail2, aimedB);
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Phase 3: EMP_CASCADE (twin rail bursts + 6-way EMP shockwave)
+          for (let i = 0; i < 6; i++) {
+            const ang = (i * Math.PI * 2) / 6 + (this.attackPhaseTime * 1.5);
+            const emp = new Bullet(core.x, core.y, Math.sin(ang) * 320, 1, false);
+            emp.velocity.x = Math.cos(ang) * 320;
+            emp.color = '#06b6d4';
+            emp.isInterceptable = true;
+            bullets.push(emp);
+          }
+          const railL = new Bullet(leftMuzzle.x, leftMuzzle.y, 420, 2, false);
+          railL.color = '#ef4444';
+          const railR = new Bullet(rightMuzzle.x, rightMuzzle.y, 420, 2, false);
+          railR.color = '#ef4444';
+          bullets.push(railL, railR);
+        } else {
+          // High-velocity direct railgun beams from left & right sponsons
+          const rail1 = new Bullet(leftMuzzle.x, leftMuzzle.y, 380, 2, false);
+          rail1.color = '#ef4444';
+          const rail2 = new Bullet(rightMuzzle.x, rightMuzzle.y, 380, 2, false);
+          rail2.color = '#ef4444';
+          
+          // Aimed center cluster shot
+          const pCenterX = player ? player.position.x + player.size.width / 2 : this.logicalWidth / 2;
+          const pCenterY = player ? player.position.y + player.size.height / 2 : this.logicalHeight - 50;
+          const aimDx = pCenterX - core.x;
+          const aimDy = pCenterY - core.y;
+          const aimDist = Math.sqrt(aimDx * aimDx + aimDy * aimDy) || 1;
+          
+          const aimedB = new Bullet(core.x, core.y, (aimDy / aimDist) * 280, 1, false);
+          aimedB.velocity.x = (aimDx / aimDist) * 280;
+          aimedB.color = '#06b6d4';
+          aimedB.isInterceptable = true;
+          
+          bullets.push(rail1, rail2, aimedB);
+        }
         break;
 
       case CrisisArchetype.CHRONO_DEVOURER:
@@ -997,11 +1054,12 @@ export class EndGameCrisis {
 
     // 1. Check Collision against Dimensional Rifts
     for (const rift of this.riftAnchors) {
+      if (bullet.hitEntities.has(rift)) continue;
       if (!rift.isDead && rift.checkCollision(bullet)) {
-        const damageDealt = rift.takeDamage(bullet.damage, bullet.piercing);
         bullet.hitEntities.add(rift);
-        
-        if (bullet.piercing <= 1) {
+        const damageDealt = rift.takeDamage(bullet.damage, bullet.piercing);
+        bullet.piercing--;
+        if (bullet.piercing <= 0) {
           bullet.isDead = true;
         }
 
@@ -1023,6 +1081,8 @@ export class EndGameCrisis {
 
     // 2. Check Collision against Sovereign
     if (this.sovereign && !this.sovereign.isDead && this.sovereign.checkCollision(bullet)) {
+      if (bullet.hitEntities.has(this.sovereign)) return false;
+
       if (this.phase === CrisisPhase.PHASE_1_SHIELD) {
         // Shielded: deflect projectile
         this.sovereign.takeDamage(0); // Trigger shield flash
@@ -1030,10 +1090,10 @@ export class EndGameCrisis {
         return true;
       }
 
-      const damageDealt = this.sovereign.takeDamage(bullet.damage, bullet.piercing);
       bullet.hitEntities.add(this.sovereign);
-      
-      if (bullet.piercing <= 1) {
+      const damageDealt = this.sovereign.takeDamage(bullet.damage, bullet.piercing);
+      bullet.piercing--;
+      if (bullet.piercing <= 0) {
         bullet.isDead = true;
       }
 

@@ -1,0 +1,12 @@
+diff --git a/src/game/GameManager.ts b/src/game/GameManager.ts
+index c0ed86b..7f1394e 100644
+--- a/src/game/GameManager.ts
++++ b/src/game/GameManager.ts
+@@ -340,7 +340,6 @@ export class GameManager {
+         }
+       },
+       onDefeated: (_arch) => {
+-        this.handleCrisisDefeatedRewards();
+         if (this.alliedReinforcements && !this.alliedReinforcements.isWarpingOut) {
+           this.alliedReinforcements.warpOut();
+         }

@@ -46,12 +46,14 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
     hullHp: number = 2500,
     coreHp: number = 1500
   ) {
-    super(x, y, 260, 130);
+    const safeX = Number.isFinite(x) ? x : 170;
+    const safeY = Number.isFinite(y) ? y : 65;
+    super(safeX, safeY, 260, 130);
     this.archetype = archetype;
-    this.initialX = x;
-    this.initialY = y;
-    this.targetX = x;
-    this.targetY = y;
+    this.initialX = safeX;
+    this.initialY = safeY;
+    this.targetX = safeX;
+    this.targetY = safeY;
     
     this.maxHullHp = hullHp;
     this.hullHp = hullHp;
@@ -194,6 +196,12 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
     if (this.flashTimer > 0) this.flashTimer -= deltaTime;
     if (this.shieldFlashTimer > 0) this.shieldFlashTimer -= deltaTime;
 
+    // Coordinate sanitization against non-finite values (DEFECT-C2)
+    if (!Number.isFinite(this.initialX)) this.initialX = 170;
+    if (!Number.isFinite(this.initialY)) this.initialY = 65;
+    if (!Number.isFinite(this.position.x)) this.position.x = this.initialX;
+    if (!Number.isFinite(this.position.y)) this.position.y = this.initialY;
+
     // Smooth hover / sweeping movement
     const sweepAmpX = this.phase === CrisisPhase.PHASE_3_CORE ? 45 : 30;
     const sweepAmpY = 12;
@@ -221,6 +229,9 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
 
   public draw(ctx: CanvasRenderingContext2D): void {
     if (this.isDead && this.phase === CrisisPhase.DEFEATED) return;
+
+    if (!Number.isFinite(this.position.x)) this.position.x = Number.isFinite(this.initialX) ? this.initialX : 170;
+    if (!Number.isFinite(this.position.y)) this.position.y = Number.isFinite(this.initialY) ? this.initialY : 65;
 
     ctx.save();
 

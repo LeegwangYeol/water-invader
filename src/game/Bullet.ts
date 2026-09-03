@@ -32,6 +32,7 @@ export class Bullet extends Entity {
   }
 
   public update(deltaTime: number): void {
+    this.prevPosition = { x: this.position.x, y: this.position.y };
     this.position.x += this.velocity.x * deltaTime; // Add X velocity update for angled bullets (like ultimate/zigzag)
     this.position.y += this.velocity.y * deltaTime;
   }

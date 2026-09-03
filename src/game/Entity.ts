@@ -16,6 +16,8 @@ export abstract class Entity {
     this.faction = val ? Faction.PLAYER : Faction.INVADER;
   }
 
+  public prevPosition?: Vector2D;
+
   constructor(x: number, y: number, width: number, height: number) {
     this.position = { x, y };
     this.velocity = { x: 0, y: 0 };
@@ -34,15 +36,62 @@ export abstract class Entity {
     };
   }
 
+  public getSweptRect(): Rect {
+    if (!this.prevPosition) {
+      return this.getRect();
+    }
+    const minX = Math.min(this.prevPosition.x, this.position.x);
+    const maxX = Math.max(this.prevPosition.x + this.size.width, this.position.x + this.size.width);
+    const minY = Math.min(this.prevPosition.y, this.position.y);
+    const maxY = Math.max(this.prevPosition.y + this.size.height, this.position.y + this.size.height);
+
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+    };
+  }
+
   public checkCollision(other: Entity): boolean {
     const rect1 = this.getRect();
     const rect2 = other.getRect();
 
-    return (
+    // Instantaneous AABB
+    if (
       rect1.x < rect2.x + rect2.width &&
       rect1.x + rect1.width > rect2.x &&
       rect1.y < rect2.y + rect2.height &&
       rect1.y + rect1.height > rect2.y
-    );
+    ) {
+      return true;
+    }
+
+    // Continuous Collision Detection (CCD): Swept bounds
+    if (this.prevPosition) {
+      const swept1 = this.getSweptRect();
+      if (
+        swept1.x < rect2.x + rect2.width &&
+        swept1.x + swept1.width > rect2.x &&
+        swept1.y < rect2.y + rect2.height &&
+        swept1.y + swept1.height > rect2.y
+      ) {
+        return true;
+      }
+    }
+
+    if (other.prevPosition) {
+      const swept2 = other.getSweptRect();
+      if (
+        rect1.x < swept2.x + swept2.width &&
+        rect1.x + rect1.width > swept2.x &&
+        rect1.y < swept2.y + swept2.height &&
+        rect1.y + rect1.height > swept2.y
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

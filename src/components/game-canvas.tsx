@@ -46,7 +46,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
         </div>
         <button 
           onClick={onRepairTank}
-          disabled={currency < 75 || hp >= 5}
+          disabled={currency < 75 || hp >= 5 || hp <= 0}
           className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 rounded font-bold transition-colors"
         >{hp >= 5 ? 'MAX' : '75 💧'}</button>
       </div>

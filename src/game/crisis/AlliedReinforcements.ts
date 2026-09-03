@@ -77,8 +77,16 @@ export class AlliedReinforcements {
   // Animation & Visual State
   public timeAlive: number = 0;
   public turretAngle: number = -Math.PI / 2;
-  private canvasWidth: number;
-  private canvasHeight: number;
+  public canvasWidth: number;
+  public canvasHeight: number;
+
+  public get logicalWidth(): number {
+    return this.canvasWidth;
+  }
+
+  public get logicalHeight(): number {
+    return this.canvasHeight;
+  }
 
   constructor(canvasWidth: number = 600, canvasHeight: number = 800) {
     this.canvasWidth = canvasWidth;
@@ -376,7 +384,7 @@ export class AlliedReinforcements {
    * by +1 periodically (every 5s) and reducing stress.
    */
   private updateRestorativeNanoShield(deltaTime: number, player: Player): void {
-    if (!player || player.isDead) return;
+    if (!player || player.isDead || player.hp <= 0) return;
 
     this.healTimer += deltaTime;
     if (this.healTimer >= this.healInterval) {
@@ -401,21 +409,23 @@ export class AlliedReinforcements {
    * 2 agile interceptors flying in formation flanking player ship providing extra suppressing fire.
    */
   private updateEscortFighters(deltaTime: number, player: Player): Bullet[] {
-    if (!player || player.isDead) return [];
+    if (!player || player.isDead || player.hp <= 0) return [];
 
     const bullets: Bullet[] = [];
 
     for (const fighter of this.escortFighters) {
       // Calculate formation targets relative to player
-      const targetX = fighter.side === 'left'
+      const rawTargetX = fighter.side === 'left'
         ? player.position.x + fighter.targetOffsetX
         : player.position.x + player.size.width + (fighter.targetOffsetX - fighter.size.width);
       
+      const targetX = Math.max(10, Math.min(this.logicalWidth - 30, rawTargetX));
       const targetY = player.position.y + fighter.targetOffsetY;
 
       // Responsive lerp movement
       const prevX = fighter.x;
       fighter.x += (targetX - fighter.x) * Math.min(1.0, 9.0 * deltaTime);
+      fighter.x = Math.max(10, Math.min(this.logicalWidth - 30, fighter.x));
       fighter.y += (targetY - fighter.y) * Math.min(1.0, 9.0 * deltaTime);
 
       // Calculate roll angle based on lateral velocity
@@ -600,14 +610,20 @@ export class AlliedReinforcements {
     ctx.fillText('✦ ALLIED REINFORCEMENTS ARRIVED! ✦', screenWidth / 2, bannerY + 22);
 
     // Text Subtitle (Korean & English)
-    ctx.font = 'bold 12px sans-serif';
+    ctx.font = bannerWidth < 380 ? 'bold 10px sans-serif' : 'bold 12px sans-serif';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText('아군 대규모 증원 함대 참전 — AEGIS VANGUARD DREADNOUGHT', screenWidth / 2, bannerY + 42);
+    const subtitleText = bannerWidth < 380
+      ? '대규모 증원 함대 참전 — AEGIS DREADNOUGHT'
+      : '아군 대규모 증원 함대 참전 — AEGIS VANGUARD DREADNOUGHT';
+    ctx.fillText(subtitleText, screenWidth / 2, bannerY + 42);
 
     // Status Badges Ticker
-    ctx.font = '9px monospace';
+    ctx.font = bannerWidth < 380 ? '8px monospace' : '9px monospace';
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText('HEAVY PLASMA CANNONS: ONLINE  |  PD LASER GRID: ACTIVE  |  NANO-SHIELD: LINKED', screenWidth / 2, bannerY + 59);
+    const tickerText = bannerWidth < 380
+      ? 'CANNONS: ON  |  PD GRID: ON  |  SHIELD: ON'
+      : 'HEAVY PLASMA CANNONS: ONLINE  |  PD LASER GRID: ACTIVE  |  NANO-SHIELD: LINKED';
+    ctx.fillText(tickerText, screenWidth / 2, bannerY + 59);
 
     ctx.restore();
   }

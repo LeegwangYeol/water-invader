@@ -81,3 +81,26 @@ The game currently has 6 crisis types. Double this number to 12. Research grand 
 
 The user has provided an additional urgent requirement: "중간에 큰 아군의 증원도넣어주삼" (Also add massive allied reinforcements in the middle of the game/crisis). Please incorporate this massive allied reinforcement feature into your current milestone plan and implement it alongside the 12-crisis expansion.
 
+## 2026-09-03T05:13:03Z
+
+This is a comprehensive testing and bug-hunting pass for the Next.js "Water Invader" project. Use a very large team of agents.
+
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Deep E2E Testing & Bug Hunting
+Deploy a very large team of agents (30+) to exhaustively playtest and analyze the game for any edge cases, crashes, visual clipping, physics glitches, or UI lockups.
+
+### R2. Automated Fixes & Verification
+If any bugs or errors are found during the deep testing phase, implement fixes, write corresponding regression tests, and ensure the entire Playwright test suite passes.
+
+## Acceptance Criteria
+
+### Quality & Deployment
+- [ ] The game passes exhaustive simulated stress testing without console errors or game-breaking states.
+- [ ] `npm run build` and `npx playwright test` pass without any errors.
+- [ ] If fixes were applied, they are successfully committed and pushed to the repository.
+
+
