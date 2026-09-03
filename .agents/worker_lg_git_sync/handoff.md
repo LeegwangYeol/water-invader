@@ -25,7 +25,9 @@
   - `challenger_lg_missiles_1`: APPROVED (15/15 homing missile stress tests passed)
   - `challenger_lg_swarm_2`: APPROVED (16/16 swarm stress tests passed)
   - `auditor_lg_integrity_1`: CLEAN (0 shortcuts, 0 facades, authentic behavior)
-- **Staged File Inventory**:
+- **Git Commit SHA**: `beadbf3507bdaa0533b38e239a268f37033153a1`
+- **Git Push Receipt**: `046a145..beadbf3  master -> master` (https://github.com/LeegwangYeol/water-invader.git)
+- **Staged & Released File Inventory**:
   - Source: `src/game/Bullet.ts`, `src/game/Player.ts`, `src/game/Enemy.ts`, `src/game/GameManager.ts`, `src/components/game-canvas.tsx`, `src/game/types.ts`, `src/game/SoundManager.ts`
   - Documentation: `COLLABORATION.md`, `PROJECT.md`, `TEST_INFRA.md`, `TEST_READY.md`
   - Tests: `tests/unit/homing_missile.test.ts`, `tests/unit/enemy_swarm.test.ts`, `tests/unit/adversarial_homing_missile_stress.test.ts`, `tests/unit/adversarial_swarm_midtier_stress.test.ts`, `tests/16_homing_missile_combat.spec.ts`, `tests/16_enemy_swarm_and_third_faction.spec.ts`
@@ -36,7 +38,7 @@
 2. Verified `npx tsc --noEmit` and `npm run build` completed with zero errors and exit code 0.
 3. Inspected git working directory via `git status`, verifying all 7 source files, 4 documentation files, 6 test suites, and agent logs are present.
 4. Staged all changes via `git add -A`.
-5. Created descriptive semantic commit covering R1 (Homing Missiles), R2 (Enemy Swarms & 3rd Faction), and R3 (Testing & Verification).
+5. Created descriptive semantic commit covering R1 (Homing Missiles), R2 (Enemy Swarms & 3rd Faction), and R3 (Testing & Verification) with commit SHA `beadbf3`.
 6. Pushed to remote tracking branch `origin/master`.
 7. Verified `git status` confirms clean working tree and synchronized tracking with remote.
 
@@ -49,6 +51,6 @@ The Major Late-Game Gameplay Update has been fully verified against production b
 ## 5. Verification Method
 - Independent command verification:
   - `git status`: Confirm `nothing to commit, working tree clean` and `Your branch is up to date with 'origin/master'`.
-  - `git log -1`: Review commit SHA and detailed commit message.
+  - `git log -1`: Review commit SHA (`beadbf3`) and detailed commit message.
   - `npx tsc --noEmit`: Confirm 0 errors.
   - `npm run build`: Confirm successful static build.
