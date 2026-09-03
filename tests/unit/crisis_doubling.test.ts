@@ -62,7 +62,7 @@ test.describe('Crisis Doubling Suite: 6 Distinct Archetypes & Bespoke Mechanics'
   // =========================================================================
   test('DOUBLE-01: End-Game Crisis Archetype enum count is strictly doubled from 3 to 6', () => {
     const archetypes = Object.keys(CrisisArchetype);
-    expect(archetypes.length).toBe(6);
+    expect(archetypes.length).toBe(12);
 
     // Original 3 Archetypes
     expect(CrisisArchetype.VOID_SOVEREIGN).toBe('VOID_SOVEREIGN');

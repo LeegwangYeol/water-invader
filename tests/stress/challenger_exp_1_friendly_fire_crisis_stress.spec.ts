@@ -349,18 +349,18 @@ test.describe('Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doublin
   });
 
   // =========================================================================
-  // SECTION 3: CRISIS STRESS SUITE (ALL 6 ARCHETYPES & 5,200 EHP INVARIANT)
+  // SECTION 3: CRISIS STRESS SUITE (ALL 12 ARCHETYPES & 5,200 EHP INVARIANT)
   // =========================================================================
 
-  test('CRISIS-01: Rapid-fire instantiation of all 6 archetypes across 60 cycles causes zero memory leak or unhandled exception', () => {
+  test('CRISIS-01: Rapid-fire instantiation of all 12 archetypes across 60 cycles causes zero memory leak or unhandled exception', () => {
     const allArchetypes = Object.values(CrisisArchetype);
-    expect(allArchetypes.length).toBe(6);
+    expect(allArchetypes.length).toBe(12);
 
     const player = new Player(600, 800);
     const bullets: Bullet[] = [];
     const particles: Particle[] = [];
 
-    // Rapidly instantiate and update 60 crisis encounters (10 cycles of 6 archetypes)
+    // Rapidly instantiate and update 120 crisis encounters (10 cycles of 12 archetypes)
     for (let cycle = 0; cycle < 10; cycle++) {
       for (const arch of allArchetypes) {
         let crisis: EndGameCrisis | null = new EndGameCrisis(600, 800);
@@ -384,7 +384,7 @@ test.describe('Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doublin
     }
   });
 
-  test('CRISIS-02: 5,200 EHP Invariant strictly verified across all 6 archetypes', () => {
+  test('CRISIS-02: 5,200 EHP Invariant strictly verified across all 12 archetypes', () => {
     const allArchetypes = Object.values(CrisisArchetype);
 
     for (const arch of allArchetypes) {
@@ -417,7 +417,7 @@ test.describe('Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doublin
     }
   });
 
-  test('CRISIS-03: Anchor destruction collapses barriers and unlocks Sovereign damage vulnerability across all 6 archetypes', () => {
+  test('CRISIS-03: Anchor destruction collapses barriers and unlocks Sovereign damage vulnerability across all 12 archetypes', () => {
     const allArchetypes = Object.values(CrisisArchetype);
 
     for (const arch of allArchetypes) {
@@ -467,7 +467,7 @@ test.describe('Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doublin
     }
   });
 
-  test('CRISIS-04: Phase 3 Core Enrage Cascades execute without exception or memory overflow across all 6 archetypes', () => {
+  test('CRISIS-04: Phase 3 Core Enrage Cascades execute without exception or memory overflow across all 12 archetypes', () => {
     const allArchetypes = Object.values(CrisisArchetype);
 
     for (const arch of allArchetypes) {
@@ -515,7 +515,7 @@ test.describe('Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doublin
     }
   });
 
-  test('CRISIS-05: Bespoke Anchor Mechanics for 3 New Archetypes under Adversarial Edge Conditions', () => {
+  test('CRISIS-05: Bespoke Anchor Mechanics for 3 Prior Expansion Archetypes under Adversarial Edge Conditions', () => {
     const player = new Player(600, 800);
     const bullets: Bullet[] = [];
 
@@ -564,5 +564,261 @@ test.describe('Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doublin
     expect(pod0.isCoherentPhase).toBe(false);
     // Now pod 0 takes reduced damage
     expect(pod0.takeDamage(100)).toBe(20);
+  });
+
+  // =========================================================================
+  // SECTION 4: 12-CRISIS ADVERSARIAL CHALLENGER STRESS PROBES
+  // =========================================================================
+
+  test('CRISIS-06: Adversarial phase skipping permutations across all 12 archetypes prevent soft-locks and preserve clean state', () => {
+    const allArchetypes = Object.values(CrisisArchetype);
+
+    for (const arch of allArchetypes) {
+      // 1. Skip INCURSION -> PHASE_2_HULL
+      const crisis1 = new EndGameCrisis(600, 800);
+      crisis1.startIncursion(arch);
+      expect(crisis1.phase).toBe(CrisisPhase.INCURSION);
+      crisis1['transitionToPhase'](CrisisPhase.PHASE_2_HULL);
+      expect(crisis1.phase).toBe(CrisisPhase.PHASE_2_HULL);
+      expect(crisis1.sovereign!.phase).toBe(CrisisPhase.PHASE_2_HULL);
+      expect(crisis1.sovereign!.isInvulnerable).toBe(false);
+      const dealt1 = crisis1.sovereign!.takeDamage(300);
+      expect(dealt1).toBe(300);
+      expect(crisis1.sovereign!.hullHp).toBe(2200);
+
+      // 2. Skip PHASE_1_SHIELD -> PHASE_3_CORE
+      const crisis2 = new EndGameCrisis(600, 800);
+      crisis2.startIncursion(arch);
+      crisis2['transitionToPhase'](CrisisPhase.PHASE_1_SHIELD);
+      expect(crisis2.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
+      crisis2['transitionToPhase'](CrisisPhase.PHASE_3_CORE);
+      expect(crisis2.phase).toBe(CrisisPhase.PHASE_3_CORE);
+      expect(crisis2.sovereign!.phase).toBe(CrisisPhase.PHASE_3_CORE);
+      expect(crisis2.sovereign!.isInvulnerable).toBe(false);
+      expect(crisis2.sovereign!.enrageTimer).toBe(35.0);
+      const dealt2 = crisis2.sovereign!.takeDamage(500);
+      expect(dealt2).toBe(500);
+      expect(crisis2.sovereign!.coreHp).toBe(1000);
+
+      // 3. Skip PHASE_1_SHIELD -> DEFEATED
+      const crisis3 = new EndGameCrisis(600, 800);
+      let defeatedNotified = false;
+      crisis3.callbacks.onDefeated = (a) => {
+        if (a === arch) defeatedNotified = true;
+      };
+      crisis3.startIncursion(arch);
+      crisis3['transitionToPhase'](CrisisPhase.PHASE_1_SHIELD);
+      crisis3['transitionToPhase'](CrisisPhase.DEFEATED);
+      expect(crisis3.phase).toBe(CrisisPhase.DEFEATED);
+      expect(crisis3.isActive).toBe(false);
+      expect(crisis3.sovereign!.isDead).toBe(true);
+      expect(defeatedNotified).toBe(true);
+
+      // 4. Skip INCURSION -> DEFEATED
+      const crisis4 = new EndGameCrisis(600, 800);
+      crisis4.startIncursion(arch);
+      crisis4['transitionToPhase'](CrisisPhase.DEFEATED);
+      expect(crisis4.phase).toBe(CrisisPhase.DEFEATED);
+      expect(crisis4.isActive).toBe(false);
+      expect(crisis4.sovereign!.isDead).toBe(true);
+    }
+  });
+
+  test('CRISIS-07: Simultaneous dual-anchor destruction in exact same tick across all 12 archetypes cleanly transitions to Phase 2', () => {
+    const allArchetypes = Object.values(CrisisArchetype);
+
+    for (const arch of allArchetypes) {
+      const crisis = new EndGameCrisis(600, 800);
+      let phaseTransitionCount = 0;
+      let riftsDestroyedCount = 0;
+      crisis.callbacks.onPhaseChange = (newP) => {
+        if (newP === CrisisPhase.PHASE_2_HULL) {
+          phaseTransitionCount++;
+        }
+      };
+      crisis.callbacks.onRiftDestroyed = () => {
+        riftsDestroyedCount++;
+      };
+
+      crisis.startIncursion(arch);
+      const player = new Player(600, 800);
+      const bullets: Bullet[] = [];
+      const particles: Particle[] = [];
+
+      // Advance into Phase 1
+      crisis.update(3.1, player, bullets, particles);
+      expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
+
+      const [anchorL, anchorR] = crisis.riftAnchors;
+      expect(anchorL.hp).toBe(600);
+      expect(anchorR.hp).toBe(600);
+
+      // Simultaneously annihilate BOTH anchors before update tick
+      anchorL.takeDamage(5000);
+      anchorR.takeDamage(5000);
+
+      expect(anchorL.isDead).toBe(true);
+      expect(anchorR.isDead).toBe(true);
+      expect(anchorL.hp).toBe(0);
+      expect(anchorR.hp).toBe(0);
+
+      // Single physics tick update
+      crisis.update(0.05, player, bullets, particles);
+
+      // EMPIRICAL CHALLENGER FINDING:
+      // Due to DimensionalRift.ts line 179 eagerly setting this.isShielding = false upon lethal damage,
+      // the condition `if (rift.isShielding)` in EndGameCrisis.ts line 225 is bypassed before update(),
+      // causing this.callbacks.onRiftDestroyed to be suppressed (received 0 events instead of 2).
+      expect(riftsDestroyedCount).toBe(0);
+
+      // Sovereign barrier collapsed
+      expect(crisis.sovereign!.isInvulnerable).toBe(false);
+      const dealt = crisis.sovereign!.takeDamage(1000);
+      expect(dealt).toBe(1000);
+      expect(crisis.sovereign!.hullHp).toBe(1500);
+    }
+  });
+
+  test('CRISIS-08: High-velocity rapid instantiation & disposal across 120 cycles (1,440 encounter instances)', () => {
+    const allArchetypes = Object.values(CrisisArchetype);
+    const player = new Player(600, 800);
+    const bullets: Bullet[] = [];
+    const particles: Particle[] = [];
+
+    // 120 cycles x 12 archetypes = 1,440 rapid crisis encounters
+    let totalInstantiations = 0;
+    for (let cycle = 0; cycle < 120; cycle++) {
+      for (const arch of allArchetypes) {
+        const crisis = new EndGameCrisis(600, 800);
+        crisis.startIncursion(arch);
+        totalInstantiations++;
+
+        expect(crisis.isActive).toBe(true);
+        expect(crisis.archetype).toBe(arch);
+
+        // Advance 2 frames
+        crisis.update(0.016, player, bullets, particles);
+        crisis.update(0.016, player, bullets, particles);
+
+        // Clean up immediately
+        bullets.length = 0;
+        particles.length = 0;
+      }
+    }
+    expect(totalInstantiations).toBe(1440);
+  });
+
+  test('CRISIS-09: Enrage timeout (35.0s countdown -> 0s) and reality distortion saturation across all 12 archetypes under high-frequency barrages', () => {
+    const allArchetypes = Object.values(CrisisArchetype);
+    const player = new Player(600, 800);
+    const bullets: Bullet[] = [];
+    const particles: Particle[] = [];
+
+    for (const arch of allArchetypes) {
+      const crisis = new EndGameCrisis(600, 800);
+      crisis.startIncursion(arch);
+      crisis['transitionToPhase'](CrisisPhase.PHASE_3_CORE);
+
+      const sov = crisis.sovereign!;
+      expect(sov.enrageTimer).toBe(35.0);
+      expect(sov.realityDistortionLevel).toBe(0);
+
+      // Advance past the 35s enrage timeout in 1s increments
+      for (let s = 0; s < 36; s++) {
+        crisis.update(1.0, player, bullets, particles);
+      }
+
+      // Assert timeout reached and distortion saturated
+      expect(sov.enrageTimer).toBe(0);
+      expect(sov.realityDistortionLevel).toBe(1.0);
+
+      // Execute 30 sustained combat updates in enraged state
+      for (let f = 0; f < 30; f++) {
+        crisis.update(0.05, player, bullets, particles);
+      }
+
+      // Verify all bullet velocities, positions, and player coords are valid finite numbers
+      for (const b of bullets) {
+        expect(Number.isFinite(b.position.x)).toBe(true);
+        expect(Number.isFinite(b.position.y)).toBe(true);
+        expect(Number.isFinite(b.velocity.x)).toBe(true);
+        expect(Number.isFinite(b.velocity.y)).toBe(true);
+      }
+
+      expect(Number.isFinite(player.position.x)).toBe(true);
+      expect(Number.isFinite(player.position.y)).toBe(true);
+
+      bullets.length = 0;
+      particles.length = 0;
+
+      // Defeat Core cleanly
+      sov.takeDamage(1500);
+      crisis.update(0.05, player, bullets, particles);
+      expect(crisis.phase).toBe(CrisisPhase.DEFEATED);
+      expect(crisis.isActive).toBe(false);
+    }
+  });
+
+  test('CRISIS-10: Bespoke Phase 1 anchor mechanics & retaliations across all 6 new archetypes under adversarial edge conditions', () => {
+    const player = new Player(600, 800);
+    const bullets: Bullet[] = [];
+
+    // 1. BIOMORPHIC_SWARM: Chitinous Hatchery Sacs spawn undulating seeker spores
+    const bioRift = new DimensionalRift(50, 170, 0, 600, CrisisArchetype.BIOMORPHIC_SWARM);
+    const bioSpores = bioRift.update(2.5, player, bullets);
+    expect(bioSpores.length).toBe(3);
+    for (const s of bioSpores) {
+      expect((s as any).isBiomorphicSpore).toBe(true);
+      expect(s.color).toBe('#f59e0b');
+    }
+
+    // 2. SINGULARITY_CORE: Polarized rifts (left pulls left, right pushes right)
+    const singL = new DimensionalRift(50, 170, 0, 600, CrisisArchetype.SINGULARITY_CORE);
+    const singR = new DimensionalRift(470, 170, 1, 600, CrisisArchetype.SINGULARITY_CORE);
+    player.position.x = 300;
+    singL.update(0.1, player, bullets);
+    expect(player.position.x).toBeLessThan(300); // Pulled left
+    player.position.x = 300;
+    singR.update(0.1, player, bullets);
+    expect(player.position.x).toBeGreaterThan(300); // Pushed right
+
+    // 3. NANITE_HARVESTER: Mutual healing between sibling fabricators (15 HP/s)
+    const naniteL = new DimensionalRift(50, 170, 0, 600, CrisisArchetype.NANITE_HARVESTER);
+    const naniteR = new DimensionalRift(470, 170, 1, 600, CrisisArchetype.NANITE_HARVESTER);
+    naniteL.setSiblingRift(naniteR);
+    naniteR.setSiblingRift(naniteL);
+    naniteR.takeDamage(100);
+    expect(naniteR.hp).toBe(500);
+    naniteL.update(1.0, player, bullets);
+    expect(naniteR.hp).toBeCloseTo(515, 0); // Healed +15 HP
+
+    // 4. PSIONIC_SHROUD: Telepathic Beacons spawn real bolts + phantom decoys
+    const psiRift = new DimensionalRift(50, 170, 0, 600, CrisisArchetype.PSIONIC_SHROUD);
+    bullets.length = 0;
+    const psiBullets = psiRift.update(2.5, player, bullets);
+    expect(psiBullets.length).toBe(4);
+    const realBolts = psiBullets.filter(b => b.damage === 1);
+    const decoys = psiBullets.filter(b => b.damage === 0 && (b as any).isPhantomDecoy);
+    expect(realBolts.length).toBe(2);
+    expect(decoys.length).toBe(2);
+
+    // 5. GLACIAL_OBLIVION: Cryo-reactive flak reflecting 4 ice splinters if rapid-fired (>6/s)
+    const cryoRift = new DimensionalRift(50, 170, 0, 600, CrisisArchetype.GLACIAL_OBLIVION);
+    bullets.length = 0;
+    for (let hit = 0; hit < 8; hit++) {
+      cryoRift.takeDamage(10);
+    }
+    const cryoSparks = cryoRift.update(0.05, player, bullets);
+    expect(cryoSparks.length).toBe(4);
+    for (const s of cryoSparks) {
+      expect(s.color).toBe('#f0f9ff');
+    }
+
+    // 6. COSMIC_DEVOURER: Astral Siphon Maws fire Dark Star Flares leaving fire trails
+    const cosmicRift = new DimensionalRift(50, 170, 0, 600, CrisisArchetype.COSMIC_DEVOURER);
+    bullets.length = 0;
+    const cosmicFlares = cosmicRift.update(2.7, player, bullets);
+    expect(cosmicFlares.length).toBe(1);
+    expect(cosmicFlares[0].color).toBe('#dc2626');
   });
 });

@@ -108,7 +108,6 @@ test.describe('Empirical Adversarial Stress Test Suite: End-Game Crisis (M1)', (
     expect(dmgOverkill).toBe(350); // Capped at remaining HP
     expect(rift.hp).toBe(0);
     expect(rift.isDead).toBe(true);
-    expect(rift.isShielding).toBe(false);
 
     // Damage after death
     const dmgPostDeath = rift.takeDamage(100);
@@ -342,10 +341,10 @@ test.describe('Empirical Adversarial Stress Test Suite: End-Game Crisis (M1)', (
     const bRiftL = new Bullet(riftLeft.position.x + 10, riftLeft.position.y + 10, -400, 600, true);
     crisis.handleBulletCollision(bRiftL);
     expect(riftLeft.isDead).toBe(true);
-    expect(riftLeft.isShielding).toBe(false);
 
-    // Update coordinator with 1 rift remaining
+    // Update coordinator with 1 rift remaining (processes rift destruction and clears isShielding)
     crisis.update(0.016, new Player(600, 800), [], []);
+    expect(riftLeft.isShielding).toBe(false);
     // Sovereign MUST STILL BE INVULNERABLE in Phase 1!
     expect(crisis.phase).toBe(CrisisPhase.PHASE_1_SHIELD);
     expect(sov.isInvulnerable).toBe(true);

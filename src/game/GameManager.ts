@@ -8,6 +8,7 @@ import { Helper, HelperType } from './Helper';
 import { soundManager } from './SoundManager';
 import { EndGameCrisis } from './crisis/EndGameCrisis';
 import { CrisisArchetype, CrisisPhase, EndGameCrisisState } from './crisis/types';
+import { AlliedReinforcements } from './crisis/AlliedReinforcements';
 
 export class GameManager {
   private canvas: HTMLCanvasElement;
@@ -64,6 +65,7 @@ export class GameManager {
   public endGameCrisis: EndGameCrisis | null = null;
   public hasEndGameCrisisOccurred: boolean = false;
   public endGameCrisisDefeatedHandled: boolean = false;
+  public alliedReinforcements?: AlliedReinforcements;
 
   // Debugging & Developer Tools
   public isDebugMode: boolean = false;
@@ -227,6 +229,7 @@ export class GameManager {
     
     this.endGameCrisis = null;
     this.endGameCrisisDefeatedHandled = false;
+    this.alliedReinforcements = undefined;
     if (resetScoreAndCash) {
       this.hasEndGameCrisisOccurred = false;
     }
@@ -276,6 +279,7 @@ export class GameManager {
     if (this.onCrisisEvent) this.onCrisisEvent(null);
     this.endGameCrisis = null;
     this.endGameCrisisDefeatedHandled = false;
+    this.alliedReinforcements = undefined;
     if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
     this.level++;
     this.spawnWave();
@@ -322,12 +326,18 @@ export class GameManager {
     this.endGameCrisisDefeatedHandled = false;
 
     this.endGameCrisis.callbacks = {
-      onPhaseChange: (_phase, _prevPhase) => {
+      onPhaseChange: (phase, _prevPhase) => {
+        if (phase === CrisisPhase.PHASE_2_HULL && !this.alliedReinforcements) {
+          this.triggerAlliedReinforcements();
+        }
         if (this.onEndGameCrisisEvent && this.endGameCrisis) {
           this.onEndGameCrisisEvent(this.endGameCrisis.getState());
         }
       },
       onDefeated: (_arch) => {
+        if (this.alliedReinforcements && !this.alliedReinforcements.isWarpingOut) {
+          this.alliedReinforcements.warpOut();
+        }
         if (this.onEndGameCrisisEvent && this.endGameCrisis) {
           this.onEndGameCrisisEvent(this.endGameCrisis.getState());
         }
@@ -351,6 +361,13 @@ export class GameManager {
     }
 
     return this.endGameCrisis;
+  }
+
+  public triggerAlliedReinforcements(): AlliedReinforcements {
+    this.alliedReinforcements = new AlliedReinforcements(this.logicalWidth, this.logicalHeight);
+    soundManager.playPowerUp();
+    this.triggerScreenShake(0.8);
+    return this.alliedReinforcements;
   }
 
   private spawnWave() {
@@ -705,6 +722,11 @@ export class GameManager {
       if (this.endGameCrisis && this.endGameCrisis.isActive) {
         this.endGameCrisis.update(deltaTime, this.player, this.bullets, this.particles, soundManager);
 
+        // Auto-summon Allied Reinforcements when EndGameCrisis reaches Phase 2
+        if (this.endGameCrisis.phase === CrisisPhase.PHASE_2_HULL && !this.alliedReinforcements) {
+          this.triggerAlliedReinforcements();
+        }
+
         // Sovereign body direct contact with player
         if (
           this.endGameCrisis.sovereign &&
@@ -741,6 +763,26 @@ export class GameManager {
             this.triggerScreenShake(1.2);
             soundManager.playVictory();
           }
+        }
+      }
+
+      // Allied Reinforcements (Aegis Vanguard Command Dreadnought) Update
+      if (this.alliedReinforcements && this.alliedReinforcements.isActive) {
+        const alliedBullets = this.alliedReinforcements.update(
+          deltaTime,
+          this.player,
+          this.enemies,
+          this.bullets,
+          this.endGameCrisis,
+          this.particles
+        );
+        if (alliedBullets && alliedBullets.length > 0) {
+          this.bullets.push(...alliedBullets);
+        }
+
+        // Safely warp out if crisis has been defeated
+        if (this.endGameCrisis && this.endGameCrisis.isDefeated() && !this.alliedReinforcements.isWarpingOut) {
+          this.alliedReinforcements.warpOut();
         }
       }
 
@@ -1568,6 +1610,7 @@ export class GameManager {
   private gameOver(reason: string) {
     this.gameOverReason = reason;
     this.state = GameState.GAME_OVER;
+    this.alliedReinforcements = undefined;
     soundManager.playGameOver();
     
     try {
@@ -1832,6 +1875,12 @@ export class GameManager {
       this.endGameCrisis.draw(this.ctx, this.logicalWidth, this.logicalHeight);
     }
 
+    // 2.6 Allied Reinforcements Dreadnought, Escort Fighters, Laser Grid & Nano-Shield
+    if (this.alliedReinforcements && this.alliedReinforcements.isActive) {
+      this.alliedReinforcements.draw(this.ctx);
+      this.alliedReinforcements.drawPlayerNanoShield(this.ctx, this.player);
+    }
+
     this.ctx.restore(); // Exit shake layer
 
     // =========================================================================
@@ -1898,6 +1947,11 @@ export class GameManager {
         this.ctx.strokeText(text, this.logicalWidth / 2, this.logicalHeight / 2);
         this.ctx.fillText(text, this.logicalWidth / 2, this.logicalHeight / 2);
       }
+    }
+
+    // 3.4 Allied Reinforcements In-Game Announcement Banner
+    if (this.alliedReinforcements && this.alliedReinforcements.hasActiveBanner()) {
+      this.alliedReinforcements.drawUI(this.ctx, this.logicalWidth, this.logicalHeight);
     }
 
     this.ctx.restore();

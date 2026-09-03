@@ -86,6 +86,24 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
       case CrisisArchetype.NEBULA_PHANTASM:
         this.color = '#6366f1';
         break;
+      case CrisisArchetype.BIOMORPHIC_SWARM:
+        this.color = '#b91c1c';
+        break;
+      case CrisisArchetype.SINGULARITY_CORE:
+        this.color = '#09090b';
+        break;
+      case CrisisArchetype.NANITE_HARVESTER:
+        this.color = '#94a3b8';
+        break;
+      case CrisisArchetype.PSIONIC_SHROUD:
+        this.color = '#7c3aed';
+        break;
+      case CrisisArchetype.GLACIAL_OBLIVION:
+        this.color = '#38bdf8';
+        break;
+      case CrisisArchetype.COSMIC_DEVOURER:
+        this.color = '#18181b';
+        break;
     }
   }
 
@@ -225,6 +243,24 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
         break;
       case CrisisArchetype.NEBULA_PHANTASM:
         this.drawNebulaPhantasm(ctx);
+        break;
+      case CrisisArchetype.BIOMORPHIC_SWARM:
+        this.drawBiomorphicSwarm(ctx);
+        break;
+      case CrisisArchetype.SINGULARITY_CORE:
+        this.drawSingularityCore(ctx);
+        break;
+      case CrisisArchetype.NANITE_HARVESTER:
+        this.drawNaniteHarvester(ctx);
+        break;
+      case CrisisArchetype.PSIONIC_SHROUD:
+        this.drawPsionicShroud(ctx);
+        break;
+      case CrisisArchetype.GLACIAL_OBLIVION:
+        this.drawGlacialOblivion(ctx);
+        break;
+      case CrisisArchetype.COSMIC_DEVOURER:
+        this.drawCosmicDevourer(ctx);
         break;
     }
 
@@ -690,6 +726,36 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
       sub = 'QUANTUM SPECTRAL SWARM';
       primaryCol = '#6366f1';
       accentCol = '#06b6d4';
+    } else if (this.archetype === CrisisArchetype.BIOMORPHIC_SWARM) {
+      title = '✦ THE BIOMORPHIC SWARM ✦';
+      sub = 'EXTRAGALACTIC CHITIN FLESH-HIVE';
+      primaryCol = '#b91c1c';
+      accentCol = '#f59e0b';
+    } else if (this.archetype === CrisisArchetype.SINGULARITY_CORE) {
+      title = '✦ THE SINGULARITY CORE ✦';
+      sub = 'SUPERMASSIVE EVENT HORIZON ENTITY';
+      primaryCol = '#8b5cf6';
+      accentCol = '#ffffff';
+    } else if (this.archetype === CrisisArchetype.NANITE_HARVESTER) {
+      title = '✦ NANITE HARVESTER NEXUS ✦';
+      sub = 'GREY-GOO MOLECULAR DISASSEMBLER';
+      primaryCol = '#94a3b8';
+      accentCol = '#14b8a6';
+    } else if (this.archetype === CrisisArchetype.PSIONIC_SHROUD) {
+      title = '✦ THE PSIONIC SHROUD ✦';
+      sub = 'EXTRA-DIMENSIONAL ASTRAL INMATE';
+      primaryCol = '#7c3aed';
+      accentCol = '#d946ef';
+    } else if (this.archetype === CrisisArchetype.GLACIAL_OBLIVION) {
+      title = '✦ GLACIAL OBLIVION ✦';
+      sub = 'ABSOLUTE ZERO ENTROPIC ENGINE';
+      primaryCol = '#38bdf8';
+      accentCol = '#f0f9ff';
+    } else if (this.archetype === CrisisArchetype.COSMIC_DEVOURER) {
+      title = '✦ THE COSMIC DEVOURER ✦';
+      sub = 'ASTRAL VOID DRAGON BEHEMOTH';
+      primaryCol = '#d97706';
+      accentCol = '#dc2626';
     }
 
     ctx.fillText(`${title} — ${sub}`, screenWidth / 2, barY - 8);
@@ -1064,6 +1130,840 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
       ctx.arc(px, py, e === 1 ? 3 : 2, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 7 — THE BIOMORPHIC SWARM
+   * Extragalactic chitin flesh-hive with segmented insectoid carapace, outward-curving dorsal mandibles,
+   * glandular pods, glowing crimson/bile veins, and bio-plasmid central core.
+   */
+  private drawBiomorphicSwarm(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Biological Hive Heat Aura
+    const bioAura = ctx.createRadialGradient(cx, cy + 10, 25, cx, cy + 10, 140);
+    bioAura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.45)' : 'rgba(185, 28, 28, 0.35)');
+    bioAura.addColorStop(0.6, 'rgba(132, 204, 22, 0.18)');
+    bioAura.addColorStop(1, 'rgba(15, 23, 42, 0)');
+    ctx.fillStyle = bioAura;
+    ctx.fillRect(x - 30, y - 30, w + 60, h + 60);
+
+    // 2. Outward-Curving Dorsal Mandibles (Razor Chitin Scythes)
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#450a0a';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#f59e0b';
+    ctx.lineWidth = 2.5;
+
+    // Left Mandible
+    ctx.beginPath();
+    ctx.moveTo(cx - 30, y + 25);
+    ctx.quadraticCurveTo(cx - 85, y - 5, cx - 125, y + 10);
+    ctx.quadraticCurveTo(cx - 100, y + 35, cx - 45, y + 45);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Right Mandible
+    ctx.beginPath();
+    ctx.moveTo(cx + 30, y + 25);
+    ctx.quadraticCurveTo(cx + 85, y - 5, cx + 125, y + 10);
+    ctx.quadraticCurveTo(cx + 100, y + 35, cx + 45, y + 45);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 3. Segmented Insectoid Carapace (Triple-Tiered Chitin Hull)
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#2b0606';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#b91c1c';
+    ctx.lineWidth = 3.0;
+
+    // Main Thorax Shell
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 6);
+    ctx.lineTo(cx + 55, y + 18);
+    ctx.lineTo(cx + 125, y + 48);
+    ctx.lineTo(cx + 118, y + 82);
+    ctx.lineTo(cx + 80, y + 102);
+    ctx.lineTo(cx + 35, y + 125);
+    ctx.lineTo(cx, y + 128);
+    ctx.lineTo(cx - 35, y + 125);
+    ctx.lineTo(cx - 80, y + 102);
+    ctx.lineTo(cx - 118, y + 82);
+    ctx.lineTo(cx - 125, y + 48);
+    ctx.lineTo(cx - 55, y + 18);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Segment Plates (Transverse Chitin Grooves)
+    ctx.strokeStyle = '#450a0a';
+    ctx.lineWidth = 2.0;
+    for (let s = 1; s <= 3; s++) {
+      const segY = y + 26 + s * 22;
+      const segW = 100 - s * 20;
+      ctx.beginPath();
+      ctx.moveTo(cx - segW, segY);
+      ctx.quadraticCurveTo(cx, segY + 8, cx + segW, segY);
+      ctx.stroke();
+    }
+
+    // 4. Glowing Crimson/Bile Veins
+    ctx.strokeStyle = isFlashing ? '#ffffff' : '#84cc16';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    // Left vein network
+    ctx.moveTo(cx - 20, cy + 10);
+    ctx.lineTo(cx - 55, cy - 5);
+    ctx.lineTo(cx - 90, cy - 15);
+    ctx.moveTo(cx - 55, cy - 5);
+    ctx.lineTo(cx - 75, cy + 20);
+    // Right vein network
+    ctx.moveTo(cx + 20, cy + 10);
+    ctx.lineTo(cx + 55, cy - 5);
+    ctx.lineTo(cx + 90, cy - 15);
+    ctx.moveTo(cx + 55, cy - 5);
+    ctx.lineTo(cx + 75, cy + 20);
+    ctx.stroke();
+
+    // 5. Four Pulsing Glandular Pods
+    const podPulse = Math.sin(this.pulsePhase * 3) * 2;
+    const podOffsets = [
+      { ox: -75, oy: -10, r: 8 },
+      { ox: -65, oy: 22, r: 7 },
+      { ox: 75, oy: -10, r: 8 },
+      { ox: 65, oy: 22, r: 7 },
+    ];
+    for (const pod of podOffsets) {
+      const px = cx + pod.ox;
+      const py = cy + pod.oy;
+      const pr = pod.r + podPulse;
+
+      const podGrad = ctx.createRadialGradient(px, py, 1, px, py, pr);
+      podGrad.addColorStop(0, '#ffffff');
+      podGrad.addColorStop(0.3, '#84cc16');
+      podGrad.addColorStop(0.8, '#f59e0b');
+      podGrad.addColorStop(1, '#450a0a');
+      ctx.fillStyle = podGrad;
+      ctx.beginPath();
+      ctx.arc(px, py, pr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#84cc16';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+
+    // 6. Central Bio-Plasmid Maw / Singularity Eye
+    this.drawSingularityEye(ctx, cx, cy + 10, '#84cc16', '#f59e0b');
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 8 — THE SINGULARITY CORE
+   * Supermassive event horizon entity with central opaque black sphere, 3 counter-rotating elliptical
+   * accretion rings, relativistic violet corona, and monolithic magnetic compression pylons.
+   */
+  private drawSingularityCore(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Relativistic Violet Corona Aura
+    const coronaAura = ctx.createRadialGradient(cx, cy + 10, 20, cx, cy + 10, 150);
+    coronaAura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.6)' : 'rgba(139, 92, 246, 0.45)');
+    coronaAura.addColorStop(0.5, 'rgba(30, 27, 75, 0.3)');
+    coronaAura.addColorStop(1, 'rgba(9, 9, 11, 0)');
+    ctx.fillStyle = coronaAura;
+    ctx.fillRect(x - 35, y - 35, w + 70, h + 70);
+
+    // 2. Monolithic Magnetic Compression Pylons (Flanking Channellers)
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#09090b';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#8b5cf6';
+    ctx.lineWidth = 2.5;
+
+    // Left Monolithic Pylon
+    ctx.beginPath();
+    ctx.moveTo(x + 10, cy - 45);
+    ctx.lineTo(x + 48, cy - 30);
+    ctx.lineTo(x + 55, cy + 40);
+    ctx.lineTo(x + 18, cy + 55);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Left Pylon Magnetic Coil Insets
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.4;
+    for (let c = 0; c < 3; c++) {
+      const coilY = cy - 20 + c * 20;
+      ctx.beginPath();
+      ctx.moveTo(x + 20, coilY);
+      ctx.lineTo(x + 45, coilY + 6);
+      ctx.stroke();
+    }
+
+    // Right Monolithic Pylon
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#09090b';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#8b5cf6';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(x + w - 10, cy - 45);
+    ctx.lineTo(x + w - 48, cy - 30);
+    ctx.lineTo(x + w - 55, cy + 40);
+    ctx.lineTo(x + w - 18, cy + 55);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Right Pylon Magnetic Coil Insets
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.4;
+    for (let c = 0; c < 3; c++) {
+      const coilY = cy - 20 + c * 20;
+      ctx.beginPath();
+      ctx.moveTo(x + w - 20, coilY);
+      ctx.lineTo(x + w - 45, coilY + 6);
+      ctx.stroke();
+    }
+
+    // 3. Central Magnetic Arch / Frame
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#1e1b4b';
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 2.0;
+    ctx.beginPath();
+    ctx.moveTo(cx - 65, y + 15);
+    ctx.quadraticCurveTo(cx, y - 5, cx + 65, y + 15);
+    ctx.lineTo(cx + 55, y + 35);
+    ctx.quadraticCurveTo(cx, y + 18, cx - 55, y + 35);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 4. Three Counter-Rotating Elliptical Accretion Rings
+    const rings = [
+      { rx: 96, ry: 32, speed: 0.85, rotOffset: 0.2, color: 'rgba(139, 92, 246, 0.8)', width: 2.4 },
+      { rx: 80, ry: 24, speed: -1.2, rotOffset: -0.4, color: 'rgba(255, 255, 255, 0.85)', width: 2.0 },
+      { rx: 64, ry: 16, speed: 1.6, rotOffset: 0.8, color: 'rgba(192, 132, 252, 0.75)', width: 1.8 },
+    ];
+
+    for (const ring of rings) {
+      ctx.save();
+      ctx.translate(cx, cy + 10);
+      ctx.rotate(this.floatTime * ring.speed + ring.rotOffset);
+      ctx.strokeStyle = ring.color;
+      ctx.lineWidth = ring.width;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, ring.rx, ring.ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Accretion Particle Clustered on Ring
+      const pAngle = this.floatTime * ring.speed * 2.5;
+      const px = Math.cos(pAngle) * ring.rx;
+      const py = Math.sin(pAngle) * ring.ry;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(px, py, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // 5. Central Opaque Black Event Horizon Sphere
+    const eventRadius = 35;
+    // Photon Ring Glare
+    const photonGrad = ctx.createRadialGradient(cx, cy + 10, eventRadius - 4, cx, cy + 10, eventRadius + 12);
+    photonGrad.addColorStop(0, '#ffffff');
+    photonGrad.addColorStop(0.4, '#8b5cf6');
+    photonGrad.addColorStop(1, 'rgba(139, 92, 246, 0)');
+    ctx.fillStyle = photonGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy + 10, eventRadius + 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Absolute Event Horizon (Zero Light)
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(cx, cy + 10, eventRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 6. Relativistic Singularity Optic / Gravitational Singularity Center
+    const pupilX = cx + Math.cos(this.eyeAngle) * 6;
+    const pupilY = cy + 10 + Math.sin(this.eyeAngle) * 6;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 9 — NANITE HARVESTER NEXUS
+   * Grey-goo molecular disassembler with tessellated floating polygonal chrome armor plates that shift and rotate,
+   * circuit etching, and glowing circuit teal processor core.
+   */
+  private drawNaniteHarvester(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Molecular Dissolution Aura
+    const naniteAura = ctx.createRadialGradient(cx, cy + 10, 25, cx, cy + 10, 145);
+    naniteAura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.5)' : 'rgba(20, 184, 166, 0.35)');
+    naniteAura.addColorStop(0.5, 'rgba(6, 182, 212, 0.2)');
+    naniteAura.addColorStop(1, 'rgba(15, 23, 42, 0)');
+    ctx.fillStyle = naniteAura;
+    ctx.fillRect(x - 30, y - 30, w + 60, h + 60);
+
+    // 2. Tessellated Floating Polygonal Chrome Plates
+    const plates = [
+      // Left Outer Chevron
+      {
+        poly: [[-126, 45], [-85, 10], [-55, 30], [-80, 75]],
+        shiftX: Math.sin(this.floatTime * 2.2 + 0) * 4,
+        shiftY: Math.cos(this.floatTime * 1.8 + 0) * 3,
+      },
+      // Right Outer Chevron
+      {
+        poly: [[126, 45], [85, 10], [55, 30], [80, 75]],
+        shiftX: -Math.sin(this.floatTime * 2.2 + 1) * 4,
+        shiftY: Math.cos(this.floatTime * 1.8 + 1) * 3,
+      },
+      // Left Mid Flank
+      {
+        poly: [[-78, 80], [-45, 35], [-15, 55], [-40, 110]],
+        shiftX: Math.cos(this.floatTime * 2.5 + 2) * 3,
+        shiftY: Math.sin(this.floatTime * 2.0 + 2) * 3,
+      },
+      // Right Mid Flank
+      {
+        poly: [[78, 80], [45, 35], [15, 55], [40, 110]],
+        shiftX: -Math.cos(this.floatTime * 2.5 + 3) * 3,
+        shiftY: Math.sin(this.floatTime * 2.0 + 3) * 3,
+      },
+      // Top Apex Prow
+      {
+        poly: [[0, 5], [45, 20], [0, 42], [-45, 20]],
+        shiftX: 0,
+        shiftY: Math.sin(this.floatTime * 3.0) * 2,
+      },
+      // Bottom Ventral Keel
+      {
+        poly: [[0, 95], [30, 126], [0, 128], [-30, 126]],
+        shiftX: 0,
+        shiftY: -Math.sin(this.floatTime * 2.8) * 2,
+      },
+    ];
+
+    for (const p of plates) {
+      ctx.save();
+      ctx.translate(cx + p.shiftX, cy + p.shiftY);
+
+      // Plate Body (Chrome Silver with Carbon Backing)
+      ctx.fillStyle = isFlashing ? '#ffffff' : '#94a3b8';
+      ctx.strokeStyle = isFlashing ? '#ef4444' : '#14b8a6';
+      ctx.lineWidth = 2.2;
+
+      ctx.beginPath();
+      ctx.moveTo(p.poly[0][0], p.poly[0][1]);
+      for (let i = 1; i < p.poly.length; i++) {
+        ctx.lineTo(p.poly[i][0], p.poly[i][1]);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Circuit lines on plate
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      const midX = (p.poly[0][0] + p.poly[2][0]) / 2;
+      const midY = (p.poly[0][1] + p.poly[2][1]) / 2;
+      ctx.moveTo(p.poly[0][0] * 0.7, p.poly[0][1] * 0.7);
+      ctx.lineTo(midX, midY);
+      ctx.lineTo(p.poly[1][0] * 0.8, p.poly[1][1] * 0.8);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // 3. Central Hexagonal Frame & Chassis
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#0f172a';
+    ctx.strokeStyle = '#14b8a6';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    const hexRadius = 38;
+    for (let i = 0; i < 6; i++) {
+      const angle = (i * Math.PI) / 3;
+      const hx = cx + Math.cos(angle) * hexRadius;
+      const hy = cy + 10 + Math.sin(angle) * hexRadius;
+      if (i === 0) ctx.moveTo(hx, hy);
+      else ctx.lineTo(hx, hy);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 4. Glowing Circuit Teal Processor Core
+    const coreGrad = ctx.createRadialGradient(cx, cy + 10, 3, cx, cy + 10, 24);
+    coreGrad.addColorStop(0, '#ffffff');
+    coreGrad.addColorStop(0.3, '#14b8a6');
+    coreGrad.addColorStop(0.7, '#06b6d4');
+    coreGrad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy + 10, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    // Processor Core Optic / Player Tracking
+    const pupilX = cx + Math.cos(this.eyeAngle) * 5;
+    const pupilY = cy + 10 + Math.sin(this.eyeAngle) * 5;
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#14b8a6';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 10 — THE PSIONIC SHROUD
+   * Extra-dimensional astral inmate with translucent crystalline crest, 6 undulating astral tendrils,
+   * weeping telepathic ocular iris at center, and shimmering magenta/rose glow.
+   */
+  private drawPsionicShroud(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Shimmering Magenta / Rose Astral Glow
+    const astralAura = ctx.createRadialGradient(cx, cy + 10, 20, cx, cy + 10, 150);
+    astralAura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.5)' : 'rgba(217, 70, 239, 0.4)');
+    astralAura.addColorStop(0.5, 'rgba(251, 113, 133, 0.22)');
+    astralAura.addColorStop(1, 'rgba(46, 16, 101, 0)');
+    ctx.fillStyle = astralAura;
+    ctx.fillRect(x - 30, y - 30, w + 60, h + 60);
+
+    // 2. Six Undulating Astral Tendrils (Ventral Tentacles)
+    const tendrilOffsets = [-95, -60, -25, 25, 60, 95];
+    for (let i = 0; i < tendrilOffsets.length; i++) {
+      const tox = cx + tendrilOffsets[i];
+      const toy = y + 75;
+      const wavePhase = this.floatTime * 3.0 + i * 1.1;
+      const waveX = Math.sin(wavePhase) * 14;
+      const waveTipX = Math.sin(wavePhase + 0.8) * 22;
+      const tipY = toy + 48;
+
+      ctx.strokeStyle = i % 2 === 0 ? 'rgba(217, 70, 239, 0.85)' : 'rgba(251, 113, 133, 0.85)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(tox, toy);
+      ctx.quadraticCurveTo(tox + waveX, toy + 24, tox + waveTipX, tipY);
+      ctx.stroke();
+
+      // Astral wisp at tendril tip
+      ctx.fillStyle = i % 2 === 0 ? '#d946ef' : '#fb7185';
+      ctx.beginPath();
+      ctx.arc(tox + waveTipX, tipY, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 3. Translucent Crystalline Crest (Astral Crown Hull)
+    ctx.fillStyle = isFlashing ? 'rgba(255, 255, 255, 0.95)' : 'rgba(124, 58, 237, 0.75)';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#d946ef';
+    ctx.lineWidth = 2.8;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 5);
+    ctx.lineTo(cx + 40, y + 22);
+    ctx.lineTo(cx + 80, y + 8);
+    ctx.lineTo(cx + 125, y + 38);
+    ctx.lineTo(cx + 105, y + 80);
+    ctx.lineTo(cx + 50, y + 85);
+    ctx.lineTo(cx, y + 92);
+    ctx.lineTo(cx - 50, y + 85);
+    ctx.lineTo(cx - 105, y + 80);
+    ctx.lineTo(cx - 125, y + 38);
+    ctx.lineTo(cx - 80, y + 8);
+    ctx.lineTo(cx - 40, y + 22);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Refractive Crystal Facets on Crest
+    ctx.strokeStyle = 'rgba(251, 113, 133, 0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 5);
+    ctx.lineTo(cx, y + 60);
+    ctx.moveTo(cx, y + 35);
+    ctx.lineTo(cx + 80, y + 8);
+    ctx.moveTo(cx, y + 35);
+    ctx.lineTo(cx - 80, y + 8);
+    ctx.stroke();
+
+    // 4. Weeping Telepathic Ocular Iris at Center
+    const eyeCenterY = cy + 12;
+    ctx.fillStyle = '#02010a';
+    ctx.beginPath();
+    ctx.moveTo(cx - 28, eyeCenterY);
+    ctx.quadraticCurveTo(cx, eyeCenterY - 18, cx + 28, eyeCenterY);
+    ctx.quadraticCurveTo(cx, eyeCenterY + 18, cx - 28, eyeCenterY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#fb7185';
+    ctx.lineWidth = 2.2;
+    ctx.stroke();
+
+    // Iridescent Iris
+    const irisGrad = ctx.createRadialGradient(cx, eyeCenterY, 2, cx, eyeCenterY, 14);
+    irisGrad.addColorStop(0, '#ffffff');
+    irisGrad.addColorStop(0.4, '#fb7185');
+    irisGrad.addColorStop(0.8, '#d946ef');
+    irisGrad.addColorStop(1, '#7c3aed');
+    ctx.fillStyle = irisGrad;
+    ctx.beginPath();
+    ctx.arc(cx, eyeCenterY, 13, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Tracking Telepathic Pupil
+    const pupilX = cx + Math.cos(this.eyeAngle) * 4;
+    const pupilY = eyeCenterY + Math.sin(this.eyeAngle) * 4;
+    ctx.fillStyle = '#02010a';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(pupilX - 1, pupilY - 1, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Weeping Astral Tears (Streaming Downward)
+    ctx.strokeStyle = 'rgba(251, 113, 133, 0.8)';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    const tearDrop = Math.sin(this.floatTime * 4) * 5;
+    ctx.moveTo(cx, eyeCenterY + 18);
+    ctx.lineTo(cx, eyeCenterY + 36 + tearDrop);
+    ctx.stroke();
+    ctx.fillStyle = '#fb7185';
+    ctx.beginPath();
+    ctx.arc(cx, eyeCenterY + 36 + tearDrop, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 11 — GLACIAL OBLIVION
+   * Absolute zero entropic engine with jagged crystalline iceberg colossus, heavy ice-shelf armor,
+   * downward icicle spires, and radiant sub-zero crystal heart.
+   */
+  private drawGlacialOblivion(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Sub-Zero Frost Haze Aura
+    const frostAura = ctx.createRadialGradient(cx, cy + 10, 25, cx, cy + 10, 145);
+    frostAura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.55)' : 'rgba(56, 189, 248, 0.4)');
+    frostAura.addColorStop(0.6, 'rgba(34, 211, 238, 0.18)');
+    frostAura.addColorStop(1, 'rgba(12, 74, 110, 0)');
+    ctx.fillStyle = frostAura;
+    ctx.fillRect(x - 30, y - 30, w + 60, h + 60);
+
+    // 2. Heavy Ice-Shelf Armor (Jagged Iceberg Colossus Hull)
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#0c4a6e';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#38bdf8';
+    ctx.lineWidth = 3.0;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 8);
+    ctx.lineTo(cx + 45, y + 14);
+    ctx.lineTo(cx + 80, y + 5);
+    ctx.lineTo(cx + 126, y + 42);
+    ctx.lineTo(cx + 115, y + 78);
+    ctx.lineTo(cx + 70, y + 90);
+    ctx.lineTo(cx + 40, y + 82);
+    ctx.lineTo(cx, y + 88);
+    ctx.lineTo(cx - 40, y + 82);
+    ctx.lineTo(cx - 70, y + 90);
+    ctx.lineTo(cx - 115, y + 78);
+    ctx.lineTo(cx - 126, y + 42);
+    ctx.lineTo(cx - 80, y + 5);
+    ctx.lineTo(cx - 45, y + 14);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Refractive Iceberg Cleavage Planes (Geometric Shards)
+    ctx.strokeStyle = '#f0f9ff';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 8);
+    ctx.lineTo(cx - 40, y + 55);
+    ctx.lineTo(cx - 115, y + 78);
+    ctx.moveTo(cx, y + 8);
+    ctx.lineTo(cx + 40, y + 55);
+    ctx.lineTo(cx + 115, y + 78);
+    ctx.stroke();
+
+    // 3. Downward Icicle Spires (Stalactite Daggers)
+    const icicles = [
+      { ox: -85, topY: y + 86, len: 32, w: 10 },
+      { ox: -45, topY: y + 82, len: 38, w: 12 },
+      { ox: 0,   topY: y + 88, len: 40, w: 14 },
+      { ox: 45,  topY: y + 82, len: 38, w: 12 },
+      { ox: 85,  topY: y + 86, len: 32, w: 10 },
+    ];
+
+    for (const ice of icicles) {
+      const ix = cx + ice.ox;
+      const iy = ice.topY;
+      const tipY = Math.min(y + 128, iy + ice.len);
+
+      ctx.fillStyle = isFlashing ? '#ffffff' : '#38bdf8';
+      ctx.strokeStyle = '#f0f9ff';
+      ctx.lineWidth = 1.8;
+
+      ctx.beginPath();
+      ctx.moveTo(ix - ice.w / 2, iy);
+      ctx.lineTo(ix + ice.w / 2, iy);
+      ctx.lineTo(ix, tipY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // 4. Radiant Sub-Zero Crystal Heart
+    const heartY = cy + 6;
+    const crystalPulse = Math.sin(this.pulsePhase * 2.5) * 3;
+    const heartRadius = 24 + crystalPulse;
+
+    // Outer Glacial Diamond Corona
+    const heartGrad = ctx.createRadialGradient(cx, heartY, 2, cx, heartY, heartRadius);
+    heartGrad.addColorStop(0, '#ffffff');
+    heartGrad.addColorStop(0.3, '#f0f9ff');
+    heartGrad.addColorStop(0.7, '#22d3ee');
+    heartGrad.addColorStop(1, '#0c4a6e');
+    ctx.fillStyle = heartGrad;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, heartY - heartRadius);
+    ctx.lineTo(cx + heartRadius * 0.85, heartY);
+    ctx.lineTo(cx, heartY + heartRadius);
+    ctx.lineTo(cx - heartRadius * 0.85, heartY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.2;
+    ctx.stroke();
+
+    // Internal Sub-Zero Focal Eye / Tracking Optic
+    const pupilX = cx + Math.cos(this.eyeAngle) * 5;
+    const pupilY = heartY + Math.sin(this.eyeAngle) * 5;
+    ctx.fillStyle = '#0c4a6e';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 12 — THE COSMIC DEVOURER
+   * Astral void dragon behemoth with sweeping curved obsidian wings, razor wingtalons,
+   * celestial dorsal spines, serpentine neck armor, and solar plasma maw.
+   */
+  private drawCosmicDevourer(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Solar Plasma / Supernova Breath Corona
+    const breathAura = ctx.createRadialGradient(cx, cy + 12, 25, cx, cy + 12, 150);
+    breathAura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.55)' : 'rgba(220, 38, 38, 0.4)');
+    breathAura.addColorStop(0.5, 'rgba(217, 119, 6, 0.25)');
+    breathAura.addColorStop(1, 'rgba(24, 24, 27, 0)');
+    ctx.fillStyle = breathAura;
+    ctx.fillRect(x - 35, y - 35, w + 70, h + 70);
+
+    // 2. Celestial Dorsal Spines (Top Crest)
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#facc15';
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.8;
+    const spines = [-40, -20, 0, 20, 40];
+    for (const sx of spines) {
+      const spX = cx + sx;
+      const spH = sx === 0 ? 24 : 18;
+      ctx.beginPath();
+      ctx.moveTo(spX - 7, y + 22);
+      ctx.lineTo(spX, y + 22 - spH);
+      ctx.lineTo(spX + 7, y + 22);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // 3. Sweeping Curved Obsidian Dragon Wings with Razor Wingtalons
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#18181b';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#d97706';
+    ctx.lineWidth = 3.0;
+
+    // Left Obsidian Wing
+    ctx.beginPath();
+    ctx.moveTo(cx - 25, y + 24);
+    ctx.quadraticCurveTo(cx - 75, y - 2, cx - 126, y + 14);
+    ctx.lineTo(cx - 120, y + 28);
+    ctx.quadraticCurveTo(cx - 128, y + 55, cx - 125, y + 78);
+    ctx.quadraticCurveTo(cx - 85, y + 92, cx - 40, y + 80);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Right Obsidian Wing
+    ctx.beginPath();
+    ctx.moveTo(cx + 25, y + 24);
+    ctx.quadraticCurveTo(cx + 75, y - 2, cx + 126, y + 14);
+    ctx.lineTo(cx + 120, y + 28);
+    ctx.quadraticCurveTo(cx + 128, y + 55, cx + 125, y + 78);
+    ctx.quadraticCurveTo(cx + 85, y + 92, cx + 40, y + 80);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Wing Struts / Feather Scutes
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(cx - 25, y + 24);
+    ctx.lineTo(cx - 110, y + 45);
+    ctx.moveTo(cx - 25, y + 45);
+    ctx.lineTo(cx - 95, y + 72);
+    ctx.moveTo(cx + 25, y + 24);
+    ctx.lineTo(cx + 110, y + 45);
+    ctx.moveTo(cx + 25, y + 45);
+    ctx.lineTo(cx + 95, y + 72);
+    ctx.stroke();
+
+    // 4. Serpentine Neck Armor & Scales
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#27272a';
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 2.4;
+
+    ctx.beginPath();
+    ctx.moveTo(cx - 32, y + 22);
+    ctx.lineTo(cx + 32, y + 22);
+    ctx.lineTo(cx + 42, y + 65);
+    ctx.lineTo(cx + 25, y + 126);
+    ctx.lineTo(cx - 25, y + 126);
+    ctx.lineTo(cx - 42, y + 65);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Segmented dragon scutes
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 1.8;
+    for (let s = 1; s <= 3; s++) {
+      const scuteY = y + 25 + s * 22;
+      ctx.beginPath();
+      ctx.moveTo(cx - 25, scuteY);
+      ctx.lineTo(cx, scuteY + 8);
+      ctx.lineTo(cx + 25, scuteY);
+      ctx.stroke();
+    }
+
+    // 5. Blazing Solar Plasma Maw (Dragon Core)
+    const mawY = cy + 14;
+    const plasmaGrad = ctx.createRadialGradient(cx, mawY, 4, cx, mawY, 26);
+    plasmaGrad.addColorStop(0, '#ffffff');
+    plasmaGrad.addColorStop(0.3, '#facc15');
+    plasmaGrad.addColorStop(0.7, '#dc2626');
+    plasmaGrad.addColorStop(1, '#18181b');
+    ctx.fillStyle = plasmaGrad;
+    ctx.beginPath();
+    ctx.arc(cx, mawY, 24, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 2.0;
+    ctx.stroke();
+
+    // Dragon Jaws Fangs
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.moveTo(cx - 14, mawY - 14);
+    ctx.lineTo(cx - 10, mawY - 5);
+    ctx.lineTo(cx - 6, mawY - 14);
+    ctx.moveTo(cx + 6, mawY - 14);
+    ctx.lineTo(cx + 10, mawY - 5);
+    ctx.lineTo(cx + 14, mawY - 14);
+    ctx.fill();
+
+    // Draconic Vertical Slit Pupil / Solar Core Tracking
+    const pupilX = cx + Math.cos(this.eyeAngle) * 6;
+    const pupilY = mawY + Math.sin(this.eyeAngle) * 4;
+    ctx.fillStyle = '#18181b';
+    ctx.beginPath();
+    ctx.ellipse(pupilX, pupilY, 3, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 2, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.restore();
   }

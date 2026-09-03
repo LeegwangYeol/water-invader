@@ -69,6 +69,12 @@ export class EndGameCrisis {
         CrisisArchetype.CHRONO_DEVOURER,
         CrisisArchetype.SOLARIS_COLOSSUS,
         CrisisArchetype.NEBULA_PHANTASM,
+        CrisisArchetype.BIOMORPHIC_SWARM,
+        CrisisArchetype.SINGULARITY_CORE,
+        CrisisArchetype.NANITE_HARVESTER,
+        CrisisArchetype.PSIONIC_SHROUD,
+        CrisisArchetype.GLACIAL_OBLIVION,
+        CrisisArchetype.COSMIC_DEVOURER,
       ];
       this.archetype = archetypes[Math.floor(Math.random() * archetypes.length)];
     }
@@ -107,6 +113,18 @@ export class EndGameCrisis {
       this.vortexPullIntensity = 0.15;
     } else if (this.archetype === CrisisArchetype.NEBULA_PHANTASM) {
       this.vortexPullIntensity = 0.25;
+    } else if (this.archetype === CrisisArchetype.BIOMORPHIC_SWARM) {
+      this.vortexPullIntensity = 20;
+    } else if (this.archetype === CrisisArchetype.SINGULARITY_CORE) {
+      this.vortexPullIntensity = 50;
+    } else if (this.archetype === CrisisArchetype.NANITE_HARVESTER) {
+      this.vortexPullIntensity = 25;
+    } else if (this.archetype === CrisisArchetype.PSIONIC_SHROUD) {
+      this.vortexPullIntensity = 30;
+    } else if (this.archetype === CrisisArchetype.GLACIAL_OBLIVION) {
+      this.vortexPullIntensity = 20;
+    } else if (this.archetype === CrisisArchetype.COSMIC_DEVOURER) {
+      this.vortexPullIntensity = 35;
     } else {
       this.vortexPullIntensity = 0.1;
     }
@@ -130,6 +148,18 @@ export class EndGameCrisis {
         return 'SOLARIS COLOSSUS';
       case CrisisArchetype.NEBULA_PHANTASM:
         return 'NEBULA PHANTASM';
+      case CrisisArchetype.BIOMORPHIC_SWARM:
+        return 'BIOMORPHIC SWARM';
+      case CrisisArchetype.SINGULARITY_CORE:
+        return 'SINGULARITY CORE';
+      case CrisisArchetype.NANITE_HARVESTER:
+        return 'NANITE HARVESTER';
+      case CrisisArchetype.PSIONIC_SHROUD:
+        return 'PSIONIC SHROUD';
+      case CrisisArchetype.GLACIAL_OBLIVION:
+        return 'GLACIAL OBLIVION';
+      case CrisisArchetype.COSMIC_DEVOURER:
+        return 'COSMIC DEVOURER';
     }
   }
 
@@ -163,6 +193,9 @@ export class EndGameCrisis {
 
     const playerPos = player ? player.position : { x: this.logicalWidth / 2, y: this.logicalHeight - 50 };
 
+    // Apply archetype-specific area-denial & environmental hazards
+    this.applyEnvironmentalHazards(deltaTime, player, bullets);
+
     // 1. Update Dimensional Rifts / Brood Sacks / Pylons
     let activeRiftsCount = 0;
     for (let i = 0; i < this.riftAnchors.length; i++) {
@@ -174,9 +207,11 @@ export class EndGameCrisis {
         }
         activeRiftsCount++;
 
-        // Apply gravitational pull on player & player bullets for Void Sovereign
+        // Apply gravitational pull on player & player bullets for Void Sovereign and Singularity Core
         if (this.archetype === CrisisArchetype.VOID_SOVEREIGN) {
           this.applyRiftGravity(rift, player, bullets, deltaTime);
+        } else if (this.archetype === CrisisArchetype.SINGULARITY_CORE) {
+          this.applySingularityRiftGravity(rift, player, bullets, deltaTime);
         }
 
         // Spawn ambient particles
@@ -300,6 +335,115 @@ export class EndGameCrisis {
           b.position.x += (bdx / bdist) * bendForce;
         }
       }
+    }
+  }
+
+  /**
+   * Polarized Gravitational Mechanics for Singularity Core Anchors
+   * Left anchor (index 0) exerts attractive pull, Right anchor (index 1) exerts repulsive push.
+   */
+  private applySingularityRiftGravity(rift: DimensionalRift, player: Player, bullets: Bullet[], deltaTime: number): void {
+    const riftCenter = rift.getSingularityCenter();
+    const pullRadius = 250;
+    const pullForce = 50;
+
+    // Left rift (index 0) pulls (+1), Right rift (index 1) pushes (-1)
+    const direction = rift.riftIndex === 0 ? 1 : -1;
+
+    // Player lateral gravity
+    if (player) {
+      const dx = riftCenter.x - (player.position.x + player.size.width / 2);
+      const dy = riftCenter.y - (player.position.y + player.size.height / 2);
+      const distSq = dx * dx + dy * dy;
+
+      if (distSq < pullRadius * pullRadius && distSq > 100) {
+        const dist = Math.sqrt(distSq);
+        const force = (1 - dist / pullRadius) * pullForce * deltaTime * direction;
+        player.position.x += (dx / dist) * force;
+      }
+    }
+
+    // Bullet bending
+    for (const b of bullets) {
+      if (b.faction === Faction.PLAYER && !b.isDead) {
+        const bx = b.position.x + b.size.width / 2;
+        const by = b.position.y + b.size.height / 2;
+        const bdx = riftCenter.x - bx;
+        const bdy = riftCenter.y - by;
+        const bdistSq = bdx * bdx + bdy * bdy;
+
+        if (bdistSq < pullRadius * pullRadius && bdistSq > 100) {
+          const bdist = Math.sqrt(bdistSq);
+          const bendForce = (1 - bdist / pullRadius) * 80 * deltaTime * direction;
+          b.position.x += (bdx / bdist) * bendForce;
+        }
+      }
+    }
+  }
+
+  /**
+   * Archetype-specific Area-Denial & Environmental Hazards
+   */
+  private applyEnvironmentalHazards(deltaTime: number, player: Player, bullets: Bullet[]): void {
+    if (!player || player.isDead) return;
+
+    switch (this.archetype) {
+      case CrisisArchetype.SINGULARITY_CORE:
+        // Spacetime Curvature: all player bullets passing within 180px of Sovereign core bend inward
+        if (this.sovereign && !this.sovereign.isDead) {
+          const core = this.sovereign.getCoreCenter();
+          for (const b of bullets) {
+            if (b.faction === Faction.PLAYER && !b.isDead) {
+              const bx = b.position.x + b.size.width / 2;
+              const by = b.position.y + b.size.height / 2;
+              const dx = core.x - bx;
+              const dy = core.y - by;
+              const distSq = dx * dx + dy * dy;
+              if (distSq < 180 * 180 && distSq > 100) {
+                const dist = Math.sqrt(distSq);
+                b.position.x += (dx / dist) * 75 * deltaTime;
+              }
+            }
+          }
+        }
+        break;
+
+      case CrisisArchetype.GLACIAL_OBLIVION:
+        // Absolute Zero Frostbite Zone: bottom 110px slows player movement speed
+        if (player.position.y > this.logicalHeight - 110) {
+          player.velocity.x *= Math.max(0.80, 1 - 0.20 * deltaTime * 60);
+          player.velocity.y *= Math.max(0.80, 1 - 0.20 * deltaTime * 60);
+        }
+        break;
+
+      case CrisisArchetype.PSIONIC_SHROUD:
+        // Telepathic Input Hysteresis: cyclic gentle horizontal ship wobble (+-10px lateral drift)
+        player.position.x += Math.sin(this.attackPhaseTime * 3.2) * 14 * deltaTime;
+        player.position.x = Math.max(10, Math.min(this.logicalWidth - player.size.width - 10, player.position.x));
+        break;
+
+      case CrisisArchetype.NANITE_HARVESTER:
+        // Nanite Screen Erosion: corrosive nanite swarms line outer 15px canvas walls
+        if (player.position.x < 15) {
+          player.position.x += 35 * deltaTime;
+        } else if (player.position.x + player.size.width > this.logicalWidth - 15) {
+          player.position.x -= 35 * deltaTime;
+        }
+        break;
+
+      case CrisisArchetype.COSMIC_DEVOURER:
+        // Solar Wind Flare Turbulence: periodic lateral buffeting gusts (+-40px/s)
+        const windGust = Math.sin(this.attackPhaseTime * 1.6) * 35 * deltaTime;
+        player.position.x += windGust;
+        player.position.x = Math.max(10, Math.min(this.logicalWidth - player.size.width - 10, player.position.x));
+        break;
+
+      case CrisisArchetype.BIOMORPHIC_SWARM:
+        // Bio-Corrosive Spore Creep: descending spore pressure if player pushes into upper screen
+        if (player.position.y < 220) {
+          player.position.y += 40 * deltaTime;
+        }
+        break;
     }
   }
 
@@ -537,6 +681,305 @@ export class EndGameCrisis {
               wisp.color = i % 2 === 0 ? '#06b6d4' : '#d946ef';
               wisp.isInterceptable = true;
               bullets.push(wisp);
+            }
+          }
+        }
+        break;
+
+      case CrisisArchetype.BIOMORPHIC_SWARM:
+        // Corrosive Bile Barrage, Mandible Ripper Volley, or Phase 3 Swarm Infestation
+        if (soundManager) soundManager.playAcidStormSound();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Extragalactic Swarm Infestation: 14-way spiraling bio-plasmid helix
+          const numSpores = 14;
+          for (let i = 0; i < numSpores; i++) {
+            const ang = (i * Math.PI * 2) / numSpores + this.attackPhaseTime * 2.0;
+            const speed = 220;
+            const b = new Bullet(core.x, core.y, Math.sin(ang) * speed, 1, false);
+            b.velocity.x = Math.cos(ang) * speed;
+            b.color = i % 2 === 0 ? '#84cc16' : '#f59e0b';
+            b.isInterceptable = true;
+            bullets.push(b);
+          }
+        } else {
+          // Phase 2: Alternates between Corrosive Bile Barrage and Mandible Ripper Volley
+          const isBile = Math.floor(this.attackPhaseTime / 2.2) % 2 === 0;
+          if (isBile) {
+            // Corrosive Bile Barrage: 7 bio-globules in wide arc
+            const angles = [-0.45, -0.3, -0.15, 0, 0.15, 0.3, 0.45];
+            for (const ang of angles) {
+              const speed = 240;
+              const bile = new Bullet(core.x, core.y, Math.cos(ang) * speed, 1, false);
+              bile.velocity.x = Math.sin(ang) * speed;
+              bile.color = '#84cc16';
+              bile.isInterceptable = true;
+              bullets.push(bile);
+            }
+          } else {
+            // Mandible Ripper Volley: high-speed chitin spikes from left and right mandibles + center
+            const leftSpike = new Bullet(leftMuzzle.x, leftMuzzle.y, 360, 2, false);
+            leftSpike.color = '#b91c1c';
+            leftSpike.isInterceptable = true;
+            const rightSpike = new Bullet(rightMuzzle.x, rightMuzzle.y, 360, 2, false);
+            rightSpike.color = '#b91c1c';
+            rightSpike.isInterceptable = true;
+            const centerChitin = new Bullet(core.x, core.y, 300, 1, false);
+            centerChitin.color = '#f59e0b';
+            centerChitin.isInterceptable = true;
+            bullets.push(leftSpike, rightSpike, centerChitin);
+          }
+        }
+        break;
+
+      case CrisisArchetype.SINGULARITY_CORE:
+        // Hawking Radiation Lance, Relativistic Jet Flares, or Phase 3 Event Horizon Implosion
+        if (soundManager) soundManager.playDarkMatterBeam();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Event Horizon Gravitational Implosion: 16-way Hawking Nova
+          const numBolts = 16;
+          for (let i = 0; i < numBolts; i++) {
+            const ang = (i * Math.PI * 2) / numBolts + this.attackPhaseTime * 1.8;
+            const speed = 240;
+            const bolt = new Bullet(core.x, core.y, Math.sin(ang) * speed, 2, false);
+            bolt.velocity.x = Math.cos(ang) * speed;
+            bolt.color = i % 2 === 0 ? '#ffffff' : '#8b5cf6';
+            bolt.isInterceptable = true;
+            bullets.push(bolt);
+          }
+        } else {
+          // Phase 2: Alternates between Hawking Radiation Lance and Relativistic Jet Flares
+          const isLance = Math.floor(this.attackPhaseTime / 2.0) % 2 === 0;
+          if (isLance) {
+            // Hawking Radiation Lance: focused high-velocity beam sweeping +-20 degrees
+            const sweep = Math.sin(this.attackPhaseTime * 3) * 0.35;
+            for (let s = -1; s <= 1; s++) {
+              const ang = sweep + s * 0.08;
+              const speed = 420;
+              const lance = new Bullet(core.x, core.y, Math.cos(ang) * speed, 2, false);
+              lance.velocity.x = Math.sin(ang) * speed;
+              lance.color = s === 0 ? '#ffffff' : '#8b5cf6';
+              lance.isInterceptable = true;
+              bullets.push(lance);
+            }
+          } else {
+            // Relativistic Jet Flares: twin diagonal plasma jets at 45 degree angles (scissor crossfire)
+            const speed = 320;
+            const jetLeft = new Bullet(leftMuzzle.x, leftMuzzle.y, Math.cos(Math.PI / 4) * speed, 2, false);
+            jetLeft.velocity.x = -Math.sin(Math.PI / 4) * speed;
+            jetLeft.color = '#8b5cf6';
+            jetLeft.isInterceptable = true;
+
+            const jetRight = new Bullet(rightMuzzle.x, rightMuzzle.y, Math.cos(Math.PI / 4) * speed, 2, false);
+            jetRight.velocity.x = Math.sin(Math.PI / 4) * speed;
+            jetRight.color = '#8b5cf6';
+            jetRight.isInterceptable = true;
+
+            const centerPulse = new Bullet(core.x, core.y, 250, 1, false);
+            centerPulse.color = '#ffffff';
+            centerPulse.isInterceptable = true;
+
+            bullets.push(jetLeft, jetRight, centerPulse);
+          }
+        }
+        break;
+
+      case CrisisArchetype.NANITE_HARVESTER:
+        // Molecular Disassembly Ray, Subatomic Nanite Flak, or Phase 3 Grey Singularity Storm
+        if (soundManager) soundManager.playRogueShoot();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Grey Singularity Storm: 16-way radial nanite storm
+          const numNanites = 16;
+          for (let i = 0; i < numNanites; i++) {
+            const ang = (i * Math.PI * 2) / numNanites + this.attackPhaseTime * 1.4;
+            const speed = 230;
+            const nanite = new Bullet(core.x, core.y, Math.sin(ang) * speed, 1, false);
+            nanite.velocity.x = Math.cos(ang) * speed;
+            nanite.color = i % 2 === 0 ? '#14b8a6' : '#06b6d4';
+            nanite.isInterceptable = true;
+            bullets.push(nanite);
+          }
+        } else {
+          // Phase 2: Alternates between Molecular Disassembly Ray and Sub-Atomic Nanite Flak
+          const isRay = Math.floor(this.attackPhaseTime / 2.0) % 2 === 0;
+          if (isRay) {
+            // Molecular Disassembly Ray: 3 parallel high-velocity teal beams
+            const leftRay = new Bullet(leftMuzzle.x, leftMuzzle.y, 390, 2, false);
+            leftRay.color = '#06b6d4';
+            leftRay.isInterceptable = true;
+            const centerRay = new Bullet(core.x, core.y, 390, 2, false);
+            centerRay.color = '#14b8a6';
+            centerRay.isInterceptable = true;
+            const rightRay = new Bullet(rightMuzzle.x, rightMuzzle.y, 390, 2, false);
+            rightRay.color = '#06b6d4';
+            rightRay.isInterceptable = true;
+            bullets.push(leftRay, centerRay, rightRay);
+          } else {
+            // Sub-Atomic Nanite Flak: 12 splinter shards expanding radially in hexagonal lattice
+            const numShards = 12;
+            for (let i = 0; i < numShards; i++) {
+              const ang = (i * Math.PI * 2) / numShards;
+              const speed = 220;
+              const shard = new Bullet(core.x, core.y, Math.sin(ang) * speed, 1, false);
+              shard.velocity.x = Math.cos(ang) * speed;
+              shard.color = i % 2 === 0 ? '#94a3b8' : '#14b8a6';
+              shard.isInterceptable = true;
+              bullets.push(shard);
+            }
+          }
+        }
+        break;
+
+      case CrisisArchetype.PSIONIC_SHROUD:
+        // Mind-Flay Lance, Telekinetic Dagger Helix, or Phase 3 Shroud Apocalypse Inversion
+        if (soundManager) soundManager.playDarkMatterBeam();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Shroud Apocalypse Inversion: 12-way star of psychic terror spheres
+          const numSpheres = 12;
+          for (let i = 0; i < numSpheres; i++) {
+            const ang = (i * Math.PI * 2) / numSpheres + Math.sin(this.attackPhaseTime * 2.5) * 0.5;
+            const speed = 210;
+            const sphere = new Bullet(core.x, core.y, Math.sin(ang) * speed, 2, false);
+            sphere.velocity.x = Math.cos(ang) * speed;
+            sphere.color = i % 2 === 0 ? '#fb7185' : '#7c3aed';
+            sphere.isInterceptable = true;
+            bullets.push(sphere);
+          }
+        } else {
+          // Phase 2: Alternates between Mind-Flay Lance and Telekinetic Dagger Helix
+          const isLance = Math.floor(this.attackPhaseTime / 2.0) % 2 === 0;
+          if (isLance) {
+            // Mind-Flay Lance: high-velocity piercing beam targeted at player position
+            const pX = player ? player.position.x + player.size.width / 2 : this.logicalWidth / 2;
+            const pY = player ? player.position.y : this.logicalHeight - 50;
+            const dx = pX - core.x;
+            const dy = pY - core.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const speed = 440;
+            const lance = new Bullet(core.x, core.y, (dy / dist) * speed, 2, false);
+            lance.velocity.x = (dx / dist) * speed;
+            lance.color = '#d946ef';
+            lance.isInterceptable = true;
+            bullets.push(lance);
+          } else {
+            // Telekinetic Dagger Helix: 8 psychic blades swirling in double-helix spiral
+            for (let i = 0; i < 8; i++) {
+              const offsetAngle = (i - 3.5) * 0.15;
+              const speed = 220;
+              const dagger = new Bullet(core.x, core.y, Math.cos(offsetAngle) * speed, 1, false);
+              dagger.velocity.x = Math.sin(offsetAngle) * speed + Math.sin(this.attackPhaseTime * 4 + i) * 60;
+              dagger.color = i % 2 === 0 ? '#7c3aed' : '#fb7185';
+              dagger.isInterceptable = true;
+              bullets.push(dagger);
+            }
+          }
+        }
+        break;
+
+      case CrisisArchetype.GLACIAL_OBLIVION:
+        // Sub-Zero Icicle Volley, Cryo-Thermal Drain, or Phase 3 Blizzard Deep Freeze
+        if (soundManager) soundManager.playAcidStormSound();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Blizzard Deep Freeze: 14-way blizzard starburst of snowflake clusters
+          const numFlakes = 14;
+          for (let i = 0; i < numFlakes; i++) {
+            const ang = (i * Math.PI * 2) / numFlakes + this.attackPhaseTime * 1.6;
+            const speed = 230;
+            const flake = new Bullet(core.x, core.y, Math.sin(ang) * speed, 1, false);
+            flake.velocity.x = Math.cos(ang) * speed;
+            flake.color = i % 2 === 0 ? '#22d3ee' : '#f0f9ff';
+            flake.isInterceptable = true;
+            bullets.push(flake);
+          }
+        } else {
+          // Phase 2: Alternates between Sub-Zero Icicle Volley and Cryo-Thermal Drain
+          const isIcicle = Math.floor(this.attackPhaseTime / 2.0) % 2 === 0;
+          if (isIcicle) {
+            // Sub-Zero Icicle Volley: 8 crystalline icicle darts forming and falling in cascade
+            for (let i = 0; i < 8; i++) {
+              const spawnX = this.logicalWidth * 0.15 + (i / 7) * (this.logicalWidth * 0.7);
+              const speed = 310;
+              const icicle = new Bullet(spawnX, core.y + 20, speed, 1, false);
+              icicle.velocity.x = (Math.random() - 0.5) * 40;
+              icicle.color = '#f0f9ff';
+              icicle.isInterceptable = true;
+              bullets.push(icicle);
+            }
+          } else {
+            // Cryo-Thermal Drain: twin cryogenic beams from wingtips + central freeze lance
+            const beamLeft = new Bullet(leftMuzzle.x, leftMuzzle.y, 360, 2, false);
+            beamLeft.color = '#22d3ee';
+            beamLeft.isInterceptable = true;
+            const beamRight = new Bullet(rightMuzzle.x, rightMuzzle.y, 360, 2, false);
+            beamRight.color = '#22d3ee';
+            beamRight.isInterceptable = true;
+            const centerFreeze = new Bullet(core.x, core.y, 300, 1, false);
+            centerFreeze.color = '#38bdf8';
+            centerFreeze.isInterceptable = true;
+            bullets.push(beamLeft, beamRight, centerFreeze);
+          }
+        }
+        break;
+
+      case CrisisArchetype.COSMIC_DEVOURER:
+        // Supernova Breath Beam, Astral Scale Scatter, or Phase 3 Star-Devouring Extinction
+        if (soundManager) soundManager.playDarkMatterBeam();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Star-Devouring Extinction: 16-way solar flare corona + aimed dragon breath fireball
+          const numFlares = 16;
+          for (let i = 0; i < numFlares; i++) {
+            const ang = (i * Math.PI * 2) / numFlares + this.attackPhaseTime * 1.5;
+            const speed = 250;
+            const flare = new Bullet(core.x, core.y, Math.sin(ang) * speed, 2, false);
+            flare.velocity.x = Math.cos(ang) * speed;
+            flare.color = i % 2 === 0 ? '#dc2626' : '#facc15';
+            flare.isInterceptable = true;
+            bullets.push(flare);
+          }
+
+          // Aimed dragon breath fireball
+          const pX = player ? player.position.x + player.size.width / 2 : this.logicalWidth / 2;
+          const pY = player ? player.position.y : this.logicalHeight - 50;
+          const dx = pX - core.x;
+          const dy = pY - core.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const speed = 370;
+          const breath = new Bullet(core.x, core.y, (dy / dist) * speed, 2, false);
+          breath.velocity.x = (dx / dist) * speed;
+          breath.color = '#facc15';
+          breath.isInterceptable = true;
+          bullets.push(breath);
+        } else {
+          // Phase 2: Alternates between Supernova Breath Beam and Astral Scale Scatter
+          const isBreath = Math.floor(this.attackPhaseTime / 2.0) % 2 === 0;
+          if (isBreath) {
+            // Supernova Breath Beam: 5 heavy fireballs in forward 50-degree cone
+            const breathAngles = [-0.4, -0.2, 0, 0.2, 0.4];
+            for (const ang of breathAngles) {
+              const speed = 360;
+              const fireball = new Bullet(core.x, core.y, Math.cos(ang) * speed, 2, false);
+              fireball.velocity.x = Math.sin(ang) * speed;
+              fireball.color = Math.abs(ang) < 0.1 ? '#facc15' : '#dc2626';
+              fireball.isInterceptable = true;
+              bullets.push(fireball);
+            }
+          } else {
+            // Astral Scale Scatter: 10 burning dragon scales drifting downward in criss-cross arcs
+            for (let i = 0; i < 10; i++) {
+              const startX = i % 2 === 0 ? leftMuzzle.x : rightMuzzle.x;
+              const startY = i % 2 === 0 ? leftMuzzle.y : rightMuzzle.y;
+              const ang = (i - 4.5) * 0.12;
+              const speed = 200;
+              const scale = new Bullet(startX, startY, Math.cos(ang) * speed, 1, false);
+              scale.velocity.x = Math.sin(ang) * speed + (i % 2 === 0 ? -40 : 40);
+              scale.color = '#d97706';
+              scale.isInterceptable = true;
+              bullets.push(scale);
             }
           }
         }

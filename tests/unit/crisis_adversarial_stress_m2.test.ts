@@ -214,7 +214,7 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
     expect(secondTriggers).toBe(0);
   });
 
-  test('STRESS-1.6: Archetype random selection distributes across all 6 archetypes evenly', () => {
+  test('STRESS-1.6: Archetype random selection distributes across all 12 archetypes evenly', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
     gm.state = GameState.PLAYING;
@@ -226,6 +226,12 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
       [CrisisArchetype.CHRONO_DEVOURER]: 0,
       [CrisisArchetype.SOLARIS_COLOSSUS]: 0,
       [CrisisArchetype.NEBULA_PHANTASM]: 0,
+      [CrisisArchetype.BIOMORPHIC_SWARM]: 0,
+      [CrisisArchetype.SINGULARITY_CORE]: 0,
+      [CrisisArchetype.NANITE_HARVESTER]: 0,
+      [CrisisArchetype.PSIONIC_SHROUD]: 0,
+      [CrisisArchetype.GLACIAL_OBLIVION]: 0,
+      [CrisisArchetype.COSMIC_DEVOURER]: 0,
     };
 
     const NUM_TRIALS = 1500;
@@ -234,15 +240,21 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
       counts[crisis.archetype]++;
     }
 
-    console.log('[STRESS-1.6] Archetype Distribution across 1,500 rolls (6 archetypes):', counts);
-    // Expected rolls per archetype: 1500 / 6 = 250 (std dev ~14.4)
-    // Threshold > 120 is > 8.5 sigma below mean: robust against statistical flakiness while verifying all 6 roll
-    expect(counts[CrisisArchetype.VOID_SOVEREIGN]).toBeGreaterThan(120);
-    expect(counts[CrisisArchetype.ABYSSAL_LEVIATHAN]).toBeGreaterThan(120);
-    expect(counts[CrisisArchetype.CYBERNETIC_EXTERMINATOR]).toBeGreaterThan(120);
-    expect(counts[CrisisArchetype.CHRONO_DEVOURER]).toBeGreaterThan(120);
-    expect(counts[CrisisArchetype.SOLARIS_COLOSSUS]).toBeGreaterThan(120);
-    expect(counts[CrisisArchetype.NEBULA_PHANTASM]).toBeGreaterThan(120);
+    console.log('[STRESS-1.6] Archetype Distribution across 1,500 rolls (12 archetypes):', counts);
+    // Expected rolls per archetype: 1500 / 12 = 125 (std dev ~10.7)
+    // Threshold > 70 is > 5 sigma below mean: robust against statistical flakiness while verifying all 12 roll
+    expect(counts[CrisisArchetype.VOID_SOVEREIGN]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.ABYSSAL_LEVIATHAN]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.CYBERNETIC_EXTERMINATOR]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.CHRONO_DEVOURER]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.SOLARIS_COLOSSUS]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.NEBULA_PHANTASM]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.BIOMORPHIC_SWARM]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.SINGULARITY_CORE]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.NANITE_HARVESTER]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.PSIONIC_SHROUD]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.GLACIAL_OBLIVION]).toBeGreaterThan(70);
+    expect(counts[CrisisArchetype.COSMIC_DEVOURER]).toBeGreaterThan(70);
   });
 
   // =========================================================================

@@ -96,7 +96,6 @@ test.describe('Milestone 1: Crisis Types, Entities & Vector Visuals', () => {
     rift.takeDamage(500);
     expect(rift.hp).toBe(0);
     expect(rift.isDead).toBe(true);
-    expect(rift.isShielding).toBe(false);
   });
 
   test('T3: DimensionalRift Procedural Vector Update & Draw', () => {

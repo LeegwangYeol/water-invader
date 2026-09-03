@@ -10,6 +10,13 @@ export enum CrisisArchetype {
   CHRONO_DEVOURER = 'CHRONO_DEVOURER',
   SOLARIS_COLOSSUS = 'SOLARIS_COLOSSUS',
   NEBULA_PHANTASM = 'NEBULA_PHANTASM',
+  // --- 6 New Grand Strategy / Sci-Fi Archetypes ---
+  BIOMORPHIC_SWARM = 'BIOMORPHIC_SWARM',
+  SINGULARITY_CORE = 'SINGULARITY_CORE',
+  NANITE_HARVESTER = 'NANITE_HARVESTER',
+  PSIONIC_SHROUD = 'PSIONIC_SHROUD',
+  GLACIAL_OBLIVION = 'GLACIAL_OBLIVION',
+  COSMIC_DEVOURER = 'COSMIC_DEVOURER',
 }
 
 /**
@@ -48,7 +55,31 @@ export type CrisisAttackType =
   // Nebula Phantasm (Quantum Spectral Swarm)
   | 'QUANTUM_MIRAGE_NOVA'
   | 'SPECTRAL_PHANTOM_WISP'
-  | 'DIMENSIONAL_SHROUD';
+  | 'DIMENSIONAL_SHROUD'
+  // Biomorphic Swarm (Extragalactic Chitin Flesh-Hive)
+  | 'CORROSIVE_BILE_BARRAGE'
+  | 'MANDIBLE_RIPPER_VOLLEY'
+  | 'SWARM_INFESTATION'
+  // Singularity Core (Supermassive Event Horizon Entity)
+  | 'HAWKING_RADIATION_LANCE'
+  | 'RELATIVISTIC_JET_FLARE'
+  | 'EVENT_HORIZON_IMPLOSION'
+  // Nanite Harvester (Grey-Goo Molecular Disassembler)
+  | 'MOLECULAR_DISASSEMBLY_RAY'
+  | 'SUBATOMIC_NANITE_FLAK'
+  | 'GREY_SINGULARITY_STORM'
+  // Psionic Shroud (Extra-Dimensional Astral Inmate)
+  | 'MIND_FLAY_LANCE'
+  | 'TELEKINETIC_DAGGER_HELIX'
+  | 'SHROUD_APOCALYPSE_INVERSION'
+  // Glacial Oblivion (Absolute Zero Entropic Engine)
+  | 'SUB_ZERO_ICICLE_VOLLEY'
+  | 'CRYO_THERMAL_DRAIN'
+  | 'BLIZZARD_DEEP_FREEZE'
+  // Cosmic Devourer (Astral Void Dragon Behemoth)
+  | 'SUPERNOVA_BREATH_BEAM'
+  | 'ASTRAL_SCALE_SCATTER'
+  | 'STAR_DEVOURING_EXTINCTION';
 
 export interface CrisisAttackPattern {
   id: string;
@@ -135,7 +166,7 @@ export interface CrisisArchetypeConfig {
 }
 
 /**
- * Standard configuration metadata for all 6 Crisis Archetypes
+ * Standard configuration metadata for all 12 Crisis Archetypes
  */
 export const CRISIS_ARCHETYPE_CONFIGS: Record<CrisisArchetype, CrisisArchetypeConfig> = {
   [CrisisArchetype.VOID_SOVEREIGN]: {
@@ -218,6 +249,91 @@ export const CRISIS_ARCHETYPE_CONFIGS: Record<CrisisArchetype, CrisisArchetypeCo
     secondaryColor: '#0f172a',
     accentColor: '#06b6d4',
     coreGlowColor: '#d946ef',
+    enrageTime: 35.0,
+    vortexStrength: 35,
+    baseFireRate: 2.0,
+  },
+  // --- 6 New Crisis Archetypes (Strict 5,200 EHP Invariant: 600*2 + 2500 + 1500 = 5,200) ---
+  [CrisisArchetype.BIOMORPHIC_SWARM]: {
+    name: 'THE BIOMORPHIC SWARM',
+    subtitle: 'EXTRAGALACTIC CHITIN FLESH-HIVE',
+    riftHp: 600,
+    sovereignHullHp: 2500,
+    coreHp: 1500,
+    primaryColor: '#b91c1c',
+    secondaryColor: '#450a0a',
+    accentColor: '#f59e0b',
+    coreGlowColor: '#84cc16',
+    enrageTime: 35.0,
+    vortexStrength: 20,
+    baseFireRate: 2.2,
+  },
+  [CrisisArchetype.SINGULARITY_CORE]: {
+    name: 'THE SINGULARITY CORE',
+    subtitle: 'SUPERMASSIVE EVENT HORIZON ENTITY',
+    riftHp: 600,
+    sovereignHullHp: 2500,
+    coreHp: 1500,
+    primaryColor: '#09090b',
+    secondaryColor: '#1e1b4b',
+    accentColor: '#ffffff',
+    coreGlowColor: '#8b5cf6',
+    enrageTime: 35.0,
+    vortexStrength: 50,
+    baseFireRate: 2.0,
+  },
+  [CrisisArchetype.NANITE_HARVESTER]: {
+    name: 'NANITE HARVESTER NEXUS',
+    subtitle: 'GREY-GOO MOLECULAR DISASSEMBLER',
+    riftHp: 600,
+    sovereignHullHp: 2500,
+    coreHp: 1500,
+    primaryColor: '#94a3b8',
+    secondaryColor: '#0f172a',
+    accentColor: '#14b8a6',
+    coreGlowColor: '#06b6d4',
+    enrageTime: 35.0,
+    vortexStrength: 25,
+    baseFireRate: 2.0,
+  },
+  [CrisisArchetype.PSIONIC_SHROUD]: {
+    name: 'THE PSIONIC SHROUD',
+    subtitle: 'EXTRA-DIMENSIONAL ASTRAL INMATE',
+    riftHp: 600,
+    sovereignHullHp: 2500,
+    coreHp: 1500,
+    primaryColor: '#7c3aed',
+    secondaryColor: '#2e1065',
+    accentColor: '#d946ef',
+    coreGlowColor: '#fb7185',
+    enrageTime: 35.0,
+    vortexStrength: 30,
+    baseFireRate: 2.0,
+  },
+  [CrisisArchetype.GLACIAL_OBLIVION]: {
+    name: 'GLACIAL OBLIVION',
+    subtitle: 'ABSOLUTE ZERO ENTROPIC ENGINE',
+    riftHp: 600,
+    sovereignHullHp: 2500,
+    coreHp: 1500,
+    primaryColor: '#38bdf8',
+    secondaryColor: '#0c4a6e',
+    accentColor: '#f0f9ff',
+    coreGlowColor: '#22d3ee',
+    enrageTime: 35.0,
+    vortexStrength: 20,
+    baseFireRate: 2.0,
+  },
+  [CrisisArchetype.COSMIC_DEVOURER]: {
+    name: 'THE COSMIC DEVOURER',
+    subtitle: 'ASTRAL VOID DRAGON BEHEMOTH',
+    riftHp: 600,
+    sovereignHullHp: 2500,
+    coreHp: 1500,
+    primaryColor: '#18181b',
+    secondaryColor: '#d97706',
+    accentColor: '#dc2626',
+    coreGlowColor: '#facc15',
     enrageTime: 35.0,
     vortexStrength: 35,
     baseFireRate: 2.0,
