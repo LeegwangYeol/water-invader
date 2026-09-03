@@ -1,62 +1,62 @@
-﻿# BRIEFING — 2026-08-21T18:34:30+09:00
+# BRIEFING — 2026-08-31T09:53:30Z
 
 ## Mission
-Review and independently verify Milestone 2 implementation (F-03, F-05, F-09, F-12, F-16, F-17) across src/game/Player.ts, src/components/game-canvas.tsx, and src/game/GameManager.ts.
+Independent Review & Verification of Milestone M1 & M2 for Water Invader (Piecewise exponential enemy scaling, Crisis Director system, Sound synthesis, HUD overlay, Type definitions, and Playwright / TypeScript checks).
 
 ## 🔒 My Identity
 - Archetype: reviewer_critic
 - Roles: reviewer, critic
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_1
-- Original parent: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Milestone: Milestone 2 (Gameplay Mechanics, Upgrades & Controls)
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_1
+- Original parent: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Milestone: M1_M2_Review
 - Instance: 1 of 1
 
 ## 🔒 Key Constraints
 - Review-only — do NOT modify implementation code
-- Check for integrity violations (no dummy code, no hardcoding, genuine logic)
-- Strict verification with automated tests & build checks
-- Reply with Korean and use Tree Structures for code/logic explanations
+- Report any build/test failures as findings — do NOT fix them directly
+- Check for integrity violations (hardcoding, facades, shortcuts, fabricated tests)
+- Comprehensive verification with evidence (tsc, build, playwright, code analysis)
 
 ## Current Parent
-- Conversation ID: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Updated: 2026-08-21T18:28:05+09:00
+- Conversation ID: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Updated: 2026-08-31T09:53:30Z
 
 ## Review Scope
 - **Files to review**:
-  - `src/game/Player.ts`
-  - `src/components/game-canvas.tsx`
+  - `src/game/Enemy.ts`
   - `src/game/GameManager.ts`
-- **Items to verify**:
-  - F-03: clearKeys() on blur / visibilitychange without leaking listeners (PASSED)
-  - F-05: Multi-shot Lv 4 & 5 bullet angular spreads (PASSED)
-  - F-09: Modal pause/resume without resetting GameManager (PASSED)
-  - F-12: CapsLock / uppercase key event normalization (PASSED)
-  - F-16: Initial HP (3/5) synchronization (PASSED)
-  - F-17: Smooth remaining enemy speed multiplier (PASSED)
-- **Review criteria**: Correctness, completeness, quality, adversarial robustness, integrity
+  - `src/game/SoundManager.ts`
+  - `src/components/game-canvas.tsx`
+  - `src/game/types.ts`
+- **Interface contracts**: PROJECT.md, SCOPE.md, ORIGINAL_REQUEST.md, COLLABORATION.md
+- **Review criteria**: Correctness, integrity, quality, safety, stage 1-9 regression freedom, crisis director mechanics, sound/HUD integration, performance.
 
 ## Review Checklist
 - **Items reviewed**:
-  - `src/game/Player.ts`: Multi-shot angle distribution & default HP
-  - `src/game/GameManager.ts`: clearKeys, pause, resume, handleKeyDown toLowerCase, speedMultiplier, init HP
-  - `src/components/game-canvas.tsx`: Event listeners, blur/visibilitychange cleanup, showManual pause decoupling, useState(3)
+  - `src/game/Enemy.ts`: Stage 10+ piecewise exponential scaling & elite mechanics [VERIFIED]
+  - `src/game/GameManager.ts`: Crisis Director state machine & 5 crisis archetypes [VERIFIED]
+  - `src/game/SoundManager.ts`: Web Audio procedural sirens and crisis synthesis [VERIFIED]
+  - `src/components/game-canvas.tsx`: React HUD overlays, banners, and badges [VERIFIED]
+  - `src/game/types.ts`: CrisisType, CrisisState, HazardProjectile types [VERIFIED]
+  - `tests/12_crisis_director_e2e.spec.ts` & `tests/unit/crisis_director_m2.test.ts` [VERIFIED]
 - **Verdict**: APPROVE
-- **Unverified claims**: None (All 6 claims independently verified via automated tests & static code review)
+- **Unverified claims**: None
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - Blur during active movement/shooting -> verified keys clear immediately
-  - Multi-shot spread angle collision & overlap -> verified distinct trajectories (-15° to +15°, -20° to +20°)
-  - Modal toggle spam & rapid re-entry -> verified animation frame cancel/resume preserves state & timestamp
-  - Shift/CapsLock/special keys -> verified normalized to lowercase
-  - Enemy speed at low counts (20 -> 1) -> verified smooth curve maxing at 1.8x instead of 2.9x
-- **Vulnerabilities found**: None. Code is robust and clean.
-- **Untested angles**: None.
+  - Piecewise HP scaling formula accuracy across Stage 1-9 vs Stage 10+ [CONFIRMED MONOTONIC & PRESERVED]
+  - Crisis Director wave transition soft-locks during warning and active phases [CONFIRMED ZERO SOFT-LOCKS]
+  - EMP suppression and weapon restore lifecycle [CONFIRMED RESTORED CLEANLY]
+  - Acid storm projectile compaction, player/barricade collision and damage limits [CONFIRMED IN-PLACE COMPACTION]
+  - Procedural Web Audio oscillator lifecycle with no node leakage [CONFIRMED DISCONNECTED ON END]
+  - React HUD rendering latency and responsive 1:1 mobile pointer dragging [CONFIRMED MEMOIZED & BOUNDED]
+- **Vulnerabilities found**: 0 critical, 0 integrity violations
+- **Untested angles**: None within M1/M2 scope
 
 ## Key Decisions Made
-- Confirmed zero integrity violations, no hardcoded shortcuts, 100% build and test pass.
-- Issued APPROVE verdict for Milestone 2.
+- Confirmed full compliance with all acceptance criteria and system integrity rules.
+- Approved Milestone M1 & M2 implementations.
 
 ## Artifact Index
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_1\progress.md
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_1\handoff.md
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_1/handoff.md` — Final review report and verdict.
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_1/progress.md` — Liveness & progress heartbeat.

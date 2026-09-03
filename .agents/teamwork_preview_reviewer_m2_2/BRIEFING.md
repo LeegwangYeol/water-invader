@@ -1,58 +1,56 @@
-﻿# BRIEFING — 2026-08-21T09:32:00Z
+# BRIEFING — 2026-08-31T09:59:25Z
 
 ## Mission
-Milestone 2 독립 코드 리뷰 및 회귀 검증 (Player.ts, game-canvas.tsx, GameManager.ts 및 Playwright E2E/Build 검증)
+Independent Edge-Case & Systems Review of Milestone M1 & M2 for the "Water Invader" project.
 
 ## 🔒 My Identity
-- Archetype: reviewer, critic
+- Archetype: reviewer_and_adversarial_critic
 - Roles: reviewer, critic
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_2
-- Original parent: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Milestone: Milestone 2 Review
-- Instance: 1 of 1
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2
+- Original parent: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Milestone: M1 & M2 Review
+- Instance: 2 of 2
 
 ## 🔒 Key Constraints
 - Review-only — do NOT modify implementation code
-- Check integrity violations (hardcoding, cheating, fabricated outputs)
-- Verify correctness, edge cases, memory leaks, React lifecycle issues
-- Run build (`npm run build`) and test suite (`npx playwright test`)
-- Maintain progress.md heartbeat
+- Check integrity violations (hardcoded test data, fake logic, shortcuts)
+- Write only inside working directory
+- Communicate via send_message to parent
 
 ## Current Parent
-- Conversation ID: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Updated: 2026-08-21T09:32:00Z
+- Conversation ID: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Updated: 2026-08-31T09:59:25Z
 
 ## Review Scope
-- **Files to review**: `src/game/Player.ts`, `src/components/game-canvas.tsx`, `src/game/GameManager.ts`, plus worker handoff & tests
-- **Interface contracts**: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`
-- **Review criteria**: Correctness, integrity, style, edge cases, React lifecycle, memory leaks, regressions
+- **Files reviewed**:
+  - `src/game/Enemy.ts` (level 9 vs 10 boundary scaling, boss HP scaling at level 5, 10, 15, 20, 2-damage elite shots)
+  - `src/game/GameManager.ts` (CrisisDirector transitions, hazard projectile boundaries, wave clear safety when crisis enemies die, EMP suppression state reset)
+  - `src/game/SoundManager.ts` (Web Audio error resilience, AudioContext state suspended/closed, non-blocking playback)
+  - `src/components/game-canvas.tsx` (Canvas HUD rendering stability, pause/resume behavior during crisis warnings)
+- **Interface contracts**: PROJECT.md, ORIGINAL_REQUEST.md, COLLABORATION.md
+- **Review criteria**: Correctness, Edge-Case resilience, Systems integrity, Error handling
 
 ## Review Checklist
-- **Items reviewed**:
-  - `src/game/Player.ts` (F-05 Multi-Shot spread, F-16 initial HP 3/5)
-  - `src/components/game-canvas.tsx` (F-03 Blur/visibility listeners, F-09 modal pause/resume & useEffect decoupling, F-16 initial HP state 3)
-  - `src/game/GameManager.ts` (F-03 keysPressed & clearKeys, F-09 pause & resume, F-12 toLowerCase key mapping, F-16 HP init reset, F-17 smoothed speedMultiplier)
-  - Production build (`npm run build`): Passed (0 errors)
-  - Playwright Test Suites (33/33 passed across unit, E2E, and adversarial suites)
+- **Items reviewed**: All 4 core source modules & Playwright E2E test suite.
 - **Verdict**: APPROVE
-- **Unverified claims**: None
+- **Unverified claims**: None. 100% verified across tsc, build, and Playwright tests.
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - Alt-tab & Tab blur key stuck conditions -> Verified clearKeys() resets all input state
-  - High upgrade level multi-shot (Lv 4, Lv 5, Lv >5) -> Verified real angular velocities
-  - Modal open during wave -> Verified state preservation and loop pause/resume
-  - Uppercase and CapsLock input -> Verified toLowerCase() normalization
-  - Extreme enemy count speed scaling -> Verified smooth 1.0x to 1.8x curve
-  - React StrictMode & double-mount cleanup -> Verified listener unbinding
-- **Vulnerabilities found**: None
-- **Untested angles**: None
+  - Stage 10 boundary scaling discontinuity: VERIFIED (Piecewise function matches spec: Level 9 = 4 HP, Level 10 = 11 HP).
+  - Boss scaling at Level 5, 10, 15, 20: VERIFIED (50, 362, 675, 1112 HP).
+  - CrisisDirector event lifecycle & EMP reset: VERIFIED (clean cleanup in all reset paths).
+  - Hazard projectile boundary bounds & AABB collisions: VERIFIED (safe culling and memory compaction).
+  - Web Audio error resilience: VERIFIED (suspended context auto-resumes, error catching).
+  - HUD overlay rendering and pause/resume: VERIFIED (pointer-events-none, rAF pause/resume).
+- **Vulnerabilities found**: None. Zero integrity violations or fake logic found.
+- **Untested angles**: None.
 
 ## Key Decisions Made
-- Confirmed full compliance with Milestone 2 requirements and project integrity guidelines. Issued APPROVE verdict.
+- Issued verdict APPROVE based on comprehensive mathematical analysis and 385/385 passing Playwright tests.
 
 ## Artifact Index
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_2\DISPATCH.md
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_2\BRIEFING.md
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_2\progress.md
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_2\handoff.md
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2/DISPATCH.md` — Dispatch log
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2/BRIEFING.md` — Working memory
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2/progress.md` — Progress tracker
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2/handoff.md` — Final review handoff report

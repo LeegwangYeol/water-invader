@@ -1,11 +1,5 @@
-# Progress — Survey Explorer 3
+# Progress Log
 
-- [x] Initialized DISPATCH.md and BRIEFING.md
-- [x] Explore project directory structure, package.json, build/test scripts
-- [x] Investigate game loop, state management, and canvas rendering
-- [x] Investigate UI/HUD elements (score, health, wave/threat display, faction indicators)
-- [x] Investigate audio, visual assets/sprites/colors, and game state transitions
-- [x] Synthesize findings and detail required changes for 3-way battle support
-- [x] Compiled final handoff.md and ready to notify orchestrator
-
-Last visited: 2026-08-26T10:38:45Z
+- **Status**: Investigation completed; writing detailed survey and handoff artifacts
+- **Last visited**: 2026-09-02T04:34:00Z
+- **Current Step**: Drafting survey_crisis_shop.md and handoff.md with full evidence chains and implementation recommendations.

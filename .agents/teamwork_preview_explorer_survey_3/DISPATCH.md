@@ -1,16 +1,8 @@
-## 2026-08-26T10:36:34Z
-You are a Survey Explorer (Survey Explorer 3).
-Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_3
+## 2026-09-02T04:31:52Z
 
-Objective:
-Investigate the Water Invader codebase with a focus on:
-1. Game loop, state management, canvas rendering, and UI/HUD elements (score, health, wave/threat display, faction indicators).
-2. Existing build and test setup: package.json scripts (npm run build, npm test, etc.), test frameworks, linting, and directory structure.
-3. What changes to UI/HUD, visuals (colors/sprites/effects for 3rd faction), audio (if any), and game state transitions are needed to clearly support a 3-way battle.
-
-Scope boundaries:
-- Read-only investigation. DO NOT write or edit source code.
-- Write your findings to /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_3/handoff.md
-
-Authoritative user request:
-Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md
+**Sender**: parent (f6eab4f4-b1f5-48ab-a8b5-a0f343d21361)
+**Task**: Survey and map the existing codebase for:
+1. Crisis system architecture (existing crisis types, trigger conditions, unique behaviors, mechanics, win/loss conditions).
+2. Opportunities to expand Crisis variety with distinct mechanics (new crisis types, unique hazard patterns, modifier behaviors).
+3. Pre-Game Lobby / Main Menu state flow and Shop access mechanics (how shop currently opens between waves, player currency/gold initialization, how to enable Shop access before Wave 1 starts and ensure purchased items/upgrades cleanly apply upon game start).
+4. Testing infrastructure (existing unit/e2e/playwright tests, test runners, commands).

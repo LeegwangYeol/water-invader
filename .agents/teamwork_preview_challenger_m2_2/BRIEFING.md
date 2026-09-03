@@ -1,48 +1,54 @@
-# BRIEFING ? 2026-08-21T18:34:25+09:00
+# BRIEFING — 2026-08-31T09:57:10Z
 
 ## Mission
-Adversarially verify Milestone 2 implementation: F-12 (CapsLock/Uppercase key handling), F-16 (Initial HP sync 3/5 in Engine & HUD), F-17 (Enemy speed escalation curve max 1.8x).
+Adversarial Mathematical & Physics Testing of Milestone M1 & M2 for Water Invader (Extreme Difficulty Scaling & Crises).
 
-## ?? My Identity
-- Archetype: challenger
+## 🔒 My Identity
+- Archetype: EMPIRICAL CHALLENGER
 - Roles: critic, specialist
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m2_2
-- Original parent: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Milestone: Milestone 2
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_2
+- Original parent: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Milestone: M1 & M2 Verification
 - Instance: 2 of 2
 
-## ?? Key Constraints
-- Review-only ? do NOT modify implementation code
-- Run empirical verification tests (generators/oracles/stress harnesses)
-- Must reply in Korean for final message & coordination
-- Write handoff.md with 5-component report
-- Use tree structure explanation for analysis
+## 🔒 Key Constraints
+- Review-only — do NOT modify implementation code
+- Pre-commit verification: npx tsc --noEmit, npx playwright test, npm run build
+- All verification must be empirical via executed tests
+- Never place source code or tests in .agents/
 
 ## Current Parent
-- Conversation ID: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Updated: 2026-08-21T18:34:25+09:00
+- Conversation ID: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Updated: 2026-08-31T09:57:10Z
 
 ## Review Scope
-- **Files to review**: src/game/GameManager.ts, src/game/Player.ts, src/components/game-canvas.tsx, tests/
-- **Interface contracts**: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-- **Review criteria**: F-12 (CapsLock & Uppercase key handling), F-16 (Initial HP sync 3/5), F-17 (Enemy speed escalation curve max 1.8x)
+- **Files reviewed**: src/game/Enemy.ts, src/game/Player.ts, src/game/Bullet.ts, src/game/GameManager.ts, src/game/types.ts
+- **Interface contracts**: PROJECT.md, COLLABORATION.md
+- **Review criteria & test results**:
+  1. HP scaling across 1,000 simulated levels: continuity at level 9/10 boundary, strictly monotonic exponential growth at level 10+ (10,000 instantiations verified).
+  2. 2-damage elite projectile impact on Player HP (5 HP max upgrade -> 3 HP -> 1 HP -> Game Over across Sniper, Boss, Stalker, Mech).
+  3. Projectile velocities at Stage 10+ scale smoothly up to 400 px/s (linear +15 px/s ramp from L10 to L20, capped at 400 px/s; Sniper 400~450 px/s).
+  4. Enemy attack tempo cooldown bounds ([0.8s, 1.5s] across 2,000 spawns and 3,000 reset cycles).
+  5. Zero NaN, Infinity, or null physics coordinates during all 5 crisis events (TITAN_HORDE, ACID_STORM, SWARM_BLITZ, EMP_DISRUPTION, TOTAL_WAR).
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - H1: CapsLock / uppercase key event.key ('A','D','Q','E','W') vs event.code ('KeyA', etc.) handling -> VERIFIED & PASS
-  - H2: Initial HP / Max HP sync between React HUD state and GameManager/Player state at init and restart -> VERIFIED & PASS
-  - H3: Enemy speed escalation curve scaling smoothly from 1.0x to 1.8x across 20 down to 1 enemies -> VERIFIED & PASS
-- **Vulnerabilities found**: None in target scope (all stress tests passed cleanly).
-- **Untested angles**: None within M2 scope.
+  - HP scaling could have discontinuous drops at L9/L10 or non-monotonic regressions -> DISPROVED (Strictly monotonic: L10 > L9, L(n+1) > L(n)).
+  - Elite projectiles might deal only 1 damage or bypass player hit processing -> DISPROVED (Sniper, Boss, Stalker, Mech deal exactly 2 damage, depleting 5 HP in 3 hits).
+  - Projectile speed could spike uncontrollably or produce NaN velocity vectors -> DISPROVED (Capped at 400 px/s, vectors strictly unit-scaled).
+  - Attack cooldowns could drop to 0s causing projectile flood / CPU lag -> DISPROVED (Strict bounds [0.8s, 1.5s] verified).
+  - Crisis events could leak NaN coordinates during rapid hazard/minion spawns -> DISPROVED (100% finite coordinates over 3,000 crisis simulation frames).
+- **Vulnerabilities found**: None in production code.
+- **Untested angles**: Hardware-specific WebGL GPU buffer bounds (handled by 2D canvas fallback).
 
 ## Loaded Skills
-- None specified in dispatch
+- None
 
 ## Key Decisions Made
-- Implemented 	ests/adversarial_challenger_m2_2.spec.ts covering asymmetric key casing, 5 consecutive restart cycles, dynamic HP spectrum reactivity, and mathematical/physics speed escalation scans.
-- Verified 12/12 Playwright tests passed.
-- Concluded with verdict APPROVE.
+- Implemented and executed Playwright adversarial test suite `tests/adversarial_math_physics_m1_m2_c2.spec.ts` (13 tests, 100% pass).
+- Verified `npm run build` and `npx tsc --noEmit` with 0 errors.
 
 ## Artifact Index
-- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m2_2\handoff.md ? Final handoff report
-- C:\src\SpaceInvader\tests\adversarial_challenger_m2_2.spec.ts ? Adversarial stress test suite
+- handoff.md — Final adversarial verification handoff report
+- progress.md — Liveness heartbeat and milestone tracking
+- DISPATCH.md — Agent dispatch log

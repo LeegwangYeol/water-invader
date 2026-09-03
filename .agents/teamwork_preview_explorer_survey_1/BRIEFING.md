@@ -1,54 +1,34 @@
-# BRIEFING — 2026-08-26T19:39:40Z
+# BRIEFING — 2026-09-02T13:34:45+09:00
 
 ## Mission
-Investigate the Water Invader codebase with a focus on Entity hierarchy/models, Combat and Collision system, and Faction hostility to inform the 3-way battle system and dynamic reinforcement design.
+Survey and map the existing codebase for environmental events (Acid Rain), damage calculation, mitigation hooks, item/inventory systems, and counterplay architecture.
 
 ## 🔒 My Identity
 - Archetype: explorer
-- Roles: investigation, synthesis
-- Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_1
-- Original parent: 738841f4-20be-4ebb-85ad-eff3ce31cb23
-- Milestone: 3way_battle_system_survey
+- Roles: codebase investigation, architectural mapping, synthesis
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_1
+- Original parent: f6eab4f4-b1f5-48ab-a8b5-a0f343d21361
+- Milestone: survey_events_acidrain
 
 ## 🔒 Key Constraints
-- Read-only investigation — do NOT implement
-- Fact-check first, no hallucination
-- No unauthorized edits to source code
+- Read-only investigation — do NOT implement main codebase changes
+- Strictly adhere to user and team communication guidelines
+- Maintain progress.md heartbeat
 
 ## Current Parent
-- Conversation ID: 738841f4-20be-4ebb-85ad-eff3ce31cb23
-- Updated: 2026-08-26T19:36:34Z
+- Conversation ID: f6eab4f4-b1f5-48ab-a8b5-a0f343d21361
+- Updated: 2026-09-02T13:34:45+09:00
 
 ## Investigation State
-- **Explored paths**:
-  - `src/game/types.ts`
-  - `src/game/Entity.ts`
-  - `src/game/Player.ts`
-  - `src/game/Enemy.ts`
-  - `src/game/Bullet.ts`
-  - `src/game/Barricade.ts`
-  - `src/game/Helper.ts`
-  - `src/game/Particle.ts`
-  - `src/game/SoundManager.ts`
-  - `src/game/GameManager.ts`
-  - `src/components/game-canvas.tsx`
-  - `tests/03_game_mechanics.spec.ts`
-  - `tests/water-invader.spec.ts`
-- **Key findings**:
-  1. All entities extend `Entity` with AABB collision check.
-  2. Bullet ownership is currently a binary boolean `isPlayerBullet`.
-  3. Faction hostility is hardcoded in `GameManager.checkCollisions()`.
-  4. 3-way battle requires `enum Faction { PLAYER, ENEMY, THIRD }`, generalized `isHostile()` predicate, multi-target AI acquisition for Helpers and Enemies, and dynamic multi-faction reinforcement tables.
-- **Unexplored areas**: None. Full survey complete.
+- **Explored paths**: `src/game/GameManager.ts`, `src/game/Player.ts`, `src/game/types.ts`, `src/game/Barricade.ts`, `src/game/Bullet.ts`, `src/game/Enemy.ts`, `src/game/Helper.ts`, `src/game/SoundManager.ts`, `src/game/crisis/*`, `src/components/game-canvas.tsx`, `tests/*`
+- **Key findings**: Complete mapping of Crisis & Acid Rain lifecycle, hazard projectile physics and collision loops, shop upgrades and health systems, pre-game reset trap in `init()`, and counterplay architecture blueprints.
+- **Unexplored areas**: None for this survey milestone.
 
 ## Key Decisions Made
-- Documented full findings in `analysis.md` and synthesized a 5-component self-contained `handoff.md`.
+- Produced comprehensive codebase survey report in `survey_events_acidrain.md`.
+- Formulated 5-component `handoff.md` with implementation strategy.
 
 ## Artifact Index
-- `analysis.md` — Complete technical breakdown, trees, and architectural blueprint.
-- `handoff.md` — 5-component self-contained handoff report.
-- `progress.md` — Liveness heartbeat.
-- `BRIEFING.md` — Situational awareness working memory.
-- `DISPATCH.md` — Task history.
-
-
+- /Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_1/survey_events_acidrain.md — Detailed survey report
+- /Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_1/handoff.md — 5-component handoff report
+- /Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_1/progress.md — Liveness & progress tracking

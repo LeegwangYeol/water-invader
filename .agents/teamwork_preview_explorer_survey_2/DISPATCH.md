@@ -1,16 +1,20 @@
-## 2026-08-26T10:36:34Z
-You are a Survey Explorer (Survey Explorer 2).
-Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_2
+## 2026-09-02T04:31:51Z
+You are teamwork_preview_explorer_survey_2.
+Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_2
+Workspace Directory: /Users/user/src/water-invader
+Original Request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+Collaboration Guide: /Users/user/src/water-invader/COLLABORATION.md
 
-Objective:
-Investigate the Water Invader codebase with a focus on:
-1. Wave / Spawner / Reinforcement system: How waves are defined, spawned, triggered, timed, and managed.
-2. Enemy types, stats, behaviors, movement patterns, shooting AI/cadence.
-3. How to rework wave spawning into dynamic, diverse, and unpredictable reinforcement spawning (e.g. dynamic event triggers, diverse spawn compositions, adaptive/randomized flanks/entries, independent third-faction spawns).
+Your mission:
+Survey and map the existing codebase for:
+1. Canvas rendering loop and drawing architecture.
+2. Event background color/opacity shifts and environmental visual overlays.
+3. Projectile rendering (enemy projectiles, player projectiles, special attacks).
+4. Identify visibility issues during events (low contrast between background tint and enemy projectiles) and recommend concrete designs for high-contrast outlines, glowing halos, or shader/canvas drawing tweaks to ensure crystal clear projectile visibility.
+5. Identify all relevant files, components, canvas draw functions, and styling.
 
-Scope boundaries:
-- Read-only investigation. DO NOT write or edit source code.
-- Write your findings to /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_2/handoff.md
-
-Authoritative user request:
-Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md
+Output Requirements:
+- Write your detailed findings to `/Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_2/survey_visuals_rendering.md`.
+- Maintain `progress.md` with timestamps during your work.
+- Provide a structured `handoff.md` with Observation, Logic Chain, Caveats, Conclusion, and Recommended Implementation Strategy.
+- Notify the orchestrator via send_message when complete.

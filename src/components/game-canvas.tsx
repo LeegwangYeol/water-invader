@@ -35,7 +35,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
 
   return (
-    <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-8 text-white w-full max-w-sm">
+    <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-4 sm:mb-8 text-white w-full max-w-sm shrink-0">
       <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center border-b border-slate-600 pb-2">Upgrades (💧 {currency})</h2>
       
       {/* Tank Repair (+1 HP) */}
@@ -422,32 +422,34 @@ export const ShopModal = React.memo(function ShopModal({
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
 
   return (
-    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
-      <h1 className="text-4xl sm:text-5xl font-black text-blue-400 mb-2">
-        {isPreGame ? t('정비소 / 무기고', 'ARMORY & WORKSHOP') : t('웨이브 클리어', 'WAVE CLEARED')}
-      </h1>
-      <p className="text-xl sm:text-2xl text-white mb-8">
-        {isPreGame ? t('출격 전 무기와 방어막을 업그레이드하세요!', 'Prepare weapons & shields before deploying!') : t('다음 웨이브를 준비하세요!', 'Prepare for next wave!')}
-      </p>
-      
-      <ShopUpgradePanel
-        currency={currency}
-        hp={hp}
-        upgrades={upgrades}
-        onBuyFireRate={onBuyFireRate}
-        onBuyMultiShot={onBuyMultiShot}
-        onBuyPiercing={onBuyPiercing}
-        onBuyAcidShield={onBuyAcidShield}
-        onRepairTank={onRepairTank}
-        lang={lang}
-      />
-      
-      <button 
-        onClick={onNextWave}
-        className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-4"
-      >
-        {isPreGame ? t('웨이브 1 출격', 'DEPLOY TO WAVE 1') : t('다음 웨이브', 'NEXT WAVE')}
-      </button>
+    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-2 sm:p-4">
+      <div className="w-full max-h-[98%] overflow-y-auto flex flex-col items-center custom-scrollbar py-2">
+        <h1 className="text-3xl sm:text-5xl font-black text-blue-400 mb-2 text-center">
+          {isPreGame ? t('정비소 / 무기고', 'ARMORY & WORKSHOP') : t('웨이브 클리어', 'WAVE CLEARED')}
+        </h1>
+        <p className="text-base sm:text-2xl text-white mb-6 text-center px-2">
+          {isPreGame ? t('출격 전 무기를 업그레이드하세요!', 'Prepare weapons before deploying!') : t('다음 웨이브를 준비하세요!', 'Prepare for next wave!')}
+        </p>
+        
+        <ShopUpgradePanel
+          currency={currency}
+          hp={hp}
+          upgrades={upgrades}
+          onBuyFireRate={onBuyFireRate}
+          onBuyMultiShot={onBuyMultiShot}
+          onBuyPiercing={onBuyPiercing}
+          onBuyAcidShield={onBuyAcidShield}
+          onRepairTank={onRepairTank}
+          lang={lang}
+        />
+        
+        <button 
+          onClick={onNextWave}
+          className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-2 shrink-0 mb-4"
+        >
+          {isPreGame ? t('웨이브 1 출격', 'DEPLOY TO WAVE 1') : t('다음 웨이브', 'NEXT WAVE')}
+        </button>
+      </div>
     </div>
   );
 });
@@ -484,31 +486,33 @@ export const GameOverModal = React.memo(function GameOverModal({
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
 
   return (
-    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-4">
-      <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-2">GAME OVER</h1>
-      {gameOverReason && (
-        <p className="text-lg sm:text-xl text-red-300 font-bold mb-4 text-center">{gameOverReason}</p>
-      )}
-      <p className="text-xl sm:text-2xl text-white mb-8">Final {t('점수:', 'Score:')} {score}</p>
-      
-      <ShopUpgradePanel
-        currency={currency}
-        hp={hp}
-        upgrades={upgrades}
-        onBuyFireRate={onBuyFireRate}
-        onBuyMultiShot={onBuyMultiShot}
-        onBuyPiercing={onBuyPiercing}
-        onBuyAcidShield={onBuyAcidShield}
-        onRepairTank={onRepairTank}
-        lang={lang}
-      />
+    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-2 sm:p-4">
+      <div className="w-full max-h-[98%] overflow-y-auto flex flex-col items-center custom-scrollbar py-2">
+        <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-2 text-center">GAME OVER</h1>
+        {gameOverReason && (
+          <p className="text-base sm:text-xl text-red-300 font-bold mb-4 text-center px-2">{gameOverReason}</p>
+        )}
+        <p className="text-xl sm:text-2xl text-white mb-6 text-center">Final {t('점수:', 'Score:')} {score}</p>
+        
+        <ShopUpgradePanel
+          currency={currency}
+          hp={hp}
+          upgrades={upgrades}
+          onBuyFireRate={onBuyFireRate}
+          onBuyMultiShot={onBuyMultiShot}
+          onBuyPiercing={onBuyPiercing}
+          onBuyAcidShield={onBuyAcidShield}
+          onRepairTank={onRepairTank}
+          lang={lang}
+        />
 
-      <button 
-        onClick={onPlayAgain}
-        className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all"
-      >
-        PLAY AGAIN
-      </button>
+        <button 
+          onClick={onPlayAgain}
+          className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shrink-0 mb-4"
+        >
+          PLAY AGAIN
+        </button>
+      </div>
     </div>
   );
 });

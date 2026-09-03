@@ -1,25 +1,37 @@
-## 2026-08-21T12:08:56Z
+## 2026-08-31T10:16:10Z
 
-You are Worker 5 (Final Report Specialist) for Milestone 5 of the Water Invader Endless Survival Stress Test.
-Your Working Directory is: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m5_report
-Authoritative User Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-Project Scope Document: C:\src\SpaceInvader\PROJECT.md
-Worker M4 Handoff: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m4\handoff.md
-Telemetry Artifact: C:\src\SpaceInvader\test-artifacts\stress_results.json
+You are Worker M5 for the Next.js "Water Invader" project.
+
+Your Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m5_report
+
+Task Assignment: Milestone M5 — 100% Verification, Production Build, Git Commit & Git Push
+Scope:
+1. Verification Step 1: Run `npx tsc --noEmit` and verify 0 type errors.
+2. Verification Step 2: Run `npm run build` and verify successful production build with Turbopack and static page generation.
+3. Verification Step 3: Run full Playwright test suite `npx playwright test` and ensure 100% pass rate across all tests.
+4. Git Status & Staging:
+   - Check `git status` and stage all modified and newly created files (`src/game/`, `src/components/`, `scripts/`, `tests/`, `PROJECT.md`, `COLLABORATION.md`, `test-artifacts/`).
+5. Git Commit:
+   - Commit with a detailed, professional commit message:
+     ```
+     feat: implement stage 10+ extreme difficulty scaling, emergency crisis events director, and empirical balance simulation harness (M1-M5)
+     
+     - M1: Implement piecewise exponential HP scaling, boss minion escorts, 2-damage elite shots, and attack tempo scaling in Enemy.ts & GameManager.ts.
+     - M2: Implement CrisisDirector supporting 5 emergency crisis archetypes (Titan Horde, Toxic Acid Storm, Swarm Blitz, EMP Disruption, Total War), procedural Web Audio sirens, and HUD warning overlays.
+     - M3: Create Monte Carlo combat simulator (scripts/simulate_balance.ts) and autonomous Playwright bot playtester (scripts/run_benchmark.ts) generating empirical balance reports.
+     - M4: Add comprehensive 4-tier E2E testing suite in tests/12_extreme_difficulty_and_crises.spec.ts.
+     - M5: Verify 100% test pass rate, type safety, production build, and push to remote repository.
+     ```
+6. Git Push:
+   - Execute `git push` to push commits to the remote repository.
+   - Verify `git status` confirms the working tree is clean and up to date with origin.
+
+MANDATORY REFERENCES:
+- Verbatim request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Scope & roadmap: /Users/user/src/water-invader/PROJECT.md
+- Collaboration guide: /Users/user/src/water-invader/COLLABORATION.md
 
 MANDATORY INTEGRITY WARNING:
-DO NOT CHEAT. All implementations must be genuine. DO NOT hardcode test results, create dummy/facade implementations, or circumvent the intended task. A teamwork_preview_auditor will independently verify your work. Integrity violations WILL be detected and your work WILL be rejected.
+DO NOT CHEAT. Verify all commands genuinely execute and pass before committing and pushing.
 
-Scope & Task:
-1. Compile the comprehensive, production-grade Final Stress Test Report at `reports/ENDLESS_SURVIVAL_STRESS_TEST_REPORT.md` (creating directory `reports/` if needed).
-2. The report must contain:
-   - Executive Summary: Test objectives, methodology, key findings, and acceptance criteria fulfillment.
-   - Code & Architecture Tree: Code tree structure explaining the Swarm Bot, Telemetry, and CLI Runner interaction.
-   - Deep Survival & Combat Heuristics Analysis (R1): 1D potential field raymarching, barricade shadowing (Stone 98%, Ice 80%), diver collision evasion, continuous shooting, Ultimate (E) and Ally (Q) usage statistics.
-   - Shop Upgrade & Weapon Evolution Analysis (R2): Fire Rate (Lv 5 / 0.1s), 5-spread Multi-Shot (Lv 5), Piercing scaling, currency earning velocity, and 100% upgrade saturation rate.
-   - Massive Concurrency & Endurance Telemetry (R3): 8-worker concurrent runs, Student's t 95% confidence intervals, survival duration distribution, deep waves reached (Wave 11, 12, 13, 14), Bio-Mech Titan boss kills, average & 1% low FPS, JS Heap memory growth slope (0.0 MB/min), Web Audio node lifecycle analysis.
-   - Comprehensive Metric & Results Tables: Worker-by-worker breakdown table, weapon upgrade distribution, death cause categorization, and resource utilization.
-   - Bug, Bottleneck & Anomaly Discoveries: GameState string/number polymorphism, Web Audio node GC timing, collision detection quadratic scaling in deep waves.
-   - Final Conclusions & Future Recommendations.
-3. Ensure the document is written clearly, formatted with high markdown standards, and saved directly to `reports/ENDLESS_SURVIVAL_STRESS_TEST_REPORT.md`.
-4. Report completion with the file path in `C:\src\SpaceInvader\.agents\teamwork_preview_worker_m5_report\handoff.md` and report via `send_message`.
+Document all terminal outputs, commit hash, and verification logs in `/Users/user/src/water-invader/.agents/teamwork_preview_worker_m5_report/handoff.md` and report back via send_message.

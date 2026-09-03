@@ -1,15 +1,19 @@
-# Progress Log
+# Progress Tracker
 
-- **Status**: Completed
-- **Last visited**: 2026-08-28T19:31:15+09:00
+Last visited: 2026-09-03T13:22:00+09:00
 
-## Steps
-1. [x] Workspace & Briefing initialization
-2. [x] Read reference files (ORIGINAL_REQUEST.md, PROJECT.md, GATE_STATUS.md)
-3. [x] Run `npx tsc --noEmit` (PASSED, 0 errors)
-4. [x] Run `npm run build` (PASSED, code 0)
-5. [x] Run Playwright tests (67/67 passed in 55.1s)
-6. [x] Stage files (`git add -A`) & verify `git status`
-7. [x] Commit changes (`8be80afa6437eaa8a343cfd013856fc03934b637`)
-8. [x] Push changes (`git push` -> origin/master)
-9. [x] Generate `handoff.md` and message parent orchestrator
+## Status: Complete
+
+- [x] Initialized DISPATCH.md and BRIEFING.md
+- [x] Read ORIGINAL_REQUEST.md, COLLABORATION.md, and pre-commit-build.md
+- [x] Inspect and apply Step 1 polish fixes:
+  - `src/game/crisis/DimensionalRift.ts`: preserved `isShielding` in `takeDamage()`
+  - `tests/unit/crisis_adversarial_stress_m2.test.ts`: updated STRESS-1.6 threshold to `> 70` for all 12 archetypes
+  - Updated legacy assertions in `crisis_adversarial_stress.test.ts` and `crisis_milestone1.test.ts`
+- [x] Run type-checking (`npx tsc --noEmit`): PASSED (0 errors)
+- [x] Run production build (`npm run build`): PASSED (0 errors)
+- [x] Run test suite (`npx playwright test tests/unit/` & `tests/15_endgame_crisis_12_archetypes.spec.ts`): ALL PASSED (185/185 tests)
+- [x] Inspect git status and stage files: `git add src/ tests/ COLLABORATION.md PROJECT.md`
+- [x] Commit with detailed message: `3e2935d`
+- [x] Push to origin master: `4cb7eef..3e2935d master -> master`
+- [x] Write handoff.md and send message to parent

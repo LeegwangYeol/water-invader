@@ -1,58 +1,60 @@
-# BRIEFING — 2026-08-26T08:44:00Z
+# BRIEFING — 2026-08-31T09:27:45Z
 
 ## Mission
-Verify, inspect, and certify all 7 Milestone 1 defect fixes (F-01, F-02, F-04, F-06, F-07, F-08, F-15) with 100% genuine implementation and 100% test pass rate across all Playwright and TypeScript test suites.
+Implement extreme difficulty scaling in `src/game/Enemy.ts` and `src/game/GameManager.ts` for Milestone M1 (Piecewise exponential HP, attack tempo & projectile scaling, elite 2-damage shots, and boss escort legions for Stage 10+).
 
 ## 🔒 My Identity
-- Archetype: teamwork_preview_worker
+- Archetype: worker
 - Roles: implementer, qa, specialist
-- Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_worker_m1
-- Original parent: f89def19-35dd-4b59-b9b9-53490b4263ec
-- Milestone: Milestone 1 (M1)
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m1
+- Original parent: a4485adf-cb83-4c08-9329-6b6a2a94f8de
+- Milestone: M1: Extreme Difficulty Scaling Engine
 
 ## 🔒 Key Constraints
-- DO NOT CHEAT. Genuine implementations only. No hardcoded test results, facade implementations, or skipping.
-- 0 TypeScript / build errors (`npx tsc --noEmit` and `npm run build`).
-- 100% tests pass on Playwright test suites.
-- Follow Handoff Protocol (5 sections: Observation, Logic Chain, Caveats, Conclusion, Verification Method).
-- All communication to parent via `send_message`.
+- For `level < 10`: Preserve exact existing formula: `hp = 1 + Math.floor(level / 3)` (and corresponding rogue/boss formulas) to ensure early game (Waves 1-9) onboarding and regression tests remain 100% intact.
+- For `level >= 10`: Implement accelerated/exponential HP scaling as specified.
+- For `level >= 10`: Enemy firing cooldown reduced to `Math.random() * 0.7 + 0.8` (0.8s ~ 1.5s, scaling down with level) from default 2.0s ~ 5.0s.
+- Projectile speed for enemies at `level >= 10` scaled to `250 + Math.min(150, (level - 10) * 15)` px/s.
+- Elite enemies (Snipers, Rogue Stalkers/Mechs, Bosses) fire projectiles with `damage = 2` starting at Stage 10+.
+- In `GameManager.ts` `spawnWave()`, when `level >= 10` and `level % 5 === 0`, spawn the Boss escorted by 4-8 accompanying minions (Shielded, Snipers, and Divers).
+- Verify: `npx tsc --noEmit` and `npm run build` with 0 errors.
+- Verify: `npx playwright test tests/04_multiwave_progression.spec.ts tests/05_three_way_battle.spec.ts tests/unit/physics_and_math.test.ts` to ensure 0 regressions.
 
 ## Current Parent
-- Conversation ID: f89def19-35dd-4b59-b9b9-53490b4263ec
-- Updated: 2026-08-26T08:44:00Z
+- Conversation ID: a4485adf-cb83-4c08-9329-6b6a2a94f8de
+- Updated: 2026-08-31T09:27:45Z
 
 ## Task Summary
-- **What to build/verify**: 7 defect fixes:
-  1. F-01: Barricade collision decoupling (independent gnaw/crash/rigid block loop)
-  2. F-02: rAF loop cancellation on restart (`cancelAnimationFrame(this.animationFrameId)`)
-  3. F-04: Player 1.0s invincibility frames & 30Hz flicker rendering
-  4. F-06: Shielded enemy HP bypass & 5.0s recharge cooldown timer
-  5. F-07: Sniper bullet interceptable flag & purple aura rendering & player bullet collision
-  6. F-08: Near-miss single-trigger guard (`hasTriggeredNearMiss`)
-  7. F-15: LocalStorage NaN score corruption recovery & UI sanitization
-- **Success criteria**: Genuine code verification, clean typecheck (0 errors), clean build (0 errors), 100% passing tests across all test suites, comprehensive handoff report.
-- **Interface contracts**: `QA_REPORT.md`, `SCOPE.md`, Explorer Reports
+- **What to build**: Piecewise Enemy HP scaling (Waves 1-9 baseline vs Stage 10+ exponential), attack tempo & projectile speed scaling, elite 2-damage shots, and boss escort fleets.
+- **Success criteria**: Stage 10+ enemies scale up in HP and firing tempo; early waves 1-9 unaffected; Boss has escort minion fleet at Stage 10+; test suites pass.
+- **Interface contracts**: `PROJECT.md`
+- **Code layout**: `src/game/Enemy.ts`, `src/game/GameManager.ts`, `tests/unit/physics_and_math.test.ts`
+
+## Key Decisions Made
+- Implemented piecewise HP formula branching on `this.level < 10` vs `this.level >= 10`.
+- Stored `maxShieldHp` in `Enemy` class so shield regeneration works seamlessly for both early waves and Stage 10+.
+- Scaled enemy projectile velocities and fire rates dynamically at Stage 10+ while preserving legacy values for Waves 1-9.
+- Configured elite enemies (Snipers, Bosses, Rogue Stalkers, Rogue Mechs) to deal 2 projectile damage at Stage 10+.
+- Added symmetrical multi-flank escort minions (Shielded, Snipers, Divers) around Bosses on boss waves starting at Stage 10+.
+
+## Artifact Index
+- `.agents/teamwork_preview_worker_m1/DISPATCH.md` — Assignment instructions
+- `.agents/teamwork_preview_worker_m1/BRIEFING.md` — Agent briefing & memory
+- `.agents/teamwork_preview_worker_m1/progress.md` — Execution progress log
+- `.agents/teamwork_preview_worker_m1/handoff.md` — Final handoff report
 
 ## Change Tracker
 - **Files modified**:
-  - `src/components/game-canvas.tsx`: Added `getSafeStoredHighScore()` to sanitize localStorage score reading against `NaN` and negative values.
-  - `tests/adversarial_m1_challenger.spec.ts`: Adjusted high-refresh 120Hz display threshold tolerance in rAF stress test.
-- **Build status**: PASS (`npx tsc --noEmit` exit code 0, `npm run build` exit code 0)
+  - `src/game/Enemy.ts`: Implemented piecewise HP formulas, attack tempo, projectile speed, and elite 2-damage scaling.
+  - `src/game/GameManager.ts`: Added Stage 10+ boss escort fleets in `spawnWave()`.
+  - `tests/unit/physics_and_math.test.ts`: Added unit tests for Stage 10+ difficulty scaling and piecewise formulas.
+- **Build status**: 100% PASS (`npx tsc --noEmit` + `npm run build` + 71/71 Playwright tests pass).
 - **Pending issues**: None
 
 ## Quality Status
-- **Build/test result**: PASS (17/17 Playwright M1 tests passed, 41/41 standalone stress tests passed)
-- **Lint status**: Clean (0 diagnostics)
-- **Tests added/modified**: `tests/adversarial_m1_challenger.spec.ts` tuned for 120Hz Promotion displays
+- **Build/test result**: PASS (71 passed, 0 failed).
+- **Lint status**: 0 violations.
+- **Tests added/modified**: 5 new unit test cases covering all scaling formulas and Stage 10+ mechanics.
 
 ## Loaded Skills
-- None specified in dispatch
-
-## Key Decisions Made
-- Confirmed all 7 defect fixes are authentically implemented with genuine logic across `GameManager.ts`, `Player.ts`, `Enemy.ts`, `Bullet.ts`, and `game-canvas.tsx`.
-- Verified zero regressions or synthetic test shortcuts.
-
-## Artifact Index
-- `.agents/teamwork_preview_worker_m1/DISPATCH.md` — Assignment record
-- `.agents/teamwork_preview_worker_m1/progress.md` — Progress tracker
-- `.agents/teamwork_preview_worker_m1/handoff.md` — Final verification & handoff report
+- None

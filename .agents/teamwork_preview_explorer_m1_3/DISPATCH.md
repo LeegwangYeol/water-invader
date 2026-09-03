@@ -1,22 +1,17 @@
-## 2026-08-26T10:39:19Z
-<USER_REQUEST>
-You are Explorer M1_3 for Milestone M1: Faction System & Multi-Directional Combat Core.
-Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_m1_3
+## 2026-09-01T06:23:30Z
 
-Authoritative references:
-- Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md
-- Read /Users/a7111/src/water-invader/PROJECT.md
+You are a teamwork_preview_explorer analyzing Milestone 1 (Crisis State Machine & Integration Contracts).
+Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_explorer_m1_3
+Read:
+- /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- /Users/user/src/water-invader/PROJECT.md
+- /Users/user/src/water-invader/COLLABORATION.md
 
-Focus:
-1. Examine `src/game/SoundManager.ts`.
-2. Propose exact Web Audio API procedural synthesis methods for:
-   - `playThirdFactionWarning()`: Alien cyber-siren warble for 3rd faction events.
-   - `playRogueShoot()`: High-tech laser chirp for Rogue projectile firing.
-   - `playCrossfireHit()`: Metallic resonance/spark sound when 3rd faction and Invaders hit each other.
-3. Ensure memory safety (clean up oscillator and gain nodes on ended) and support for `isMuted`.
-4. Outline exact code changes for the Worker.
-
-Scope boundaries:
-- Read-only analysis. DO NOT modify source files.
-- Write your report to `/Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_m1_3/handoff.md` and send a message.
-</USER_REQUEST>
+Your mission:
+1. Inspect `src/game/GameManager.ts` and `src/components/game-canvas.tsx`.
+2. Define how `EndGameCrisis` interacts with `GameManager`:
+   - State representation in `GameManager` (`this.endGameCrisis: EndGameCrisis | null`).
+   - Phase lifecycle: `INCURSION` (3s warning) -> `PHASE_1_SHIELD` (Anchors active) -> `PHASE_2_HULL` (Sovereign exposed) -> `PHASE_3_CORE` (Singularity core enrage) -> `DEFEATED`.
+   - HUD Boss Bar rendering for Crisis (multi-phase health bar overlay, phase title, warning countdown).
+3. Write your analysis to /Users/user/src/water-invader/.agents/teamwork_preview_explorer_m1_3/analysis.md and create handoff.md.
+4. Send a message to caller when complete.

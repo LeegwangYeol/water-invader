@@ -1,37 +1,40 @@
-# BRIEFING — 2026-08-26T10:38:50Z
+# BRIEFING — 2026-09-02T13:34:30+09:00
 
 ## Mission
-Investigate the Water Invader wave/spawner/reinforcement systems, enemy behaviors/stats/movement/shooting, and formulate architectural rework proposals for dynamic, diverse, and unpredictable reinforcement spawning in a 3-way battle environment.
+Survey and map the existing codebase for canvas rendering loop, event background color/opacity shifts, projectile rendering, and projectile visibility issues during event states, recommending high-contrast outline/halo designs.
 
 ## 🔒 My Identity
-- Archetype: Teamwork explorer (Survey Explorer 2)
-- Roles: Explorer, Synthesizer
-- Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_2
-- Original parent: 738841f4-20be-4ebb-85ad-eff3ce31cb23
-- Milestone: Survey & Architectural Design for Dynamic Reinforcement Spawning
+- Archetype: explorer
+- Roles: investigator, visual & rendering specialist
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_2
+- Original parent: f6eab4f4-b1f5-48ab-a8b5-a0f343d21361
+- Milestone: milestone_1_reconnaissance
 
 ## 🔒 Key Constraints
-- Read-only investigation — do NOT implement or modify project code
-- Deliver self-contained handoff.md with 5 components (Observation, Logic Chain, Caveats, Conclusion, Verification Method)
-- Communicate completion via send_message to parent
+- Read-only investigation — do NOT implement changes to codebase
+- Output report to /Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_2/survey_visuals_rendering.md
+- Produce structured handoff.md with 5-component structure
+- Notify orchestrator with send_message upon completion
 
 ## Current Parent
-- Conversation ID: 738841f4-20be-4ebb-85ad-eff3ce31cb23
-- Updated: 2026-08-26T10:38:50Z
+- Conversation ID: f6eab4f4-b1f5-48ab-a8b5-a0f343d21361
+- Updated: 2026-09-02T13:34:30+09:00
 
 ## Investigation State
-- **Explored paths**: `src/game/GameManager.ts`, `src/game/Enemy.ts`, `src/game/Helper.ts`, `src/game/Bullet.ts`, `src/game/Player.ts`, `src/game/Barricade.ts`, `src/components/game-canvas.tsx`, `tests/*.spec.ts`, `tests/stress/*.ts`
+- **Explored paths**: `src/game/GameManager.ts`, `src/game/Bullet.ts`, `src/game/Enemy.ts`, `src/game/Player.ts`, `src/game/Particle.ts`, `src/game/Barricade.ts`, `src/game/Helper.ts`, `src/game/crisis/*`, `src/components/game-canvas.tsx`, `tests/02_rendering_and_vector_art.spec.ts`, `tests/adversarial_r1_reviewer_graphics_integrity.spec.ts`
 - **Key findings**:
-  1. Wave engine uses static rectangular grid (`spawnWave`) with boss on `level % 5 === 0`.
-  2. Reinforcement system uses simple countdown (`reinforcementTimer = 10..20s`) with binary 60/40 coin-flip for ENEMY (4 ZIGZAGs) vs ALLY (1..3 Helpers).
-  3. 7 Enemy types with distinct stats/AI: Normal (patrol/evade), Zigzag (sinusoidal/fast), Boss (tank/rapid-fire/top-bar), Sniper (targeted purple interceptable), Diver (280+px/s dive on X-alignment), Shielded (3 shield HP + 5s regen), Splitter (spawns 2 mini-enemies on death).
-  4. 3-Way Battle can be seamlessly added via Faction tagging (`PLAYER`, `INVADER`, `ROGUE`) on entities and bullets.
-  5. Dynamic reinforcement director with weighted event queues, varied entry vectors (flanks/warp-in/v-formations), and crossfire dynamics maintains 100% test compatibility.
-- **Unexplored areas**: None within survey scope boundary.
+  1. Full render loop runs at fixed 60Hz timestep in `GameManager.ts:608-640` with DPR canvas scaling and 14 distinct render layers.
+  2. Warning overlays paint flat 20-30% opacity screen-wide fills (`rgba(255,0,0,0.3)`, `rgba(132,204,22,0.25)`) that wash out red/lime/purple enemy bullets.
+  3. All projectiles in `Bullet.ts` use translucent outer glows without dark perimeter strokes, causing silhouette dissolution under matching background tints.
+  4. Acid Storm hazard drops in `GameManager.ts` are generic green circles without tails or outlines.
+  5. React warning banners in `game-canvas.tsx` apply `backdrop-blur-[2-3px]` over active gameplay.
+- **Unexplored areas**: None for visuals survey; all visual systems surveyed and mapped.
 
 ## Key Decisions Made
-- [2026-08-26] Completed in-depth code analysis of wave generation, enemy mechanics, and reinforcement logic.
-- [2026-08-26] Formulated comprehensive architecture rework proposal for 3-way faction and dynamic reinforcement spawning.
+- Authored comprehensive report `survey_visuals_rendering.md` detailing the 4-tier "Halo Sandwich" projectile rendering architecture, upgraded acid rain hazard geometry, event background alpha reduction (to 0.10-0.12), perimeter stroke vignette, and removal of combat backdrop-blur.
 
 ## Artifact Index
-- /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_survey_2/handoff.md — Comprehensive findings & architecture rework proposal
+- `/Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_2/survey_visuals_rendering.md` — Detailed survey report
+- `/Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_2/handoff.md` — 5-component handoff report
+- `/Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_2/progress.md` — Progress tracker and heartbeat
+- `/Users/user/src/water-invader/.agents/teamwork_preview_explorer_survey_2/DISPATCH.md` — Dispatch log

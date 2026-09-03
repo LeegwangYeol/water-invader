@@ -4,15 +4,10 @@
       "/Users/user/.nvm/versions/node/v25.8.1/bin/node",
       "/Users/user/src/water-invader/node_modules/.bin/playwright",
       "test",
-      "tests/cross_device_touch_verification.spec.ts",
-      "tests/enemy_y_boundary_and_dive_fixes.spec.ts",
-      "tests/m1_verification.spec.ts",
-      "tests/m2_verification.spec.ts",
-      "tests/m3_verification.spec.ts",
-      "tests/mobile_controls_and_touch_evasion.spec.ts",
-      "tests/tier5_adversarial_combat.spec.ts",
-      "tests/tier5_adversarial_reinforcements.spec.ts",
-      "tests/water-invader.spec.ts"
+      "tests/unit/crisis_expansion_12.test.ts",
+      "tests/unit/crisis_distribution_12.test.ts",
+      "tests/unit/allied_reinforcements.test.ts",
+      "tests/unit/challenger_crisis12_adversarial.test.ts"
     ],
     "configFile": "/Users/user/src/water-invader/playwright.config.ts",
     "rootDir": "/Users/user/src/water-invader/tests",
@@ -79,1098 +74,24 @@
     "updateSourceMethod": "patch",
     "version": "1.62.1",
     "workers": 1,
-    "webServer": {
-      "command": "npm run dev",
-      "url": "http://localhost:3000",
-      "reuseExistingServer": true,
-      "timeout": 120000
-    }
+    "webServer": null
   },
   "suites": [
     {
-      "title": "cross_device_touch_verification.spec.ts",
-      "file": "cross_device_touch_verification.spec.ts",
+      "title": "unit/allied_reinforcements.test.ts",
+      "file": "unit/allied_reinforcements.test.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Cross-Device Touch Verification: Samsung Galaxy S25+",
-          "file": "cross_device_touch_verification.spec.ts",
-          "line": 46,
-          "column": 8,
-          "specs": [
-            {
-              "title": "1. Initial state alignment & initial screenshot",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2165,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:40.572Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-1f6d6c7c761be4bc5715",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 70,
-              "column": 9
-            },
-            {
-              "title": "2. 1:1 Responsive Touch Dragging Right & Left with Screenshot Capture",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2330,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:43.025Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-a3fb21aa0a2d6c89b727",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 83,
-              "column": 9
-            },
-            {
-              "title": "3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2527,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:45.372Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-1b4b5d9f9ac5f80800e7",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 147,
-              "column": 9
-            },
-            {
-              "title": "4. Stationary Touch Hold: Zero Drift & Continuous Firing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1550,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:47.910Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-b444c4fd98b0956a495a",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 179,
-              "column": 9
-            },
-            {
-              "title": "5. Dynamic Viewport Resizing / Foldable Unfold Resilience",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1938,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:49.470Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-4be958855726dd4b2faf",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 204,
-              "column": 9
-            },
-            {
-              "title": "6. Adversarial NaN & Malformed PointerEvent Immunity",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1414,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:51.425Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-e777c2f67f24b0f5f307",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 234,
-              "column": 9
-            }
-          ]
-        },
-        {
-          "title": "Cross-Device Touch Verification: iPhone 16 Pro / 15 Pro",
-          "file": "cross_device_touch_verification.spec.ts",
-          "line": 46,
-          "column": 8,
-          "specs": [
-            {
-              "title": "1. Initial state alignment & initial screenshot",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1364,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:52.849Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-11f2847faca628888404",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 70,
-              "column": 9
-            },
-            {
-              "title": "2. 1:1 Responsive Touch Dragging Right & Left with Screenshot Capture",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1950,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:54.231Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-547ea233f2e5d4c78277",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 83,
-              "column": 9
-            },
-            {
-              "title": "3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2024,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:56.190Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-ce5f4e1a423807336324",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 147,
-              "column": 9
-            },
-            {
-              "title": "4. Stationary Touch Hold: Zero Drift & Continuous Firing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1753,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:00:58.228Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-46bb98e280ae3baaf668",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 179,
-              "column": 9
-            },
-            {
-              "title": "5. Dynamic Viewport Resizing / Foldable Unfold Resilience",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1629,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:00.002Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-cacfcfb36242204958ef",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 204,
-              "column": 9
-            },
-            {
-              "title": "6. Adversarial NaN & Malformed PointerEvent Immunity",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1538,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:01.641Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-db1dd947422bb1ba491f",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 234,
-              "column": 9
-            }
-          ]
-        },
-        {
-          "title": "Cross-Device Touch Verification: iPhone 14 / 13",
-          "file": "cross_device_touch_verification.spec.ts",
-          "line": 46,
-          "column": 8,
-          "specs": [
-            {
-              "title": "1. Initial state alignment & initial screenshot",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1573,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:03.219Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-becf0c7e9b35d31066d1",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 70,
-              "column": 9
-            },
-            {
-              "title": "2. 1:1 Responsive Touch Dragging Right & Left with Screenshot Capture",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1822,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:04.815Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-1d29ce314145c424cc56",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 83,
-              "column": 9
-            },
-            {
-              "title": "3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2190,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:06.662Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-296b30d4c7efe12b605b",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 147,
-              "column": 9
-            },
-            {
-              "title": "4. Stationary Touch Hold: Zero Drift & Continuous Firing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1498,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:08.862Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-aaf42bc2d3811a2ea8e0",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 179,
-              "column": 9
-            },
-            {
-              "title": "5. Dynamic Viewport Resizing / Foldable Unfold Resilience",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1900,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:10.367Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-0851a58a59aa3c528227",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 204,
-              "column": 9
-            },
-            {
-              "title": "6. Adversarial NaN & Malformed PointerEvent Immunity",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1490,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:12.277Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-ea6e0a8c06b9a4ba3e5f",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 234,
-              "column": 9
-            }
-          ]
-        },
-        {
-          "title": "Cross-Device Touch Verification: iPhone SE",
-          "file": "cross_device_touch_verification.spec.ts",
-          "line": 46,
-          "column": 8,
-          "specs": [
-            {
-              "title": "1. Initial state alignment & initial screenshot",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1343,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:13.788Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-599c1805186670b967c0",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 70,
-              "column": 9
-            },
-            {
-              "title": "2. 1:1 Responsive Touch Dragging Right & Left with Screenshot Capture",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1483,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:15.156Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-a8610a032ccf7e029494",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 83,
-              "column": 9
-            },
-            {
-              "title": "3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1892,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:16.647Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-958d18f0130d91d31a1e",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 147,
-              "column": 9
-            },
-            {
-              "title": "4. Stationary Touch Hold: Zero Drift & Continuous Firing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1445,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:18.592Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-ddbb907c584b84fd51a1",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 179,
-              "column": 9
-            },
-            {
-              "title": "5. Dynamic Viewport Resizing / Foldable Unfold Resilience",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1290,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:20.070Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-8ca47cd496cbffa0571a",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 204,
-              "column": 9
-            },
-            {
-              "title": "6. Adversarial NaN & Malformed PointerEvent Immunity",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1075,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:21.366Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-a8f077833aef7401a755",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 234,
-              "column": 9
-            }
-          ]
-        },
-        {
-          "title": "Cross-Device Touch Verification: Samsung Galaxy Z Fold",
-          "file": "cross_device_touch_verification.spec.ts",
-          "line": 46,
-          "column": 8,
-          "specs": [
-            {
-              "title": "1. Initial state alignment & initial screenshot",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1391,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:22.447Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-77241309207b1f71a31a",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 70,
-              "column": 9
-            },
-            {
-              "title": "2. 1:1 Responsive Touch Dragging Right & Left with Screenshot Capture",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1729,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:23.851Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-e1ab50abe1fe746b0866",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 83,
-              "column": 9
-            },
-            {
-              "title": "3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2184,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:25.590Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-bb79f28f36648ba45f75",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 147,
-              "column": 9
-            },
-            {
-              "title": "4. Stationary Touch Hold: Zero Drift & Continuous Firing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1514,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:27.790Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-cba670c4f86cae5326ae",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 179,
-              "column": 9
-            },
-            {
-              "title": "5. Dynamic Viewport Resizing / Foldable Unfold Resilience",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1503,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:29.320Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-e33af333edb5185aa4b0",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 204,
-              "column": 9
-            },
-            {
-              "title": "6. Adversarial NaN & Malformed PointerEvent Immunity",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1243,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:30.833Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "7326538dfd58536faace-f171900873ddbc40cb1f",
-              "file": "cross_device_touch_verification.spec.ts",
-              "line": 234,
-              "column": 9
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "enemy_y_boundary_and_dive_fixes.spec.ts",
-      "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Enemy Y-Axis Boundary & Dive Mechanic Fixes Suite (R1 & R2)",
-          "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-          "line": 3,
+          "title": "Massive Allied Reinforcements Suite (Aegis Vanguard Command Dreadnought)",
+          "file": "unit/allied_reinforcements.test.ts",
+          "line": 69,
           "column": 6,
           "specs": [
             {
-              "title": "R1-01: Strict Math.min clamping of Y-axis coordinates for all standard enemy types",
+              "title": "REINFORCE-01: Instantiation and procedural Canvas 2D vector drawing sanity across lifecycles",
               "ok": true,
               "tags": [],
               "tests": [
@@ -1185,12 +106,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1070,
+                      "duration": 44,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-28T15:01:32.092Z",
+                      "startTime": "2026-09-03T04:31:09.960Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1198,13 +119,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "e9144e0da96330d39607-f061109efbfb427295f5",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 10,
+              "id": "61fbfa6e095f3b214cde-fad63233a3b2716735b0",
+              "file": "unit/allied_reinforcements.test.ts",
+              "line": 74,
               "column": 7
             },
             {
-              "title": "R1-02: Zigzag enemy horizontal oscillation while strictly clamped at bottom Y bound",
+              "title": "REINFORCE-02: Forward heavy plasma cannons fire dual high-velocity bolts targeting Sovereign Core or nearest enemies",
               "ok": true,
               "tags": [],
               "tests": [
@@ -1219,12 +140,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 992,
+                      "duration": 42,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-28T15:01:33.167Z",
+                      "startTime": "2026-09-03T04:31:10.079Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1232,1475 +153,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "e9144e0da96330d39607-7d1158e2e5a58ba19830",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 48,
-              "column": 7
-            },
-            {
-              "title": "R2-01: Diver plunge attack trigger, safe trajectory acceleration, and boundary containment",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1015,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:34.166Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-2b16d737f7926b7a8bdb",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 81,
-              "column": 7
-            },
-            {
-              "title": "R2-02: Diver crashing into destructible barricade deals 20 crash damage and is destroyed",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1018,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:35.188Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-3d8a9e3f7b59eb6ff67c",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 123,
-              "column": 7
-            },
-            {
-              "title": "R2-03: Diver crashing into indestructible stone barricade is destroyed with 0 damage to barricade",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1017,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:36.215Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-f1bb6375cb1848240a6d",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 153,
-              "column": 7
-            },
-            {
-              "title": "R2-04: Diver ramming player damages player and destroys diver",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1095,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:37.240Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-3d75d1a876cbc0622725",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 180,
-              "column": 7
-            },
-            {
-              "title": "R2-05: Enemy reaching bottom boundary is gracefully despawned with breach penalty",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1004,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:38.342Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-8e48cecef9b41b7a7573",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 212,
-              "column": 7
-            },
-            {
-              "title": "R2-06: Robustness under extreme / NaN inputs and missing parameters",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1086,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:39.355Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-975249041bdc5c45f4f4",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 244,
-              "column": 7
-            },
-            {
-              "title": "R2-07: NaN canvas dimensions and invalid speed multipliers do not corrupt positions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1049,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:40.463Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-9c1bc0aba5e383689a5f",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 293,
-              "column": 7
-            },
-            {
-              "title": "R2-08: Diver does NOT trigger downward dive when player is above the diver",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1092,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:41.518Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-dea37278ac07e8316f41",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 326,
-              "column": 7
-            },
-            {
-              "title": "R2-09: Multiple simultaneous divers under fluctuating deltaTimes (240 FPS to lag spikes)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1130,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:42.616Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-2c3ce05579e512b8c023",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 348,
-              "column": 7
-            },
-            {
-              "title": "R2-10: Diver with NaN constructor coordinates or during dive recovers to finite values and despawns gracefully",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1235,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:43.776Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-00bf98f132f5d1153dea",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 393,
-              "column": 7
-            },
-            {
-              "title": "R2-11: Negative initial coordinates and negative speed impulses are clamped to upper boundary (Y >= 0)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1225,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:45.031Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-57c851c479c79097e33e",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 429,
-              "column": 7
-            },
-            {
-              "title": "R2-12: Massive lag spike (deltaTime = 0.5s) is capped to 0.1s timestep inside Enemy.update",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1267,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:46.263Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-17828c569ad59d32b638",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 458,
-              "column": 7
-            },
-            {
-              "title": "R2-13: Enemy ramming player resets combo to 0 and updates score UI",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1174,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:47.535Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-388c47666640d6da36f9",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 482,
-              "column": 7
-            },
-            {
-              "title": "R2-14: Splitter mini-enemies spawn strictly inside canvas boundaries at extreme edges",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1192,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:48.716Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-4d92afa000d8c536d878",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 512,
-              "column": 7
-            },
-            {
-              "title": "R3-15: Boss and Splitter size re-clamping immediately in constructor at extreme boundaries",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1130,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:49.915Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-03d378347e091910faf8",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 548,
-              "column": 7
-            },
-            {
-              "title": "R3-16: Defense breach penalty strictly resets player combo to 0 and updates score UI",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1309,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:51.051Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-993b7b30d6150cee0c86",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 576,
-              "column": 7
-            },
-            {
-              "title": "R3-17: Diver horizontal bounds containment and trajectory stability during plunge",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1336,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:52.366Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-fe5b4b8c6291d9bd07d9",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 603,
-              "column": 7
-            },
-            {
-              "title": "R3-18: 1000-Frame continuous stress across all enemy movement patterns with zero NaN and zero out-of-bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1247,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:53.731Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e9144e0da96330d39607-5e535b453e260529e93c",
-              "file": "enemy_y_boundary_and_dive_fixes.spec.ts",
-              "line": 632,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "m1_verification.spec.ts",
-      "file": "m1_verification.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Milestone 1: Core Engine & Collision Fixes Verification Suite",
-          "file": "m1_verification.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "F-01 [CRITICAL]: Enemy-vs-Barricade collision functions independently with 0 active bullets",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1222,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:54.997Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-7ab4ec17ce7d826a3af3",
-              "file": "m1_verification.spec.ts",
-              "line": 10,
-              "column": 7
-            },
-            {
-              "title": "F-02 [CRITICAL]: Repeated start/startGame calls cancel existing rAF loop",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1224,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:56.224Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-da4d29acf515001c3f24",
-              "file": "m1_verification.spec.ts",
-              "line": 42,
-              "column": 7
-            },
-            {
-              "title": "F-04 [HIGH]: Player i-Frames (invincibilityTimer) protects from consecutive damage and decrements in update",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1226,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:57.453Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-506c9b82fefd7aabd236",
-              "file": "m1_verification.spec.ts",
-              "line": 72,
-              "column": 7
-            },
-            {
-              "title": "F-06 [HIGH]: Shielded enemy absorbs damage via shieldHp first and triggers 5s cooldown when broken",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1198,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:58.683Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-5ae0986a1a2d894d6418",
-              "file": "m1_verification.spec.ts",
-              "line": 121,
-              "column": 7
-            },
-            {
-              "title": "F-07 [HIGH]: Sniper interceptable purple bullet collides with player bullet and both are destroyed",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1237,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:01:59.887Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-855736c49daa8004f6ed",
-              "file": "m1_verification.spec.ts",
-              "line": 174,
-              "column": 7
-            },
-            {
-              "title": "F-08 [HIGH]: Near-miss suppression triggers only once per bullet (hasTriggeredNearMiss)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1301,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:01.130Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-b40c89e295bf6defd613",
-              "file": "m1_verification.spec.ts",
-              "line": 203,
-              "column": 7
-            },
-            {
-              "title": "F-15 [MEDIUM]: Corrupted localStorage NaN recovery falls back to 0 and stores valid high score",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1263,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:02.437Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8972788bc7f0f65adb96-7018aa5e20fa87eb4bb0",
-              "file": "m1_verification.spec.ts",
-              "line": 237,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "m2_verification.spec.ts",
-      "file": "m2_verification.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Milestone 2: Gameplay Mechanics, Upgrades & Controls Verification Suite",
-          "file": "m2_verification.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "F-03 [CRITICAL]: Blur and visibilitychange events call clearKeys() to reset movement/keysPressed",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1200,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:03.709Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-b2de6aefc80c4cd19d59",
-              "file": "m2_verification.spec.ts",
-              "line": 10,
-              "column": 7
-            },
-            {
-              "title": "F-05 [HIGH]: Multi-Shot Lv 4 & Lv 5 genuinely fire 4 and 5 bullets with spread angles",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1182,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:04.915Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-f29532e61bfcbe814e65",
-              "file": "m2_verification.spec.ts",
-              "line": 67,
-              "column": 7
-            },
-            {
-              "title": "F-09 [HIGH]: Opening HOW TO PLAY modal pauses game and preserves GameManager instance across toggles",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1207,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:06.103Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-7db5e3c4cdb844ba16d0",
-              "file": "m2_verification.spec.ts",
-              "line": 133,
-              "column": 7
-            },
-            {
-              "title": "F-12 [HIGH]: CapsLock and uppercase key events correctly control movement, skills, and cheats",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1207,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:07.315Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-286f1b8d63e2ef207665",
-              "file": "m2_verification.spec.ts",
-              "line": 173,
-              "column": 7
-            },
-            {
-              "title": "F-16 [MEDIUM]: Starting Player HP initializes to 3 out of max 5 in Player instance, GameManager, and HUD",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1040,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:08.527Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-3c714f0058a09914982c",
-              "file": "m2_verification.spec.ts",
-              "line": 221,
-              "column": 7
-            },
-            {
-              "title": "F-17 [MEDIUM]: Enemy speed escalation scales smoothly and is capped at 1.8x without 2.9x spike",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1063,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:09.573Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "9b7879f8ca012ce7c5d9-148adaa013f596a6c303",
-              "file": "m2_verification.spec.ts",
-              "line": 252,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "m3_verification.spec.ts",
-      "file": "m3_verification.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Milestone 3: UI/UX, HiDPI Scaling, Audio/Visual FX & Boss Polish Verification Suite",
-          "file": "m3_verification.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "F-10 [HIGH]: Desktop Canvas aspect-[3/4] maintains ratio without horizontal stretch",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1136,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:10.648Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-41a8c642ea3507c4fd10",
-              "file": "m3_verification.spec.ts",
-              "line": 9,
-              "column": 7
-            },
-            {
-              "title": "F-11 [HIGH]: Retina & HiDPI Canvas Scaling supports window.devicePixelRatio",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 997,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:11.791Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-ae8c767f10574d785df3",
-              "file": "m3_verification.spec.ts",
-              "line": 30,
-              "column": 7
-            },
-            {
-              "title": "F-13 [HIGH]: Top HUD Overlay Occlusion Fix — Spawn Y lowered from 40 to 80 (Boss 50 to 90)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1050,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:12.796Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-2fe6456839785e8029fb",
-              "file": "m3_verification.spec.ts",
-              "line": 57,
-              "column": 7
-            },
-            {
-              "title": "F-14 [HIGH]: Boss HP Bar renders when Boss is alive",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1026,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:13.855Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-b549cda11dd1efcda5c8",
-              "file": "m3_verification.spec.ts",
-              "line": 86,
-              "column": 7
-            },
-            {
-              "title": "F-14 [HIGH]: Hit Flash FX — Player & Enemy hitFlashTimer decrements on update and activates on damage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1038,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:14.888Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-0c3538b024a845ea9337",
-              "file": "m3_verification.spec.ts",
-              "line": 122,
-              "column": 7
-            },
-            {
-              "title": "F-14 [HIGH]: Audio FX Suite & Mute Toggle functionality",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1167,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:15.933Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f8404804499b19d539f6-0ec6b9f5d9215c6b0745",
-              "file": "m3_verification.spec.ts",
-              "line": 168,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "mobile_controls_and_touch_evasion.spec.ts",
-      "file": "mobile_controls_and_touch_evasion.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Mobile Touch & Drag Evasion Controls Suite",
-          "file": "mobile_controls_and_touch_evasion.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "R1: Pointer drag horizontally moves player with 1:1 delta calculation",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1302,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:17.114Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a5b3f42feaf972e1372c-07e9c9cc830875282424",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
-              "line": 19,
-              "column": 7
-            },
-            {
-              "title": "R1: Extreme horizontal drag respects boundary clamping at 0 and max logical width",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1459,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:18.422Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a5b3f42feaf972e1372c-5a9cf3e80ba5ecc83d4f",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
-              "line": 61,
-              "column": 7
-            },
-            {
-              "title": "R1: Pointer drag event triggers shooting while active and releases on pointer up",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1105,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:19.885Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a5b3f42feaf972e1372c-846759237832cb6271e6",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
-              "line": 88,
-              "column": 7
-            },
-            {
-              "title": "R2: Mobile button controls (ALLY, ULT, FIRE) operate without breaking or moving player position",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1130,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:20.995Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a5b3f42feaf972e1372c-cdb383a2948341c8f16d",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
+              "id": "61fbfa6e095f3b214cde-f91e86486069dfc76917",
+              "file": "unit/allied_reinforcements.test.ts",
               "line": 111,
               "column": 7
             },
             {
-              "title": "R2: Top HUD buttons (MUTE) are clickable without interfering with canvas or dragging",
+              "title": "REINFORCE-03: 120px point-defense laser grid vaporizes hostile bullets within perimeter of player and dreadnought",
               "ok": true,
               "tags": [],
               "tests": [
@@ -2715,12 +174,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1241,
+                      "duration": 14,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-28T15:02:22.130Z",
+                      "startTime": "2026-09-03T04:31:10.191Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2728,13 +187,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "a5b3f42feaf972e1372c-947596274187ba4a34d6",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
+              "id": "61fbfa6e095f3b214cde-b29f4ea1dece3ce56c2a",
+              "file": "unit/allied_reinforcements.test.ts",
               "line": 152,
               "column": 7
             },
             {
-              "title": "R1 & R2 Adversarial: Multi-touch secondary pointer down does not cause position teleportation or hijack active drag",
+              "title": "REINFORCE-04: Restorative nano-shield aura heals player HP by +1 every 5.0s and alleviates combat stress",
               "ok": true,
               "tags": [],
               "tests": [
@@ -2749,12 +208,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1145,
+                      "duration": 6,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-28T15:02:23.376Z",
+                      "startTime": "2026-09-03T04:31:10.233Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2762,13 +221,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "a5b3f42feaf972e1372c-a68981f9ab2f0234b3c9",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
-              "line": 166,
+              "id": "61fbfa6e095f3b214cde-179f0e9d81733ba01393",
+              "file": "unit/allied_reinforcements.test.ts",
+              "line": 198,
               "column": 7
             },
             {
-              "title": "R1 Adversarial: Stationary touch hold does not autonomously drift or jitter player position",
+              "title": "REINFORCE-05: 2 Escort interceptors track player in flanking formation and fire suppressing blasters",
               "ok": true,
               "tags": [],
               "tests": [
@@ -2783,12 +242,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1456,
+                      "duration": 6,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-28T15:02:24.526Z",
+                      "startTime": "2026-09-03T04:31:10.264Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2796,13 +255,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "a5b3f42feaf972e1372c-dc0b3be0ccdcf43a945f",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
-              "line": 275,
+              "id": "61fbfa6e095f3b214cde-f1f61465afb79c09ca90",
+              "file": "unit/allied_reinforcements.test.ts",
+              "line": 232,
               "column": 7
             },
             {
-              "title": "R1 & R2 Adversarial: Simultaneous canvas drag and button tap (Ally/Ult) does not cancel drag or drop player position",
+              "title": "REINFORCE-06: Warp-in entry descent and warp-out jump on crisis victory",
               "ok": true,
               "tags": [],
               "tests": [
@@ -2817,12 +276,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1109,
+                      "duration": 8,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-28T15:02:25.988Z",
+                      "startTime": "2026-09-03T04:31:10.280Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2830,13 +289,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "a5b3f42feaf972e1372c-7c6bc000cd3167027cf5",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
-              "line": 312,
+              "id": "61fbfa6e095f3b214cde-3021ad5479489d878a99",
+              "file": "unit/allied_reinforcements.test.ts",
+              "line": 267,
               "column": 7
             },
             {
-              "title": "R1 Adversarial: PointerCancel event cleanly resets drag state, shooting state, and movement flags",
+              "title": "REINFORCE-07: GameManager triggers Allied Reinforcements automatically when entering Phase 2 and orders warp-out on crisis defeat",
               "ok": true,
               "tags": [],
               "tests": [
@@ -2851,12 +310,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1095,
+                      "duration": 17,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-28T15:02:27.107Z",
+                      "startTime": "2026-09-03T04:31:10.299Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2864,43 +323,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "a5b3f42feaf972e1372c-c839d902f2bb172dc9f4",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
-              "line": 384,
-              "column": 7
-            },
-            {
-              "title": "R1 Adversarial: Window blur during active pointer drag cleanly resets all dragging and movement flags",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1029,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-08-28T15:02:28.210Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a5b3f42feaf972e1372c-f3b01b12bd27b97c4b55",
-              "file": "mobile_controls_and_touch_evasion.spec.ts",
-              "line": 434,
+              "id": "61fbfa6e095f3b214cde-a7f0f4ac1530b923f29a",
+              "file": "unit/allied_reinforcements.test.ts",
+              "line": 301,
               "column": 7
             }
           ]
@@ -2908,1080 +333,20 @@
       ]
     },
     {
-      "title": "tier5_adversarial_combat.spec.ts",
-      "file": "tier5_adversarial_combat.spec.ts",
+      "title": "unit/challenger_crisis12_adversarial.test.ts",
+      "file": "unit/challenger_crisis12_adversarial.test.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Tier 5 Adversarial Combat Hardening Suite (Milestone M5)",
-          "file": "tier5_adversarial_combat.spec.ts",
-          "line": 39,
-          "column": 6,
-          "specs": [],
-          "suites": [
-            {
-              "title": "1. Extreme Bullet Storms & Particle Pooling",
-              "file": "tier5_adversarial_combat.spec.ts",
-              "line": 51,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "T5.1 [BulletStorm] 300+ multi-faction projectiles in high-density crossfire execute stably over 100 frames without memory leaks or NaN corruption",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1244,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:29.264Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-26b76cf0f98ac899a863",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 52,
-                  "column": 9
-                },
-                {
-                  "title": "T5.2 [BulletStorm] Massive 100-pair bullet interception cascade resolves with exact pair neutralization and no orphan bullets",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1129,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:30.516Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-df3f86e19c36327b741d",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 130,
-                  "column": 9
-                }
-              ]
-            },
-            {
-              "title": "2. Multi-Faction Piercing Collisions",
-              "file": "tier5_adversarial_combat.spec.ts",
-              "line": 189,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "T5.3 [Piercing] High-piercing (piercing=10) projectile cleanly slices interleaved Invader & Rogue formations with exactly 1 hit per entity",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1273,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:31.655Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-1853692ca9f7f2fb05fc",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 190,
-                  "column": 9
-                },
-                {
-                  "title": "T5.4 [Piercing] Rogue Mech piercing bullet damages Invaders & ignores friendly Rogues with exact charge conservation",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1127,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:32.935Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-1eb4b53cc6f468954563",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 244,
-                  "column": 9
-                }
-              ]
-            },
-            {
-              "title": "3. Simultaneous Crossfire Annihilation & Entity List Integrity",
-              "file": "tier5_adversarial_combat.spec.ts",
-              "line": 319,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "T5.5 [Annihilation] 20-entity simultaneous crossfire elimination in a single frame maintains array integrity, grants combo & rewards, and transitions to shop",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1152,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:34.067Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-0526f0950f61d088baf4",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 320,
-                  "column": 9
-                },
-                {
-                  "title": "T5.6 [Annihilation] Symmetrical crossfire bullet trade eliminates both formations simultaneously with proper reward attribution",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1029,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:35.226Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-4f03ca6a374ac2f844db",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 384,
-                  "column": 9
-                }
-              ]
-            },
-            {
-              "title": "4. Helper Drone Dynamic Retargeting & Interception",
-              "file": "tier5_adversarial_combat.spec.ts",
-              "line": 463,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "T5.7 [HelperAI] Helper Fighter dynamically retargets across interleaved Invader/Rogue deaths in succession without getting stuck",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1266,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:36.276Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-75dcdbcbf6e4b5187587",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 464,
-                  "column": 9
-                },
-                {
-                  "title": "T5.8 [HelperAI] Helper Tank dynamically tracks and intercepts lowest incoming hostile bullets while ignoring friendly fire",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1253,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:37.568Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-c90bdeb985b0ee87218c",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 536,
-                  "column": 9
-                }
-              ]
-            },
-            {
-              "title": "5. Boss Crossfire Incursions & 3-Way Boss Resolution",
-              "file": "tier5_adversarial_combat.spec.ts",
-              "line": 599,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "T5.9 [BossCrossfire] Mid-wave Rogue incursion during Boss wave creates 3-way boss clash, handles Rogue-on-Boss defeat, and prevents premature wave clear",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1107,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:38.846Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-4be2f522bfd2dea3d6c8",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 600,
-                  "column": 9
-                },
-                {
-                  "title": "T5.10 [BossCrossfire] Boss + Splitter + Rogue crossfire chain reaction creates nested entities without index corruption",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1106,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:39.964Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "f1c4c685fd378ce056b0-bbecef92e30e1dc15b5c",
-                  "file": "tier5_adversarial_combat.spec.ts",
-                  "line": 696,
-                  "column": 9
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "tier5_adversarial_reinforcements.spec.ts",
-      "file": "tier5_adversarial_reinforcements.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Tier 5 Adversarial Reinforcement & Wave Pacing Stress Suite",
-          "file": "tier5_adversarial_reinforcements.spec.ts",
-          "line": 43,
-          "column": 6,
-          "specs": [],
-          "suites": [
-            {
-              "title": "1. Rapid Sequential Incursions & List Integrity",
-              "file": "tier5_adversarial_reinforcements.spec.ts",
-              "line": 54,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "1.1 Burst-firing 20 dynamic incursions in a single frame maintains entity list integrity",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1247,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:41.097Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-b20d07882665b5eb4092",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 55,
-                  "column": 9
-                },
-                {
-                  "title": "1.2 Rapid sequential incursions interleaved with game loop updates (60 frames) execute without desync",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1189,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:42.361Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-a2623ab7b151dec78f5e",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 112,
-                  "column": 9
-                },
-                {
-                  "title": "1.3 High-density multi-faction clash: 80+ enemies and 150+ crossfire bullets resolve stably",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1332,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:43.561Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-6c7c654ac16e0a920bd0",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 158,
-                  "column": 9
-                },
-                {
-                  "title": "1.4 Dynamic incursion director handles arbitrary/unknown incursion types with fallback gracefully",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1113,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:44.914Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-8d9eb597eb8466ccf1ec",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 210,
-                  "column": 9
-                }
-              ]
-            },
-            {
-              "title": "2. Canvas Boundary Edge Clamping & Kinematics",
-              "file": "tier5_adversarial_reinforcements.spec.ts",
-              "line": 239,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "2.1 Extreme coordinate spawns (negative/oversized) are strictly clamped by Enemy constructor",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1028,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:46.033Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-287136062a5f40bd0f26",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 240,
-                  "column": 9
-                },
-                {
-                  "title": "2.2 High-speed Flank incursion entities maintain strict boundary confinement over 200 frames",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1107,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:47.070Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-f86116dcff1f9d96b62e",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 280,
-                  "column": 9
-                },
-                {
-                  "title": "2.3 Diver dive trajectory to bottom boundary executes safely and triggers defense breach",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1196,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:48.187Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-32341435191d358366b1",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 321,
-                  "column": 9
-                },
-                {
-                  "title": "2.4 Rogue Stalker AI tracking enemies at screen edges remains confined within canvas bounds",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1113,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:49.396Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-099c66faba2867be7c26",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 357,
-                  "column": 9
-                },
-                {
-                  "title": "2.5 Spearhead formation wingmen clamping prevents spawning outside canvas",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1310,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:50.515Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-750340f6588afc286e57",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 399,
-                  "column": 9
-                }
-              ]
-            },
-            {
-              "title": "3. Zero-Hostile & Queued Reinforcement Wave Clear Edge Cases",
-              "file": "tier5_adversarial_reinforcements.spec.ts",
-              "line": 429,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "3.1 Active warning timer blocks premature wave clear when hostile count is 0",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1119,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:51.839Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-39777a824c8a1f8e61ee",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 430,
-                  "column": 9
-                },
-                {
-                  "title": "3.2 Queued pending reinforcement spawns units when warning expires and keeps game in PLAYING",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1125,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:52.967Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-96f6a4532ace25ea00bb",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 454,
-                  "column": 9
-                },
-                {
-                  "title": "3.3 Pending ALLY reinforcement with 0 hostiles transitions cleanly to SHOP after helpers spawn",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 980,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:54.098Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-def6f131a1a1a49fb25c",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 483,
-                  "column": 9
-                },
-                {
-                  "title": "3.4 Sub-millisecond warning threshold handover prevents race condition wave clear",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1086,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:55.085Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-2d180e85619a88b8cc8b",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 509,
-                  "column": 9
-                },
-                {
-                  "title": "3.5 Dynamic reinforcement tempo acceleration triggers when hostile count drops <= 2",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1066,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:56.177Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-d9da8318dcc90f42bc39",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 532,
-                  "column": 9
-                }
-              ]
-            },
-            {
-              "title": "4. Shop Transition & Intermission Integrity",
-              "file": "tier5_adversarial_reinforcements.spec.ts",
-              "line": 565,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "4.1 Legitimate wave clear triggers SHOP state and cleanly resets all pacing and warning variables",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1069,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:57.249Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-823d4261bbc43f4cadda",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 566,
-                  "column": 9
-                },
-                {
-                  "title": "4.2 Intermission startNextWave() advances level and spawns fresh wave with clean pacing timers",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1217,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:58.354Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-f2ddae914cb2117a3263",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 602,
-                  "column": 9
-                },
-                {
-                  "title": "4.3 Wave 5 Boss wave spawn integrity via startNextWave()",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1088,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:02:59.578Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-7765be21bdb54e156607",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 637,
-                  "column": 9
-                },
-                {
-                  "title": "4.4 Continuous 5-Wave loop with Shop intermissions and dynamic incursions completes without state leakage",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1120,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-08-28T15:03:00.673Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "17dbf2f928c509f16408-3344d8e1ad9f6e7cc1de",
-                  "file": "tier5_adversarial_reinforcements.spec.ts",
-                  "line": 669,
-                  "column": 9
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "water-invader.spec.ts",
-      "file": "water-invader.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Water Invader E2E Master Verification Suite",
-          "file": "water-invader.spec.ts",
-          "line": 3,
+          "title": "Challenger 2 Empirical Combat & Reinforcements Suite",
+          "file": "unit/challenger_crisis12_adversarial.test.ts",
+          "line": 16,
           "column": 6,
           "specs": [
             {
-              "title": "Full Life-cycle: Menu -> In-game -> Combat -> Reinforcement -> Boss -> Game Over",
+              "title": "CHALLENGE-01: Allied forward plasma cannons deal genuine damage to Sovereign Hull, Sovereign Core, and Enemies",
               "ok": true,
               "tags": [],
               "tests": [
@@ -3996,12 +361,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1843,
+                      "duration": 15,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-08-28T15:03:01.806Z",
+                      "startTime": "2026-09-03T04:31:10.369Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -4009,9 +374,849 @@
                   "status": "expected"
                 }
               ],
-              "id": "2c561389e21ec9c94dfb-3eee5d46bdc7c9838461",
-              "file": "water-invader.spec.ts",
-              "line": 9,
+              "id": "1f61e21ea1ec6cf12e87-a6c824220de1f7c7fb7c",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 21,
+              "column": 7
+            },
+            {
+              "title": "CHALLENGE-02: 120px point-defense laser grid vaporizes hostile projectiles and preserves player projectiles under 1,000-bullet barrage",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:10.397Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f61e21ea1ec6cf12e87-538f4cf30f77ba43417a",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 106,
+              "column": 7
+            },
+            {
+              "title": "CHALLENGE-03: Restorative nano-shield aura heals player HP by +1 exactly every 5.0s and reduces combat stress / suppression",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:10.421Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f61e21ea1ec6cf12e87-ef96523227dbf20097e5",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 185,
+              "column": 7
+            },
+            {
+              "title": "CHALLENGE-04: Escort interceptors maintain formation tracking across violent player maneuvers and fire suppressing blasters",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:10.444Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f61e21ea1ec6cf12e87-c2d08be7e9ff943efa83",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 232,
+              "column": 7
+            },
+            {
+              "title": "CHALLENGE-05: Warp-in descent and warp-out departure lifecycle transitions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:10.463Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f61e21ea1ec6cf12e87-b48556311d394448f743",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 279,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Adversarial 5,200 EHP Invariant & High-DPS Load Testing Suite",
+          "file": "unit/challenger_crisis12_adversarial.test.ts",
+          "line": 315,
+          "column": 6,
+          "specs": [
+            {
+              "title": "ADVERSARIAL-01: Sovereign is strictly invulnerable in Phase 1 under 1,000,000 DPS player barrage",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 38449,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:10.509Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f61e21ea1ec6cf12e87-630f48bc20b47ca0db5a",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 320,
+              "column": 7
+            },
+            {
+              "title": "ADVERSARIAL-02: Phase 2 activates if and only if both anchors are dead, with strict hull isolation from overkill",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 48,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:48.999Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f61e21ea1ec6cf12e87-26c72d188cf482f1216d",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 364,
+              "column": 7
+            },
+            {
+              "title": "ADVERSARIAL-03: Phase 3 engages exact 35.0s enrage clock and Core absorbs exact 1,500 damage to defeat",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 64,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.055Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f61e21ea1ec6cf12e87-a3ecda35e25fccbc454e",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 409,
+              "column": 7
+            },
+            {
+              "title": "ADVERSARIAL-04: Mathematical proof that encounter absorbs exactly 5,200 total EHP across all 12 archetypes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 66,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.127Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f61e21ea1ec6cf12e87-7f54bf691d0cea664542",
+              "file": "unit/challenger_crisis12_adversarial.test.ts",
+              "line": 458,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "unit/crisis_distribution_12.test.ts",
+      "file": "unit/crisis_distribution_12.test.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "12-Crisis Statistical Distribution & Incursion Gating Suite",
+          "file": "unit/crisis_distribution_12.test.ts",
+          "line": 42,
+          "column": 6,
+          "specs": [
+            {
+              "title": "STAT12-01 to STAT12-03: 12,000 Monte Carlo trials satisfy Pearson Chi-Square (df=11, p<0.01) and [850, 1150] per-archetype bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 54,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "--- 12,000 Monte Carlo Spawning Distribution ---\n"
+                        },
+                        {
+                          "text": "  VOID_SOVEREIGN: 1064 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  ABYSSAL_LEVIATHAN: 970 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  CYBERNETIC_EXTERMINATOR: 1006 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  CHRONO_DEVOURER: 989 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  SOLARIS_COLOSSUS: 996 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  NEBULA_PHANTASM: 1020 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  BIOMORPHIC_SWARM: 979 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  SINGULARITY_CORE: 1004 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  NANITE_HARVESTER: 991 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  PSIONIC_SHROUD: 1031 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  GLACIAL_OBLIVION: 989 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "  COSMIC_DEVOURER: 961 (Expected: 1000)\n"
+                        },
+                        {
+                          "text": "Pearson Chi-Square statistic: 8.7100 (Threshold: < 24.725)\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.206Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c8de5c8c01faaad2cb3-55dab6c46de8918c7f70",
+              "file": "unit/crisis_distribution_12.test.ts",
+              "line": 47,
+              "column": 7
+            },
+            {
+              "title": "STAT12-04: Incursion gating invariants: Stage 15 has 0% crisis chance, Stage 16 has 30% +- 5%, Stage 18 has 100% pity trigger",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 71,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[STAT12-04] Stage 16 Trigger Rate: 28.70% (287/1000)\n"
+                        },
+                        {
+                          "text": "[STAT12-04] Stage 18 Pity Trigger Rate: 100.00% (1000/1000)\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.266Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c8de5c8c01faaad2cb3-a42061c54a2cf08a9c72",
+              "file": "unit/crisis_distribution_12.test.ts",
+              "line": 120,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "unit/crisis_expansion_12.test.ts",
+      "file": "unit/crisis_expansion_12.test.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "12-Crisis Expansion Suite: Comprehensive Archetype, Balance, and State Machine Verification",
+          "file": "unit/crisis_expansion_12.test.ts",
+          "line": 63,
+          "column": 6,
+          "specs": [
+            {
+              "title": "EXP12-01: Verify all 12 distinct CrisisArchetype keys and CRISIS_ARCHETYPE_CONFIGS entries exist with non-empty fields and exact HP values",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 63,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.360Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-835e42947735e0d93d0d",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "EXP12-02: Strict 5,200 EHP invariant (2x600 + 2500 + 1500 = 5,200) across all 12 archetypes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 150,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.430Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-06ae12a72b343a3e2c66",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 114,
+              "column": 7
+            },
+            {
+              "title": "EXP12-03: 5-Phase State Machine lifecycle across all 12 archetypes (INCURSION -> PHASE_1_SHIELD -> PHASE_2_HULL -> PHASE_3_CORE -> DEFEATED)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 128,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.589Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-3ac51c41a06875023a7b",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 162,
+              "column": 7
+            },
+            {
+              "title": "EXP12-04A: BIOMORPHIC_SWARM Chitinous Hatchery Sacs spawn undulating seeker spores",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.725Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-7d771c15b0991922ebd9",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 240,
+              "column": 7
+            },
+            {
+              "title": "EXP12-04B: SINGULARITY_CORE Polarized Gravitational Dampeners exert opposing lateral forces",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.736Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-014e8b5f7206143aaa1c",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 266,
+              "column": 7
+            },
+            {
+              "title": "EXP12-04C: NANITE_HARVESTER Nanite Assembly Fabricators execute mutual 15 HP/s healing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.746Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-fc7e0ddce946e2594a84",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 293,
+              "column": 7
+            },
+            {
+              "title": "EXP12-04D: PSIONIC_SHROUD Telepathic Beacons spawn real psychic bolts and phantom mirage decoys",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.756Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-52b22da9e0a60e68c5d3",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 321,
+              "column": 7
+            },
+            {
+              "title": "EXP12-04E: GLACIAL_OBLIVION Cryo-Condensers reflect 4 ice splinters when rapid-fired (>6 shots/s)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.780Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-a6be844d7e3c0c773829",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 337,
+              "column": 7
+            },
+            {
+              "title": "EXP12-04F: COSMIC_DEVOURER Astral Siphon Maw regurgitates Dark Star Flares with fire trails",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.799Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-37d76837d5ba641b7df1",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 355,
+              "column": 7
+            },
+            {
+              "title": "EXP12-05: Archetypal Phase 2 and Phase 3 attack pattern execution across all 12 archetypes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 87,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.825Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-d4120fed5188b08c540d",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 380,
+              "column": 7
+            },
+            {
+              "title": "EXP12-06: Headless Canvas 2D vector drawing sanity across all 12x5 = 60 archetype/phase permutations (zero exceptions)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 72,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:49.979Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-8e0a4199570381996310",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 437,
+              "column": 7
+            },
+            {
+              "title": "EXP12-07: High-velocity player bullet collisions, piercing deduction, and damage gating",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-03T04:31:50.058Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1a8cf8b097a6d29a7605-f87399304c6fc747b4b2",
+              "file": "unit/crisis_expansion_12.test.ts",
+              "line": 471,
               "column": 7
             }
           ]
@@ -4021,9 +1226,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-28T15:00:36.158Z",
-    "duration": 147710.728,
-    "expected": 108,
+    "startTime": "2026-09-03T04:31:08.634Z",
+    "duration": 41473.668,
+    "expected": 30,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

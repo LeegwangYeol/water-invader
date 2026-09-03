@@ -1,61 +1,47 @@
-# BRIEFING — 2026-08-21T21:08:30+09:00
+# BRIEFING — 2026-08-31T19:00:00+09:00
 
 ## Mission
-Execute large-scale swarm endurance stress tests on Water Invader (Milestone 4), running deep endurance benchmarks with concurrent headless workers to test deep late-game waves (Wave 10+, Wave 15+, Boss Titan encounters, saturated bullet fields), verifying automated skills (Ultimate E, Ally Q), shop upgrades (Fire Rate 0.1s, Multi-Shot 5-spread, Piercing), resource stability (JS Heap, Web Audio lifecycle, FPS, entity counts, anomaly detection), and generate test-artifacts/stress_results.json and handoff documentation.
+Create comprehensive, rigorous Playwright E2E and integration tests in `tests/12_extreme_difficulty_and_crises.spec.ts` for Milestone M4 (Extreme Difficulty & Emergency Crisis Events).
 
 ## 🔒 My Identity
-- Archetype: implementer, qa, specialist
-- Roles: [implementer, qa, specialist]
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_worker_m4
-- Original parent: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Milestone: Milestone 4 (Deep Wave Swarm Stress Execution)
+- Archetype: Test Writer M4
+- Roles: specialist, qa
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m4
+- Original parent: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Milestone: Milestone M4 — E2E Testing Suite Expansion & Hardening
 
 ## 🔒 Key Constraints
-- Genuine execution without mocks, hardcoding, or cheats (MANDATORY INTEGRITY WARNING).
-- Follow all User Rules: Tree structure explanation, Korean replies, direct document append / accurate handling, clean background tasks.
-- Never write source/tests to `.agents/` directory (only metadata in `.agents/teamwork_preview_worker_m4/`).
-- Save JSON aggregate telemetry to `test-artifacts/stress_results.json`.
-- Document findings and complete verification in `handoff.md` and send report via `send_message`.
+- Write and modify test code ONLY (`tests/12_extreme_difficulty_and_crises.spec.ts`).
+- Never modify implementation code; escalate bugs to implementing agent / orchestrator.
+- Progressive Testability: Test features from Milestone M4 and its completed dependencies (M1-M3).
+- Self-contained and isolated tests.
+- Explicit authoritative expected outputs from specifications / game engine contracts.
+- DO NOT CHEAT: No facade tests, no hardcoded passing tests without exercising real logic.
+- Run `npx playwright test tests/12_extreme_difficulty_and_crises.spec.ts` and ensure all tests pass.
+- Run `npx tsc --noEmit` and `npm run build` to verify 0 errors.
 
 ## Current Parent
-- Conversation ID: f0dde94c-4951-4b88-847a-4f2ac38c6ac6
-- Updated: 2026-08-21T21:08:30+09:00
+- Conversation ID: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Updated: 2026-08-31T19:00:00+09:00
 
 ## Task Summary
-- **What to build/execute**: Large-scale multi-worker swarm endurance benchmarks for deep waves (Wave 10+, 12+, Titan Bosses) using `scripts/run_swarm_endurance.ts` and `tests/stress/endless_survival_swarm.spec.ts`.
-- **Success criteria**: 
-  1. Deep endurance runs executed across multiple concurrent workers (4 to 8 workers) targeting deep waves.
-  2. Extreme survival gameplay verified with active Ultimate (E) and Ally (Q) casting.
-  3. Automated shop purchases verified maxing out Fire Rate (0.1s), Multi-Shot (5-spread), Piercing.
-  4. Resource stability verified: JS Heap curve, Web Audio node lifecycle, FPS, bullet saturation (>100 bullets), zero critical crashes / NaN coordinates.
-  5. Aggregate telemetry collected and saved to `test-artifacts/stress_results.json`.
-  6. Detailed performance tables and observations documented in `handoff.md` and communicated via `send_message`.
-- **Interface contracts**: PROJECT.md
-- **Code layout**: PROJECT.md § Code Layout
-
-## Change Tracker
-- **Files modified**:
-  - `tests/stress/swarm_bot_engine.ts`: Support enum string & numeric GameState representations in perception and controller loop.
-  - `tests/stress/telemetry_stress_collector.ts`: Support enum string & numeric GameState in GameplayProgress and finalize cause of death check.
-  - `tests/stress/endless_survival_swarm.spec.ts`: Support enum string GameState in in-page bot scripts and test assertions.
-  - `scripts/run_swarm_endurance.ts`: Optimize upgrade priority and support enum string GameState in live session loop.
-- **Build status**: `npm run build` (Turbopack) PASS (2.0s), `npx tsc --noEmit` PASS, `npx playwright test tests/stress/` 34/34 PASS.
-- **Pending issues**: None.
-
-## Quality Status
-- **Build/test result**: 34/34 Playwright stress tests PASS (41.9s), Type check PASS.
-- **Lint status**: Clean.
-- **Tests added/modified**: Milestone 4 multi-worker 8-instance 120s live endurance execution.
+- **What to build**: Comprehensive Playwright E2E test suite in `tests/12_extreme_difficulty_and_crises.spec.ts` covering Tier 1 (Feature Coverage), Tier 2 (Boundary & Corner Cases), Tier 3 (Cross-Feature Combinations), Tier 4 (Real-World Scenarios) for Stage 10+ extreme difficulty and 5 Emergency Crisis Events.
+- **Success criteria**: All tests pass in Playwright, 100% type-safe, 0 lint/tsc/build errors.
+- **Interface contracts**: /Users/user/src/water-invader/PROJECT.md
+- **Code layout**: `tests/` directory for Playwright test specs.
 
 ## Loaded Skills
-- None
+- None required initially.
+
+## Quality Status
+- **Build/test result**: [TBD]
+- **Lint status**: [TBD]
+- **Tests added/modified**: `tests/12_extreme_difficulty_and_crises.spec.ts`
 
 ## Key Decisions Made
-- Executed 8 concurrent browser workers for 120s endurance run reaching Wave 12-14 with full weapon upgrades and skill activations.
-- Verified zero memory leaks, zero NaN coordinates, zero unhandled exceptions.
-- Exported complete telemetry to `test-artifacts/stress_results.json`.
+- [Initial] Review existing codebase, game canvas/state architecture, existing Playwright tests in `tests/`, and emergency crisis logic.
 
 ## Artifact Index
-- `test-artifacts/stress_results.json` — Comprehensive Swarm Stress JSON Telemetry (545k lines, 8 workers, 120s)
-- `.agents/teamwork_preview_worker_m4/handoff.md` — Final Handoff Report for Milestone 4
-- `.agents/teamwork_preview_worker_m4/progress.md` — Liveness & Step-by-Step Execution Log
+- `/Users/user/src/water-invader/tests/12_extreme_difficulty_and_crises.spec.ts` — E2E test suite for M4
+- `/Users/user/src/water-invader/.agents/teamwork_preview_worker_m4/handoff.md` — Final handoff report
+- `/Users/user/src/water-invader/.agents/teamwork_preview_worker_m4/progress.md` — Progress tracker

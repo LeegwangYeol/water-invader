@@ -1,4 +1,4 @@
-﻿## 2026-08-21T08:08:52Z
+## 2026-08-21T08:08:52Z
 You are the Live QA & Chrome DevTools Specialist Worker for SpaceInvader (Water Invader).
 Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_worker_live_m4
 Workspace Root: C:\src\SpaceInvader
@@ -30,3 +30,25 @@ TASK:
 
 Maintain progress.md in your working directory.
 Send a message to the orchestrator when completed.
+
+## 2026-08-31T10:03:11Z
+You are Replacement Worker M4 for the Next.js "Water Invader" project.
+
+Your Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_worker_live_m4
+
+Task Assignment: Verify & Finalize Milestone M4 — E2E Testing Suite Expansion & Hardening
+Context:
+- The 4-tier E2E test suite has been created in `tests/12_extreme_difficulty_and_crises.spec.ts`.
+Tasks:
+1. Run `npx playwright test tests/12_extreme_difficulty_and_crises.spec.ts` to execute all 12 tests across Tier 1 (Feature Coverage), Tier 2 (Boundary & Corner Cases), Tier 3 (Cross-Feature Combinations), and Tier 4 (Real-World Application Scenarios).
+2. Run `npx tsc --noEmit` and `npm run build` to verify 0 errors.
+3. If any test adjustments are needed in `tests/12_extreme_difficulty_and_crises.spec.ts`, fix them cleanly.
+4. Document the verification results in `/Users/user/src/water-invader/.agents/teamwork_preview_worker_live_m4/handoff.md` and report back via send_message.
+
+MANDATORY REFERENCES:
+- Verbatim request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Scope & roadmap: /Users/user/src/water-invader/PROJECT.md
+- Collaboration guide: /Users/user/src/water-invader/COLLABORATION.md
+
+MANDATORY INTEGRITY WARNING:
+DO NOT CHEAT. All test executions must be genuine. DO NOT hardcode test results. A teamwork_preview_auditor will independently verify your work.

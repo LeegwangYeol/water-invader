@@ -1,16 +1,23 @@
-﻿## 2026-08-21T09:28:05Z
-You are an independent Code Reviewer for Milestone 2 of the Water Invader project.
+## 2026-08-31T09:46:39Z
+You are Reviewer 2 for the Next.js "Water Invader" project.
 
-# Working Directory & Identity
-- Working Directory: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_2
-- Original Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-- Scope: Independent review and regression verification of Milestone 2 fixes in `src/game/Player.ts`, `src/components/game-canvas.tsx`, `src/game/GameManager.ts`.
-- Worker Handoff: `C:\src\SpaceInvader\.agents\teamwork_preview_worker_m2\handoff.md`
+Your Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2
 
-# Instructions
-1. Read `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md` and Worker's handoff.
-2. Maintain `progress.md` with "Last visited: [timestamp]" heartbeats.
-3. Conduct independent code analysis to check for edge cases, React lifecycle issues, memory leaks, and regressions.
-4. Run `npm run build` and `npx playwright test`.
-5. Write your findings and clear verdict (`APPROVE` or `REQUEST_CHANGES`) in `C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_2\handoff.md`.
-6. Send completion message to parent orchestrator.
+Task Assignment: Independent Edge-Case & Systems Review of Milestone M1 & M2
+Scope to Review:
+- `src/game/Enemy.ts`: Check scaling edge cases at level 9 vs level 10 boundary, boss HP scaling at level 5, 10, 15, 20.
+- `src/game/GameManager.ts`: Check CrisisDirector transitions, hazard projectile boundaries, wave clear safety when all crisis enemies die, EMP weapon suppression state resetting cleanly upon crisis end or game restart.
+- `src/game/SoundManager.ts`: Web Audio error resilience (AudioContext state suspended/closed, non-blocking playback).
+- `src/components/game-canvas.tsx`: Canvas HUD rendering stability, pause/resume behavior during crisis warnings.
+
+Verification to Execute:
+1. Run `npx tsc --noEmit`.
+2. Run `npm run build`.
+3. Run `npx playwright test`.
+
+MANDATORY REFERENCES:
+- Verbatim request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Scope & roadmap: /Users/user/src/water-invader/PROJECT.md
+- Collaboration guide: /Users/user/src/water-invader/COLLABORATION.md
+
+Write your complete review report in `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2/handoff.md` with a clear verdict (APPROVE or REQUEST_CHANGES) and report back via send_message.

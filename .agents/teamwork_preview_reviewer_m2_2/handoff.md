@@ -1,135 +1,124 @@
-﻿# Milestone 2 Independent Code Review & Adversarial Verification Report
-
-**Reviewer Verdict**: **APPROVE**
-
----
+# Reviewer 2: Independent Edge-Case & Systems Review Report (Milestones M1 & M2)
 
 ## 1. Observation
 
-Direct code inspections, build commands, and Playwright automated test executions were conducted on Milestone 2 changes:
+### 1.1 Source Code Inspections
+- **`src/game/Enemy.ts` (Lines 78–198, 415–498)**:
+  - **Level 1–9 Onboarding Baseline**:
+    - Enemy HP formula: `hp = 1 + Math.floor(level / 3)`. At Level 9, standard HP is `4`.
+    - Boss HP at Level 5: `hp = level * 10 = 50`.
+    - Attack cooldown: `fireTimer = Math.random() * 3 + 2` (2.0s ~ 5.0s, Rogues 2.5s ~ 5.5s).
+    - Projectile speed: `200 px/s` (Boss `300 px/s`, Rogues `240 ~ 360 px/s`).
+    - Projectile damage: Standard `1` damage.
+  - **Level 10+ Extreme Scaling & Piecewise Boundary**:
+    - Normal enemy HP formula: `standardHp = 4 + (level - 9) * 6 + Math.floor(Math.pow(level - 9, 1.5))`.
+      - Level 10: `standardHp = 4 + 1*6 + 1 = 11 HP` (clean step from Level 9's 4 HP).
+      - Level 15: `standardHp = 4 + 6*6 + 14 = 54 HP`.
+      - Level 20: `standardHp = 4 + 11*6 + 36 = 106 HP`.
+    - Shielded Enemy: `hp = 8 + (level - 9) * 4`, `shieldHp = 6 + (level - 9) * 3` (Level 10 EHP = 21, Level 15 EHP = 56).
+    - Rogue Legions:
+      - Rogue Drone: `hp = 3 + (level - 9) * 3` (Level 10 = 6 HP).
+      - Rogue Stalker: `hp = 6 + (level - 9) * 5` (Level 10 = 11 HP).
+      - Rogue Mech: `hp = 15 + (level - 9) * 10` (Level 10 = 25 HP, Level 15 = 75 HP).
+    - Boss HP Scaling Formula: `hp = 50 + level * 25 + Math.floor(Math.pow(level - 5, 2) * 2.5)`.
+      - Level 5 Boss: `50 HP`.
+      - Level 10 Boss: `50 + 250 + 62 = 362 HP`.
+      - Level 15 Boss: `50 + 375 + 250 = 675 HP`.
+      - Level 20 Boss: `50 + 500 + 562 = 1112 HP`.
+    - Projectile Velocity & Attack Tempo:
+      - Cooldown: `minCooldown = Math.max(0.4, 0.8 - (level - 10) * 0.02)`, `fireTimer = Math.random() * 0.7 + minCooldown` (0.8s ~ 1.5s).
+      - Bullet speed: `250 + Math.min(150, (level - 10) * 15)` (250 px/s scaling to 400 px/s, Snipers at 400+ px/s).
+    - Elite 2-Damage Projectiles: Snipers, Bosses, Rogue Stalkers, and Rogue Mechs deal 2 damage per shot, menacing a 5 HP max-upgrade player in 3 hits.
+    - Aggression AI: `isAggressive = true`, `rushVelocityModifier = 1.8 + Math.min(1.2, (level - 10) * 0.15)` (1.8x ~ 3.0x), directional homing pull towards player X position, periodic downward rush surges (`chargeSurgeY = 60 ~ 100 px/s`).
 
-- **Source Code Verification**:
-  - `src/game/Player.ts` (Lines 7-8, 106-145):
-    - `public hp: number = 3; public maxHp: number = 5;` correctly sets starting HP.
-    - `fire()` implements 5 distinct firing patterns: Lv 1 (single central bullet), Lv 2 (2 parallel bullets with spread), Lv 3 (3 angular bullets: -10°, 0°, +10°), Lv 4 (4 angular bullets: -15°, -5°, +5°, +15°), and Lv 5+ (5 angular bullets: -20°, -10°, 0°, +10°, +20°) with precise trigonometry (`Math.sin`/`Math.cos`).
-  - `src/components/game-canvas.tsx` (Lines 19, 75-83, 109-142):
-    - `useState(3)` initializes HP state to 3.
-    - `handleOpenManual` and `handleCloseManual` call `gameManagerRef.current?.pause()` and `gameManagerRef.current?.resume()`.
-    - `useEffect` dependency array decoupled to `[]` with `showManualRef` preventing canvas remounts.
-    - Event listeners for `window.addEventListener('blur', ...)` and `document.addEventListener('visibilitychange', ...)` registered with cleanup on unmount.
-  - `src/game/GameManager.ts` (Lines 51-53, 65-94, 100-128, 284, 727-761):
-    - `keysPressed: { [key: string]: boolean } = {}` and `clearKeys()` reset player input state.
-    - `pause()` halts the rAF animation frame and clears keys; `resume()` resets `lastTime = performance.now()` and re-requests animation frames without delta time jumps.
-    - `handleKeyDown` and `handleKeyUp` convert keys to lowercase (`k = key.toLowerCase()`) supporting both CapsLock and standard inputs.
-    - `init()` resets `this.player.hp = 3` and updates UI via `onPlayerHpChange(3)`.
-    - `speedMultiplier = Math.min(1.8, Math.max(1.0, 1.0 + (20 - Math.min(20, this.enemies.length)) * 0.04))` smoothly scales speed between 1.0x and 1.8x.
+- **`src/game/GameManager.ts` (Lines 45–58, 391–539, 670–795, 937–966)**:
+  - **CrisisDirector Event System**:
+    - Supports 5 distinct emergency archetypes: `TITAN_HORDE`, `ACID_STORM`, `SWARM_BLITZ`, `EMP_DISRUPTION`, `TOTAL_WAR`.
+    - Warning phase (`warningTimer = 2.0s`): activates siren alarm `soundManager.playCrisisAlarm()`, triggers screen shake, and broadcasts `onCrisisEvent` to HUD overlay.
+    - Activation phase (`activateCrisisEffect`):
+      1. `TITAN_HORDE`: Spawns Boss dreadnought (`hp >= 250`) + 4 Shielded escorts + 4 Diver units.
+      2. `ACID_STORM`: Generates falling toxic hazard projectiles (`speedY = 220 ~ 340 px/s`), damages player / destructible barricades, and cleans up when `y > logicalHeight + 30`.
+      3. `SWARM_BLITZ`: Spawns 8 high-speed coordinated pincer Divers + 3 Zigzag units.
+      4. `EMP_DISRUPTION`: Suppresses player shooting for 2.5s (`empSuppressionActive = true`, `suppressionLevel = 100`) and spawns 2 Snipers + 2 Rogue Stalkers.
+      5. `TOTAL_WAR`: Spawns 11 Invaders and 11 Rogues in dual-flank chaotic clash.
+  - **State Cleanup & EMP Reset Integrity**:
+    - EMP suppression clears automatically when `empTimer <= 0`.
+    - All crisis state (`activeCrisis = null`, `warningTimer = 0`, `bannerText = null`, `empSuppressionActive = false`, `hazardProjectiles = []`) resets completely on:
+      - Crisis timeout (`crisisState.timer <= 0`)
+      - Wave clear (`remainingHostiles === 0` -> SHOP)
+      - Next wave start (`startNextWave()`)
+      - Game restart (`init()`)
+  - **Wave Clear Safety & Softlock Prevention**:
+    - All crisis units inherit `Faction.INVADER` or `Faction.ROGUE`.
+    - `remainingHostiles` counts all non-dead Invaders and Rogues.
+    - Transition to `GameState.SHOP` is blocked while `warningTimer > 0`, `crisisState.warningTimer > 0`, or active `ACID_STORM` is ongoing with positive duration, preventing premature wave clears and softlocks.
 
-- **Build Verification**:
-  - `npm run build` executed and finished with 0 errors (Turbopack compile time 538ms, TypeScript type-check passed in 2.0s, static pages generated).
+- **`src/game/SoundManager.ts` (Lines 1–434)**:
+  - Web Audio AudioContext initializes on first user action (`init()`).
+  - Automatically checks `if (this.audioCtx && this.audioCtx.state === 'suspended') { this.audioCtx.resume(); }`.
+  - All playback methods check `if (!this.enabled || !this.audioCtx || this.isMuted) return;`.
+  - Audio node disconnections in `osc.onended` are safely wrapped in `try { osc.disconnect(); gainNode.disconnect(); } catch (e) {}`.
+  - Procedural synthesizer methods added for all crisis events: `playCrisisAlarm()`, `playEmpDisruptionSound()`, `playAcidStormSound()`, `playRogueShoot()`, `playCrossfireHit()`, `playThirdFactionWarning()`.
 
-- **Playwright Test Suite Verification**:
-  - `tests/m2_verification.spec.ts`: 6/6 tests passed.
-  - `tests/01_ui_and_controls.spec.ts`: 4/4 tests passed.
-  - `tests/02_rendering_and_vector_art.spec.ts`: 3/3 tests passed.
-  - `tests/03_game_mechanics.spec.ts`: 8/8 tests passed.
-  - `tests/04_multiwave_progression.spec.ts`: 4/4 tests passed.
-  - `tests/water-invader.spec.ts`: 1/1 master E2E test passed.
-  - `tests/adversarial_challenger_m1.spec.ts` & `tests/adversarial_m1_challenger.spec.ts`: 7/7 adversarial tests passed.
-  - **Total**: 33/33 tests passed (100% pass rate).
+- **`src/components/game-canvas.tsx` (Lines 1–1001)**:
+  - Memoized subcomponents (`TopHUD`, `ShopUpgradePanel`, `CanvasCore`, `MobileControls`, `MenuOverlay`, `ShopModal`, `GameOverModal`) prevent UI render thrashing.
+  - Crisis warning banner (`[data-testid="crisis-warning-banner"]`) and hazard badges (`[data-testid="emp-suppression-badge"]`, `[data-testid="acid-storm-badge"]`) render with `pointer-events-none` so gameplay input on the underlying canvas is never blocked.
+  - Pause/resume integrity: Manual modal open pauses rAF and clears keys; close resumes rAF seamlessly. `window.blur` and `document.visibilitychange` invoke `clearKeys()` and reset pointer drag to prevent desyncs.
+
+### 1.2 Verification Commands Executed
+1. `npx tsc --noEmit` -> **Exit code 0** (0 TypeScript errors).
+2. `npm run build` -> **Exit code 0** (Compiled successfully with Turbopack, static routes optimized).
+3. `npx playwright test` -> **Exit code 0** (385 passed out of 385 tests in 5.5m across all unit, integration, adversarial, and E2E suites).
 
 ---
 
 ## 2. Logic Chain
 
-```
-Milestone 2 Architecture & Control Flow Tree
-========================================================================================
-src/
-├── game/
-│   ├── Player.ts
-│   │   ├── [F-16] hp = 3, maxHp = 5
-│   │   └── [F-05] fire(): Projectile Fan Architecture
-│   │       ├── Lv 1 (1 bullet)  : [ 0° ]
-│   │       ├── Lv 2 (2 bullets) : [ -20px offset, +20px offset ]
-│   │       ├── Lv 3 (3 bullets) : [ -10°, 0°, +10° ] (sin/cos velocity vectors)
-│   │       ├── Lv 4 (4 bullets) : [ -15°, -5°, +5°, +15° ]
-│   │       └── Lv 5+ (5 bullets): [ -20°, -10°, 0°, +10°, +20° ]
-│   ├── GameManager.ts
-│   │   ├── [F-03] clearKeys() ──> keysPressed = {} & player.{isMovingLeft, isMovingRight, isShooting} = false
-│   │   ├── [F-09] Lifecycle Pause/Resume:
-│   │   │   ├── pause()  ──> isPaused = true, cancelAnimationFrame(id), clearKeys()
-│   │   │   └── resume() ──> isPaused = false, lastTime = performance.now(), requestAnimationFrame()
-│   │   ├── [F-12] Case Normalization:
-│   │   │   ├── handleKeyDown(key) ──> k = key.toLowerCase() (handles 'A'/'a', 'D'/'d', 'E'/'e', 'Q'/'q', 'F3'~'F5')
-│   │   │   └── handleKeyUp(key)   ──> k = key.toLowerCase()
-│   │   ├── [F-16] init() ──> reset player.hp = 3, trigger onPlayerHpChange(3)
-│   │   └── [F-17] speedMultiplier = min(1.8, max(1.0, 1.0 + (20 - enemies.length) * 0.04))
-│   └── types.ts
-└── components/
-    └── game-canvas.tsx
-        ├── [F-03] Focus Safety Listeners:
-        │   ├── window 'blur'              ──> game.clearKeys()
-        │   └── document 'visibilitychange'──> if (hidden) game.clearKeys()
-        ├── [F-09] Modal Decoupling:
-        │   ├── useEffect dependencies: [] (no remounts on modal toggle)
-        │   ├── showManualRef: tracks modal state without triggering re-render
-        │   ├── handleOpenManual  ──> setShowManual(true) & game.pause()
-        │   └── handleCloseManual ──> setShowManual(false) & game.resume()
-        └── [F-16] useState(3) for HUD dot synchronization (3 active, 2 inactive)
-========================================================================================
-```
+1. **Premise 1 (Mathematical Scaling Continuity)**:
+   - Piecewise HP formulas in `Enemy.ts` maintain the gentle onboarding curve for Waves 1–9 ($HP = 1 + \lfloor\text{level}/3\rfloor \in [1, 4]$) and transition to exponential growth at Stage 10+ ($HP = 4 + (\text{level}-9) \times 6 + \lfloor(\text{level}-9)^{1.5}\rfloor$), matching the specification.
+   - Boss HP scaling ($50 \to 362 \to 675 \to 1112$ HP for Levels 5, 10, 15, 20) combined with 2-damage elite shots and 0.8s–1.5s fire rates mathematically forces max-upgrade players to utilize tactical cover, barricades, and crossfire.
 
-1. **Integrity & Legitimacy**:
-   - Zero hardcoding or facades: `Player.fire()` generates real `Bullet` instances with accurate trigonometry.
-   - Zero cheating: tests assert actual runtime velocities and internal entity states.
-2. **Lifecycle & Memory Safety**:
-   - `useEffect` in `game-canvas.tsx` registers window/document listeners once and unbinds them cleanly in its return teardown function.
-   - `pause()` cancels active rAF IDs preventing zombie rendering loops.
-   - `resume()` updates `lastTime` to avoid delta time accumulation spikes.
-3. **Control Robustness**:
-   - Key inputs are normalized via `.toLowerCase()`, eliminating Shift and CapsLock input drop bugs.
-   - Blur and visibility changes wipe the `keysPressed` map and player movement flags, preventing runaway movement.
-4. **Game Balance & Progression**:
-   - Player starts with 3 HP out of 5, matching the upgradeable health design.
-   - Enemy speed scaling transitions smoothly between 1.0x and 1.8x without jarring velocity jumps.
+2. **Premise 2 (State Machine & Softlock Safety)**:
+   - All enemies spawned by `CrisisDirector` register under `Faction.INVADER` or `Faction.ROGUE`.
+   - `GameManager.ts` evaluates `remainingHostiles` across all active entities and enforces warning timer completion before advancing to `GameState.SHOP`.
+   - EMP weapon suppression, Acid Storm hazard projectiles, and warning banners are comprehensively reset in `init()`, `startNextWave()`, and wave completion gates, guaranteeing no state leakage across game loops.
+
+3. **Premise 3 (Audio & UI Resilience)**:
+   - `SoundManager.ts` handles browser autoplay policies and audio context suspensions gracefully without throwing unhandled exceptions or blocking the main thread.
+   - `game-canvas.tsx` isolates React HUD overlays with `pointer-events-none`, protects canvas DPI scaling, and handles blur/visibility loss without state corruption.
+
+4. **Premise 4 (Integrity & Anti-Facade Audit)**:
+   - No hardcoded test responses or facade bypass implementations exist.
+   - All physics calculations, AABB bounding box collision checks, fixed-step accumulator updates, and multi-faction AI behaviors are executed genuinely through real procedural code.
 
 ---
 
 ## 3. Caveats
 
-- **No caveats.** All 6 Milestone 2 items (F-03, F-05, F-09, F-12, F-16, F-17) were independently analyzed and verified against edge cases, lifecycle anomalies, memory leaks, and regressions.
+- **Caveat 1**: Audio synthesis requires initial user interaction (e.g. clicking 'START GAME' or toggling sound) per standard browser Web Audio autoplay policies; this is standard for web browsers and fully accounted for in `SoundManager.init()`.
+- **Caveat 2**: All 385 automated tests pass with 100% success rate across Chrome/Chromium; mobile touch emulation tests confirm multi-touch and drag evasion behaviors.
 
 ---
 
 ## 4. Conclusion
 
-**Verdict**: **APPROVE**
+**Verdict: APPROVE**
 
-Milestone 2 implementation is thoroughly verified, robust, and clean:
-- **F-03**: Stuck keys on focus loss are 100% resolved.
-- **F-05**: Multi-shot Lv 4 and Lv 5 fire true angular projectile fans.
-- **F-09**: Modal toggles pause/resume the game engine without resetting score, level, or canvas state.
-- **F-12**: CapsLock/uppercase key events work identically to lowercase keys.
-- **F-16**: Starting HP is synchronized at 3/5 across React state, Player class, and HUD dots.
-- **F-17**: Enemy speed escalation scales smoothly up to 1.8x.
+The implementation of Milestone M1 (Extreme Difficulty Scaling Engine) and Milestone M2 (Emergency Waves & Crisis Events Director) is robust, mathematically sound, defensively coded against all boundary edge cases, and completely free of integrity violations or state leaks.
 
 ---
 
 ## 5. Verification Method
 
-To independently reproduce the verification results:
-
+To independently verify all findings:
 ```bash
-# 1. Type Check & Production Build
+# 1. Typecheck
+npx tsc --noEmit
+
+# 2. Production Build
 npm run build
 
-# 2. Start Production Server
-npx next start -p 3000
-
-# 3. Execute Milestone 2 Verification Suite
-$env:TARGET_URL="http://localhost:3000"
-npx playwright test tests/m2_verification.spec.ts
-
-# 4. Execute Full Regression & Adversarial Suites
-npx playwright test tests/01_ui_and_controls.spec.ts tests/02_rendering_and_vector_art.spec.ts tests/03_game_mechanics.spec.ts tests/04_multiwave_progression.spec.ts tests/adversarial_challenger_m1.spec.ts tests/adversarial_m1_challenger.spec.ts tests/water-invader.spec.ts
+# 3. Full Playwright E2E & Adversarial Test Suite
+npx playwright test
 ```
+All commands must exit with code 0.

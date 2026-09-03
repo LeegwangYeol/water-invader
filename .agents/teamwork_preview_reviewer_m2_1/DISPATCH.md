@@ -1,24 +1,20 @@
-﻿# DISPATCH LOG
+## 2026-08-31T09:46:38Z
 
-## 2026-08-21T09:28:05Z
-You are an independent Code Reviewer for Milestone 2 of the Water Invader project.
+Task Assignment: Independent Review & Verification of Milestone M1 & M2
+Scope to Review:
+- `src/game/Enemy.ts`: Stage 10+ piecewise exponential HP scaling, attack cooldowns, projectile velocities, 2-damage elite shots, boss scaling.
+- `src/game/GameManager.ts`: CrisisDirector state machine, 5 crisis archetypes (Titan Horde, Acid Storm, Swarm Blitz, EMP Disruption, Total War), 2.0s warning phase, boss minion escorts, zero soft-lock wave transitions.
+- `src/game/SoundManager.ts`: Procedural Web Audio synthesizers (`playCrisisAlarm`, `playEmpDisruptionSound`, `playAcidStormSound`).
+- `src/components/game-canvas.tsx`: React HUD overlay with animated crisis banners, EMP suppression badge, acid storm indicator.
+- `src/game/types.ts`: Type definitions for `CrisisType`, `HazardProjectile`, `CrisisState`.
 
-# Working Directory & Identity
-- Working Directory: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_1
-- Original Request: C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-- Scope: Review and verify Milestone 2 implementation (F-03, F-05, F-09, F-12, F-16, F-17) across `src/game/Player.ts`, `src/components/game-canvas.tsx`, and `src/game/GameManager.ts`.
-- Worker Handoff: `C:\src\SpaceInvader\.agents\teamwork_preview_worker_m2\handoff.md`
+Verification to Execute:
+1. Run `npx tsc --noEmit` and verify 0 type errors.
+2. Run `npm run build` and verify successful production Next.js build.
+3. Run `npx playwright test` and verify test suite status.
+4. Verify code cleanliness, absence of regressions for Waves 1–9, and proper error handling.
 
-# Instructions
-1. Read `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md` and Worker's handoff.
-2. Maintain `progress.md` with "Last visited: [timestamp]" heartbeats.
-3. Review the code changes in the 3 modified files to verify:
-   - F-03: `clearKeys()` is invoked on window blur and visibilitychange without leaking listeners.
-   - F-05: Multi-shot 4 and 5 bullets fire accurate angular spreads.
-   - F-09: Modal opening pauses the game without destroying or resetting `GameManager` instance.
-   - F-12: CapsLock / uppercase key event normalization is properly applied.
-   - F-16: Initial HP (3/5) synchronization between UI and engine.
-   - F-17: Smooth remaining enemy speed multiplier calculation.
-4. Run `npm run build` and `npx playwright test` to verify build and test results.
-5. Write your findings and clear verdict (`APPROVE` or `REQUEST_CHANGES`) in `C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m2_1\handoff.md`.
-6. Send completion message to parent orchestrator.
+MANDATORY REFERENCES:
+- Verbatim request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Scope & roadmap: /Users/user/src/water-invader/PROJECT.md
+- Collaboration guide: /Users/user/src/water-invader/COLLABORATION.md

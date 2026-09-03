@@ -1,14 +1,16 @@
-# Progress Heartbeat - Explorer Survey 1
-Last visited: 2026-08-26T19:39:50Z
+# Progress Tracker — teamwork_preview_explorer_survey_1
 
-- [x] Read ORIGINAL_REQUEST.md and task instructions
-- [x] Initialized DISPATCH.md and BRIEFING.md
-- [x] Explore src/game directory and find all entity, combat, and collision types/classes
-- [x] Analyze Entity hierarchy/models (Player, Helper/Allies, Enemy, Bullet, Barricade)
-- [x] Analyze Combat & Collision system (shooting, bullets, damage, hitboxes, collision loop)
-- [x] Analyze Faction hostility & targeting (who shoots whom, friendly fire checks, collision filtering)
-- [x] Synthesize findings into detailed analysis (analysis.md) and 5-component handoff report (handoff.md)
-- [x] Verified build and tests with npm run build and npx playwright test
-- [x] Send completion message to parent orchestrator
+- **Status**: COMPLETED
+- **Last visited**: 2026-09-02T13:34:50+09:00
 
-
+## Tasks
+- [x] Initialized DISPATCH.md, BRIEFING.md, progress.md
+- [x] Read ORIGINAL_REQUEST.md and COLLABORATION.md
+- [x] Survey environmental events system (scheduling, warning phase, active phase, completion)
+- [x] Survey Acid Rain implementation (spawning, speed/damage, collision, barricade interaction)
+- [x] Survey player damage mitigation, inventory, shop, and items
+- [x] Investigate potential counterplay architectures (deployable safe zone, umbrella/shield, shop items)
+- [x] Synthesize findings into `survey_events_acidrain.md`
+- [x] Create `handoff.md`
+- [x] Update BRIEFING.md & progress.md
+- [x] Notify orchestrator via `send_message`

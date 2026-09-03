@@ -1,48 +1,54 @@
-﻿# BRIEFING — 2026-08-21T09:34:30Z
+# BRIEFING — 2026-08-31T09:58:00Z
 
 ## Mission
-Adversarial verification & stress testing of Milestone 2 (F-03, F-05, F-09).
+Adversarially stress-test Stage 10+ difficulty scaling and CrisisDirector mechanics in Water Invader via Playwright tests and TypeScript type checking.
 
 ## 🔒 My Identity
-- Archetype: empirical-challenger
+- Archetype: challenger
 - Roles: critic, specialist
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m2_1
-- Original parent: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Milestone: Milestone 2
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_1
+- Original parent: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Milestone: M1 & M2
 - Instance: 1 of 1
 
 ## 🔒 Key Constraints
-- Review-only — do NOT modify implementation code without authorization
-- Run empirical test verification (execute tests directly, do not trust claims)
-- Reply in Korean for messages/reports
-- Code tree structure format for structural analysis
+- Review-only — do NOT modify implementation code
+- Write and execute adversarial test harnesses directly
+- Empirical verification required for all claims and bugs
+- All test files must be co-located or placed in project tests directory (NOT in .agents/)
+- Verify pre-commit build (`npx tsc --noEmit`, `npm run build`)
 
 ## Current Parent
-- Conversation ID: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Updated: 2026-08-21T09:34:30Z
+- Conversation ID: c4cd9241-cfaa-4000-94c3-6c5941894621
+- Updated: 2026-08-31T09:58:00Z
 
 ## Review Scope
-- **Files reviewed**: src/components/game-canvas.tsx, src/game/Player.ts, src/game/GameManager.ts, C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md
-- **Interface contracts**: F-03 (Blur/Visibility key clearance), F-05 (Multi-shot Lv 4 & 5 angles and bullet counts), F-09 (Modal open instance preservation & pause/resume)
-- **Review criteria**: Empirical correctness, resilience under stress/edge-cases, bug finding
-
-## Key Decisions Made
-- Created and executed comprehensive Playwright adversarial stress suite 	ests/adversarial_challenger_m2.spec.ts covering 9 stress/edge cases across F-03, F-05, and F-09.
-- Verified 100% pass across all 9 adversarial challenge tests and 6 milestone verification tests. Verdict: APPROVE.
-
-## Artifact Index
-- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m2_1\BRIEFING.md — Persistent context & state
-- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m2_1\progress.md — Liveness heartbeat & task progress
-- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m2_1\handoff.md — 5-component adversarial review report
-- C:\src\SpaceInvader\tests\adversarial_challenger_m2.spec.ts — 9-test adversarial stress test suite
+- **Files to review**: `src/components/game-canvas.tsx`, `src/game/GameManager.ts`, `src/game/Enemy.ts`, `src/game/Player.ts`, `src/game/types.ts`
+- **Test suite created**: `tests/adversarial_challenger_m1_m2_stress.spec.ts` (17 tests)
+- **Review criteria**: State corruption resistance, EMP suppression/restoration, Toxic Acid Storm collision/cleanup, Wave to SHOP transition under crisis, Boss escort spawning at Stage 10 vs Wave 5.
 
 ## Attack Surface
-- **Hypotheses tested**:
-  - H1: Window blur / visibility change while holding movement / shoot keys resets isMovingLeft, isMovingRight, isShooting, and empties keysPressed. Late keyup does not cause error/desync. (Confirmed Robust)
-  - H2: Multi-shot Lv 4 produces exactly 4 bullets with trigonometric velocities [-15°, -5°, +5°, +15°], and Lv 5 produces exactly 5 bullets [-20°, -10°, 0°, +10°, +20°]. Shop upgrade boundary caps at Lv 5 without deducting currency beyond max. (Confirmed Robust)
-  - H3: Opening/closing modal 5 times in Wave 2 preserves GameManager instance, score, level, and enemy formation without loop duplication or delta time explosion upon resume. (Confirmed Robust)
-- **Vulnerabilities found**: 0 vulnerabilities. Implementation is robust and mathematically sound.
-- **Untested angles**: None within M2 scope.
+- **Hypotheses tested**: 
+  - H1: Rapid sequential crisis triggers (20x burst, interleaved updates, state rejection in non-PLAYING states) do not corrupt gameState or spawn runaway timers. (PASS)
+  - H2: EMP weapon suppression blocks player shooting and restores after expiration. (PASS with EMP Keydown Leak Vulnerability documented: 1 bullet can leak on initial Space keydown if pressed mid-EMP due to `player.update()` running before line 686).
+  - H3: Acid Storm projectiles cause player damage on collision, trigger hit-flash and i-frames, and properly despawn off-screen without leak. (PASS)
+  - H4: Crisis waves cleanly transition to SHOP when all hostiles (regular + crisis) are cleared, with proper duration safety for Acid Storm. (PASS)
+  - H5: Stage 10 Boss spawns with 4-8 escorts while Wave 5 Boss has 0 escorts; exponential HP formulas match specifications. (PASS)
+- **Vulnerabilities found**:
+  - EMP Single-Frame Keydown Leak: In `GameManager.ts`, `this.player.update()` runs before the EMP suppression check (`crisisState.empTimer`), allowing 1 initial bullet to fire if Spacebar is pressed during active EMP disruption before `isShooting` is reset to false.
+- **Untested angles**: Audio synthesizer node allocation under continuous 1000+ frame crisis stress.
 
 ## Loaded Skills
-None
+- None loaded.
+
+## Key Decisions Made
+- Created 17-test dedicated test suite `tests/adversarial_challenger_m1_m2_stress.spec.ts`.
+- Verified build and TypeScript type checking (`npx tsc --noEmit` and `npm run build`).
+- Verdict: APPROVE with recommended optimization for EMP input suppression.
+
+## Artifact Index
+- `/Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_1/DISPATCH.md` — Received dispatch instructions
+- `/Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_1/BRIEFING.md` — Situational awareness
+- `/Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_1/progress.md` — Progress and heartbeat
+- `/Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_1/handoff.md` — Final handoff report
+- `/Users/user/src/water-invader/tests/adversarial_challenger_m1_m2_stress.spec.ts` — 17 adversarial stress tests

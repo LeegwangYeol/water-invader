@@ -1,40 +1,35 @@
-# BRIEFING — 2026-08-26T10:41:40Z
+# BRIEFING — 2026-09-01T06:25:30Z
 
 ## Mission
-Analyze `types.ts`, `Entity.ts`, and `Bullet.ts` to define the Faction system (Player, Invader, Rogue), entity faction property, bullet faction mechanics, backward compatibility (`isPlayerBullet`), rendering styles, and provide precise changes for Worker M1_1.
+Analyze Milestone 1: Crisis Types, Entities & Vector Visuals for Water Invader endgame crisis system.
 
 ## 🔒 My Identity
 - Archetype: explorer
-- Roles: investigator, analyzer, synthesizer
-- Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_explorer_m1_1
-- Original parent: 738841f4-20be-4ebb-85ad-eff3ce31cb23
-- Milestone: M1 (Faction System & Multi-Directional Combat Core)
+- Roles: investigation, synthesis
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_explorer_m1_1
+- Original parent: 270670b6-2c75-43bf-aa57-ed25ddd6d8c0
+- Milestone: Milestone 1 (Crisis Types, Entities & Vector Visuals)
 
 ## 🔒 Key Constraints
-- Read-only investigation — do NOT implement / modify source code directly
-- Focus on `types.ts`, `Entity.ts`, and `Bullet.ts`
-- Backward-compatibility preservation for `isPlayerBullet` and existing systems
-- High-contrast visual bullet rendering by faction (Player=Cyan, Invader=Orange/Red, Rogue=Neon Lime/Amber)
+- Read-only investigation — do NOT implement in src/game/ yet (analysis only)
+- File workspace convention: Write only to your folder (`.agents/teamwork_preview_explorer_m1_1/`)
+- All visual rendering must use Canvas 2D pure procedural vector paths, gradients, glow (no images/sprites)
+- Coordinate with parent agent via send_message
 
 ## Current Parent
-- Conversation ID: 738841f4-20be-4ebb-85ad-eff3ce31cb23
-- Updated: not yet
+- Conversation ID: 270670b6-2c75-43bf-aa57-ed25ddd6d8c0
+- Updated: 2026-09-01T06:25:30Z
 
 ## Investigation State
-- **Explored paths**: `src/game/types.ts`, `src/game/Entity.ts`, `src/game/Bullet.ts`, `src/game/Enemy.ts`, `src/game/Player.ts`, `src/game/Helper.ts`, `src/game/Barricade.ts`, `src/game/Particle.ts`, `src/game/GameManager.ts`, `tests/03_game_mechanics.spec.ts`
-- **Key findings**:
-  - `types.ts` requires string enum `Faction { PLAYER = 'PLAYER', INVADER = 'INVADER', ROGUE = 'ROGUE' }`.
-  - `Entity` needs `public faction: Faction` with default `Faction.PLAYER` in constructor for seamless subclassing.
-  - `Bullet` needs backward-compatible `isPlayerBullet` getter/setter and `Faction | boolean` constructor input.
-  - Bullet rendering supports 3 distinct styles: Player (Cyan droplet), Invader (Orange/Red plasma orb / purple interceptable), Rogue (Neon Lime / Amber kinetic diamond spike) with dynamic velocity angle rotation.
-- **Unexplored areas**: None for M1_1 scope.
+- **Explored paths**: `src/game/types.ts`, `src/game/Entity.ts`, `src/game/Enemy.ts`, `src/game/SoundManager.ts`, `src/game/GameManager.ts`, `PROJECT.md`, `COLLABORATION.md`
+- **Key findings**: Complete procedural vector rendering formulas, tri-phase entity models, type contracts for `src/game/crisis/`, and Web Audio procedural synthesis routines documented.
+- **Unexplored areas**: Milestone 1 investigation complete. Downstream implementation and balance calibration assigned to subsequent milestones.
 
 ## Key Decisions Made
-- Used string enum values for `Faction` for clean serialization and debugging.
-- Maintained backward-compatibility for all existing `isPlayerBullet` reads and constructor calls.
-- Completed comprehensive `handoff.md` for Worker M1_1.
+- Encapsulated crisis module inside `src/game/crisis/` (`types.ts`, `DimensionalRift.ts`, `CrisisSovereign.ts`, `EndGameCrisis.ts`, `index.ts`).
+- Established 5,400+ EHP tri-phase health model (1,200 HP Rifts Phase 1 -> 2,400 HP Hull Phase 2 -> 1,800 HP Core Overdrive Phase 3 with 35s enrage timer).
+- Designed pure Canvas 2D procedural vector rendering specifications with zero raster dependencies.
 
 ## Artifact Index
-- handoff.md — Complete specifications and code for `types.ts`, `Entity.ts`, and `Bullet.ts`
-- progress.md — Liveness and progress tracking
-- DISPATCH.md — Agent dispatch log
+- /Users/user/src/water-invader/.agents/teamwork_preview_explorer_m1_1/analysis.md — Comprehensive analysis of Milestone 1 specifications
+- /Users/user/src/water-invader/.agents/teamwork_preview_explorer_m1_1/handoff.md — 5-component handoff report
