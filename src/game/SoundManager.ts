@@ -580,6 +580,82 @@ export class SoundManager {
     osc.start();
     osc.stop(now + 0.1);
   }
+
+  public playMissileLaunch() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const now = this.audioCtx.currentTime;
+
+    // Rocket ignition frequency sweep 220Hz -> 660Hz
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.exponentialRampToValueAtTime(660, now + 0.18);
+
+    gainNode.gain.setValueAtTime(0.12, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    // Booster hiss
+    const hissOsc = this.audioCtx.createOscillator();
+    const hissGain = this.audioCtx.createGain();
+
+    hissOsc.type = 'triangle';
+    hissOsc.frequency.setValueAtTime(140, now);
+    hissOsc.frequency.linearRampToValueAtTime(320, now + 0.22);
+
+    hissGain.gain.setValueAtTime(0.08, now);
+    hissGain.gain.linearRampToValueAtTime(0.005, now + 0.22);
+
+    hissOsc.connect(hissGain);
+    hissGain.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+        hissOsc.disconnect();
+        hissGain.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start(now);
+    osc.stop(now + 0.22);
+    hissOsc.start(now);
+    hissOsc.stop(now + 0.22);
+  }
+
+  public playMissileExplosion() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const now = this.audioCtx.currentTime;
+
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    // Low-frequency rumble burst at 80Hz ramping down to 25Hz
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, now);
+    osc.frequency.exponentialRampToValueAtTime(25, now + 0.35);
+
+    gainNode.gain.setValueAtTime(0.25, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start(now);
+    osc.stop(now + 0.35);
+  }
 }
 
 // Singleton instance export

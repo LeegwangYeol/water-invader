@@ -38,7 +38,10 @@ export enum EnemyType {
   SPLITTER = 6,
   ROGUE_DRONE = 7,
   ROGUE_STALKER = 8,
-  ROGUE_MECH = 9
+  ROGUE_MECH = 9,
+  ROGUE_GOLIATH = 10,
+  ROGUE_PHANTOM = 11,
+  ROGUE_CARRIER = 12
 }
 
 export type CrisisType = 'TITAN_HORDE' | 'ACID_STORM' | 'SWARM_BLITZ' | 'EMP_DISRUPTION' | 'TOTAL_WAR' | 'SOLAR_FLARE';

@@ -44,6 +44,16 @@ export class Enemy extends Entity {
   public level: number = 1;
   public canvasHeight: number = 960;
 
+  // 3rd Faction & Mid-Tier Monster Mechanics
+  public isMidTier: boolean = false;
+  public phaseDashCooldown: number = 0;
+  public teleportEffectTimer: number = 0;
+  public isPhaseDashing: boolean = false;
+  public phaseAfterimages: Array<{ x: number; y: number; alpha: number }> = [];
+  public sustainedHitCount: number = 0;
+  public lastHitTime: number = 0;
+  public goliathBarrelToggle: boolean = false;
+
   // Stage 10+ Aggression AI
   public isAggressive: boolean = false;
   public rushVelocityModifier: number = 1.0;
@@ -138,6 +148,34 @@ export class Enemy extends Entity {
         this.speedX = 18 + this.level * 2;
         this.speedY = 5 + this.level;
         this.hp = 4 + Math.floor((this.level - 1) * 1.5); // Rebalanced: Base 4 HP
+        this.isMidTier = true;
+      } else if (type === EnemyType.ROGUE_GOLIATH) {
+        this.faction = Faction.ROGUE;
+        this.color = '#d946ef'; // High-Voltage Electric Magenta
+        this.size = { width: 56, height: 42 };
+        this.speedX = 20;
+        this.speedY = 6;
+        this.hp = 15;
+        this.shieldHp = 8;
+        this.isMidTier = true;
+      } else if (type === EnemyType.ROGUE_PHANTOM) {
+        this.faction = Faction.ROGUE;
+        this.color = '#c026d3'; // Ultraviolet
+        this.size = { width: 48, height: 34 };
+        this.speedX = 35;
+        this.speedY = 8;
+        this.hp = 10;
+        this.canEvade = true;
+        this.isMidTier = true;
+      } else if (type === EnemyType.ROGUE_CARRIER) {
+        this.faction = Faction.ROGUE;
+        this.color = '#84cc16'; // Neon Lime
+        this.size = { width: 52, height: 40 };
+        this.speedX = 22;
+        this.speedY = 6;
+        this.hp = 12;
+        this.shieldHp = 6;
+        this.isMidTier = true;
       } else {
         this.color = '#f97316'; // Orange/Fire
         this.speedX += this.level * 5;
@@ -197,6 +235,34 @@ export class Enemy extends Entity {
         this.speedX = 18 + this.level * 2;
         this.speedY = 5 + this.level;
         this.hp = 15 + (this.level - 9) * 10;
+        this.isMidTier = true;
+      } else if (type === EnemyType.ROGUE_GOLIATH) {
+        this.faction = Faction.ROGUE;
+        this.color = '#d946ef'; // Electric Magenta
+        this.size = { width: 56, height: 42 };
+        this.speedX = 20 + Math.min(10, (this.level - 10) * 1.5);
+        this.speedY = 6 + Math.min(6, (this.level - 10) * 0.8);
+        this.hp = 35 + Math.min(20, (this.level - 10) * 4); // 35–55 HP
+        this.shieldHp = 12 + Math.min(8, (this.level - 10) * 2); // 12–20 Shield HP
+        this.isMidTier = true;
+      } else if (type === EnemyType.ROGUE_PHANTOM) {
+        this.faction = Faction.ROGUE;
+        this.color = '#c026d3'; // Ultraviolet
+        this.size = { width: 48, height: 34 };
+        this.speedX = 35 + Math.min(15, (this.level - 10) * 2);
+        this.speedY = 8 + Math.min(8, (this.level - 10) * 1);
+        this.hp = 25 + Math.min(15, (this.level - 10) * 3); // 25–40 HP
+        this.canEvade = true;
+        this.isMidTier = true;
+      } else if (type === EnemyType.ROGUE_CARRIER) {
+        this.faction = Faction.ROGUE;
+        this.color = '#84cc16'; // Neon Lime
+        this.size = { width: 52, height: 40 };
+        this.speedX = 22 + Math.min(12, (this.level - 10) * 1.5);
+        this.speedY = 6 + Math.min(6, (this.level - 10) * 0.8);
+        this.hp = 30 + Math.min(15, (this.level - 10) * 3); // 30–45 HP
+        this.shieldHp = 8; // 8 Shield HP
+        this.isMidTier = true;
       } else {
         this.color = '#f97316'; // Orange/Fire
         this.speedX += this.level * 5;
@@ -224,6 +290,24 @@ export class Enemy extends Entity {
     if (this.hitFlashTimer > 0) {
       this.hitFlashTimer -= deltaTime;
       if (this.hitFlashTimer < 0) this.hitFlashTimer = 0;
+    }
+
+    if (this.phaseDashCooldown > 0) {
+      this.phaseDashCooldown -= clampedDt;
+      if (this.phaseDashCooldown < 0) this.phaseDashCooldown = 0;
+    }
+    if (this.teleportEffectTimer > 0) {
+      this.teleportEffectTimer -= clampedDt;
+      if (this.teleportEffectTimer <= 0) {
+        this.teleportEffectTimer = 0;
+        this.isPhaseDashing = false;
+      }
+    }
+    for (let i = this.phaseAfterimages.length - 1; i >= 0; i--) {
+      this.phaseAfterimages[i].alpha -= clampedDt * 2.5;
+      if (this.phaseAfterimages[i].alpha <= 0) {
+        this.phaseAfterimages.splice(i, 1);
+      }
     }
 
     const validSpeedMultiplier = Number.isFinite(speedMultiplier) && speedMultiplier > 0 ? speedMultiplier : 1.0;
@@ -379,9 +463,9 @@ export class Enemy extends Entity {
         this.fireTimer = Math.random() * 2 + 0.5;
       } else if (this.type === EnemyType.ROGUE_DRONE) {
         this.fireTimer = Math.random() * 2.0 + 2.5; // 2.5 ~ 4.5s
-      } else if (this.type === EnemyType.ROGUE_STALKER) {
+      } else if (this.type === EnemyType.ROGUE_STALKER || this.type === EnemyType.ROGUE_PHANTOM) {
         this.fireTimer = Math.random() * 2.0 + 3.0; // 3.0 ~ 5.0s
-      } else if (this.type === EnemyType.ROGUE_MECH) {
+      } else if (this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH || this.type === EnemyType.ROGUE_CARRIER) {
         this.fireTimer = Math.random() * 2.0 + 3.5; // 3.5 ~ 5.5s
       } else {
         this.fireTimer = Math.random() * 3 + 2;
@@ -444,7 +528,7 @@ export class Enemy extends Entity {
         // Dynamic lead estimation (nominal 300px/s projectile speed)
         const estTime = Math.min(0.6, Math.max(0.05, distY / 300));
         const allyVx = ally.slideTimer > 0 ? ally.slideDir * 45 : (ally.speedX ?? 30) * (ally.direction ?? 1);
-        const isRogue = ally.faction === Faction.ROGUE || ally.type === EnemyType.ROGUE_DRONE;
+        const isRogue = ally.faction === Faction.ROGUE || ally.type >= EnemyType.ROGUE_DRONE;
         let allyLeft: number;
         let allyRight: number;
         let corridorBuffer: number;
@@ -514,7 +598,7 @@ export class Enemy extends Entity {
       const distToAlly = Math.hypot(toAllyX, toAllyY);
       const estTime = Math.min(0.6, Math.max(0.05, distToAlly / 300));
       const allyVx = ally.slideTimer > 0 ? ally.slideDir * 45 : (ally.speedX ?? 30) * (ally.direction ?? 1);
-      const isRogue = ally.faction === Faction.ROGUE || ally.type === EnemyType.ROGUE_DRONE;
+      const isRogue = ally.faction === Faction.ROGUE || ally.type >= EnemyType.ROGUE_DRONE;
 
       let boxMinX: number;
       let boxMaxX: number;
@@ -667,26 +751,32 @@ export class Enemy extends Entity {
 
         if (this.level >= 10) {
           bulletSpeed = 250 + Math.min(150, (this.level - 10) * 15);
-          const isElite = this.type === EnemyType.ROGUE_STALKER || this.type === EnemyType.ROGUE_MECH;
-          bulletDamage = isElite ? 2 : 1;
-          piercing = this.type === EnemyType.ROGUE_MECH ? 2 : 1;
+          const isElite = this.type === EnemyType.ROGUE_STALKER || this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH || this.type === EnemyType.ROGUE_PHANTOM || this.type === EnemyType.ROGUE_CARRIER;
+          bulletDamage = (this.type === EnemyType.ROGUE_GOLIATH) ? 3 : (isElite ? 2 : 1);
+          piercing = (this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH) ? 2 : 1;
         } else {
           bulletSpeed = this.type === EnemyType.ROGUE_DRONE 
             ? (this.level <= 2 ? 300 : 360) 
-            : (this.type === EnemyType.ROGUE_MECH ? (this.level <= 2 ? 240 : 280) : (this.level <= 2 ? 280 : 320));
-          bulletDamage = this.type === EnemyType.ROGUE_MECH 
+            : ((this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH) ? (this.level <= 2 ? 240 : 280) : (this.level <= 2 ? 280 : 320));
+          bulletDamage = (this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH) 
             ? (this.level <= 3 ? 2 : 3) 
-            : (this.type === EnemyType.ROGUE_STALKER ? (this.level <= 2 ? 1 : 2) : 1);
-          piercing = this.type === EnemyType.ROGUE_MECH ? (this.level <= 3 ? 1 : 2) : 1;
+            : ((this.type === EnemyType.ROGUE_STALKER || this.type === EnemyType.ROGUE_PHANTOM) ? (this.level <= 2 ? 1 : 2) : 1);
+          piercing = (this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH) ? (this.level <= 3 ? 1 : 2) : 1;
         }
 
-        const b = new Bullet(spawnX, spawnY, bulletSpeed, bulletDamage, false, piercing);
+        let effectiveSpawnX = spawnX;
+        if (this.type === EnemyType.ROGUE_GOLIATH) {
+          this.goliathBarrelToggle = !this.goliathBarrelToggle;
+          effectiveSpawnX = spawnX + (this.goliathBarrelToggle ? -14 : 14);
+        }
+
+        const b = new Bullet(effectiveSpawnX, spawnY, bulletSpeed, bulletDamage, false, piercing);
         b.faction = Faction.ROGUE;
         b.shooter = this;
         b.hitEntities.add(this);
-        b.color = '#d946ef'; // Electric Magenta
+        b.color = (this.type === EnemyType.ROGUE_CARRIER) ? '#84cc16' : '#d946ef'; // Electric Magenta or Neon Lime
 
-        if (this.type === EnemyType.ROGUE_STALKER) {
+        if (this.type === EnemyType.ROGUE_STALKER || this.type === EnemyType.ROGUE_PHANTOM) {
           b.isInterceptable = true;
         }
 
@@ -810,6 +900,103 @@ export class Enemy extends Entity {
     return null;
   }
 
+  public fireAtTarget(playerPos?: Vector2D, allEnemies: Enemy[] = []): Bullet[] {
+    const b = this.fire(playerPos, allEnemies);
+    if (!b) return [];
+    return [b];
+  }
+
+  public takeDamage(damage: number): number {
+    let remainingDamage = damage;
+    if (this.shieldHp > 0) {
+      const absorbed = Math.min(this.shieldHp, remainingDamage);
+      this.shieldHp -= absorbed;
+      remainingDamage -= absorbed;
+      if (this.shieldHp <= 0) {
+        this.shieldHp = 0;
+        soundManager.playShieldBreak();
+        if (this.type === EnemyType.SHIELDED) {
+          this.shieldRegenTimer = 5.0;
+        }
+      }
+    }
+    this.hp -= remainingDamage;
+    this.hitFlashTimer = 0.08;
+
+    if (this.type === EnemyType.ROGUE_PHANTOM && this.hp > 0) {
+      this.checkPhaseDash();
+    }
+
+    return remainingDamage;
+  }
+
+  public checkPhaseDash(): void {
+    if (this.phaseDashCooldown > 0) return;
+    const now = Date.now();
+    if (now - this.lastHitTime < 800) {
+      this.sustainedHitCount++;
+    } else {
+      this.sustainedHitCount = 1;
+    }
+    this.lastHitTime = now;
+
+    if (this.sustainedHitCount >= 2) {
+      this.triggerPhaseDash();
+    }
+  }
+
+  public triggerPhaseDash(): void {
+    if (this.phaseDashCooldown > 0) return;
+    this.phaseAfterimages.push({
+      x: this.position.x,
+      y: this.position.y,
+      alpha: 0.85
+    });
+
+    // Horizontal Phase Dash (80-120px teleport)
+    const dashDist = 80 + Math.random() * 40;
+    const dashDir = (this.position.x > this.canvasWidth / 2) ? -1 : (Math.random() < 0.5 ? -1 : 1);
+    const newX = this.position.x + dashDir * dashDist;
+    this.position.x = Math.max(10, Math.min(newX, this.canvasWidth - this.size.width - 10));
+
+    this.phaseAfterimages.push({
+      x: (this.phaseAfterimages[0].x + this.position.x) / 2,
+      y: this.position.y,
+      alpha: 0.55
+    });
+
+    this.phaseDashCooldown = 2.5;
+    this.teleportEffectTimer = 0.35;
+    this.isPhaseDashing = true;
+    this.sustainedHitCount = 0;
+  }
+
+  public drawHealthBar(ctx: CanvasRenderingContext2D): void {
+    if (this.hp <= 0) return;
+    const barWidth = 40;
+    const barHeight = 4;
+    const bx = this.position.x + (this.size.width - barWidth) / 2;
+    const by = this.position.y - 8;
+
+    ctx.save();
+    // 40x4px container background
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.fillRect(bx - 1, by - 1, barWidth + 2, barHeight + 2);
+
+    // Health ratio gradient: Lime (#84cc16) -> Yellow (#eab308) -> Red (#ef4444)
+    const hpRatio = Math.max(0, Math.min(1, this.hp / (this.maxHp || 1)));
+    ctx.fillStyle = hpRatio > 0.5 ? '#84cc16' : (hpRatio > 0.25 ? '#eab308' : '#ef4444');
+    ctx.fillRect(bx, by, barWidth * hpRatio, barHeight);
+
+    // Shield overlay
+    if (this.shieldHp > 0 && this.maxShieldHp > 0) {
+      const shieldRatio = Math.max(0, Math.min(1, this.shieldHp / this.maxShieldHp));
+      ctx.fillStyle = '#38bdf8'; // Cyan
+      ctx.fillRect(bx, by - 3, barWidth * shieldRatio, 2);
+    }
+    ctx.restore();
+  }
+
   public draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     
@@ -819,13 +1006,26 @@ export class Enemy extends Entity {
     const h = this.size.height;
     const time = Date.now() / 1000;
 
+    // Cyan Phase Dash Afterimages
+    if (this.phaseAfterimages.length > 0) {
+      ctx.save();
+      for (const img of this.phaseAfterimages) {
+        ctx.globalAlpha = Math.max(0, Math.min(1, img.alpha));
+        ctx.fillStyle = '#06b6d4';
+        ctx.shadowColor = '#22d3ee';
+        ctx.shadowBlur = 10;
+        ctx.fillRect(img.x, img.y, this.size.width, this.size.height);
+      }
+      ctx.restore();
+    }
+
     // Shield Aura
-    if (this.type === EnemyType.SHIELDED && this.shieldHp > 0) {
+    if ((this.type === EnemyType.SHIELDED || this.shieldHp > 0) && this.shieldHp > 0) {
       ctx.save();
       const shieldPulse = Math.sin(time * 6) * 2;
       ctx.beginPath();
       ctx.arc(cx, cy, w / 2 + 8 + shieldPulse, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(56, 189, 248, ${0.2 + this.shieldHp * 0.15})`;
+      ctx.fillStyle = `rgba(56, 189, 248, ${0.2 + Math.min(0.4, this.shieldHp * 0.05)})`;
       ctx.fill();
       ctx.lineWidth = 2.5;
       ctx.strokeStyle = '#38bdf8';
@@ -1445,6 +1645,152 @@ export class Enemy extends Entity {
         ctx.closePath();
         ctx.fill();
       }
+    } else if (this.type === EnemyType.ROGUE_GOLIATH) {
+      // ----------------------------------------------------------------------
+      // ROGUE GOLIATH: High-Voltage Armored Dreadnought (Electric Magenta & Lime)
+      // ----------------------------------------------------------------------
+      if (!isFlashing) {
+        const grad = ctx.createLinearGradient(cx - w/2, cy - h/2, cx + w/2, cy + h/2);
+        grad.addColorStop(0, '#d946ef'); // Electric Magenta
+        grad.addColorStop(0.5, '#c026d3'); // Ultraviolet
+        grad.addColorStop(1, '#86198f'); // Deep Fuchsia
+        ctx.fillStyle = grad;
+      }
+
+      // Heavy armored dreadnought hull
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(cx - w/2, cy - h/2, w, h, 6);
+        ctx.fill();
+      } else {
+        ctx.fillRect(cx - w/2, cy - h/2, w, h);
+      }
+
+      if (!isFlashing) {
+        // Dual Heavy Plasma Rail Cannons
+        ctx.fillStyle = '#a21caf';
+        ctx.fillRect(cx - w/2 - 6, cy - h/4, 8, h/1.8);
+        ctx.fillRect(cx + w/2 - 2, cy - h/4, 8, h/1.8);
+
+        // Neon Lime Power Conduits
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(cx - w/2 + 4, cy - h/2 + 4, 3, h - 8);
+        ctx.fillRect(cx + w/2 - 7, cy - h/2 + 4, 3, h - 8);
+
+        // Armored Center Cockpit Plating
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - w/3, cy - h/3, (w * 2) / 3, (h * 2) / 3);
+
+        // High-Intensity Cyan Scanning Visor
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(cx - 12, cy - 6, 24, 5);
+        ctx.fillStyle = '#22d3ee';
+        ctx.fillRect(cx - 6, cy - 5, 12, 3);
+
+        // Gold Faction Chevron ▼
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.moveTo(cx - 6, cy + 3); ctx.lineTo(cx + 6, cy + 3); ctx.lineTo(cx, cy + 11);
+        ctx.closePath();
+        ctx.fill();
+      }
+    } else if (this.type === EnemyType.ROGUE_PHANTOM) {
+      // ----------------------------------------------------------------------
+      // ROGUE PHANTOM: Phase Teleport Interceptor (Ultraviolet & Cyan Visor)
+      // ----------------------------------------------------------------------
+      if (!isFlashing) {
+        const grad = ctx.createLinearGradient(cx, cy - h/2, cx, cy + h/2);
+        grad.addColorStop(0, '#c026d3'); // Ultraviolet
+        grad.addColorStop(0.5, '#9333ea'); // Vivid Purple
+        grad.addColorStop(1, '#581c87'); // Deep Void Purple
+        ctx.fillStyle = grad;
+      }
+
+      // Sleek swept-wing delta hull
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + h/2 + 2);
+      ctx.lineTo(cx + w/2, cy - h/4);
+      ctx.lineTo(cx + w/2 - 6, cy - h/2);
+      ctx.lineTo(cx, cy - h/4);
+      ctx.lineTo(cx - w/2 + 6, cy - h/2);
+      ctx.lineTo(cx - w/2, cy - h/4);
+      ctx.closePath();
+      ctx.fill();
+
+      if (!isFlashing) {
+        // Neon Lime Phase Stabilizers
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(cx - w/2 + 2, cy - 2, 4, 8);
+        ctx.fillRect(cx + w/2 - 6, cy - 2, 4, 8);
+
+        // Central Void Core
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + h/4);
+        ctx.lineTo(cx + w/4, cy - h/5);
+        ctx.lineTo(cx, cy - h/3);
+        ctx.lineTo(cx - w/4, cy - h/5);
+        ctx.closePath();
+        ctx.fill();
+
+        // Glowing Cyan Scanning Visor
+        ctx.fillStyle = '#22d3ee';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy - 2, 8, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Phase distortion glow if teleport effect is active
+        if (this.teleportEffectTimer > 0) {
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      }
+    } else if (this.type === EnemyType.ROGUE_CARRIER) {
+      // ----------------------------------------------------------------------
+      // ROGUE CARRIER: Bio-Mech Mothership (Neon Lime & Electric Magenta Hangars)
+      // ----------------------------------------------------------------------
+      if (!isFlashing) {
+        const grad = ctx.createLinearGradient(cx - w/2, cy, cx + w/2, cy);
+        grad.addColorStop(0, '#84cc16'); // Neon Lime
+        grad.addColorStop(0.5, '#65a30d'); // Medium Lime
+        grad.addColorStop(1, '#4d7c0f'); // Deep Bio-Lime
+        ctx.fillStyle = grad;
+      }
+
+      // Broad hexagonal carrier hull
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + h/2);
+      ctx.lineTo(cx + w/2, cy + h/6);
+      ctx.lineTo(cx + w/2 - 4, cy - h/2);
+      ctx.lineTo(cx - w/2 + 4, cy - h/2);
+      ctx.lineTo(cx - w/2, cy + h/6);
+      ctx.closePath();
+      ctx.fill();
+
+      if (!isFlashing) {
+        // Electric Magenta Drone Launch Pods / Hangars
+        ctx.fillStyle = '#d946ef';
+        ctx.fillRect(cx - w/2 + 6, cy - h/4, 8, h/2);
+        ctx.fillRect(cx + w/2 - 14, cy - h/4, 8, h/2);
+
+        // Ultraviolet Heavy Thrusters
+        ctx.fillStyle = '#c026d3';
+        ctx.fillRect(cx - 10, cy - h/2 - 2, 6, 4);
+        ctx.fillRect(cx + 4, cy - h/2 - 2, 6, 4);
+
+        // Central Sensor Dome
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cyan Visor Core
+        ctx.fillStyle = '#06b6d4';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
     } else if (this.faction === Faction.ROGUE) {
       // Generic Cyber Rogue Delta
       if (!isFlashing) {
@@ -1473,6 +1819,11 @@ export class Enemy extends Entity {
       ctx.fill();
     }
     
+    // Overhead Mini-Health Bar for Mid-Tier Monsters
+    if (this.isMidTier || this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH || this.type === EnemyType.ROGUE_PHANTOM || this.type === EnemyType.ROGUE_CARRIER) {
+      this.drawHealthBar(ctx);
+    }
+
     ctx.restore();
   }
 }

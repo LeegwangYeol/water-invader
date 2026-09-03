@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { GameManager } from '../game/GameManager';
+import { GameManager, HOMING_MISSILE_COSTS } from '../game/GameManager';
 import { GameState, CrisisState, EndGameCrisisState, CrisisPhase } from '../game/types';
 import { soundManager } from '../game/SoundManager';
 
@@ -12,11 +12,12 @@ import { soundManager } from '../game/SoundManager';
 interface ShopUpgradePanelProps {
   currency: number;
   hp: number;
-  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean };
+  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean; homingMissiles?: number };
   onBuyFireRate: () => void;
   onBuyMultiShot: () => void;
   onBuyPiercing: () => void;
   onBuyAcidShield?: () => void;
+  onBuyHomingMissiles?: () => void;
   onRepairTank: () => void;
   lang: string;
 }
@@ -29,6 +30,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
   onBuyMultiShot,
   onBuyPiercing,
   onBuyAcidShield,
+  onBuyHomingMissiles,
   onRepairTank,
   lang,
 }: ShopUpgradePanelProps) {
@@ -88,7 +90,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
       </div>
 
       {/* Acid Shield / 내산성 코팅 */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-4">
         <div>
           <p className="font-bold">{t('내산성 코팅 (ACID SHIELD)', 'Acid Shield Coating')}</p>
           <p className="text-xs sm:text-sm text-slate-400">{t('산성 폭풍의 유독성 물방울을 무효화합니다', 'Neutralize toxic acid storm droplets')}</p>
@@ -98,6 +100,29 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
           disabled={currency < 150 || !!upgrades.hasAcidShield}
           className="px-4 py-2 bg-lime-600 hover:bg-lime-500 disabled:bg-slate-700 rounded font-bold transition-colors"
         >{upgrades.hasAcidShield ? t('보유중', 'OWNED') : '150 💧'}</button>
+      </div>
+
+      {/* Homing Missiles / 유도 미사일 */}
+      <div className="flex justify-between items-center">
+        <div>
+          <div className="flex items-center gap-2">
+            <p className="font-bold">{t('유도 미사일', 'Homing Missiles')} (Lv. {upgrades.homingMissiles || 0})</p>
+            <span className="text-xs bg-indigo-900/80 text-indigo-300 border border-indigo-500/50 px-1.5 py-0.5 rounded font-mono font-bold">
+              🚀 Lv.{upgrades.homingMissiles || 0}
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-400">
+            {t('가장 가까운 적을 자동 추적하여 큰 피해를 줍니다', 'Auto-seeks nearest enemy with heavy damage')}
+          </p>
+        </div>
+        <button 
+          data-testid="buy-homing-missiles-btn"
+          onClick={onBuyHomingMissiles}
+          disabled={(upgrades.homingMissiles || 0) >= 5 || currency < HOMING_MISSILE_COSTS[upgrades.homingMissiles || 0]}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 rounded font-bold transition-colors shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+        >
+          {(upgrades.homingMissiles || 0) >= 5 ? 'MAX' : `${HOMING_MISSILE_COSTS[upgrades.homingMissiles || 0]} 💧`}
+        </button>
       </div>
     </div>
   );
@@ -395,11 +420,12 @@ export const ManualModal = React.memo(function ManualModal({
 interface ShopModalProps {
   currency: number;
   hp: number;
-  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean };
+  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean; homingMissiles?: number };
   onBuyFireRate: () => void;
   onBuyMultiShot: () => void;
   onBuyPiercing: () => void;
   onBuyAcidShield?: () => void;
+  onBuyHomingMissiles?: () => void;
   onRepairTank: () => void;
   onNextWave: () => void;
   isPreGame?: boolean;
@@ -414,6 +440,7 @@ export const ShopModal = React.memo(function ShopModal({
   onBuyMultiShot,
   onBuyPiercing,
   onBuyAcidShield,
+  onBuyHomingMissiles,
   onRepairTank,
   onNextWave,
   isPreGame,
@@ -439,6 +466,7 @@ export const ShopModal = React.memo(function ShopModal({
           onBuyMultiShot={onBuyMultiShot}
           onBuyPiercing={onBuyPiercing}
           onBuyAcidShield={onBuyAcidShield}
+          onBuyHomingMissiles={onBuyHomingMissiles}
           onRepairTank={onRepairTank}
           lang={lang}
         />
@@ -447,7 +475,7 @@ export const ShopModal = React.memo(function ShopModal({
           onClick={onNextWave}
           className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-2 shrink-0 mb-4"
         >
-          {isPreGame ? t('웨이브 1 출격', 'DEPLOY TO WAVE 1') : t('다음 웨이브', 'NEXT WAVE')}
+          {isPreGame ? t('웨이브 1 출격', 'START MISSION (DEPLOY TO WAVE 1)') : t('다음 웨이브', 'NEXT WAVE')}
         </button>
       </div>
     </div>
@@ -459,11 +487,12 @@ interface GameOverModalProps {
   currency: number;
   hp: number;
   gameOverReason: string;
-  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean };
+  upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield?: boolean; homingMissiles?: number };
   onBuyFireRate: () => void;
   onBuyMultiShot: () => void;
   onBuyPiercing: () => void;
   onBuyAcidShield?: () => void;
+  onBuyHomingMissiles?: () => void;
   onRepairTank: () => void;
   onPlayAgain: () => void;
   lang: string;
@@ -479,6 +508,7 @@ export const GameOverModal = React.memo(function GameOverModal({
   onBuyMultiShot,
   onBuyPiercing,
   onBuyAcidShield,
+  onBuyHomingMissiles,
   onRepairTank,
   onPlayAgain,
   lang,
@@ -502,6 +532,7 @@ export const GameOverModal = React.memo(function GameOverModal({
           onBuyMultiShot={onBuyMultiShot}
           onBuyPiercing={onBuyPiercing}
           onBuyAcidShield={onBuyAcidShield}
+          onBuyHomingMissiles={onBuyHomingMissiles}
           onRepairTank={onRepairTank}
           lang={lang}
         />
@@ -779,6 +810,14 @@ export default function GameCanvas() {
   const buyAcidShield = useCallback(() => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradeAcidShield();
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+    }
+  }, []);
+
+  const buyHomingMissiles = useCallback(() => {
+    if (gameManagerRef.current) {
+      gameManagerRef.current.upgradeHomingMissiles();
       setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
     }
@@ -1071,6 +1110,7 @@ export default function GameCanvas() {
             onBuyMultiShot={buyMultiShot}
             onBuyPiercing={buyPiercing}
             onBuyAcidShield={buyAcidShield}
+            onBuyHomingMissiles={buyHomingMissiles}
             onRepairTank={repairTank}
             onNextWave={isPreGameShop ? startGame : startNextWave}
             isPreGame={isPreGameShop}
@@ -1090,6 +1130,7 @@ export default function GameCanvas() {
             onBuyMultiShot={buyMultiShot}
             onBuyPiercing={buyPiercing}
             onBuyAcidShield={buyAcidShield}
+            onBuyHomingMissiles={buyHomingMissiles}
             onRepairTank={repairTank}
             onPlayAgain={startGame}
             lang={lang}

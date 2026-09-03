@@ -1,5 +1,5 @@
 import { Entity } from './Entity';
-import { Bullet } from './Bullet';
+import { Bullet, HomingMissile } from './Bullet';
 import { Faction } from './types';
 
 export class Player extends Entity {
@@ -14,7 +14,16 @@ export class Player extends Entity {
   public multiShot: number = 1; // number of projectiles
   public piercing: number = 1; // new weapon upgrade
   public hasAcidShield: boolean = false; // Acid Rain immunity shield
+  public homingMissiles: number = 0; // 0 = unpurchased, 1..5 = upgrade level
   public ultimateGauge: number = 0; // 0 to 100
+
+  public static readonly MISSILE_SPECS = [
+    { interval: 2.0, count: 1, damage: 3 }, // Lv 1
+    { interval: 1.6, count: 1, damage: 4 }, // Lv 2
+    { interval: 1.4, count: 2, damage: 5 }, // Lv 3
+    { interval: 1.1, count: 2, damage: 6 }, // Lv 4
+    { interval: 0.9, count: 3, damage: 7 }, // Lv 5
+  ];
   
   // Dynamic mechanics
   public suppressionLevel: number = 0; // 0 to 100. High = less accuracy
@@ -23,6 +32,7 @@ export class Player extends Entity {
   public hitFlashTimer: number = 0;
   
   private fireTimer: number = 0;
+  private missileTimer: number = 0;
   public isMovingLeft: boolean = false;
   public isMovingRight: boolean = false;
   public isShooting: boolean = false;
@@ -96,8 +106,47 @@ export class Player extends Entity {
     if (this.isShooting) {
       generatedBullets = this.fire();
     }
+
+    // Autonomous Homing Missile Salvo Launcher Pods
+    if (this.homingMissiles > 0) {
+      const level = Math.min(5, Math.max(1, this.homingMissiles));
+      const spec = Player.MISSILE_SPECS[level - 1];
+
+      this.missileTimer -= deltaTime;
+      if (this.missileTimer <= 0) {
+        this.missileTimer = spec.interval;
+        const missiles = this.fireHomingMissiles(spec.count, spec.damage);
+        generatedBullets.push(...missiles);
+      }
+    }
     
     return generatedBullets;
+  }
+
+  public fireHomingMissiles(count: number, damage: number): Bullet[] {
+    const missiles: Bullet[] = [];
+    const centerX = this.position.x + this.size.width / 2;
+    const launchY = this.position.y + 5;
+
+    for (let i = 0; i < count; i++) {
+      const lateralOffset = (i - (count - 1) / 2) * 16;
+      const mx = centerX + lateralOffset - 5;
+      const missile = new HomingMissile(mx, launchY, damage);
+      missile.faction = Faction.PLAYER;
+      missiles.push(missile);
+    }
+
+    return missiles;
+  }
+
+  public createHomingMissile(damage?: number): HomingMissile {
+    const level = Math.min(5, Math.max(1, this.homingMissiles || 1));
+    const specDamage = damage ?? Player.MISSILE_SPECS[level - 1].damage;
+    const mx = this.position.x + this.size.width / 2 - 5;
+    const my = this.position.y + 5;
+    const missile = new HomingMissile(mx, my, specDamage);
+    missile.faction = Faction.PLAYER;
+    return missile;
   }
 
   public fire(): Bullet[] {
@@ -327,6 +376,47 @@ export class Player extends Entity {
       ctx.beginPath();
       ctx.arc(cx, cy - 2, w + 13, Math.PI * 1.2, Math.PI * 1.8);
       ctx.stroke();
+      ctx.restore();
+    }
+
+    // Autonomous Wingtip Missile Pods
+    if (this.homingMissiles > 0) {
+      ctx.save();
+      const podW = 6;
+      const podH = 14;
+      const podY = cy - podH / 2 + 6;
+
+      const leftPodX = cx - w - podW + 1;
+      const rightPodX = cx + w - 1;
+
+      [leftPodX, rightPodX].forEach(px => {
+        // Deep indigo launcher pod casing
+        ctx.fillStyle = '#312e81';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 1.5;
+        if (ctx.roundRect) {
+          ctx.beginPath();
+          ctx.roundRect(px, podY, podW, podH, 2);
+          ctx.fill();
+          ctx.stroke();
+        } else {
+          ctx.fillRect(px, podY, podW, podH);
+          ctx.strokeRect(px, podY, podW, podH);
+        }
+
+        // Protruding cyan missile nose tips
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(px + podW / 2, podY - 1, podW / 2 - 0.5, Math.PI, 0);
+        ctx.fill();
+
+        // Charge indicator LED
+        const level = Math.min(5, Math.max(1, this.homingMissiles));
+        const interval = Player.MISSILE_SPECS[level - 1].interval;
+        const chargeRatio = Math.max(0, 1 - Math.max(0, this.missileTimer) / interval);
+        ctx.fillStyle = chargeRatio >= 0.95 ? '#a855f7' : (chargeRatio >= 0.5 ? '#6366f1' : '#475569');
+        ctx.fillRect(px + 1, podY + podH - 3, podW - 2, 2);
+      });
       ctx.restore();
     }
 

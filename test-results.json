@@ -4,7 +4,8 @@
       "/Users/user/.nvm/versions/node/v25.8.1/bin/node",
       "/Users/user/src/water-invader/node_modules/.bin/playwright",
       "test",
-      "tests/adversarial_r3_reviewer_crossfire_stress.spec.ts"
+      "tests/unit/adversarial_homing_missile_stress.test.ts",
+      "tests/unit/adversarial_swarm_midtier_stress.test.ts"
     ],
     "configFile": "/Users/user/src/water-invader/playwright.config.ts",
     "rootDir": "/Users/user/src/water-invader/tests",
@@ -80,187 +81,1162 @@
   },
   "suites": [
     {
-      "title": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
-      "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
+      "title": "unit/adversarial_homing_missile_stress.test.ts",
+      "file": "unit/adversarial_homing_missile_stress.test.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Adversarial R3 Reviewer: Comprehensive Crossfire & Score Persistence Suite",
-          "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
-          "line": 3,
+          "title": "Adversarial Stress Suite: Homing Missile Weapon System (R1)",
+          "file": "unit/adversarial_homing_missile_stress.test.ts",
+          "line": 60,
           "column": 6,
-          "specs": [
+          "specs": [],
+          "suites": [
             {
-              "title": "ADV-R3.1: Multi-Cycle Death & Respawn: Score, Currency & Post-Death Upgrades monotonically persist",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Dimension 1: Target Seeking & Turning Radius Stress Harness",
+              "file": "unit/adversarial_homing_missile_stress.test.ts",
+              "line": 65,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
+                  "title": "STRESS-1.1: Diving rusher at y = 660 within 80-100px of player (y = 740) is intercepted without overshooting",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1675,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T05:02:41.675Z",
+                      "timeout": 60000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 79,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:36.342Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "43197a592b52618380ba-b78bf7c07f8f01a8cf0d",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 67,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-1.2: Boundary orbit prevention (missiles never circle in infinite loops)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:36.464Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-f85afcebbc15ac2d697a",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 138,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-1.3: Verification of kinematic parameters (v0=280, a=360, vmax=520, omega=6.2)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 7,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:36.483Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-6eec43bd4aca43465145",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 179,
+                  "column": 9
                 }
-              ],
-              "id": "25f66b17d09ece68292c-fd71c937674b2da00191",
-              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
-              "line": 10,
-              "column": 7
+              ]
             },
             {
-              "title": "ADV-R3.2: Vertical Column Simultaneous Multi-Fire: Self-Immunity & Progressive Friendly Fire Collisions",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Dimension 2: Rapid Death & High-Density Adversarial Retargeting",
+              "file": "unit/adversarial_homing_missile_stress.test.ts",
+              "line": 202,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
+                  "title": "STRESS-2.1: Rapid elimination of 50 enemies while 10 missiles fly -> 0 crashes, instant retargeting or cruise",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1031,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T05:02:43.680Z",
+                      "timeout": 60000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3688,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:36.538Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "43197a592b52618380ba-d7d53c116c0421c33552",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 204,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-2.2: Mass extinction burst (all 50 enemies killed simultaneously on frame 5)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 28,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.237Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-fe68962414fca2ad3c5b",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 279,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-2.3: Targeted assassination edge case: target dies every single frame",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.333Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-3024ab9c68243494978a",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 333,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-2.4: Empty array and undefined parameters null safety",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.359Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-69ffcd59de5ad5577b66",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 357,
+                  "column": 9
                 }
-              ],
-              "id": "25f66b17d09ece68292c-29f491c5f419a4b598ef",
-              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
-              "line": 95,
-              "column": 7
+              ]
             },
             {
-              "title": "ADV-R3.3: Splitter Crossfire Elimination Spawns Same-Faction Mini Enemies with Valid State",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Dimension 3: Barricade Protection & Penetration at y = 650",
+              "file": "unit/adversarial_homing_missile_stress.test.ts",
+              "line": 371,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
+                  "title": "STRESS-3.1: Missiles fly straight through y = 650 barricades with 0 barricade damage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1001,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T05:02:44.719Z",
+                      "timeout": 60000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 24,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.406Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "43197a592b52618380ba-4e28a936a75f2b31a866",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 373,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-3.2: Point-blank missile detonation adjacent to barricade does NOT splash damage barricade",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.463Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-727cfa9fb071d6edf062",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 421,
+                  "column": 9
                 }
-              ],
-              "id": "25f66b17d09ece68292c-5e432ed16ca45b30de59",
-              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
-              "line": 162,
-              "column": 7
+              ]
             },
             {
-              "title": "ADV-R3.4: Crossfire Mid-Air Interception between Hostile Sniper & Rogue Stalker Bullets",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Dimension 4: Splash Blast Damage & Kinetic Shield Physics",
+              "file": "unit/adversarial_homing_missile_stress.test.ts",
+              "line": 454,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
+                  "title": "STRESS-4.1: Full kinetic shield absorption: splash damage absorbs into shield, 0 HP lost",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1054,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T05:02:45.727Z",
+                      "timeout": 60000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.482Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "43197a592b52618380ba-e80c436e28435b2b6ccd",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 456,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-4.2: Partial kinetic shield: shield breaks and remainder bleeds through to base HP",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.492Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-37022dcd46015566afbe",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 490,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-4.3: Strict distance cutoff: units outside 45px radius take 0 damage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.505Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-9bb8e3c174e013319d2b",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 517,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-4.4: Dense multi-target cluster splash resolution",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 53,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.537Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-f069e06abfb833f8eacc",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 549,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-4.5: Rogue Goliath EMP shockwave triggers safely upon splash shield break without melee crossfire",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.644Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-a0c71dffd08eeea799bc",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 600,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-4.6: Rogue Phantom phase dash trigger on splash blast hit",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.660Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "43197a592b52618380ba-78d5609c2b458fd78cf6",
+                  "file": "unit/adversarial_homing_missile_stress.test.ts",
+                  "line": 636,
+                  "column": 9
                 }
-              ],
-              "id": "25f66b17d09ece68292c-4f345799435d81a5420d",
-              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
-              "line": 227,
-              "column": 7
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "unit/adversarial_swarm_midtier_stress.test.ts",
+      "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Adversarial Stress Suite: Enemy Swarms & 3rd Faction Mid-Tier Monsters",
+          "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+          "line": 59,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "1. Swarm Safety Cap & Frame Rate Benchmark",
+              "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+              "line": 64,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "STRESS-1.1: Extreme continuous spawning flood NEVER exceeds 70 concurrent units",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 31,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.687Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-5d0bc83de05cce389582",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 66,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-1.2: Boundary saturation test at exactly 68 and 69 active units",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.751Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-4b1a4cefa4ea8e95a92c",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 93,
+                  "column": 9
+                },
+                {
+                  "title": "STRESS-1.3: Simultaneous multi-carrier cluster split at near-cap does not exceed 70",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.764Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-6f95bef2a148c331fc94",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 128,
+                  "column": 9
+                },
+                {
+                  "title": "PERF-1.4: Tick duration / frame rate under 60 concurrent enemies (>= 40-60 FPS)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 220,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "[PERF BENCHMARK 60 ENEMIES] Mean: 0.192ms, P95: 0.312ms, P99: 4.592ms, Max: 26.130ms\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:40.782Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-7f99da3473e80f7911e5",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 162,
+                  "column": 9
+                }
+              ]
             },
             {
-              "title": "ADV-R3.5: 60-Unit Heavy 3-Way Crossfire Simulation: Math/Physics Stability & Entity Pool Safety",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "2. 3rd Faction AI & Friendly Fire Raycast Suppression",
+              "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+              "line": 218,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
+                  "title": "AI-2.1: 3-way crossfire targeting: Rogues engage closest hostile (Player vs Invader)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1151,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-03T05:02:46.787Z",
+                      "timeout": 60000,
                       "annotations": [],
-                      "attachments": []
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 4,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [
+                            {
+                              "text": "(node:79791) Warning: `--localstorage-file` was provided without a valid path\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                            }
+                          ],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.031Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "85b84655f0a0d1a0e0e7-cfa73b8683fc2eb92360",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 220,
+                  "column": 9
+                },
+                {
+                  "title": "AI-2.2: Friendly-fire raycast suppression prevents allied Rogues from damaging each other",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.076Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-8efb601012262a703f42",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 261,
+                  "column": 9
+                },
+                {
+                  "title": "AI-2.3: Hostile Invader in shot path does NOT suppress Rogue fire",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.086Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-752ce9d8c88e862892fc",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 291,
+                  "column": 9
+                },
+                {
+                  "title": "AI-2.4: Allied Rogue BEHIND shooter does NOT suppress forward fire",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.108Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-023670c939c735b2888c",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 320,
+                  "column": 9
+                },
+                {
+                  "title": "AI-2.5: Crossfire Kill awards strategic bonus score and currency",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.121Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-0817282e94f54df80576",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 346,
+                  "column": 9
                 }
-              ],
-              "id": "25f66b17d09ece68292c-2158d6b238908c0f7416",
-              "file": "adversarial_r3_reviewer_crossfire_stress.spec.ts",
-              "line": 268,
-              "column": 7
+              ]
+            },
+            {
+              "title": "3. Mid-Tier Mechanics: Goliath, Phantom, Carrier",
+              "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+              "line": 370,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "MIDTIER-3.1: Rogue Goliath kinetic shield absorption and EMP shockwave on shield break",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 9,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.133Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-c771ea5f85b71c5a99fb",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 372,
+                  "column": 9
+                },
+                {
+                  "title": "MIDTIER-3.2: Rogue Goliath alternating twin-barrel trajectory",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.159Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-6259d7fe75f9c42160b3",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 419,
+                  "column": 9
+                },
+                {
+                  "title": "MIDTIER-3.3: Rogue Phantom phase dash teleport under sustained damage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.167Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-5c8e6197ec359286252c",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 439,
+                  "column": 9
+                },
+                {
+                  "title": "MIDTIER-3.4: Rogue Carrier cluster split on death spawns 2-3 Rogue Drones",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 10,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.175Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-80b340ffbfe4a4888bc5",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 468,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "4. Solitary Boss Integrity (Wave 5)",
+              "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+              "line": 506,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "BOSS-4.1: Wave 5 strictly spawns exactly 1 Boss and 0 minions / mid-tiers",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 24,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.195Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-8db43ddfca6533292125",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 508,
+                  "column": 9
+                },
+                {
+                  "title": "BOSS-4.2: Contrast with Wave 10+ boss waves having escort legions",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.239Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-8dc3c665ad7a08fce6b1",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 535,
+                  "column": 9
+                },
+                {
+                  "title": "BOSS-4.3: Dynamic echelons do not trigger during Wave 5 solitary boss fight",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-03T11:14:41.256Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "85b84655f0a0d1a0e0e7-264c3f8d67dace078383",
+                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+                  "line": 555,
+                  "column": 9
+                }
+              ]
             }
           ]
         }
@@ -269,9 +1245,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-03T05:02:38.574Z",
-    "duration": 9499.941,
-    "expected": 5,
+    "startTime": "2026-09-03T11:14:31.058Z",
+    "duration": 10323.810000000001,
+    "expected": 31,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

@@ -1,7 +1,7 @@
 import { GameState, Faction, CrisisType, CrisisState, HazardProjectile, SolarFlareBeam } from './types';
 import { Player } from './Player';
 import { Enemy, EnemyType } from './Enemy';
-import { Bullet } from './Bullet';
+import { Bullet, HomingMissile } from './Bullet';
 import { Particle } from './Particle';
 import { Barricade, BarricadeType } from './Barricade';
 import { Helper, HelperType } from './Helper';
@@ -9,6 +9,8 @@ import { soundManager } from './SoundManager';
 import { EndGameCrisis } from './crisis/EndGameCrisis';
 import { CrisisArchetype, CrisisPhase, EndGameCrisisState } from './crisis/types';
 import { AlliedReinforcements } from './crisis/AlliedReinforcements';
+
+export const HOMING_MISSILE_COSTS = [250, 450, 700, 1000, 1400];
 
 export class GameManager {
   private canvas: HTMLCanvasElement;
@@ -60,6 +62,7 @@ export class GameManager {
   public crisisTimer: number = 0;
   public hazardProjectiles: HazardProjectile[] = [];
   public solarFlares: SolarFlareBeam[] = [];
+  public swarmEchelonsRemaining: number = 0;
   
   // End-Game Crisis Incursion Engine (Stage 15+)
   public endGameCrisis: EndGameCrisis | null = null;
@@ -85,7 +88,7 @@ export class GameManager {
   public onStateChange?: (state: GameState) => void;
   public onScoreChange?: (score: number, currency: number, combo: number, wave: number, ultimateGauge: number, invaderCount?: number, rogueCount?: number) => void;
   public onPlayerHpChange?: (hp: number) => void;
-  public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean }) => void;
+  public onUpgradesChange?: (upgrades: { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean; homingMissiles: number }) => void;
   public onCrisisEvent?: (crisis: CrisisState | null) => void;
   public onEndGameCrisisEvent?: (crisis: EndGameCrisisState | null) => void;
 
@@ -176,8 +179,9 @@ export class GameManager {
       this.player.multiShot = 1;
       this.player.piercing = 1;
       this.player.hasAcidShield = false;
+      this.player.homingMissiles = 0;
     } else {
-      // Preserve player upgrades (baseFireRate, multiShot, piercing, maxHp, hp, hasAcidShield)
+      // Preserve player upgrades (baseFireRate, multiShot, piercing, maxHp, hp, hasAcidShield, homingMissiles)
       this.player.hp = Math.max(3, this.player.hp);
       this.player.position.x = this.logicalWidth / 2 - 25;
       this.player.position.y = this.logicalHeight - 60;
@@ -282,6 +286,7 @@ export class GameManager {
     this.alliedReinforcements = undefined;
     if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
     this.level++;
+    this.swarmEchelonsRemaining = (this.level >= 10 && this.level % 5 !== 0) ? (this.level >= 15 ? 2 : 1) : 0;
     this.spawnWave();
     this.updateScoreUI();
     if (this.onStateChange) this.onStateChange(GameState.PLAYING);
@@ -392,8 +397,9 @@ export class GameManager {
     return this.alliedReinforcements;
   }
 
-  private spawnWave() {
+  public spawnWave() {
     if (this.level % 5 === 0) {
+      this.swarmEchelonsRemaining = 0;
       // Boss wave (F-13: spawn Y lowered to 90)
       const boss = new Enemy(this.logicalWidth / 2 - 75, 90, this.logicalWidth, this.level, EnemyType.BOSS, this.logicalHeight);
       this.enemies.push(boss);
@@ -432,6 +438,9 @@ export class GameManager {
       return;
     }
 
+    // Dynamic Swarm streaming echelons setup for post-Wave 10 non-boss waves
+    this.swarmEchelonsRemaining = this.level >= 10 ? (this.level >= 15 ? 2 : 1) : 0;
+
     // Stage 15+ End-Game Crisis Trigger Evaluation on non-boss waves
     if (this.level >= 15 && !this.endGameCrisis && !this.hasEndGameCrisisOccurred) {
       const isPityTrigger = this.level >= 18;
@@ -441,38 +450,92 @@ export class GameManager {
       }
     }
 
-    const rows = Math.min(5, 3 + Math.floor(this.level / 4));
-    const cols = Math.min(8, 6 + Math.floor(this.level / 3));
-    const paddingX = 60;
-    const paddingY = 50;
-    const offsetX = Math.max(20, (this.logicalWidth - ((cols - 1) * paddingX)) / 2);
+    let rows: number;
+    let cols: number;
+    let paddingX: number;
+    let paddingY: number;
+    let startY: number;
+
+    if (this.level < 5) {
+      rows = Math.min(4, 3 + Math.floor(this.level / 4));
+      cols = Math.min(7, 6 + Math.floor(this.level / 3));
+      paddingX = 60;
+      paddingY = 50;
+      startY = 80;
+    } else if (this.level < 10) {
+      rows = Math.min(5, 3 + Math.floor(this.level / 4));
+      cols = Math.min(8, 6 + Math.floor(this.level / 3));
+      paddingX = 60;
+      paddingY = 50;
+      startY = 80;
+    } else {
+      // Stage 10+ Swarm Expansion: 50 to 60 initial units
+      // rows: 5 (Level 10-13: 50 units) to 6 (Level 14+: 60 units)
+      // cols: 10
+      rows = Math.min(6, 5 + Math.floor((this.level - 10) / 4));
+      cols = 10;
+      paddingX = 52;
+      paddingY = 38;
+      startY = 75;
+    }
+
+    const offsetX = Math.max(15, (this.logicalWidth - ((cols - 1) * paddingX)) / 2);
     
     let specialCount = 0;
     const maxSpecials = Math.max(1, Math.min(1 + Math.floor(this.level / 2), 4));
-    
+
+    // Mid-tier Rogue spawn targets
+    let rogueMidTierTarget = 0;
+    if (this.level >= 10) {
+      rogueMidTierTarget = Math.min(4, 2 + Math.floor((this.level - 10) / 3)); // 2 to 4 Rogues
+    } else if (this.level >= 7) {
+      rogueMidTierTarget = (this.level === 9) ? 2 : 1; // 1 to 2 Rogues
+    }
+    let rogueMidTierSpawned = 0;
+    const rogueMidTierTypes = [EnemyType.ROGUE_GOLIATH, EnemyType.ROGUE_PHANTOM, EnemyType.ROGUE_CARRIER];
+
+    // Predefined safe inner-column slots for mid-tier Rogues
+    const rogueSlots = [
+      { r: 0, c: 3 },
+      { r: 0, c: 6 },
+      { r: 1, c: 4 },
+      { r: 1, c: 7 }
+    ];
+
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         let type = EnemyType.NORMAL;
-        
-        if (r === 1 && c % 2 === 0) {
+
+        // Check if this slot should naturally spawn a mid-tier Rogue
+        const slotMatch = rogueSlots.findIndex(s => s.r === r && s.c === c);
+        if (slotMatch !== -1 && slotMatch < rogueMidTierTarget && rogueMidTierSpawned < rogueMidTierTarget) {
+          type = rogueMidTierTypes[rogueMidTierSpawned % rogueMidTierTypes.length];
+          rogueMidTierSpawned++;
+        } else if (r === 1 && c % 2 === 0) {
           type = EnemyType.ZIGZAG;
         } else if (specialCount < maxSpecials && Math.random() > 0.85) {
           const specials = [EnemyType.SNIPER, EnemyType.DIVER, EnemyType.SHIELDED, EnemyType.SPLITTER];
           type = specials[Math.floor(Math.random() * specials.length)];
           specialCount++;
         }
-        
-        this.enemies.push(new Enemy(offsetX + c * paddingX, 80 + r * paddingY, this.logicalWidth, this.level, type, this.logicalHeight));
+
+        this.enemies.push(new Enemy(offsetX + c * paddingX, startY + r * paddingY, this.logicalWidth, this.level, type, this.logicalHeight));
       }
     }
   }
 
   public spawnDynamicReinforcement(type?: 'FLANK' | 'SPEARHEAD' | 'ROGUE_INCURSION' | '3WAY_CLASH' | 'CHAOTIC_AIRDROP' | string) {
+    const currentActive = this.enemies.filter(e => !e.isDead).length;
+    if (currentActive >= 60) {
+      return;
+    }
+
     const selectedType = type || (['FLANK', 'SPEARHEAD', 'ROGUE_INCURSION', '3WAY_CLASH'] as const)[Math.floor(Math.random() * 4)];
 
     if (selectedType === 'FLANK') {
       const count = Math.min(3, 2 + Math.floor(this.level / 3));
       for (let i = 0; i < count; i++) {
+        if (this.enemies.filter(e => !e.isDead).length >= 70) break;
         const y = 80 + i * 45;
         const leftEnemy = new Enemy(10, y, this.logicalWidth, this.level + 1, EnemyType.ROGUE_DRONE, this.logicalHeight);
         leftEnemy.speedX = 35 + this.level * 3;
@@ -492,7 +555,11 @@ export class GameManager {
       const right1 = new Enemy(Math.min(this.logicalWidth - 50, centerX + 55), 125, this.logicalWidth, this.level + 1, EnemyType.ROGUE_DRONE, this.logicalHeight);
       const left2 = new Enemy(Math.max(10, centerX - 110), 170, this.logicalWidth, this.level + 1, EnemyType.ROGUE_DRONE, this.logicalHeight);
       const right2 = new Enemy(Math.min(this.logicalWidth - 50, centerX + 110), 170, this.logicalWidth, this.level + 1, EnemyType.ROGUE_STALKER, this.logicalHeight);
-      this.enemies.push(apex, left1, right1, left2, right2);
+      const units = [apex, left1, right1, left2, right2];
+      for (const u of units) {
+        if (this.enemies.filter(e => !e.isDead).length >= 70) break;
+        this.enemies.push(u);
+      }
 
       this.warningMessage = "WARNING! SPEARHEAD FORMATION DETECTED!";
       this.warningText = this.warningMessage;
@@ -503,8 +570,9 @@ export class GameManager {
       const count = Math.min(5, 3 + Math.floor(this.level / 3));
       const spacing = (this.logicalWidth - 100) / Math.max(1, count - 1);
       for (let i = 0; i < count; i++) {
+        if (this.enemies.filter(e => !e.isDead).length >= 70) break;
         const x = 50 + i * spacing;
-        const types = [EnemyType.ROGUE_DRONE, EnemyType.ROGUE_STALKER, EnemyType.ROGUE_MECH];
+        const types = [EnemyType.ROGUE_GOLIATH, EnemyType.ROGUE_PHANTOM, EnemyType.ROGUE_CARRIER, EnemyType.ROGUE_MECH, EnemyType.ROGUE_STALKER, EnemyType.ROGUE_DRONE];
         const rType = types[i % types.length];
         const unit = new Enemy(x, 80 + (i % 2) * 30, this.logicalWidth, this.level + 1, rType, this.logicalHeight);
         this.enemies.push(unit);
@@ -517,6 +585,7 @@ export class GameManager {
     } else if (selectedType === '3WAY_CLASH') {
       const count = Math.min(3, 2 + Math.floor(this.level / 4));
       for (let i = 0; i < count; i++) {
+        if (this.enemies.filter(e => !e.isDead).length >= 70) break;
         const invader = new Enemy(40, 80 + i * 50, this.logicalWidth, this.level + 1, EnemyType.ZIGZAG, this.logicalHeight);
         invader.faction = Faction.INVADER;
         const rogue = new Enemy(this.logicalWidth - 85, 80 + i * 50, this.logicalWidth, this.level + 1, EnemyType.ROGUE_STALKER, this.logicalHeight);
@@ -529,6 +598,59 @@ export class GameManager {
       this.triggerScreenShake(0.8);
       soundManager.playThirdFactionWarning();
     }
+    this.updateScoreUI();
+  }
+
+  public checkSwarmEchelons(): void {
+    if (this.state !== GameState.PLAYING || this.swarmEchelonsRemaining <= 0 || this.level < 10 || this.level % 5 === 0) {
+      return;
+    }
+    const activeHostiles = this.enemies.filter(e => !e.isDead && (e.faction === Faction.INVADER || e.faction === Faction.ROGUE)).length;
+    if (activeHostiles <= 18) {
+      this.triggerSwarmEchelon();
+    }
+  }
+
+  public triggerSwarmEchelon(): void {
+    const activeCount = this.enemies.filter(e => !e.isDead).length;
+    if (activeCount >= 60) {
+      return;
+    }
+    if (this.swarmEchelonsRemaining <= 0) {
+      return;
+    }
+
+    this.swarmEchelonsRemaining--;
+
+    // Stream in secondary swarm formation: 12 units
+    // 1 Mid-Tier Rogue Monster, 8 Divers (4 pairs in V-formation), 3 Skirmishers
+    const midTierTypes = [EnemyType.ROGUE_GOLIATH, EnemyType.ROGUE_PHANTOM, EnemyType.ROGUE_CARRIER];
+    const midTierType = midTierTypes[Math.floor(Math.random() * midTierTypes.length)];
+    const leader = new Enemy(this.logicalWidth / 2 - 26, 65, this.logicalWidth, this.level, midTierType, this.logicalHeight);
+    this.enemies.push(leader);
+
+    for (let i = 0; i < 4; i++) {
+      if (this.enemies.filter(e => !e.isDead).length >= 70) break;
+      const dx = (i + 1) * 55;
+      const dy = 70 + (i % 2) * 35;
+      const dLeft = new Enemy(Math.max(20, this.logicalWidth / 2 - dx - 20), dy, this.logicalWidth, this.level, EnemyType.DIVER, this.logicalHeight);
+      const dRight = new Enemy(Math.min(this.logicalWidth - 60, this.logicalWidth / 2 + dx - 20), dy, this.logicalWidth, this.level, EnemyType.DIVER, this.logicalHeight);
+      this.enemies.push(dLeft, dRight);
+    }
+
+    for (let i = 0; i < 3; i++) {
+      if (this.enemies.filter(e => !e.isDead).length >= 70) break;
+      const x = 70 + i * 180;
+      const sType = (i % 2 === 0) ? EnemyType.ZIGZAG : EnemyType.ROGUE_DRONE;
+      const skirmisher = new Enemy(x, 130, this.logicalWidth, this.level, sType, this.logicalHeight);
+      this.enemies.push(skirmisher);
+    }
+
+    this.warningMessage = "⚠ SWARM REINFORCEMENTS DETECTED!";
+    this.warningText = this.warningMessage;
+    this.warningTimer = 2.0;
+    this.triggerScreenShake(0.6);
+    soundManager.playThirdFactionWarning();
     this.updateScoreUI();
   }
 
@@ -731,12 +853,21 @@ export class GameManager {
     this.animationFrameId = requestAnimationFrame(this.loop);
   };
 
-  private update(deltaTime: number) {
+  public update(deltaTime: number) {
     if (this.state === GameState.PLAYING) {
+      this.checkSwarmEchelons();
+
       // Player
       const newBullets = this.player.update(deltaTime);
       if (newBullets && newBullets.length > 0) {
-        soundManager.playShoot();
+        const hasNormalBullets = newBullets.some(b => !(b instanceof HomingMissile));
+        const hasMissiles = newBullets.some(b => b instanceof HomingMissile);
+        if (hasNormalBullets) {
+          soundManager.playShoot();
+        }
+        if (hasMissiles) {
+          soundManager.playMissileLaunch();
+        }
         this.bullets.push(...newBullets);
       }
       
@@ -1149,7 +1280,13 @@ export class GameManager {
       });
       
       this.barricades.forEach(barricade => barricade.update(deltaTime));
-      this.bullets.forEach(bullet => bullet.update(deltaTime));
+      this.bullets.forEach(bullet => {
+        if (bullet instanceof HomingMissile) {
+          bullet.update(deltaTime, this.enemies, this.endGameCrisis);
+        } else {
+          bullet.update(deltaTime);
+        }
+      });
       
       // Collision
       this.checkCollisions(deltaTime);
@@ -1309,18 +1446,20 @@ export class GameManager {
 
       // 1.1 Bullet vs Barricades (Destructible & Indestructible Cover)
       let hitBarricade = false;
-      for (const barricade of this.barricades) {
-        if (!barricade.isDead && bullet.checkCollision(barricade)) {
-          bullet.isDead = true;
-          hitBarricade = true;
+      if (!(bullet as any).ignoreBarricades) {
+        for (const barricade of this.barricades) {
+          if (!barricade.isDead && bullet.checkCollision(barricade)) {
+            bullet.isDead = true;
+            hitBarricade = true;
 
-          if (barricade.type === BarricadeType.DESTRUCTIBLE) {
-            barricade.hp -= bullet.damage;
-            this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 5);
-          } else {
-            this.createExplosion(bullet.position.x, bullet.position.y, '#94a3b8', 3);
+            if (barricade.type === BarricadeType.DESTRUCTIBLE) {
+              barricade.hp -= bullet.damage;
+              this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 5);
+            } else {
+              this.createExplosion(bullet.position.x, bullet.position.y, '#94a3b8', 3);
+            }
+            break;
           }
-          break;
         }
       }
       if (hitBarricade) continue;
@@ -1366,10 +1505,13 @@ export class GameManager {
           if (bullet.piercing <= 0) bullet.isDead = true;
 
           const isPlayerSource = bullet.faction === Faction.PLAYER;
+          const isHoming = bullet instanceof HomingMissile;
 
           // Shield Handling
-          if (enemy.type === EnemyType.SHIELDED && enemy.shieldHp > 0) {
-            enemy.shieldHp -= bullet.damage;
+          if (enemy.shieldHp > 0) {
+            const shieldDmg = Math.min(enemy.shieldHp, bullet.damage);
+            const remainingDmg = bullet.damage - shieldDmg;
+            enemy.shieldHp -= shieldDmg;
             enemy.hitFlashTimer = 0.08;
             if (isPlayerSource) {
               soundManager.playEnemyHit();
@@ -1380,9 +1522,18 @@ export class GameManager {
 
             if (enemy.shieldHp <= 0) {
               enemy.shieldHp = 0;
-              enemy.shieldRegenTimer = 5.0;
+              if (enemy.type === EnemyType.SHIELDED) {
+                enemy.shieldRegenTimer = 5.0;
+              }
               soundManager.playShieldBreak();
               this.createExplosion(enemy.position.x + enemy.size.width / 2, enemy.position.y + enemy.size.height / 2, '#38bdf8', 16);
+
+              if (enemy.type === EnemyType.ROGUE_GOLIATH) {
+                this.triggerEMPShockwave(enemy.position.x + enemy.size.width / 2, enemy.position.y + enemy.size.height / 2);
+              }
+            }
+            if (remainingDmg > 0) {
+              enemy.hp -= remainingDmg;
             }
           } else {
             // Standard Damage
@@ -1394,6 +1545,84 @@ export class GameManager {
             } else {
               soundManager.playCrossfireHit();
               this.createExplosion(bullet.position.x, bullet.position.y, '#f59e0b', 6);
+            }
+          }
+
+          if (enemy.type === EnemyType.ROGUE_PHANTOM && !enemy.isDead && typeof (enemy as any).checkPhaseDash === 'function') {
+            (enemy as any).checkPhaseDash();
+          }
+
+          // Homing Missile Splash Blast (Area of Effect detonation)
+          if (isHoming) {
+            const hMissile = bullet as HomingMissile;
+            soundManager.playMissileExplosion();
+            this.triggerScreenShake(0.25);
+            const blastX = bullet.position.x + bullet.size.width / 2;
+            const blastY = bullet.position.y + bullet.size.height / 2;
+            this.createExplosion(blastX, blastY, '#818cf8', 25, 2.0);
+
+            const splashRadius = hMissile.splashRadius || 45;
+            const splashDamage = hMissile.splashDamage || Math.max(1, Math.floor(bullet.damage * 0.5));
+
+            for (const adjEnemy of this.enemies) {
+              if (adjEnemy.isDead || adjEnemy === enemy) continue;
+              const aex = adjEnemy.position.x + adjEnemy.size.width / 2;
+              const aey = adjEnemy.position.y + adjEnemy.size.height / 2;
+              const dist = Math.hypot(aex - blastX, aey - blastY);
+              if (dist <= splashRadius) {
+                if (adjEnemy.shieldHp > 0) {
+                  const sDmg = Math.min(adjEnemy.shieldHp, splashDamage);
+                  const remDmg = splashDamage - sDmg;
+                  adjEnemy.shieldHp -= sDmg;
+                  adjEnemy.hitFlashTimer = 0.08;
+                  if (adjEnemy.shieldHp <= 0) {
+                    adjEnemy.shieldHp = 0;
+                    if (adjEnemy.type === EnemyType.SHIELDED) {
+                      adjEnemy.shieldRegenTimer = 5.0;
+                    }
+                    soundManager.playShieldBreak();
+                    this.createExplosion(aex, aey, '#38bdf8', 12);
+                    if (adjEnemy.type === EnemyType.ROGUE_GOLIATH) {
+                      this.triggerEMPShockwave(aex, aey);
+                    }
+                  }
+                  if (remDmg > 0) {
+                    adjEnemy.hp -= remDmg;
+                  }
+                } else {
+                  adjEnemy.hp -= splashDamage;
+                  adjEnemy.hitFlashTimer = 0.08;
+                  this.createExplosion(aex, aey, '#818cf8', 6);
+                }
+
+                if (adjEnemy.type === EnemyType.ROGUE_PHANTOM && !adjEnemy.isDead && typeof (adjEnemy as any).checkPhaseDash === 'function') {
+                  (adjEnemy as any).checkPhaseDash();
+                }
+
+                if (adjEnemy.hp <= 0) {
+                  adjEnemy.isDead = true;
+                  const isBoss = adjEnemy.type === EnemyType.BOSS;
+                  this.createExplosion(
+                    aex,
+                    aey,
+                    isBoss ? '#fbbf24' : (adjEnemy.color || '#f97316'),
+                    isBoss ? 150 : 25,
+                    isBoss ? 3.0 : 1.5
+                  );
+                  if (isBoss) {
+                    this.triggerScreenShake(0.75);
+                    soundManager.playVictory();
+                  }
+                  if (adjEnemy.type === EnemyType.ROGUE_CARRIER) {
+                    this.handleCarrierSplit(adjEnemy);
+                  }
+                  if (isPlayerSource) {
+                    this.handleEnemyKill(adjEnemy);
+                  } else {
+                    this.handleCrossfireKill(adjEnemy, bullet.faction);
+                  }
+                }
+              }
             }
           }
 
@@ -1435,6 +1664,8 @@ export class GameManager {
               mini1.speedX = 10; mini1.speedY = 5;
               mini2.speedX = -10; mini2.speedY = 5;
               this.enemies.push(mini1, mini2);
+            } else if (enemy.type === EnemyType.ROGUE_CARRIER) {
+              this.handleCarrierSplit(enemy);
             }
 
             if (isPlayerSource) {
@@ -1590,26 +1821,64 @@ export class GameManager {
     this.updateScoreUI();
   }
 
-  private handleCrossfireKill(killedEnemy: Enemy, killerFaction: Faction) {
+  public triggerEMPShockwave(x: number, y: number): void {
+    soundManager.playShieldBreak();
+    this.triggerScreenShake(0.35);
+    const empRadius = 110;
+    for (const b of this.bullets) {
+      if (!b.isDead && b.faction !== Faction.PLAYER) {
+        const d = Math.hypot(b.position.x - x, b.position.y - y);
+        if (d <= empRadius) {
+          b.isDead = true;
+          this.createExplosion(b.position.x, b.position.y, '#38bdf8', 6);
+        }
+      }
+    }
+    this.createExplosion(x, y, '#38bdf8', 25, 2.0);
+  }
+
+  private handleCarrierSplit(enemy: Enemy): void {
+    const currentActive = this.enemies.filter(e => !e.isDead).length;
+    if (currentActive < 68) {
+      const droneCount = Math.min(3, Math.max(2, 70 - currentActive));
+      const spawnY = Math.max(40, Math.min(enemy.position.y, this.logicalHeight - 60));
+      for (let i = 0; i < droneCount; i++) {
+        const offsetX = (i - (droneCount - 1) / 2) * 28;
+        const spawnX = Math.max(10, Math.min(enemy.position.x + offsetX, this.logicalWidth - 40));
+        const drone = new Enemy(spawnX, spawnY, this.logicalWidth, this.level, EnemyType.ROGUE_DRONE, this.logicalHeight);
+        drone.faction = Faction.ROGUE;
+        drone.speedX = (i === 0 ? -45 : (i === 1 ? 45 : 0)) + (Math.random() * 20 - 10);
+        drone.speedY = 12 + Math.random() * 8;
+        this.enemies.push(drone);
+        this.createExplosion(spawnX, spawnY, '#84cc16', 8);
+      }
+    }
+  }
+
+  public handleCrossfireKill(killedEnemy?: Enemy, killerFaction?: Faction) {
     this.combo++;
     this.comboTimer = 2.5; // Extended 2.5s window for crossfire chaos
 
     // Strategic crossfire charges ultimate
-    this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 2.0);
+    if (this.player) {
+      this.player.ultimateGauge = Math.min(100, this.player.ultimateGauge + 2.0);
+    }
 
     const comboMultiplier = 1 + Math.floor(this.combo / 5) * 0.5;
-    const baseScore = killedEnemy.type === EnemyType.BOSS ? 1500 : 150;
-    const baseCurrency = killedEnemy.type === EnemyType.BOSS ? 75 : 8;
+    const baseScore = killedEnemy && killedEnemy.type === EnemyType.BOSS ? 1500 : 150;
+    const baseCurrency = killedEnemy && killedEnemy.type === EnemyType.BOSS ? 75 : 8;
 
     this.score += Math.floor(baseScore * comboMultiplier);
     this.currency += Math.floor(baseCurrency * comboMultiplier);
 
-    this.createExplosion(
-      killedEnemy.position.x + killedEnemy.size.width / 2,
-      killedEnemy.position.y + killedEnemy.size.height / 2,
-      '#38bdf8',
-      12
-    );
+    if (killedEnemy) {
+      this.createExplosion(
+        killedEnemy.position.x + killedEnemy.size.width / 2,
+        killedEnemy.position.y + killedEnemy.size.height / 2,
+        '#38bdf8',
+        12
+      );
+    }
 
     this.updateScoreUI();
   }
@@ -2051,13 +2320,14 @@ export class GameManager {
     }
   }
 
-  public getUpgrades(): { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean } {
+  public getUpgrades(): { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean; homingMissiles: number } {
     const fireRateLevel = this.player ? Math.min(5, Math.max(1, Math.round((0.5 - this.player.baseFireRate) / 0.1) + 1)) : 1;
     return {
       fireRate: fireRateLevel,
       multiShot: this.player ? this.player.multiShot : 1,
       piercing: this.player ? this.player.piercing : 1,
       hasAcidShield: this.player ? !!this.player.hasAcidShield : false,
+      homingMissiles: this.player ? (this.player.homingMissiles || 0) : 0,
     };
   }
 
@@ -2106,5 +2376,21 @@ export class GameManager {
       this.updateScoreUI();
       this.updateUpgradesUI();
     }
+  }
+
+  public upgradeHomingMissiles(): boolean {
+    if (!this.player) return false;
+    const currentLevel = this.player.homingMissiles || 0;
+    if (currentLevel >= 5) return false;
+    const cost = HOMING_MISSILE_COSTS[currentLevel];
+    if (this.currency < cost) return false;
+
+    this.currency -= cost;
+    this.player.homingMissiles = currentLevel + 1;
+    soundManager.playPowerUp();
+    soundManager.playMissileLaunch();
+    this.updateScoreUI();
+    this.updateUpgradesUI();
+    return true;
   }
 }

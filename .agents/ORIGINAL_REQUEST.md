@@ -102,5 +102,31 @@ If any bugs or errors are found during the deep testing phase, implement fixes, 
 - [ ] The game passes exhaustive simulated stress testing without console errors or game-breaking states.
 - [ ] `npm run build` and `npx playwright test` pass without any errors.
 - [ ] If fixes were applied, they are successfully committed and pushed to the repository.
+## 2026-09-03T10:09:20Z
 
+This is a major gameplay update for the Next.js "Water Invader" project introducing late-game mechanics, a new weapon, and a 3rd faction. Use a very large team of agents.
 
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Homing Missile Weapon Upgrade
+Introduce a new purchasable weapon upgrade in the shop: Homing Missiles (유도탄). This weapon must target the closest enemy and deal significant damage. It is intended to help players clear enemies that spawn too close to them after Wave 10. The price can be scaled for late-game.
+
+### R2. Enemy Swarm and 3rd Faction (Mid-Tier Monsters)
+Increase the overall spawn count of enemies. Introduce a new "3rd faction" consisting of mid-tier monsters that also spawn in the game. These entities should have distinct mechanics or stats compared to the regular invaders.
+
+### R3. Mandatory Double-Check Testing Before Push
+Before committing and pushing the changes, the agent team MUST thoroughly verify the balance and logic. Ensure that the homing missiles work correctly and that the new faction doesn't crash the game. Write and run Playwright tests to confirm these behaviors.
+
+## Acceptance Criteria
+
+### Gameplay Mechanics
+- [ ] A Homing Missile upgrade is purchasable in the shop, and when used, projectiles successfully seek the nearest enemy.
+- [ ] A distinct 3rd faction (mid-tier monsters) spawns during gameplay, and the overall enemy count is noticeably higher.
+
+### Quality & Deployment
+- [ ] Automated tests confirm the new homing physics and 3rd faction mechanics without error.
+- [ ] `npm run build` and `npx playwright test` pass cleanly.
+- [ ] Changes are pushed to the repository only after unanimous tester verification.
