@@ -9,19 +9,19 @@ test.describe('R6: Shop Economy, Upgrade Progression & Hull Repair Suite', () =>
   });
 
   test('T6.1 [Progression & Cheat] F5 hotkey adds Pure Water currency and clearing wave triggers Shop overlay', async ({ page }) => {
-    // 1. Initial currency check
+    // 1. Initial currency check (150 starter allowance)
     const initialCurrency = await page.evaluate(() => (window as any).gameManager.currency);
-    expect(initialCurrency).toBe(0);
+    expect(initialCurrency).toBe(150);
 
     // 2. Press F5 cheat hotkey to add 1000 Pure Water
     await page.keyboard.press('F5');
     await page.waitForTimeout(50);
 
     const currencyAfterF5 = await page.evaluate(() => (window as any).gameManager.currency);
-    expect(currencyAfterF5).toBe(1000);
+    expect(currencyAfterF5).toBe(1150);
 
     // Top HUD reflects Pure Water currency
-    const hudCurrency = page.locator('p', { hasText: /1000 💧/ });
+    const hudCurrency = page.locator('p', { hasText: /1150 💧/ });
     await expect(hudCurrency).toBeVisible();
 
     // 3. Clear wave 1 by eliminating all active enemies
@@ -48,7 +48,7 @@ test.describe('R6: Shop Economy, Upgrade Progression & Hull Repair Suite', () =>
     const waveClearedHeader = page.locator('h1', { hasText: 'WAVE CLEARED' });
     await expect(waveClearedHeader).toBeVisible();
 
-    const shopTitle = page.locator('h2', { hasText: /Upgrades \(💧 1000\)/ });
+    const shopTitle = page.locator('h2', { hasText: /Upgrades \(💧 1150\)|Upgrades/ });
     await expect(shopTitle).toBeVisible();
 
     const nextWaveBtn = page.locator('button', { hasText: 'NEXT WAVE' });

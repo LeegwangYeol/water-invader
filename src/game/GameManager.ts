@@ -102,6 +102,18 @@ export class GameManager {
     this.init();
   }
 
+  public resize(): void {
+    const currentDpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+    this.dpr = currentDpr;
+    const targetW = Math.round(this.logicalWidth * this.dpr);
+    const targetH = Math.round(this.logicalHeight * this.dpr);
+
+    if (this.canvas.width !== targetW || this.canvas.height !== targetH) {
+      this.canvas.width = targetW;
+      this.canvas.height = targetH;
+    }
+  }
+
   public clearKeys(): void {
     this.keysPressed = {};
     if (this.player) {
@@ -1637,24 +1649,52 @@ export class GameManager {
   private draw() {
     this.ctx.save();
     this.ctx.scale(this.dpr, this.dpr);
-    
-    // Screen shake
-    if (this.shakeTimer > 0) {
-      let shakeAmount = 2;
-      if (this.warningTimer > 0) {
-         shakeAmount = 5;
-      }
-      const offsetX = (Math.random() - 0.5) * shakeAmount;
-      const offsetY = (Math.random() - 0.5) * shakeAmount;
-      this.ctx.translate(offsetX, offsetY);
-    }
+    const time = performance.now() / 1000;
 
-    // Clear
-    this.ctx.fillStyle = '#0f172a'; // dark slate
+    // =========================================================================
+    // LAYER 1: STATIC BACKGROUND LAYER
+    // Crisis warning background fills, starfield, environmental tint
+    // (Rendered without screen shake displacement so no unpainted gaps appear)
+    // =========================================================================
+
+    // 1.1 Base void fill (dark slate #0f172a)
+    this.ctx.fillStyle = '#0f172a';
     this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
 
-    // Draw scrolling background (Batched bubbles in single path)
-    const time = performance.now() / 1000;
+    // 1.2 Crisis warning background fills & environmental tint (DRAWN BEHIND ENTITIES)
+    if (this.warningTimer > 0) {
+      const isThirdFaction = (this.warningMessage || this.warningText).includes('ROGUE') || 
+                             (this.warningMessage || this.warningText).includes('THIRD') || 
+                             (this.warningMessage || this.warningText).includes('3-WAY');
+      this.ctx.fillStyle = isThirdFaction 
+        ? 'rgba(132, 204, 22, 0.12)' 
+        : (this.pendingReinforcement === 'ALLY' ? 'rgba(34, 197, 94, 0.10)' : 'rgba(239, 68, 68, 0.12)');
+      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
+    }
+
+    // 1.3 Active crisis environmental tint (Acid Storm / EMP)
+    if (this.crisisState.activeCrisis === 'ACID_STORM' && this.crisisState.timer > 0) {
+      this.ctx.fillStyle = 'rgba(132, 204, 22, 0.05)';
+      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
+    } else if (this.crisisState.empSuppressionActive) {
+      this.ctx.fillStyle = 'rgba(34, 211, 238, 0.04)';
+      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
+    }
+
+    // 1.4 End-Game Crisis ambient radial vignette if in INCURSION phase (DRAWN BEHIND ENTITIES)
+    if (this.endGameCrisis && this.endGameCrisis.isActive && this.endGameCrisis.phase === CrisisPhase.INCURSION) {
+      const pulse = (Math.sin(this.endGameCrisis.warningTimer * 8) + 1) / 2;
+      const vig = this.ctx.createRadialGradient(
+        this.logicalWidth / 2, this.logicalHeight / 2, this.logicalHeight * 0.2,
+        this.logicalWidth / 2, this.logicalHeight / 2, this.logicalHeight * 0.7
+      );
+      vig.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      vig.addColorStop(1, `rgba(147, 51, 234, ${0.35 * pulse})`);
+      this.ctx.fillStyle = vig;
+      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
+    }
+
+    // 1.5 Starfield / scrolling background bubbles (No shake)
     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
     this.ctx.beginPath();
     for (let i = 0; i < 30; i++) {
@@ -1668,7 +1708,21 @@ export class GameManager {
     }
     this.ctx.fill();
 
-    // Draw Entities
+    // =========================================================================
+    // LAYER 2: WORLD LAYER (Save context, apply screen shake, render world)
+    // =========================================================================
+    this.ctx.save();
+    if (this.shakeTimer > 0) {
+      let shakeAmount = 2;
+      if (this.warningTimer > 0) {
+        shakeAmount = 5;
+      }
+      const offsetX = (Math.random() - 0.5) * shakeAmount;
+      const offsetY = (Math.random() - 0.5) * shakeAmount;
+      this.ctx.translate(offsetX, offsetY);
+    }
+
+    // 2.1 World Entities
     this.barricades.forEach(b => b.draw(this.ctx));
     this.player.draw(this.ctx);
     this.helpers.forEach(h => h.draw(this.ctx));
@@ -1676,7 +1730,7 @@ export class GameManager {
     this.bullets.forEach(b => b.draw(this.ctx));
     this.particles.forEach(p => p.draw(this.ctx));
 
-    // Hazard Projectiles (Acid Storm) - Directional Toxic Teardrops with crisp black border
+    // 2.2 Hazard Projectiles (Acid Storm) - Directional Toxic Teardrops with crisp black border
     if (this.hazardProjectiles.length > 0) {
       for (const hz of this.hazardProjectiles) {
         if (hz.isDead) continue;
@@ -1711,7 +1765,7 @@ export class GameManager {
       }
     }
 
-    // Solar Flare Hazards
+    // 2.3 Solar Flare Hazards
     if (this.solarFlares.length > 0) {
       for (const flare of this.solarFlares) {
         if (flare.isDead) continue;
@@ -1758,7 +1812,7 @@ export class GameManager {
       }
     }
 
-    // EMP Disruption Visual Static Sweep
+    // 2.4 EMP Disruption Visual Static Sweep
     if (this.crisisState.empSuppressionActive) {
       this.ctx.save();
       this.ctx.strokeStyle = 'rgba(34, 211, 238, 0.25)';
@@ -1773,18 +1827,25 @@ export class GameManager {
       this.ctx.restore();
     }
 
-    // Boss HP Bar (F-14)
+    // 2.5 End-Game Crisis Entity Vector Art & Multi-Segment Boss HUD
+    if (this.endGameCrisis && this.endGameCrisis.isActive) {
+      this.endGameCrisis.draw(this.ctx, this.logicalWidth, this.logicalHeight);
+    }
+
+    this.ctx.restore(); // Exit shake layer
+
+    // =========================================================================
+    // LAYER 3: STABLE FOREGROUND LAYER
+    // Perimeter warning hazard stripes/borders, HUD, notifications (No Shake)
+    // =========================================================================
+
+    // 3.1 Boss HP Bar (F-14)
     const activeBoss = this.enemies.find(e => e.type === EnemyType.BOSS && !e.isDead);
     if (activeBoss) {
       this.drawBossHpBar(activeBoss);
     }
 
-    // End-Game Crisis Entity Vector Art & Multi-Segment Boss HUD
-    if (this.endGameCrisis && this.endGameCrisis.isActive) {
-      this.endGameCrisis.draw(this.ctx, this.logicalWidth, this.logicalHeight);
-    }
-    
-    // Debug Overlay
+    // 3.2 Debug Overlay
     if (this.isDebugMode) {
       this.ctx.lineWidth = 1;
       this.ctx.strokeStyle = '#ff00ff'; // Magenta for hitboxes
@@ -1810,18 +1871,21 @@ export class GameManager {
       this.ctx.fillText(`Particles: ${this.particles.length}`, 10, 80);
       this.ctx.fillText(`Barricades: ${this.barricades.length}`, 10, 95);
     }
-    
-    // UI overlays that shouldn't shake (Calibrated 0.10-0.12 fill alpha with crisp perimeter stroke)
+
+    // 3.3 Stable Perimeter Warning Hazard Stripes / Borders & Warning Notifications
     if (this.warningTimer > 0) {
-      const isThirdFaction = (this.warningMessage || this.warningText).includes('ROGUE') || (this.warningMessage || this.warningText).includes('THIRD') || (this.warningMessage || this.warningText).includes('3-WAY');
-      this.ctx.fillStyle = isThirdFaction ? 'rgba(132, 204, 22, 0.10)' : (this.pendingReinforcement === 'ALLY' ? 'rgba(34, 197, 94, 0.10)' : 'rgba(239, 68, 68, 0.12)');
-      this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
+      const isThirdFaction = (this.warningMessage || this.warningText).includes('ROGUE') || 
+                             (this.warningMessage || this.warningText).includes('THIRD') || 
+                             (this.warningMessage || this.warningText).includes('3-WAY');
       
-      // Crisp 4px perimeter border stroke
-      this.ctx.strokeStyle = isThirdFaction ? 'rgba(132, 204, 22, 0.8)' : (this.pendingReinforcement === 'ALLY' ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)');
+      // Crisp 4px perimeter border stroke (stable at boundaries without shaking off-canvas)
+      this.ctx.strokeStyle = isThirdFaction 
+        ? 'rgba(132, 204, 22, 0.85)' 
+        : (this.pendingReinforcement === 'ALLY' ? 'rgba(34, 197, 94, 0.85)' : 'rgba(239, 68, 68, 0.85)');
       this.ctx.lineWidth = 4;
       this.ctx.strokeRect(2, 2, this.logicalWidth - 4, this.logicalHeight - 4);
 
+      // Warning text with crisp stroke outline
       this.ctx.fillStyle = isThirdFaction ? '#84cc16' : (this.pendingReinforcement === 'ALLY' ? '#4ade80' : '#ef4444');
       this.ctx.font = 'bold 36px sans-serif';
       this.ctx.textAlign = 'center';

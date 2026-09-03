@@ -170,7 +170,7 @@ test.describe('R3: Multi-Wave Progression & Boss Encounter Suite', () => {
     expect(scoreProgression.length).toBe(6);
     expect(scoreProgression[0].combo).toBe(1);
     expect(scoreProgression[0].score).toBe(100);
-    expect(scoreProgression[0].currency).toBe(5);
+    expect(scoreProgression[0].currency).toBe(155);
 
     // At combo = 5 (6th kill, combo reached 5), multiplier becomes 1 + Math.floor(5/5)*0.5 = 1.5x
     expect(scoreProgression[4].combo).toBe(5);

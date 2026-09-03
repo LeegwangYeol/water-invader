@@ -51,6 +51,19 @@ export class Enemy extends Entity {
   public isRushing: boolean = false;
   public aggressionMode: boolean = false;
 
+  // Smarter Friendly-Fire AI & Tactical Lateral Repositioning
+  public slideDir: number = 0;
+  public slideTimer: number = 0;
+  public lastBlockingAlly: Enemy | null = null;
+
+  public get width(): number {
+    return this.size.width;
+  }
+
+  public get height(): number {
+    return this.size.height;
+  }
+
   constructor(x: number, y: number, canvasWidth: number = 720, level: number = 1, type: EnemyType = EnemyType.NORMAL, canvasHeight: number = 960) {
     Enemy.initAssets();
     const validX = Number.isFinite(x) ? x : 0;
@@ -329,7 +342,10 @@ export class Enemy extends Entity {
       }
     }
 
-    if (this.type === EnemyType.ZIGZAG || this.type === EnemyType.ROGUE_DRONE) {
+    if (this.slideTimer > 0) {
+      this.slideTimer -= clampedDt;
+      this.position.x += this.slideDir * 45 * clampedDt;
+    } else if (this.type === EnemyType.ZIGZAG || this.type === EnemyType.ROGUE_DRONE) {
       this.position.x += currentSpeedX * this.direction * clampedDt;
       this.position.x += Math.sin(Date.now() / 180 + this.position.y) * 4 * validSpeedMultiplier;
     } else {
@@ -350,39 +366,235 @@ export class Enemy extends Entity {
     if (this.position.x + this.size.width >= this.canvasWidth) {
       this.position.x = Math.max(0, this.canvasWidth - this.size.width);
     }
-    
+
     this.fireTimer -= clampedDt * validSpeedMultiplier;
+  }
+
+  private resetFireTimer(): void {
+    if (this.level >= 10) {
+      const minCooldown = Math.max(0.4, 0.8 - (this.level - 10) * 0.02);
+      this.fireTimer = Math.random() * 0.7 + minCooldown;
+    } else {
+      if (this.type === EnemyType.BOSS) {
+        this.fireTimer = Math.random() * 2 + 0.5;
+      } else if (this.type === EnemyType.ROGUE_DRONE) {
+        this.fireTimer = Math.random() * 2.0 + 2.5; // 2.5 ~ 4.5s
+      } else if (this.type === EnemyType.ROGUE_STALKER) {
+        this.fireTimer = Math.random() * 2.0 + 3.0; // 3.0 ~ 5.0s
+      } else if (this.type === EnemyType.ROGUE_MECH) {
+        this.fireTimer = Math.random() * 2.0 + 3.5; // 3.5 ~ 5.5s
+      } else {
+        this.fireTimer = Math.random() * 3 + 2;
+      }
+    }
+  }
+
+  public hasAlliedObstacleInShotPath(
+    allEnemies: Enemy[],
+    originX: number,
+    originY: number,
+    targetX: number,
+    targetY: number,
+    projectileRadius: number = 5
+  ): boolean {
+    this.lastBlockingAlly = null;
+    if (!allEnemies || allEnemies.length === 0) return false;
+
+    const dx = targetX - originX;
+    const dy = targetY - originY;
+    const dist = Math.hypot(dx, dy);
+
+    // Normalize trajectory direction
+    const dirX = dist > 1e-6 ? dx / dist : 0;
+    const dirY = dist > 1e-6 ? dy / dist : 1;
+
+    // Effective horizontal velocity
+    const isVertical = Math.abs(dx) < 1e-3;
+
+    const radius = projectileRadius ?? 3;
+
+    if (isVertical) {
+      // Tier 1 Fast Path: vertical shot (|v_x| < 5)
+      for (let i = 0; i < allEnemies.length; i++) {
+        const ally = allEnemies[i];
+        if (ally === this || ally.isDead || ally.faction !== this.faction) {
+          continue;
+        }
+
+        const eWidth = ally.width ?? ally.size.width;
+        const eHeight = ally.height ?? ally.size.height;
+
+        // Immediate spatial overlap check (touching or overlapping units cannot safely shoot)
+        const xOverlap = Math.abs((ally.position.x + eWidth / 2) - (this.position.x + this.size.width / 2)) < (eWidth + this.size.width) / 2;
+        const yOverlap = Math.abs((ally.position.y + eHeight / 2) - (this.position.y + this.size.height / 2)) < (eHeight + this.size.height) / 2;
+        if (xOverlap && yOverlap) {
+          this.lastBlockingAlly = ally;
+          return true;
+        }
+
+        // Direction-aware vertical pruning (support upward and downward fire)
+        if (dirY > 0 && ally.position.y + eHeight < originY - 5) {
+          continue;
+        }
+        if (dirY < 0 && ally.position.y > originY + 5) {
+          continue;
+        }
+
+        const distY = Math.abs(ally.position.y - originY);
+        // Dynamic lead estimation (nominal 300px/s projectile speed)
+        const estTime = Math.min(0.6, Math.max(0.05, distY / 300));
+        const allyVx = ally.slideTimer > 0 ? ally.slideDir * 45 : (ally.speedX ?? 30) * (ally.direction ?? 1);
+        const isRogue = ally.faction === Faction.ROGUE || ally.type === EnemyType.ROGUE_DRONE;
+        let allyLeft: number;
+        let allyRight: number;
+        let corridorBuffer: number;
+        if (isRogue) {
+          const maxLead = (Math.abs(allyVx) + 40) * estTime;
+          corridorBuffer = 12;
+          allyLeft = ally.position.x - maxLead - corridorBuffer;
+          allyRight = ally.position.x + eWidth + maxLead + corridorBuffer;
+        } else {
+          const leadX = allyVx * estTime;
+          corridorBuffer = ally.type === EnemyType.ZIGZAG ? 8 : 4;
+          allyLeft = Math.min(ally.position.x, ally.position.x + leadX) - corridorBuffer;
+          allyRight = Math.max(ally.position.x + eWidth, ally.position.x + eWidth + leadX) + corridorBuffer;
+        }
+        const allyCenterX = ally.position.x + eWidth / 2;
+
+        const corridorOverlap = (originX + radius > allyLeft) && (originX - radius < allyRight);
+        const centerOverlap = Math.abs(allyCenterX - originX) < (eWidth / 2 + radius + corridorBuffer);
+        const isLeftAligned = Math.abs(originX - this.position.x) < 5;
+        const posOverlap = isLeftAligned && (Math.abs(ally.position.x - originX) < (eWidth / 2 + radius + corridorBuffer));
+
+        if (corridorOverlap || centerOverlap || posOverlap) {
+          this.lastBlockingAlly = ally;
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Tier 2 General Path: 2D raycast / slab intersection against live same-faction ally hitboxes
+    const maxRange = dist > 0 ? dist : 1000;
+
+    for (let i = 0; i < allEnemies.length; i++) {
+      const ally = allEnemies[i];
+      if (ally === this || ally.isDead || ally.faction !== this.faction) {
+        continue;
+      }
+
+      const eWidth = ally.width ?? ally.size.width;
+      const eHeight = ally.height ?? ally.size.height;
+
+      // Immediate spatial overlap check
+      const xOverlap = Math.abs((ally.position.x + eWidth / 2) - (this.position.x + this.size.width / 2)) < (eWidth + this.size.width) / 2;
+      const yOverlap = Math.abs((ally.position.y + eHeight / 2) - (this.position.y + this.size.height / 2)) < (eHeight + this.size.height) / 2;
+      if (xOverlap && yOverlap) {
+        this.lastBlockingAlly = ally;
+        return true;
+      }
+
+      // Direction-aware pruning: ally behind shooter along firing direction cannot block
+      if (dirY > 0 && ally.position.y + eHeight < originY - 5) {
+        continue;
+      }
+      if (dirY < 0 && ally.position.y > originY + 5) {
+        continue;
+      }
+
+      // Quick dot-product check: if ally is entirely behind the origin along ray direction
+      const toAllyX = (ally.position.x + eWidth / 2) - originX;
+      const toAllyY = (ally.position.y + eHeight / 2) - originY;
+      const dot = toAllyX * dirX + toAllyY * dirY;
+      if (dot < -Math.max(eWidth, eHeight)) {
+        continue;
+      }
+
+      // Dynamic lead & corridor buffer for 2D slab raycasting
+      const distToAlly = Math.hypot(toAllyX, toAllyY);
+      const estTime = Math.min(0.6, Math.max(0.05, distToAlly / 300));
+      const allyVx = ally.slideTimer > 0 ? ally.slideDir * 45 : (ally.speedX ?? 30) * (ally.direction ?? 1);
+      const isRogue = ally.faction === Faction.ROGUE || ally.type === EnemyType.ROGUE_DRONE;
+
+      let boxMinX: number;
+      let boxMaxX: number;
+      if (isRogue) {
+        const maxLead = (Math.abs(allyVx) + 40) * estTime;
+        boxMinX = ally.position.x - maxLead - (radius + 12);
+        boxMaxX = ally.position.x + eWidth + maxLead + (radius + 12);
+      } else {
+        const leadX = allyVx * estTime;
+        const corridorBuffer = ally.type === EnemyType.ZIGZAG ? 6 : 1;
+        boxMinX = Math.min(ally.position.x, ally.position.x + leadX) - (radius + corridorBuffer);
+        boxMaxX = Math.max(ally.position.x + eWidth, ally.position.x + eWidth + leadX) + (radius + corridorBuffer);
+      }
+      const boxMinY = Math.min(ally.position.y, ally.position.y + (ally.speedY ?? 0) * estTime) - radius;
+      const boxMaxY = Math.max(ally.position.y + eHeight, ally.position.y + eHeight + (ally.speedY ?? 0) * estTime) + radius;
+
+      // Continuous Y-span interval overlap check:
+      // Verify whether the bullet's trajectory passes through the ally's horizontal bounding box
+      // anywhere while traversing the ally's vertical span [ally.position.y, ally.position.y + eHeight]
+      if (Math.abs(dirY) > 1e-4) {
+        const yEntry = dirY < 0 ? ally.position.y + eHeight : ally.position.y;
+        const yExit = dirY < 0 ? ally.position.y : ally.position.y + eHeight;
+        const tEntry = (yEntry - originY) / dirY;
+        const tExit = (yExit - originY) / dirY;
+        if (tExit > 0 && tEntry <= maxRange) {
+          const xEntry = originX + tEntry * dirX;
+          const xExit = originX + tExit * dirX;
+          const rayMinX = Math.min(xEntry, xExit);
+          const rayMaxX = Math.max(xEntry, xExit);
+          if (rayMaxX >= boxMinX && rayMinX <= boxMaxX) {
+            this.lastBlockingAlly = ally;
+            return true;
+          }
+        }
+      }
+
+      let tmin = 0;
+      let tmax = maxRange;
+
+      // X slab
+      if (Math.abs(dirX) < 1e-6) {
+        if (originX < boxMinX || originX > boxMaxX) continue;
+      } else {
+        const invDx = 1.0 / dirX;
+        let t1 = (boxMinX - originX) * invDx;
+        let t2 = (boxMaxX - originX) * invDx;
+        if (t1 > t2) { const tmp = t1; t1 = t2; t2 = tmp; }
+        tmin = Math.max(tmin, t1);
+        tmax = Math.min(tmax, t2);
+        if (tmin > tmax) continue;
+      }
+
+      // Y slab
+      if (Math.abs(dirY) < 1e-6) {
+        if (originY < boxMinY || originY > boxMaxY) continue;
+      } else {
+        const invDy = 1.0 / dirY;
+        let t1 = (boxMinY - originY) * invDy;
+        let t2 = (boxMaxY - originY) * invDy;
+        if (t1 > t2) { const tmp = t1; t1 = t2; t2 = tmp; }
+        tmin = Math.max(tmin, t1);
+        tmax = Math.min(tmax, t2);
+        if (tmin > tmax) continue;
+      }
+
+      if (tmax >= Math.max(0, tmin) && tmin <= maxRange) {
+        this.lastBlockingAlly = ally;
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public fire(playerPos?: Vector2D, allEnemies: Enemy[] = []): Bullet | null {
     if (this.isDiving) return null; // divers don't shoot while diving
 
     if (this.fireTimer <= 0) {
-      // Reset timer
-      if (this.level >= 10) {
-        const minCooldown = Math.max(0.4, 0.8 - (this.level - 10) * 0.02);
-        this.fireTimer = Math.random() * 0.7 + minCooldown;
-      } else {
-        if (this.type === EnemyType.BOSS) {
-          this.fireTimer = Math.random() * 2 + 0.5;
-        } else if (this.type === EnemyType.ROGUE_DRONE) {
-          this.fireTimer = Math.random() * 2.0 + 2.5; // 2.5 ~ 4.5s
-        } else if (this.type === EnemyType.ROGUE_STALKER) {
-          this.fireTimer = Math.random() * 2.0 + 3.0; // 3.0 ~ 5.0s
-        } else if (this.type === EnemyType.ROGUE_MECH) {
-          this.fireTimer = Math.random() * 2.0 + 3.5; // 3.5 ~ 5.5s
-        } else {
-          this.fireTimer = Math.random() * 3 + 2;
-        }
-      }
-      
-      const spawnX = this.position.x + this.size.width / 2 - 3;
-      const spawnY = this.position.y + this.size.height;
-
       // Rogue Faction Dual-Targeting AI
       if (this.faction === Faction.ROGUE) {
-        soundManager.playRogueShoot();
-
         let targetCenter: Vector2D | null = null;
         let minDistance = Infinity;
 
@@ -390,7 +602,7 @@ export class Enemy extends Entity {
         if (playerPos && Number.isFinite(playerPos.x) && Number.isFinite(playerPos.y)) {
           const px = playerPos.x + 25;
           const py = playerPos.y + 20;
-          const dist = Math.hypot(px - spawnX, py - spawnY);
+          const dist = Math.hypot(px - (this.position.x + this.size.width / 2), py - (this.position.y + this.size.height / 2));
           minDistance = dist;
           targetCenter = { x: px, y: py };
         }
@@ -400,13 +612,54 @@ export class Enemy extends Entity {
           if (!e.isDead && e.faction !== this.faction) {
             const ex = e.position.x + e.size.width / 2;
             const ey = e.position.y + e.size.height / 2;
-            const dist = Math.hypot(ex - spawnX, ey - spawnY);
+            const dist = Math.hypot(ex - (this.position.x + this.size.width / 2), ey - (this.position.y + this.size.height / 2));
             if (dist < minDistance) {
               minDistance = dist;
               targetCenter = { x: ex, y: ey };
             }
           }
         }
+
+        const isShootingUp = Boolean(targetCenter && targetCenter.y < this.position.y);
+        const spawnX = this.position.x + this.size.width / 2 - 3;
+        const spawnY = isShootingUp ? this.position.y : this.position.y + this.size.height;
+        // Raycast origin aligned exactly with bullet spawn center (centerX = spawnX + 3)
+        const originX = spawnX + 3;
+        const originY = spawnY;
+
+        const targetX = targetCenter ? targetCenter.x : originX;
+        const targetY = targetCenter ? targetCenter.y : (isShootingUp ? originY - 200 : originY + 200);
+
+        // Friendly-fire Line of Sight check
+        const isBlocked = this.hasAlliedObstacleInShotPath(allEnemies, originX, originY, targetX, targetY, 5);
+        if (isBlocked) {
+          // Suppress fire!
+          this.fireTimer = Math.random() * 0.12 + 0.12;
+
+          let slideDir = 1;
+          if (this.lastBlockingAlly) {
+            const selfCenterX = this.position.x + this.size.width / 2;
+            const allyCenterX = this.lastBlockingAlly.position.x + (this.lastBlockingAlly.width ?? this.lastBlockingAlly.size.width) / 2;
+            slideDir = selfCenterX <= allyCenterX ? -1 : 1;
+          }
+          if (this.position.x <= 5 && slideDir < 0) {
+            slideDir = 1;
+          } else if (this.position.x + this.size.width >= this.canvasWidth - 5 && slideDir > 0) {
+            slideDir = -1;
+          }
+
+          const dt = 1 / 60;
+          this.position.x += slideDir * 45 * dt;
+          this.position.x = Math.max(0, Math.min(this.position.x, this.canvasWidth - this.size.width));
+          this.slideDir = slideDir;
+          this.slideTimer = 1.0;
+
+          return null;
+        }
+
+        // Line of sight clear: reset cooldown and fire
+        this.resetFireTimer();
+        soundManager.playRogueShoot();
 
         let bulletSpeed: number;
         let bulletDamage: number;
@@ -438,8 +691,8 @@ export class Enemy extends Entity {
         }
 
         if (targetCenter) {
-          const dx = targetCenter.x - spawnX;
-          const dy = targetCenter.y - spawnY;
+          const dx = targetCenter.x - originX;
+          const dy = targetCenter.y - originY;
           const angle = Math.atan2(dy, dx);
           b.velocity.x = Math.cos(angle) * bulletSpeed;
           b.velocity.y = Math.sin(angle) * bulletSpeed;
@@ -449,6 +702,77 @@ export class Enemy extends Entity {
       }
 
       // Invader Faction
+      const spawnX = this.position.x + this.size.width / 2 - 3;
+      const spawnY = this.position.y + this.size.height;
+      // Raycast origin aligned exactly with bullet spawn center (centerX = spawnX + 3)
+      const originX = spawnX + 3;
+      const originY = spawnY;
+
+      let targetCenter: Vector2D | null = null;
+      let minDistance = Infinity;
+
+      if (playerPos && Number.isFinite(playerPos.x) && Number.isFinite(playerPos.y)) {
+        const px = playerPos.x + 25;
+        const py = playerPos.y + 20;
+        minDistance = Math.hypot(px - originX, py - originY);
+        // Only snipers actively target the player
+        if (this.type === EnemyType.SNIPER) {
+          targetCenter = { x: px, y: py };
+        }
+      }
+
+      // Check for enemies of a different faction (crossfire targets)
+      for (const e of allEnemies) {
+        if (!e.isDead && e.faction !== this.faction) {
+          const ex = e.position.x + e.size.width / 2;
+          const ey = e.position.y + e.size.height / 2;
+          const dist = Math.hypot(ex - spawnX, ey - spawnY);
+          // If the enemy is closer than the current minDistance (which is the player's distance)
+          if (dist < minDistance) {
+            minDistance = dist;
+            targetCenter = { x: ex, y: ey };
+          }
+        }
+      }
+
+      const targetX = targetCenter ? targetCenter.x : originX;
+      const targetY = targetCenter ? targetCenter.y : originY + 200;
+
+      // Friendly-fire Line of Sight check
+      if (this.hasAlliedObstacleInShotPath(allEnemies, originX, originY, targetX, targetY, 5)) {
+        // Suppress fire!
+        this.fireTimer = Math.random() * 0.12 + 0.12;
+
+        const isAgile = this.type === EnemyType.SNIPER ||
+                        this.type === EnemyType.ROGUE_DRONE ||
+                        this.type === EnemyType.ROGUE_STALKER ||
+                        this.type === EnemyType.ROGUE_MECH;
+        if (isAgile) {
+          let slideDir = 1;
+          if (this.lastBlockingAlly) {
+            const selfCenterX = this.position.x + this.size.width / 2;
+            const allyCenterX = this.lastBlockingAlly.position.x + (this.lastBlockingAlly.width ?? this.lastBlockingAlly.size.width) / 2;
+            slideDir = selfCenterX <= allyCenterX ? -1 : 1;
+          }
+          if (this.position.x <= 5 && slideDir < 0) {
+            slideDir = 1;
+          } else if (this.position.x + this.size.width >= this.canvasWidth - 5 && slideDir > 0) {
+            slideDir = -1;
+          }
+
+          const dt = 1 / 60;
+          this.position.x += slideDir * 45 * dt;
+          this.position.x = Math.max(0, Math.min(this.position.x, this.canvasWidth - this.size.width));
+          this.slideDir = slideDir;
+          this.slideTimer = 1.0;
+        }
+
+        return null;
+      }
+
+      // Line of sight clear: reset cooldown and fire
+      this.resetFireTimer();
+
       let bulletSpeed: number;
       let bulletDamage: number;
 
@@ -466,40 +790,13 @@ export class Enemy extends Entity {
       b.shooter = this;
       b.hitEntities.add(this);
 
-      let targetCenter: Vector2D | null = null;
-      let minDistance = Infinity;
-
-      if (playerPos && Number.isFinite(playerPos.x) && Number.isFinite(playerPos.y)) {
-        const px = playerPos.x + 25;
-        const py = playerPos.y + 20;
-        minDistance = Math.hypot(px - spawnX, py - spawnY);
-        // Only snipers actively target the player
-        if (this.type === EnemyType.SNIPER) {
-          targetCenter = { x: px, y: py };
-        }
-      }
-
-      // Check for enemies of a different faction
-      for (const e of allEnemies) {
-        if (!e.isDead && e.faction !== this.faction) {
-          const ex = e.position.x + e.size.width / 2;
-          const ey = e.position.y + e.size.height / 2;
-          const dist = Math.hypot(ex - spawnX, ey - spawnY);
-          // If the enemy is closer than the current minDistance (which is the player's distance)
-          if (dist < minDistance) {
-            minDistance = dist;
-            targetCenter = { x: ex, y: ey };
-          }
-        }
-      }
-
       if (this.type === EnemyType.SNIPER) {
         b.isInterceptable = true;
       }
 
       if (targetCenter) {
-        const dx = targetCenter.x - spawnX;
-        const dy = targetCenter.y - spawnY;
+        const dx = targetCenter.x - originX;
+        const dy = targetCenter.y - originY;
         const angle = Math.atan2(dy, dx);
         const speed = this.type === EnemyType.SNIPER 
           ? (this.level >= 10 ? Math.max(400, bulletSpeed + 50) : 400) 

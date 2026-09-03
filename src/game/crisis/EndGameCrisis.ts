@@ -66,6 +66,9 @@ export class EndGameCrisis {
         CrisisArchetype.VOID_SOVEREIGN,
         CrisisArchetype.ABYSSAL_LEVIATHAN,
         CrisisArchetype.CYBERNETIC_EXTERMINATOR,
+        CrisisArchetype.CHRONO_DEVOURER,
+        CrisisArchetype.SOLARIS_COLOSSUS,
+        CrisisArchetype.NEBULA_PHANTASM,
       ];
       this.archetype = archetypes[Math.floor(Math.random() * archetypes.length)];
     }
@@ -92,9 +95,21 @@ export class EndGameCrisis {
     const rightRift = new DimensionalRift(riftRightX, riftY, 1, 600, this.archetype);
     leftRift.setSovereignTarget(this.sovereign.getCoreCenter());
     rightRift.setSovereignTarget(this.sovereign.getCoreCenter());
+    leftRift.setSiblingRift(rightRift);
+    rightRift.setSiblingRift(leftRift);
     
     this.riftAnchors = [leftRift, rightRift];
-    this.vortexPullIntensity = this.archetype === CrisisArchetype.VOID_SOVEREIGN ? 0.3 : 0.1;
+    if (this.archetype === CrisisArchetype.VOID_SOVEREIGN) {
+      this.vortexPullIntensity = 0.3;
+    } else if (this.archetype === CrisisArchetype.CHRONO_DEVOURER) {
+      this.vortexPullIntensity = 0.2;
+    } else if (this.archetype === CrisisArchetype.SOLARIS_COLOSSUS) {
+      this.vortexPullIntensity = 0.15;
+    } else if (this.archetype === CrisisArchetype.NEBULA_PHANTASM) {
+      this.vortexPullIntensity = 0.25;
+    } else {
+      this.vortexPullIntensity = 0.1;
+    }
 
     if (this.callbacks.onPhaseChange) {
       this.callbacks.onPhaseChange(this.phase, CrisisPhase.DEFEATED);
@@ -109,6 +124,12 @@ export class EndGameCrisis {
         return 'ABYSSAL LEVIATHAN';
       case CrisisArchetype.CYBERNETIC_EXTERMINATOR:
         return 'CYBERNETIC EXTERMINATOR';
+      case CrisisArchetype.CHRONO_DEVOURER:
+        return 'CHRONO DEVOURER';
+      case CrisisArchetype.SOLARIS_COLOSSUS:
+        return 'SOLARIS COLOSSUS';
+      case CrisisArchetype.NEBULA_PHANTASM:
+        return 'NEBULA PHANTASM';
     }
   }
 
@@ -377,6 +398,149 @@ export class EndGameCrisis {
         
         bullets.push(rail1, rail2, aimedB);
         break;
+
+      case CrisisArchetype.CHRONO_DEVOURER:
+        // Tachyon Lance Fan, Paradox Temporal Echo, or Phase 3 Chrono-Implosion
+        if (soundManager) soundManager.playDarkMatterBeam();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Singularity Core Overdrive: 8-way omnidirectional tachyon starburst
+          const numNeedles = 8;
+          for (let i = 0; i < numNeedles; i++) {
+            const ang = (i * Math.PI * 2) / numNeedles + this.attackPhaseTime;
+            const speed = 260;
+            const needle = new Bullet(core.x, core.y, Math.sin(ang) * speed, 1, false);
+            needle.velocity.x = Math.cos(ang) * speed;
+            needle.color = '#fbbf24';
+            needle.isInterceptable = true;
+            bullets.push(needle);
+          }
+        } else {
+          // Phase 2: Alternates between Tachyon Lance Fan and Paradox Temporal Burst
+          const isLance = Math.floor(this.attackPhaseTime / 2.2) % 2 === 0;
+          if (isLance) {
+            // Tachyon Lance: 5 needle-thin high-velocity bolts
+            const lanceAngles = [-0.3, -0.15, 0, 0.15, 0.3];
+            for (const ang of lanceAngles) {
+              const speed = 380;
+              const lance = new Bullet(core.x, core.y, Math.cos(ang) * speed, 1, false);
+              lance.velocity.x = Math.sin(ang) * speed;
+              lance.color = '#fbbf24';
+              lance.isInterceptable = true;
+              bullets.push(lance);
+            }
+          } else {
+            // Temporal Burst: delayed chronal echo bolts from wings + central paradox bolt
+            const leftEcho = new Bullet(leftMuzzle.x, leftMuzzle.y, 280, 1, false);
+            leftEcho.color = '#f59e0b';
+            leftEcho.isInterceptable = true;
+            const rightEcho = new Bullet(rightMuzzle.x, rightMuzzle.y, 280, 1, false);
+            rightEcho.color = '#f59e0b';
+            rightEcho.isInterceptable = true;
+            const centerParadox = new Bullet(core.x, core.y, 320, 1, false);
+            centerParadox.color = '#fef08a';
+            centerParadox.isInterceptable = true;
+            bullets.push(leftEcho, rightEcho, centerParadox);
+          }
+        }
+        break;
+
+      case CrisisArchetype.SOLARIS_COLOSSUS:
+        // Coronal Mass Ejection, Prominence Sweep, or Phase 3 Solar Supernova
+        if (soundManager) soundManager.playAcidStormSound();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Supernova Fusion Overdrive: 10-way rotating starburst
+          const numFlares = 10;
+          for (let i = 0; i < numFlares; i++) {
+            const ang = (i * Math.PI * 2) / numFlares + this.attackPhaseTime * 1.5;
+            const speed = 240;
+            const flare = new Bullet(core.x, core.y, Math.sin(ang) * speed, 2, false);
+            flare.velocity.x = Math.cos(ang) * speed;
+            flare.color = '#fef08a';
+            flare.isInterceptable = true;
+            bullets.push(flare);
+          }
+        } else {
+          // Phase 2: Alternates between Coronal Mass Ejection and Prominence Sweep
+          const isCME = Math.floor(this.attackPhaseTime / 2.2) % 2 === 0;
+          if (isCME) {
+            // 3 heavy superheated plasma fireballs
+            const cmeAngles = [-0.25, 0, 0.25];
+            for (const ang of cmeAngles) {
+              const speed = 220;
+              const fireball = new Bullet(core.x, core.y, Math.cos(ang) * speed, 2, false);
+              fireball.velocity.x = Math.sin(ang) * speed;
+              fireball.color = '#f97316';
+              fireball.isInterceptable = true;
+              bullets.push(fireball);
+            }
+          } else {
+            // Prominence Sweep: dual heavy solar beams from wings + center spark
+            const beamLeft = new Bullet(leftMuzzle.x, leftMuzzle.y, 350, 2, false);
+            beamLeft.color = '#ef4444';
+            beamLeft.isInterceptable = true;
+            const beamRight = new Bullet(rightMuzzle.x, rightMuzzle.y, 350, 2, false);
+            beamRight.color = '#ef4444';
+            beamRight.isInterceptable = true;
+            const spark = new Bullet(core.x, core.y, 260, 1, false);
+            spark.color = '#fef08a';
+            spark.isInterceptable = true;
+            bullets.push(beamLeft, beamRight, spark);
+          }
+        }
+        break;
+
+      case CrisisArchetype.NEBULA_PHANTASM:
+        // Quantum Mirage Nova, Spectral Homing Wisps, or Phase 3 Dimensional Shroud
+        if (soundManager) soundManager.playDarkMatterBeam();
+
+        if (this.phase === CrisisPhase.PHASE_3_CORE) {
+          // Dimensional Shroud Overdrive: 12-way expanding quantum nebula curtain
+          const numWisps = 12;
+          for (let i = 0; i < numWisps; i++) {
+            const ang = (i * Math.PI * 2) / numWisps + Math.sin(this.attackPhaseTime * 2) * 0.4;
+            const speed = 200;
+            const wisp = new Bullet(core.x, core.y, Math.sin(ang) * speed, 1, false);
+            wisp.velocity.x = Math.cos(ang) * speed;
+            wisp.color = i % 2 === 0 ? '#d946ef' : '#6366f1';
+            wisp.isInterceptable = true;
+            bullets.push(wisp);
+          }
+        } else {
+          // Phase 2: Alternates between Quantum Mirage Nova and Spectral Homing Wisps
+          const isNova = Math.floor(this.attackPhaseTime / 2.2) % 2 === 0;
+          if (isNova) {
+            // Quantum Mirage Nova: 6 criss-cross needles
+            const angles = [-0.4, -0.24, -0.08, 0.08, 0.24, 0.4];
+            for (let i = 0; i < angles.length; i++) {
+              const ang = angles[i];
+              const speed = 250;
+              const needle = new Bullet(core.x, core.y, Math.cos(ang) * speed, 1, false);
+              needle.velocity.x = Math.sin(ang) * speed;
+              needle.color = i % 2 === 0 ? '#6366f1' : '#06b6d4';
+              needle.isInterceptable = true;
+              bullets.push(needle);
+            }
+          } else {
+            // Spectral Homing Wisps: 4 wisps aimed towards player
+            const pX = player ? player.position.x + player.size.width / 2 : this.logicalWidth / 2;
+            const pY = player ? player.position.y : this.logicalHeight - 50;
+            const dx = pX - core.x;
+            const dy = pY - core.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            for (let i = 0; i < 4; i++) {
+              const offsetAngle = (i - 1.5) * 0.18;
+              const speed = 160;
+              const wisp = new Bullet(core.x, core.y, (dy / dist) * speed, 1, false);
+              wisp.velocity.x = (dx / dist) * speed + Math.sin(offsetAngle) * 80;
+              wisp.color = i % 2 === 0 ? '#06b6d4' : '#d946ef';
+              wisp.isInterceptable = true;
+              bullets.push(wisp);
+            }
+          }
+        }
+        break;
     }
   }
 
@@ -477,7 +641,6 @@ export class EndGameCrisis {
     // 3. Draw Sovereign Entity
     if (this.sovereign) {
       this.sovereign.draw(ctx);
-      // Top HUD Boss Bar
       this.sovereign.drawBossHUD(ctx, screenWidth);
     }
 

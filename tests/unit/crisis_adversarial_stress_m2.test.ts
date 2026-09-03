@@ -214,7 +214,7 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
     expect(secondTriggers).toBe(0);
   });
 
-  test('STRESS-1.6: Archetype random selection distributes across all 3 archetypes evenly', () => {
+  test('STRESS-1.6: Archetype random selection distributes across all 6 archetypes evenly', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
     gm.state = GameState.PLAYING;
@@ -223,6 +223,9 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
       [CrisisArchetype.VOID_SOVEREIGN]: 0,
       [CrisisArchetype.ABYSSAL_LEVIATHAN]: 0,
       [CrisisArchetype.CYBERNETIC_EXTERMINATOR]: 0,
+      [CrisisArchetype.CHRONO_DEVOURER]: 0,
+      [CrisisArchetype.SOLARIS_COLOSSUS]: 0,
+      [CrisisArchetype.NEBULA_PHANTASM]: 0,
     };
 
     const NUM_TRIALS = 1500;
@@ -231,11 +234,15 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
       counts[crisis.archetype]++;
     }
 
-    console.log('[STRESS-1.6] Archetype Distribution across 1,500 rolls:', counts);
-    // Each archetype should receive roughly 500 (+/- 80)
-    expect(counts[CrisisArchetype.VOID_SOVEREIGN]).toBeGreaterThan(400);
-    expect(counts[CrisisArchetype.ABYSSAL_LEVIATHAN]).toBeGreaterThan(400);
-    expect(counts[CrisisArchetype.CYBERNETIC_EXTERMINATOR]).toBeGreaterThan(400);
+    console.log('[STRESS-1.6] Archetype Distribution across 1,500 rolls (6 archetypes):', counts);
+    // Expected rolls per archetype: 1500 / 6 = 250 (std dev ~14.4)
+    // Threshold > 120 is > 8.5 sigma below mean: robust against statistical flakiness while verifying all 6 roll
+    expect(counts[CrisisArchetype.VOID_SOVEREIGN]).toBeGreaterThan(120);
+    expect(counts[CrisisArchetype.ABYSSAL_LEVIATHAN]).toBeGreaterThan(120);
+    expect(counts[CrisisArchetype.CYBERNETIC_EXTERMINATOR]).toBeGreaterThan(120);
+    expect(counts[CrisisArchetype.CHRONO_DEVOURER]).toBeGreaterThan(120);
+    expect(counts[CrisisArchetype.SOLARIS_COLOSSUS]).toBeGreaterThan(120);
+    expect(counts[CrisisArchetype.NEBULA_PHANTASM]).toBeGreaterThan(120);
   });
 
   // =========================================================================
@@ -313,7 +320,7 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
     gm.enemies = [rogue];
 
     // Defeat the crisis step by step
-    crisis.riftAnchors.forEach(r => r.takeDamage(600));
+    crisis.riftAnchors.forEach(r => r.takeDamage(3500));
     gm['update'](1 / 60); // Phase 1 -> Phase 2
     expect(crisis.phase).toBe(CrisisPhase.PHASE_2_HULL);
 
@@ -373,7 +380,7 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
     gm['update'](3.1); // Advance to Phase 1
 
     // Defeat Crisis through all phases
-    crisis.riftAnchors.forEach(r => r.takeDamage(600));
+    crisis.riftAnchors.forEach(r => r.takeDamage(3500));
     gm['update'](1 / 60);
     crisis.sovereign!.takeDamage(2500);
     gm['update'](1 / 60);

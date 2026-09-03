@@ -206,16 +206,14 @@ export const CanvasCore = React.memo(function CanvasCore({
   onPointerUp,
 }: CanvasCoreProps) {
   return (
-    <div className="w-full aspect-[3/4]">
-      <canvas
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        ref={canvasRef}
-        className="w-full h-full border-4 border-blue-900 rounded-lg shadow-2xl bg-slate-900 touch-none object-contain select-none"
-      />
-    </div>
+    <canvas
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      ref={canvasRef}
+      className="w-full h-full block bg-slate-900 touch-none select-none"
+    />
   );
 });
 
@@ -700,6 +698,7 @@ export default function GameCanvas() {
     const handleResize = () => {
       // Re-anchor pointer drag on resize / orientation change so layout changes don't cause coordinate delta jump
       lastPointerXRef.current = null;
+      game.resize();
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -937,168 +936,173 @@ export default function GameCanvas() {
 
   return (
     <div className="relative flex flex-col items-center justify-center w-full max-w-[800px] mx-auto">
-      {/* Top HUD (Memoized) */}
-      <TopHUD
-        score={score}
-        currency={currency}
-        wave={wave}
-        invaderCount={invaderCount}
-        rogueCount={rogueCount}
-        hp={hp}
-        isMuted={isMuted}
-        combo={combo}
-        ultimate={ultimate}
-        gameState={gameState}
-        onToggleMute={handleToggleMute}
-        lang={lang}
-      />
-
-      {/* Canvas Viewport (Memoized container, DPR buffer sizing protected) */}
-      <CanvasCore
-        canvasRef={canvasRef}
-        onPointerDown={handleCanvasPointerDown}
-        onPointerMove={handleCanvasPointerMove}
-        onPointerUp={handleCanvasPointerUp}
-      />
-
-      {/* Stellaris-Style End-Game Crisis Warning Banner Overlay */}
-      {gameState === GameState.PLAYING && endGameCrisisState && (endGameCrisisState.phase === CrisisPhase.INCURSION || endGameCrisisState.warningTimer > 0) && (
-        <div
-          data-testid="endgame-crisis-warning-banner"
-          className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-purple-500/90 shadow-[inset_0_0_80px_rgba(168,85,247,0.8)] animate-pulse rounded-lg bg-purple-950/40"
-        >
-          <div className="bg-slate-950/95 border-2 border-purple-500 px-6 py-5 rounded-2xl text-center shadow-[0_0_40px_rgba(168,85,247,0.9)] max-w-lg mx-4">
-            <div className="text-purple-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-1 flex items-center justify-center gap-2">
-              <span>⚡</span> STELLARIS-STYLE END-GAME CRISIS INCURSION <span>⚡</span>
-            </div>
-            <div className="text-white font-black text-xl sm:text-2xl text-purple-100 tracking-wider my-1">
-              {endGameCrisisState.bannerText || 'DIMENSIONAL WARP CONVERGENCE IMMINENT'}
-            </div>
-            <div className="text-amber-400 font-black text-xs sm:text-sm mt-2 animate-bounce">
-              WARP CONVERGENCE IN: {endGameCrisisState.warningTimer.toFixed(1)}s
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Stellaris-Style End-Game Crisis Active Badge Indicator */}
-      {gameState === GameState.PLAYING && endGameCrisisState && endGameCrisisState.isActive && endGameCrisisState.phase !== CrisisPhase.INCURSION && endGameCrisisState.phase !== CrisisPhase.DEFEATED && (
-        <div
-          data-testid="endgame-crisis-active-badge"
-          className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-5 py-1.5 rounded-full bg-purple-950/95 border-2 border-purple-400 text-purple-200 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.7)] animate-pulse select-none"
-        >
-          <span>🌌</span>
-          <span>
-            {endGameCrisisState.phase === CrisisPhase.PHASE_1_SHIELD
-              ? 'PHASE 1: DIMENSIONAL SHIELD ACTIVE'
-              : endGameCrisisState.phase === CrisisPhase.PHASE_2_HULL
-              ? 'PHASE 2: SOVEREIGN HULL EXPOSED'
-              : `PHASE 3: CORE OVERDRIVE (${Math.ceil(endGameCrisisState.enrageTimer)}s)`}
-          </span>
-          <span>🌌</span>
-        </div>
-      )}
-
-      {/* Crisis Warning Banner Overlay */}
-      {gameState === GameState.PLAYING && crisisState && crisisState.warningTimer > 0 && (
-        <div
-          data-testid="crisis-warning-banner"
-          className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-red-500/90 shadow-[inset_0_0_60px_rgba(239,68,68,0.7)] animate-pulse rounded-lg bg-red-950/30"
-        >
-          <div className="bg-red-950/95 border-2 border-red-500 px-6 py-4 rounded-xl text-center shadow-[0_0_30px_rgba(239,68,68,0.8)] max-w-md mx-4">
-            <div className="text-red-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-1 flex items-center justify-center gap-2">
-              <span>🚨</span> EMERGENCY CRISIS DETECTED <span>🚨</span>
-            </div>
-            <div className="text-white font-black text-lg sm:text-2xl text-red-100 tracking-wide">
-              {crisisState.bannerText || crisisState.activeCrisis}
-            </div>
-            <div className="text-amber-400 font-black text-xs sm:text-sm mt-2 animate-bounce">
-              IMMINENT THREAT ARRIVAL: {crisisState.warningTimer.toFixed(1)}s
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* EMP Suppression Visual Indicator */}
-      {gameState === GameState.PLAYING && crisisState && crisisState.empSuppressionActive && (
-        <div
-          data-testid="emp-suppression-badge"
-          className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-4 py-1.5 rounded-full bg-cyan-950/90 border border-cyan-400 text-cyan-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-pulse select-none"
-        >
-          <span>⚡</span> WEAPONS SUPPRESSED (EMP ACTIVE) <span>⚡</span>
-        </div>
-      )}
-
-      {/* Toxic Acid Storm Indicator */}
-      {gameState === GameState.PLAYING && crisisState && crisisState.activeCrisis === 'ACID_STORM' && crisisState.warningTimer <= 0 && (
-        <div
-          data-testid="acid-storm-badge"
-          className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-4 py-1.5 rounded-full bg-lime-950/90 border border-lime-400 text-lime-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(132,204,22,0.6)] animate-pulse select-none"
-        >
-          <span>☣️</span> TOXIC ACID STORM ACTIVE <span>☣️</span>
-        </div>
-      )}
-
-      {/* Mobile Controls (Memoized) */}
-      {gameState === GameState.PLAYING && (
-        <MobileControls
-          currency={currency}
-          ultimate={ultimate}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+      {/* 1. Dedicated Canvas Viewport Container (Isolated from Mobile Controls) */}
+      <div className="relative w-full max-w-[600px] aspect-[3/4] rounded-lg overflow-hidden border-4 border-blue-900 shadow-2xl bg-slate-900">
+        {/* Canvas Viewport (Memoized container, DPR buffer sizing protected) */}
+        <CanvasCore
+          canvasRef={canvasRef}
+          onPointerDown={handleCanvasPointerDown}
+          onPointerMove={handleCanvasPointerMove}
+          onPointerUp={handleCanvasPointerUp}
         />
-      )}
 
-      {/* Main Menu Overlay */}
-      {gameState === GameState.MENU && (
-        <MenuOverlay
-          highScore={highScore}
-          deferredPrompt={deferredPrompt}
-          onStartGame={startGame}
-          onOpenShop={handleOpenPreGameShop}
-          onOpenManual={handleOpenManual}
-          onInstallClick={handleInstallClick}
-        />
-      )}
-
-      {/* How To Play Manual Modal */}
-      {showManual && (
-        <ManualModal onClose={handleCloseManual} />
-      )}
-
-      {/* Wave Clear Shop Modal */}
-      {gameState === GameState.SHOP && (
-        <ShopModal
-          currency={currency}
-          hp={hp}
-          upgrades={upgrades}
-          onBuyFireRate={buyFireRate}
-          onBuyMultiShot={buyMultiShot}
-          onBuyPiercing={buyPiercing}
-          onBuyAcidShield={buyAcidShield}
-          onRepairTank={repairTank}
-          onNextWave={isPreGameShop ? startGame : startNextWave}
-          isPreGame={isPreGameShop}
-          lang={lang}
-        />
-      )}
-
-      {/* Game Over Modal */}
-      {gameState === GameState.GAME_OVER && (
-        <GameOverModal
+        {/* Top HUD (Memoized) */}
+        <TopHUD
           score={score}
           currency={currency}
+          wave={wave}
+          invaderCount={invaderCount}
+          rogueCount={rogueCount}
           hp={hp}
-          gameOverReason={gameOverReason}
-          upgrades={upgrades}
-          onBuyFireRate={buyFireRate}
-          onBuyMultiShot={buyMultiShot}
-          onBuyPiercing={buyPiercing}
-          onBuyAcidShield={buyAcidShield}
-          onRepairTank={repairTank}
-          onPlayAgain={startGame}
+          isMuted={isMuted}
+          combo={combo}
+          ultimate={ultimate}
+          gameState={gameState}
+          onToggleMute={handleToggleMute}
           lang={lang}
         />
+
+        {/* Stellaris-Style End-Game Crisis Warning Banner Overlay */}
+        {gameState === GameState.PLAYING && endGameCrisisState && (endGameCrisisState.phase === CrisisPhase.INCURSION || endGameCrisisState.warningTimer > 0) && (
+          <div
+            data-testid="endgame-crisis-warning-banner"
+            className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-purple-500/90 shadow-[inset_0_0_80px_rgba(168,85,247,0.8)] animate-pulse rounded-lg bg-purple-950/40"
+          >
+            <div className="bg-slate-950/95 border-2 border-purple-500 px-6 py-5 rounded-2xl text-center shadow-[0_0_40px_rgba(168,85,247,0.9)] max-w-lg mx-4">
+              <div className="text-purple-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-1 flex items-center justify-center gap-2">
+                <span>⚡</span> STELLARIS-STYLE END-GAME CRISIS INCURSION <span>⚡</span>
+              </div>
+              <div className="text-white font-black text-xl sm:text-2xl text-purple-100 tracking-wider my-1">
+                {endGameCrisisState.bannerText || 'DIMENSIONAL WARP CONVERGENCE IMMINENT'}
+              </div>
+              <div className="text-amber-400 font-black text-xs sm:text-sm mt-2 animate-bounce">
+                WARP CONVERGENCE IN: {endGameCrisisState.warningTimer.toFixed(1)}s
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Stellaris-Style End-Game Crisis Active Badge Indicator */}
+        {gameState === GameState.PLAYING && endGameCrisisState && endGameCrisisState.isActive && endGameCrisisState.phase !== CrisisPhase.INCURSION && endGameCrisisState.phase !== CrisisPhase.DEFEATED && (
+          <div
+            data-testid="endgame-crisis-active-badge"
+            className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-5 py-1.5 rounded-full bg-purple-950/95 border-2 border-purple-400 text-purple-200 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.7)] animate-pulse select-none"
+          >
+            <span>🌌</span>
+            <span>
+              {endGameCrisisState.phase === CrisisPhase.PHASE_1_SHIELD
+                ? 'PHASE 1: DIMENSIONAL SHIELD ACTIVE'
+                : endGameCrisisState.phase === CrisisPhase.PHASE_2_HULL
+                ? 'PHASE 2: SOVEREIGN HULL EXPOSED'
+                : `PHASE 3: CORE OVERDRIVE (${Math.ceil(endGameCrisisState.enrageTimer)}s)`}
+            </span>
+            <span>🌌</span>
+          </div>
+        )}
+
+        {/* Crisis Warning Banner Overlay */}
+        {gameState === GameState.PLAYING && crisisState && crisisState.warningTimer > 0 && (
+          <div
+            data-testid="crisis-warning-banner"
+            className="absolute inset-0 pointer-events-none z-30 flex flex-col items-center justify-center border-4 border-red-500/90 shadow-[inset_0_0_60px_rgba(239,68,68,0.7)] animate-pulse rounded-lg bg-red-950/30"
+          >
+            <div className="bg-red-950/95 border-2 border-red-500 px-6 py-4 rounded-xl text-center shadow-[0_0_30px_rgba(239,68,68,0.8)] max-w-md mx-4">
+              <div className="text-red-400 font-black text-xs sm:text-sm tracking-widest uppercase mb-1 flex items-center justify-center gap-2">
+                <span>🚨</span> EMERGENCY CRISIS DETECTED <span>🚨</span>
+              </div>
+              <div className="text-white font-black text-lg sm:text-2xl text-red-100 tracking-wide">
+                {crisisState.bannerText || crisisState.activeCrisis}
+              </div>
+              <div className="text-amber-400 font-black text-xs sm:text-sm mt-2 animate-bounce">
+                IMMINENT THREAT ARRIVAL: {crisisState.warningTimer.toFixed(1)}s
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* EMP Suppression Visual Indicator */}
+        {gameState === GameState.PLAYING && crisisState && crisisState.empSuppressionActive && (
+          <div
+            data-testid="emp-suppression-badge"
+            className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-4 py-1.5 rounded-full bg-cyan-950/90 border border-cyan-400 text-cyan-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-pulse select-none"
+          >
+            <span>⚡</span> WEAPONS SUPPRESSED (EMP ACTIVE) <span>⚡</span>
+          </div>
+        )}
+
+        {/* Toxic Acid Storm Indicator */}
+        {gameState === GameState.PLAYING && crisisState && crisisState.activeCrisis === 'ACID_STORM' && crisisState.warningTimer <= 0 && (
+          <div
+            data-testid="acid-storm-badge"
+            className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-4 py-1.5 rounded-full bg-lime-950/90 border border-lime-400 text-lime-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(132,204,22,0.6)] animate-pulse select-none"
+          >
+            <span>☣️</span> TOXIC ACID STORM ACTIVE <span>☣️</span>
+          </div>
+        )}
+
+        {/* Main Menu Overlay */}
+        {gameState === GameState.MENU && (
+          <MenuOverlay
+            highScore={highScore}
+            deferredPrompt={deferredPrompt}
+            onStartGame={startGame}
+            onOpenShop={handleOpenPreGameShop}
+            onOpenManual={handleOpenManual}
+            onInstallClick={handleInstallClick}
+          />
+        )}
+
+        {/* How To Play Manual Modal */}
+        {showManual && (
+          <ManualModal onClose={handleCloseManual} />
+        )}
+
+        {/* Wave Clear Shop Modal */}
+        {gameState === GameState.SHOP && (
+          <ShopModal
+            currency={currency}
+            hp={hp}
+            upgrades={upgrades}
+            onBuyFireRate={buyFireRate}
+            onBuyMultiShot={buyMultiShot}
+            onBuyPiercing={buyPiercing}
+            onBuyAcidShield={buyAcidShield}
+            onRepairTank={repairTank}
+            onNextWave={isPreGameShop ? startGame : startNextWave}
+            isPreGame={isPreGameShop}
+            lang={lang}
+          />
+        )}
+
+        {/* Game Over Modal */}
+        {gameState === GameState.GAME_OVER && (
+          <GameOverModal
+            score={score}
+            currency={currency}
+            hp={hp}
+            gameOverReason={gameOverReason}
+            upgrades={upgrades}
+            onBuyFireRate={buyFireRate}
+            onBuyMultiShot={buyMultiShot}
+            onBuyPiercing={buyPiercing}
+            onBuyAcidShield={buyAcidShield}
+            onRepairTank={repairTank}
+            onPlayAgain={startGame}
+            lang={lang}
+          />
+        )}
+      </div>
+
+      {/* 2. Mobile Controls (Positioned outside and below the canvas container) */}
+      {gameState === GameState.PLAYING && (
+        <div data-testid="mobile-controls-wrapper" className="w-full max-w-[600px]">
+          <MobileControls
+            currency={currency}
+            ultimate={ultimate}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          />
+        </div>
       )}
     </div>
   );

@@ -77,6 +77,15 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
       case CrisisArchetype.CYBERNETIC_EXTERMINATOR:
         this.color = '#ef4444';
         break;
+      case CrisisArchetype.CHRONO_DEVOURER:
+        this.color = '#fbbf24';
+        break;
+      case CrisisArchetype.SOLARIS_COLOSSUS:
+        this.color = '#f97316';
+        break;
+      case CrisisArchetype.NEBULA_PHANTASM:
+        this.color = '#6366f1';
+        break;
     }
   }
 
@@ -208,9 +217,18 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
       case CrisisArchetype.CYBERNETIC_EXTERMINATOR:
         this.drawCyberneticExterminator(ctx);
         break;
+      case CrisisArchetype.CHRONO_DEVOURER:
+        this.drawChronoDevourer(ctx);
+        break;
+      case CrisisArchetype.SOLARIS_COLOSSUS:
+        this.drawSolarisColossus(ctx);
+        break;
+      case CrisisArchetype.NEBULA_PHANTASM:
+        this.drawNebulaPhantasm(ctx);
+        break;
     }
 
-    // 2. Draw Hex-Barrier Deflection Matrix if Shielded
+    // 2. Draw Hex-Barrier Deflection Matrix if Shielded (drawn ON TOP of the hull)
     if (this.isInvulnerable || this.phase === CrisisPhase.PHASE_1_SHIELD) {
       this.drawHexDeflectorBarrier(ctx);
     }
@@ -645,12 +663,33 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
     
     let title = '✦ THE VOID SOVEREIGN ✦';
     let sub = 'EXTRA-DIMENSIONAL CATACLYSM';
+    let primaryCol = '#ef4444';
+    let accentCol = '#f97316';
     if (this.archetype === CrisisArchetype.ABYSSAL_LEVIATHAN) {
       title = '✦ THE ABYSSAL LEVIATHAN ✦';
       sub = 'CORRUPTED BIO-SWARM HORROR';
+      primaryCol = '#10b981';
+      accentCol = '#34d399';
     } else if (this.archetype === CrisisArchetype.CYBERNETIC_EXTERMINATOR) {
       title = '✦ CYBERNETIC EXTERMINATOR MATRIX ✦';
       sub = 'PURIFICATION DREADNOUGHT PROTOCOL';
+      primaryCol = '#ef4444';
+      accentCol = '#f97316';
+    } else if (this.archetype === CrisisArchetype.CHRONO_DEVOURER) {
+      title = '✦ THE CHRONO DEVOURER ✦';
+      sub = 'TEMPORAL PARADOX HARBINGER';
+      primaryCol = '#fbbf24';
+      accentCol = '#fef08a';
+    } else if (this.archetype === CrisisArchetype.SOLARIS_COLOSSUS) {
+      title = '✦ SOLARIS COLOSSUS ✦';
+      sub = 'STELLAR HYPERGIANT DREADNOUGHT';
+      primaryCol = '#f97316';
+      accentCol = '#ef4444';
+    } else if (this.archetype === CrisisArchetype.NEBULA_PHANTASM) {
+      title = '✦ THE NEBULA PHANTASM ✦';
+      sub = 'QUANTUM SPECTRAL SWARM';
+      primaryCol = '#6366f1';
+      accentCol = '#06b6d4';
     }
 
     ctx.fillText(`${title} — ${sub}`, screenWidth / 2, barY - 8);
@@ -661,19 +700,24 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
 
     // Segment 1: Phase 1 Shield / Phase 2 Hull / Phase 3 Core
     if (this.phase === CrisisPhase.PHASE_1_SHIELD) {
-      // Shimmering purple/cyan shield bar
-      ctx.fillStyle = '#a855f7';
-      ctx.fillRect(barX, barY, barWidth, barHeight);
-      ctx.fillStyle = '#38bdf8';
+      if (this.archetype === CrisisArchetype.VOID_SOVEREIGN) {
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(barX, barY, barWidth, barHeight);
+        ctx.fillStyle = '#38bdf8';
+      } else {
+        ctx.fillStyle = primaryCol;
+        ctx.fillRect(barX, barY, barWidth, barHeight);
+        ctx.fillStyle = accentCol;
+      }
       const shimmer = (Math.sin(this.floatTime * 4) + 1) / 2;
       ctx.fillRect(barX, barY, barWidth * shimmer, barHeight);
     } else if (this.phase === CrisisPhase.PHASE_2_HULL) {
       const hullRatio = Math.max(0, Math.min(1, this.hullHp / this.maxHullHp));
-      ctx.fillStyle = '#ef4444';
+      ctx.fillStyle = primaryCol;
       ctx.fillRect(barX, barY, barWidth * hullRatio, barHeight);
     } else if (this.phase === CrisisPhase.PHASE_3_CORE) {
       const coreRatio = Math.max(0, Math.min(1, this.coreHp / this.maxCoreHp));
-      ctx.fillStyle = '#f97316';
+      ctx.fillStyle = accentCol;
       ctx.fillRect(barX, barY, barWidth * coreRatio, barHeight);
     }
 
@@ -691,6 +735,335 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
       phaseText = `PHASE 3: CORE OVERDRIVE (${Math.ceil(this.enrageTimer)}s)`;
     }
     ctx.fillText(phaseText, screenWidth / 2, barY + barHeight + 14);
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 4 — THE CHRONO DEVOURER
+   * Astrolabe-shaped temporal dreadnought with concentric rotating brass gears, stepped pylons, and pendulum optic.
+   */
+  private drawChronoDevourer(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Golden Tachyon Distortion Aura
+    const aura = ctx.createRadialGradient(cx, cy, 25, cx, cy, 145);
+    aura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.45)' : 'rgba(251, 191, 36, 0.35)');
+    aura.addColorStop(0.6, 'rgba(245, 158, 11, 0.15)');
+    aura.addColorStop(1, 'rgba(15, 23, 42, 0)');
+    ctx.fillStyle = aura;
+    ctx.fillRect(x - 40, y - 40, w + 80, h + 80);
+
+    // 2. Concentric Rotating Brass Gear Rings
+    const gearRadii = [36, 50, 64];
+    const gearSpeeds = [1.5, -1.2, 0.8];
+    const gearTeeth = [8, 12, 16];
+    for (let g = 0; g < 3; g++) {
+      ctx.save();
+      ctx.translate(cx, cy + 10);
+      ctx.rotate(this.floatTime * gearSpeeds[g]);
+      ctx.strokeStyle = g === 1 ? '#d97706' : '#f59e0b';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(0, 0, gearRadii[g], 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#fef08a';
+      for (let t = 0; t < gearTeeth[g]; t++) {
+        const a = (t * Math.PI * 2) / gearTeeth[g];
+        ctx.fillRect(Math.cos(a) * gearRadii[g] - 2, Math.sin(a) * gearRadii[g] - 2, 4, 4);
+      }
+      ctx.restore();
+    }
+
+    // 3. Stepped Pyramid Wing Pylons (Left & Right)
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#78350f';
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2.0;
+
+    // Left Stepped Pylon
+    for (let s = 0; s < 3; s++) {
+      const stepW = 32 - s * 8;
+      const stepH = 14;
+      const stepX = x + 12 + s * 4;
+      const stepY = cy - 20 + s * 16;
+      ctx.fillRect(stepX, stepY, stepW, stepH);
+      ctx.strokeRect(stepX, stepY, stepW, stepH);
+    }
+
+    // Right Stepped Pylon
+    for (let s = 0; s < 3; s++) {
+      const stepW = 32 - s * 8;
+      const stepH = 14;
+      const stepX = x + w - 44 - s * 4;
+      const stepY = cy - 20 + s * 16;
+      ctx.fillRect(stepX, stepY, stepW, stepH);
+      ctx.strokeRect(stepX, stepY, stepW, stepH);
+    }
+
+    // 4. Main Astrolabe Dreadnought Hull
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#451a03';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#fbbf24';
+    ctx.lineWidth = 3.0;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, y); // Central top apex
+    ctx.lineTo(cx + 50, y + 16);
+    ctx.lineTo(cx + 122, y + 50); // Right wing tip
+    ctx.lineTo(cx + 128, y + 90);
+    ctx.lineTo(cx + 85, y + 115);
+    ctx.lineTo(cx + 40, y + 95);
+    ctx.lineTo(cx, y + 128);      // Keel
+    ctx.lineTo(cx - 40, y + 95);
+    ctx.lineTo(cx - 85, y + 115);
+    ctx.lineTo(cx - 128, y + 90);
+    ctx.lineTo(cx - 122, y + 50); // Left wing tip
+    ctx.lineTo(cx - 50, y + 16);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 5. Central Chronal Astrolabe Iris & Pendulum Optic
+    const coreGrad = ctx.createRadialGradient(cx, cy + 10, 4, cx, cy + 10, 24);
+    coreGrad.addColorStop(0, '#ffffff');
+    coreGrad.addColorStop(0.4, '#fef08a');
+    coreGrad.addColorStop(0.8, '#f59e0b');
+    coreGrad.addColorStop(1, '#78350f');
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy + 10, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 2.0;
+    ctx.stroke();
+
+    // Pupil looking toward player
+    const pupilX = cx + Math.cos(this.eyeAngle) * 5;
+    const pupilY = cy + 10 + Math.sin(this.eyeAngle) * 5;
+    ctx.fillStyle = '#02010a';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(pupilX - 1, pupilY - 1, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 5 — SOLARIS COLOSSUS
+   * Stellar hypergiant dreadnought with obsidian basalt plates, prominence horns, and thermonuclear furnace core.
+   */
+  private drawSolarisColossus(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Thermonuclear Heat Aura
+    const heatAura = ctx.createRadialGradient(cx, cy + 10, 30, cx, cy + 10, 150);
+    heatAura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.5)' : 'rgba(249, 115, 22, 0.45)');
+    heatAura.addColorStop(0.6, 'rgba(239, 68, 68, 0.2)');
+    heatAura.addColorStop(1, 'rgba(15, 23, 42, 0)');
+    ctx.fillStyle = heatAura;
+    ctx.fillRect(x - 45, y - 45, w + 90, h + 90);
+
+    // 2. Solar Prominence Horns (Curving outward and up)
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#f97316';
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 2.5;
+
+    // Left Horn
+    ctx.beginPath();
+    ctx.moveTo(cx - 25, y + 15);
+    ctx.quadraticCurveTo(cx - 70, y - 20, cx - 85, y - 10);
+    ctx.quadraticCurveTo(cx - 65, y + 15, cx - 35, y + 25);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Right Horn
+    ctx.beginPath();
+    ctx.moveTo(cx + 25, y + 15);
+    ctx.quadraticCurveTo(cx + 70, y - 20, cx + 85, y - 10);
+    ctx.quadraticCurveTo(cx + 65, y + 15, cx + 35, y + 25);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 3. Main Basalt Obsidian Juggernaut Hull
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#2d1305';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#f97316';
+    ctx.lineWidth = 3.5;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 5);
+    ctx.lineTo(cx + 65, y + 5);
+    ctx.lineTo(cx + 130, y + 42); // Flared wing tip
+    ctx.lineTo(cx + 125, y + 95);
+    ctx.lineTo(cx + 75, y + 105);
+    ctx.lineTo(cx + 45, y + 128); // Bottom keel
+    ctx.lineTo(cx - 45, y + 128);
+    ctx.lineTo(cx - 75, y + 105);
+    ctx.lineTo(cx - 125, y + 95);
+    ctx.lineTo(cx - 130, y + 42); // Left wing tip
+    ctx.lineTo(cx - 65, y + 5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 4. Molten Heat Radiator Slots
+    ctx.fillStyle = '#ef4444';
+    for (let r = 0; r < 4; r++) {
+      const ry = y + 35 + r * 14;
+      ctx.fillRect(cx - 95, ry, 26, 6);
+      ctx.fillRect(cx + 69, ry, 26, 6);
+    }
+
+    // 5. Central Thermonuclear Fusion Furnace Eye
+    const furnaceGrad = ctx.createRadialGradient(cx, cy + 12, 3, cx, cy + 12, 26);
+    furnaceGrad.addColorStop(0, '#ffffff');
+    furnaceGrad.addColorStop(0.3, '#fef08a');
+    furnaceGrad.addColorStop(0.7, '#f97316');
+    furnaceGrad.addColorStop(1, '#451a03');
+    ctx.fillStyle = furnaceGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy + 12, 24, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Corona flares
+    const flarePulse = Math.sin(this.pulsePhase * 3) * 4;
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 2.0;
+    ctx.beginPath();
+    ctx.arc(cx, cy + 12, 26 + flarePulse, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Pupil
+    const pupilX = cx + Math.cos(this.eyeAngle) * 6;
+    const pupilY = cy + 12 + Math.sin(this.eyeAngle) * 6;
+    ctx.fillStyle = '#02010a';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(pupilX, pupilY, 3.0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Vector Drawing: Archetype 6 — THE NEBULA PHANTASM
+   * Quantum spectral swarm dreadnought with phantom manta-ray silhouette, mist tendrils, and triple-pupil optic.
+   */
+  private drawNebulaPhantasm(ctx: CanvasRenderingContext2D): void {
+    const x = this.position.x;
+    const y = this.position.y;
+    const w = this.size.width;
+    const h = this.size.height;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const isFlashing = this.flashTimer > 0;
+
+    ctx.save();
+
+    // 1. Quantum Mist Aura
+    const mistAura = ctx.createRadialGradient(cx, cy, 25, cx, cy, 145);
+    mistAura.addColorStop(0, isFlashing ? 'rgba(255, 255, 255, 0.45)' : 'rgba(99, 102, 241, 0.35)');
+    mistAura.addColorStop(0.6, 'rgba(6, 182, 212, 0.15)');
+    mistAura.addColorStop(1, 'rgba(15, 23, 42, 0)');
+    ctx.fillStyle = mistAura;
+    ctx.fillRect(x - 40, y - 40, w + 80, h + 80);
+
+    // 2. Trailing Undulating Quantum Mist Tendrils
+    for (let t = 0; t < 5; t++) {
+      const offsetX = (t - 2) * 38;
+      const startX = cx + offsetX;
+      const startY = y + h - 18;
+      const wave = Math.sin(this.floatTime * 3.2 + t) * 14;
+      ctx.strokeStyle = t % 2 === 0 ? 'rgba(6, 182, 212, 0.7)' : 'rgba(217, 70, 239, 0.7)';
+      ctx.lineWidth = 3.0;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.quadraticCurveTo(startX + wave, startY + 28, startX + wave * 1.5, startY + 54);
+      ctx.stroke();
+
+      // Mist mote on tip
+      ctx.fillStyle = t % 2 === 0 ? '#06b6d4' : '#d946ef';
+      ctx.beginPath();
+      ctx.arc(startX + wave * 1.5, startY + 54, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 3. Spectral Manta-Ray Hull Silhouette
+    ctx.fillStyle = isFlashing ? '#ffffff' : '#0b0f19';
+    ctx.strokeStyle = isFlashing ? '#ef4444' : '#6366f1';
+    ctx.lineWidth = 3.0;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 6);
+    ctx.bezierCurveTo(cx + 65, y, cx + 135, y + 38, cx + 128, y + 80);
+    ctx.bezierCurveTo(cx + 105, y + 115, cx + 55, y + 105, cx, y + 126);
+    ctx.bezierCurveTo(cx - 55, y + 105, cx - 105, y + 115, cx - 128, y + 80);
+    ctx.bezierCurveTo(cx - 135, y + 38, cx - 65, y, cx, y + 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 4. Crystalline Refractive Shield Facets
+    ctx.strokeStyle = '#06b6d4';
+    ctx.lineWidth = 1.6;
+    for (let f = 0; f < 3; f++) {
+      const fY = y + 26 + f * 22;
+      const fW = 75 - f * 16;
+      ctx.beginPath();
+      ctx.ellipse(cx, fY, fW, 12, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // 5. Triple-Pupil Spectral Optic Cluster
+    const eyeOffsets = [-22, 0, 22];
+    for (let e = 0; e < 3; e++) {
+      const eyeX = cx + eyeOffsets[e];
+      const eyeY = cy + 8;
+      const eyeRadius = e === 1 ? 12 : 9;
+
+      // Eye background
+      ctx.fillStyle = '#02010a';
+      ctx.beginPath();
+      ctx.arc(eyeX, eyeY, eyeRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Iris
+      ctx.strokeStyle = e === 1 ? '#d946ef' : '#06b6d4';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+
+      // Tracking pupil
+      const px = eyeX + Math.cos(this.eyeAngle) * 3;
+      const py = eyeY + Math.sin(this.eyeAngle) * 3;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(px, py, e === 1 ? 3 : 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.restore();
   }

@@ -45,24 +45,24 @@ export class Bullet extends Entity {
       const centerX = this.position.x + this.size.width / 2;
       const rx = this.size.width / 2;
 
-      // 1. High-Contrast Black Perimeter Outline
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(centerX, this.position.y + this.size.height - rx, rx + 0.5, 0, Math.PI);
-      ctx.lineTo(centerX, this.position.y - 1);
-      ctx.closePath();
-      ctx.stroke();
-
-      // 2. Outer Glow Halo
-      ctx.globalAlpha = 0.5;
+      // Tier 1: Outer Glow Halo (Drawn behind outline)
+      ctx.globalAlpha = 0.45;
       ctx.fillStyle = '#38bdf8';
       ctx.beginPath();
       ctx.arc(centerX, this.position.y + this.size.height - rx, this.size.width * 0.9, 0, Math.PI * 2);
       ctx.fill();
 
-      // 3. Bright Cyan Droplet Body
+      // Tier 2: High-Contrast Black Armor Rim (2.0px stroke drawn on top of outer bloom)
       ctx.globalAlpha = 1.0;
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      ctx.arc(centerX, this.position.y + this.size.height - rx, rx + 1.0, 0, Math.PI);
+      ctx.lineTo(centerX, this.position.y - 2);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Tier 3: Bright Cyan Droplet Body
       ctx.fillStyle = '#00e5ff';
       ctx.beginPath();
       ctx.arc(centerX, this.position.y + this.size.height - rx, rx, 0, Math.PI);
@@ -70,10 +70,10 @@ export class Bullet extends Entity {
       ctx.closePath();
       ctx.fill();
 
-      // 4. Solid White Core Highlight
+      // Tier 4: Solid White Core Highlight (Luminance = 1.0)
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(centerX, this.position.y + this.size.height * 0.6, this.size.width * 0.3, 0, Math.PI * 2);
+      ctx.arc(centerX, this.position.y + this.size.height * 0.55, this.size.width * 0.35, 0, Math.PI * 2);
       ctx.fill();
 
     } else if (this.faction === Faction.ROGUE) {
@@ -84,22 +84,22 @@ export class Bullet extends Entity {
       const centerY = this.position.y + this.size.height / 2;
       const radius = this.size.width / 2;
 
-      // Tier 1: 1.5px Black Perimeter Stroke Outline
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius + 1.5, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Tier 2: Outer Glow
-      ctx.globalAlpha = 0.6;
+      // Tier 1: Outer Glow Bloom (Drawn behind outline)
+      ctx.globalAlpha = 0.5;
       ctx.fillStyle = '#84cc16';
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 1.5, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius * 1.6, 0, Math.PI * 2);
       ctx.fill();
 
-      // Tier 3: Saturated Shell (Lime & Amber Ring)
+      // Tier 2: 2.0px Black Armor Rim (Drawn on top of bloom for >= 7:1 contrast)
       ctx.globalAlpha = 1.0;
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius + 1.0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Tier 3: Saturated Dual-Ring Shell (Lime & Amber Ring)
       ctx.fillStyle = '#84cc16';
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -110,10 +110,10 @@ export class Bullet extends Entity {
       ctx.arc(centerX, centerY, radius * 0.65, 0, Math.PI * 2);
       ctx.fill();
 
-      // Tier 4: White-Hot Core
+      // Tier 4: White-Hot Core Focus
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 0.35, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius * 0.40, 0, Math.PI * 2);
       ctx.fill();
 
     } else {
@@ -125,22 +125,22 @@ export class Bullet extends Entity {
       const radius = this.size.width / 2;
       const shellColor = this.isInterceptable ? '#a855f7' : (this.color || '#ef4444');
 
-      // Tier 1: 1.5px Black Perimeter Stroke Outline
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius + 1.5, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Tier 2: Outer Glow
-      ctx.globalAlpha = 0.5;
+      // Tier 1: Outer Atmospheric Bloom (Drawn behind outline)
+      ctx.globalAlpha = 0.45;
       ctx.fillStyle = shellColor;
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 1.5, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius * 1.6, 0, Math.PI * 2);
       ctx.fill();
 
-      // Tier 3: Saturated Color Shell
+      // Tier 2: 2.0px Black Armor Rim (Drawn ON TOP of outer bloom to ensure >= 7:1 WCAG AAA contrast)
       ctx.globalAlpha = 1.0;
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius + 1.0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Tier 3: Saturated Color Plasma Shell
       ctx.fillStyle = shellColor;
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -148,14 +148,15 @@ export class Bullet extends Entity {
 
       if (this.isInterceptable) {
         ctx.strokeStyle = '#f3e8ff';
-        ctx.lineWidth = 1.0;
+        ctx.lineWidth = 1.5;
         ctx.stroke();
       }
 
-      // Tier 4: Solid White Core
+      // Tier 4: Concentrated Solid White Core Highlight (Radius 0.55x)
+      ctx.globalAlpha = 1.0;
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius * 0.45, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY, radius * 0.55, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
