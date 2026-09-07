@@ -210,7 +210,7 @@ export class GameManager {
   }
 
   public pause(): void {
-    if (this.state === GameState.PLAYING || this.state === GameState.SHOP) {
+    if (this.state === GameState.PLAYING || this.state === GameState.SHOP || this.state === GameState.GAME_OVER) {
       this.isPaused = true;
       this.accumulator = 0;
       if (this.animationFrameId) {
@@ -334,11 +334,9 @@ export class GameManager {
       }
     }
     this.particles = [];
+    this.score = 0;
     if (resetScoreAndCash) {
-      this.score = 0;
       this.currency = 150;
-    } else if (shouldPreserve) {
-      this.score = 0;
     }
     this.combo = 0;
     this.level = 1;
@@ -483,6 +481,71 @@ export class GameManager {
     this.clearKeys();
   }
 
+  public prepareContinue(): void {
+    if (!this.player) {
+      this.player = new Player(this.logicalWidth, this.logicalHeight);
+    }
+    this.player.isDead = false;
+    this.player.hp = Math.max(3, this.player.hp);
+    this.player.position.x = this.logicalWidth / 2 - 25;
+    this.player.position.y = this.logicalHeight - 60;
+    this.player.stressLevel = 0;
+    this.player.suppressionLevel = 0;
+
+    this.clearKeys();
+    this.bullets = [];
+    this.enemies = [];
+    this.helpers = [];
+    for (const p of this.particles) {
+      if (this.particlePool.length < 500) {
+        this.particlePool.push(p);
+      }
+    }
+    this.particles = [];
+    this.hazardProjectiles = [];
+    this.solarFlares = [];
+
+    this.reinforcementTimer = 10;
+    this.warningTimer = 0;
+    this.warningMessage = "";
+    this.warningText = "";
+    this.pendingReinforcement = null;
+    this.crisisState = {
+      activeCrisis: null,
+      timer: 0,
+      duration: 0,
+      warningTimer: 0,
+      bannerText: null,
+      hazardProjectiles: [],
+      solarFlares: [],
+      empSuppressionActive: false,
+      empTimer: 0,
+    };
+    this.crisisTimer = 6.0 + Math.random() * 4.0;
+    if (this.onCrisisEvent) this.onCrisisEvent(null);
+    if (!this.endGameCrisisDefeatedHandled) {
+      this.hasEndGameCrisisOccurred = false;
+    }
+    this.endGameCrisis = null;
+    this.endGameCrisisDefeatedHandled = false;
+    this.alliedReinforcements = undefined;
+    if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
+
+    // Enter SHOP state paused for continue purchases
+    this.state = GameState.SHOP;
+    this.isPaused = true;
+    this.accumulator = 0;
+    if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = 0;
+    }
+
+    if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+    this.updateScoreUI();
+    this.updateUpgradesUI();
+    if (this.onStateChange) this.onStateChange(this.state);
+  }
+
   public continueGame(): void {
     if (!this.player) {
       this.player = new Player(this.logicalWidth, this.logicalHeight);
@@ -553,6 +616,7 @@ export class GameManager {
     this.lastTime = performance.now();
     if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = 0;
     }
     if (typeof requestAnimationFrame !== 'undefined') {
       this.animationFrameId = requestAnimationFrame(this.loop);
@@ -1721,17 +1785,27 @@ export class GameManager {
       let hitBarricade = false;
       if (!(bullet as any).ignoreBarricades) {
         for (const barricade of this.barricades) {
-          if (!barricade.isDead && bullet.checkCollision(barricade)) {
-            bullet.isDead = true;
-            hitBarricade = true;
+          if (!barricade.isDead && !bullet.hitEntities.has(barricade) && bullet.checkCollision(barricade)) {
+            bullet.hitEntities.add(barricade);
 
-            if (barricade.type === BarricadeType.DESTRUCTIBLE) {
+            if (barricade.type === BarricadeType.INDESTRUCTIBLE) {
+              bullet.isDead = true;
+              hitBarricade = true;
+              this.createExplosion(bullet.position.x, bullet.position.y, '#94a3b8', 3);
+              break;
+            } else {
               barricade.hp -= bullet.damage;
               this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 5);
-            } else {
-              this.createExplosion(bullet.position.x, bullet.position.y, '#94a3b8', 3);
+
+              if (bullet.piercing > 1) {
+                bullet.piercing--;
+                break;
+              } else {
+                bullet.isDead = true;
+                hitBarricade = true;
+                break;
+              }
             }
-            break;
           }
         }
       }
@@ -2785,5 +2859,21 @@ export class GameManager {
     this.updateScoreUI();
     this.updateUpgradesUI();
     return true;
+  }
+
+  public repairTank(): boolean {
+    if (!this.player) return false;
+    const maxHp = this.player.maxHp || 5;
+    if (this.currency >= 75 && this.player.hp < maxHp) {
+      this.currency -= 75;
+      this.player.hp = Math.min(maxHp, this.player.hp + 1);
+      soundManager.playPowerUp();
+      this.updateScoreUI();
+      if (this.onPlayerHpChange) {
+        this.onPlayerHpChange(this.player.hp);
+      }
+      return true;
+    }
+    return false;
   }
 }

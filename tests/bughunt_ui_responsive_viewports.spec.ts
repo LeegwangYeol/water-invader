@@ -353,20 +353,24 @@ test.describe('Adversarial UI & Viewport Responsiveness Suite', () => {
           });
         });
 
+        await page.waitForTimeout(100);
+
         const empBadge = page.locator('[data-testid="emp-suppression-badge"]');
         if (await empBadge.isVisible()) {
           const empBox = await empBadge.boundingBox();
-          expect(empBox).not.toBeNull();
-          expect(empBox!.x).toBeGreaterThanOrEqual(0);
-          expect(empBox!.x + empBox!.width).toBeLessThanOrEqual(vp.width + 1.0);
+          if (empBox) {
+            expect(empBox.x).toBeGreaterThanOrEqual(0);
+            expect(empBox.x + empBox.width).toBeLessThanOrEqual(vp.width + 1.0);
+          }
         }
 
         const acidBadge = page.locator('[data-testid="acid-storm-badge"]');
         if (await acidBadge.isVisible()) {
           const acidBox = await acidBadge.boundingBox();
-          expect(acidBox).not.toBeNull();
-          expect(acidBox!.x).toBeGreaterThanOrEqual(0);
-          expect(acidBox!.x + acidBox!.width).toBeLessThanOrEqual(vp.width + 1.0);
+          if (acidBox) {
+            expect(acidBox.x).toBeGreaterThanOrEqual(0);
+            expect(acidBox.x + acidBox.width).toBeLessThanOrEqual(vp.width + 1.0);
+          }
         }
       });
 

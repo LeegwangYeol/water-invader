@@ -81,8 +81,11 @@ test.describe('Crossfire & Score/Cash Persistence Verification Suite', () => {
     await expect(page.locator('text=GAME OVER')).toBeVisible();
     await expect(page.locator('text=Final')).toBeVisible();
 
-    // Click Continue
+    // Click Continue -> Opens Continue Shop, click Resume Wave to resume combat
     await page.click('button:has-text("Continue")');
+    const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+    await resumeBtn.waitFor({ state: 'visible' });
+    await resumeBtn.click();
 
     // Verify in HUD that the score and currency carried over
     const hudData = await page.evaluate(() => {

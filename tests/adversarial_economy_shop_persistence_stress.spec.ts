@@ -182,6 +182,7 @@ test.describe('Empirical Adversarial Stress Suite: Economy, Shop State Machine &
       multiShot: 1,
       piercing: 1,
       hasAcidShield: false,
+      homingMissiles: 0,
     });
 
     // Attempt all upgrades at 0 funds

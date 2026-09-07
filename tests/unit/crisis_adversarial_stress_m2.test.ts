@@ -409,9 +409,13 @@ test.describe('Adversarial Stress Harness: Milestone 2 Crisis Incursion & Transi
       expect(gm.state).toBe(GameState.PLAYING);
       expect(gm.level).toBe(w);
 
-      // Clear standard enemies
-      gm.enemies.forEach(e => (e.isDead = true));
-      gm['update'](1 / 60);
+      // Clear standard enemies and any secondary swarm echelons
+      let loopCount = 0;
+      while (gm.state === GameState.PLAYING && loopCount < 300) {
+        gm.enemies.forEach(e => (e.isDead = true));
+        gm['update'](1 / 60);
+        loopCount++;
+      }
 
       expect(gm.state).toBe(GameState.SHOP);
     }

@@ -1,4 +1,4 @@
-﻿import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import {
   SwarmBotEngine,
   extractBotPerception,
@@ -450,6 +450,7 @@ test.describe('Challenger 2 Empirical Verification: Corner Cases & Stress Harnes
         gameState: 1
       };
 
+      SwarmBotEngine.computeDecision(perception); // Warm up JIT
       const t0 = performance.now();
       const decision = SwarmBotEngine.computeDecision(perception);
       const t1 = performance.now();

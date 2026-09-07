@@ -636,8 +636,11 @@ test.describe('Empirical Verification: State Machine Transitions & Boundary Cond
 
       await expect(page.locator('text=GAME OVER')).toBeVisible();
 
-      // 2. Test Continue: keeps wave, upgrades, score, and currency
+      // 2. Test Continue: opens continue shop, then resume wave into combat
       await page.locator('[data-testid="continue-button"]').click();
+      const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+      await resumeBtn.waitFor({ state: 'visible' });
+      await resumeBtn.click();
       await page.waitForTimeout(200);
 
       const continueState = await page.evaluate(() => {

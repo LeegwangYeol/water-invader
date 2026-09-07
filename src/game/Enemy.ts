@@ -92,6 +92,27 @@ export class Enemy extends Entity {
     );
   }
 
+  /**
+   * Calculates wave-based piercing multiplier for late-game difficulty scaling.
+   * Baseline 1.0x at Waves 1-10; scales smoothly up to 2.5x at Wave 29+.
+   */
+  public getPiercingMultiplier(): number {
+    return 1.0 + Math.min(1.5, Math.max(0, this.level - 10) * 0.08);
+  }
+
+  /**
+   * Projectile penetration count (number of entities bullet can pierce).
+   * Waves 1-14: 1 (blocked by cover).
+   * Waves 15-24: 2 (pierces 1 barricade/ally).
+   * Waves 25+: 3.
+   */
+  public getPiercingCount(): number {
+    if (this.isElite || this.type === EnemyType.BOSS || this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH) {
+      return this.level >= 20 ? 3 : (this.level >= 10 ? 2 : 1);
+    }
+    return this.level < 15 ? 1 : (this.level < 25 ? 2 : 3);
+  }
+
   constructor(x: number, y: number, canvasWidth: number = 720, level: number = 1, type: EnemyType = EnemyType.NORMAL, canvasHeight: number = 960) {
     Enemy.initAssets();
     const validX = Number.isFinite(x) ? x : 0;
@@ -863,8 +884,17 @@ export class Enemy extends Entity {
         if (this.level >= 10) {
           bulletSpeed = 250 + Math.min(150, (this.level - 10) * 15);
           const isElite = this.type === EnemyType.ROGUE_STALKER || this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH || this.type === EnemyType.ROGUE_PHANTOM || this.type === EnemyType.ROGUE_CARRIER;
-          bulletDamage = (this.type === EnemyType.ROGUE_GOLIATH) ? 3 : (isElite ? 2 : 1);
-          piercing = (this.type === EnemyType.ROGUE_MECH || this.type === EnemyType.ROGUE_GOLIATH) ? 2 : 1;
+          if (this.type === EnemyType.ROGUE_GOLIATH) {
+            bulletDamage = 3;
+            piercing = this.level >= 20 ? 3 : 2;
+          } else if (isElite) {
+            bulletDamage = 2;
+            piercing = (this.type === EnemyType.ROGUE_MECH) ? (this.level >= 20 ? 3 : 2) : 1;
+          } else {
+            // Common mob: ROGUE_DRONE
+            bulletDamage = Math.min(2, 1 + Math.floor(Math.max(0, this.level - 10) / 10));
+            piercing = this.level < 15 ? 1 : (this.level < 25 ? 2 : 3);
+          }
         } else {
           bulletSpeed = this.type === EnemyType.ROGUE_DRONE 
             ? (this.level <= 2 ? 300 : 360) 
@@ -976,17 +1006,29 @@ export class Enemy extends Entity {
 
       let bulletSpeed: number;
       let bulletDamage: number;
+      let piercing: number;
 
       if (this.level >= 10) {
         bulletSpeed = 250 + Math.min(150, (this.level - 10) * 15);
         const isElite = this.type === EnemyType.SNIPER || this.type === EnemyType.BOSS;
-        bulletDamage = isElite ? 2 : 1;
+        if (isElite) {
+          bulletDamage = this.level >= 20 ? 3 : 2;
+          piercing = this.level >= 20 ? 3 : 2;
+        } else {
+          // Common mobs (NORMAL, ZIGZAG, SHIELDED, SPLITTER)
+          bulletDamage = Math.min(2, 1 + Math.floor(Math.max(0, this.level - 10) / 10));
+          piercing = this.level < 15 ? 1 : (this.level < 25 ? 2 : 3);
+        }
       } else {
         bulletSpeed = this.type === EnemyType.BOSS ? 300 : 200;
         bulletDamage = 1;
+        piercing = 1;
       }
 
-      const b = new Bullet(spawnX, spawnY, bulletSpeed, bulletDamage, false);
+      const b = new Bullet(spawnX, spawnY, bulletSpeed, bulletDamage, false, piercing);
+      if (piercing > 1) {
+        b.color = '#f97316';
+      }
       b.faction = this.faction;
       b.shooter = this;
       b.hitEntities.add(this);

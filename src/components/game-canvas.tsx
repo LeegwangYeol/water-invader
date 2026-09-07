@@ -48,7 +48,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
         </div>
         <button 
           onClick={onRepairTank}
-          disabled={currency < 75 || hp >= 5 || hp <= 0}
+          disabled={currency < 75 || hp >= 5}
           className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 rounded font-bold transition-colors"
         >{hp >= 5 ? 'MAX' : '75 💧'}</button>
       </div>
@@ -160,23 +160,23 @@ export const TopHUD = React.memo(function TopHUD({
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
 
   return (
-    <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-start text-white touch-none z-30 pointer-events-none">
+    <div className="absolute top-0 left-0 w-full p-4 p-2 sm:p-4 max-sm:!p-2 flex justify-between items-start text-white touch-none z-30 pointer-events-none">
       <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-blue-400">{t('점수:', 'Score:')} {score}</h2>
-        <p className="text-sm sm:text-base text-blue-200">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
+        <h2 className="text-sm sm:text-2xl font-bold text-blue-400">{t('점수:', 'Score:')} {score}</h2>
+        <p className="text-xs sm:text-base text-blue-200">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
         {gameState === GameState.PLAYING && (
-          <div className="flex items-center gap-2 mt-1 flex-wrap">
-            <p className="text-sm sm:text-base text-yellow-300 font-bold">WAVE {wave}</p>
-            <div className="flex items-center gap-1.5 ml-1">
+          <div className="flex items-center gap-1 sm:gap-2 mt-0.5 sm:mt-1 flex-wrap">
+            <p className="text-xs sm:text-base text-yellow-300 font-bold">WAVE {wave}</p>
+            <div className="flex items-center gap-1 ml-0.5 sm:ml-1">
               <span 
                 data-testid="invader-threat-badge" 
-                className="px-2 py-0.5 rounded-full text-xs font-black bg-red-950/80 text-red-400 border border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.4)] flex items-center gap-1 select-none"
+                className="px-1.5 py-0 sm:px-2 sm:py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-red-950/80 text-red-400 border border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.4)] flex items-center gap-0.5 select-none"
               >
                 👾 {invaderCount}
               </span>
               <span 
                 data-testid="rogue-threat-badge" 
-                className="px-2 py-0.5 rounded-full text-xs font-black bg-lime-950/80 text-lime-400 border border-lime-500/60 shadow-[0_0_8px_rgba(132,204,22,0.4)] flex items-center gap-1 select-none"
+                className="px-1.5 py-0 sm:px-2 sm:py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-lime-950/80 text-lime-400 border border-lime-500/60 shadow-[0_0_8px_rgba(132,204,22,0.4)] flex items-center gap-0.5 select-none"
               >
                 ⚡ {rogueCount}
               </span>
@@ -185,27 +185,27 @@ export const TopHUD = React.memo(function TopHUD({
         )}
       </div>
       <div className="text-right flex flex-col items-end">
-        <div className="flex gap-1 justify-end mb-2">
+        <div className="flex gap-1 justify-end mb-1 sm:mb-2">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className={`w-4 h-4 sm:w-6 sm:h-6 rounded-full ${i < hp ? 'bg-blue-500' : 'bg-gray-600'}`} />
+            <div key={i} className={`w-3.5 h-3.5 sm:w-6 sm:h-6 rounded-full ${i < hp ? 'bg-blue-500' : 'bg-gray-600'}`} />
           ))}
         </div>
         {/* Mute button */}
         <button
           onClick={onToggleMute}
           aria-label={isMuted ? 'Unmute Sound' : 'Mute Sound'}
-          className="px-3 py-1 bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded border border-slate-600 transition-colors pointer-events-auto select-none mb-1 z-30"
+          className="px-2 py-0.5 sm:px-3 sm:py-1 bg-slate-800/80 hover:bg-slate-700 text-[10px] sm:text-xs font-bold text-slate-200 rounded border border-slate-600 transition-colors pointer-events-auto select-none mb-0.5 sm:mb-1 z-30"
         >
           {isMuted ? '🔇 MUTE' : '🔊 SOUND'}
         </button>
         {combo > 1 && (
-          <div className="text-lg sm:text-xl font-bold text-yellow-400 animate-pulse">
+          <div className="text-sm sm:text-xl font-bold text-yellow-400 animate-pulse">
             {combo}x COMBO!
           </div>
         )}
         {/* Ultimate Gauge */}
         {gameState === GameState.PLAYING && (
-          <div className="mt-2 w-32 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-500 relative">
+          <div className="mt-1 sm:mt-2 w-20 sm:w-32 bg-slate-700 h-2.5 sm:h-4 rounded-full overflow-hidden border border-slate-500 relative">
             <div 
               className={`h-full transition-all duration-300 ${ultimate >= 100 ? 'bg-gradient-to-r from-yellow-400 to-red-500 animate-pulse' : 'bg-blue-500'}`}
               style={{ width: `${ultimate}%` }}
@@ -429,6 +429,8 @@ interface ShopModalProps {
   onRepairTank: () => void;
   onNextWave: () => void;
   isPreGame?: boolean;
+  isContinue?: boolean;
+  wave?: number;
   lang: string;
 }
 
@@ -444,18 +446,32 @@ export const ShopModal = React.memo(function ShopModal({
   onRepairTank,
   onNextWave,
   isPreGame,
+  isContinue,
+  wave,
   lang,
 }: ShopModalProps) {
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
+
+  const title = isContinue
+    ? t('정비소 / 무기고 (이어하기)', 'ARMORY & WORKSHOP (CONTINUE)')
+    : (isPreGame ? t('정비소 / 무기고', 'ARMORY & WORKSHOP') : t('웨이브 클리어', 'WAVE CLEARED'));
+
+  const subtitle = isContinue
+    ? t('전투 재개 전 무기와 체력을 정비하세요!', `Prepare weapons & restore HP before resuming Wave ${wave || 1}!`)
+    : (isPreGame ? t('출격 전 무기를 업그레이드하세요!', 'Prepare weapons before deploying!') : t('다음 웨이브를 준비하세요!', 'Prepare for next wave!'));
+
+  const actionButtonText = isContinue
+    ? t('전투 재개 (RESUME WAVE)', 'RESUME WAVE')
+    : (isPreGame ? t('웨이브 1 출격', 'START MISSION (DEPLOY TO WAVE 1)') : t('다음 웨이브', 'NEXT WAVE'));
 
   return (
     <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-2 sm:p-4">
       <div className="w-full max-h-[98%] overflow-y-auto flex flex-col items-center custom-scrollbar py-2">
         <h1 className="text-3xl sm:text-5xl font-black text-blue-400 mb-2 text-center">
-          {isPreGame ? t('정비소 / 무기고', 'ARMORY & WORKSHOP') : t('웨이브 클리어', 'WAVE CLEARED')}
+          {title}
         </h1>
         <p className="text-base sm:text-2xl text-white mb-6 text-center px-2">
-          {isPreGame ? t('출격 전 무기를 업그레이드하세요!', 'Prepare weapons before deploying!') : t('다음 웨이브를 준비하세요!', 'Prepare for next wave!')}
+          {subtitle}
         </p>
         
         <ShopUpgradePanel
@@ -472,10 +488,12 @@ export const ShopModal = React.memo(function ShopModal({
         />
         
         <button 
+          data-testid={isContinue ? "resume-wave-button" : (isPreGame ? "start-mission-button" : "next-wave-button")}
+          id={isContinue ? "resume-wave-button" : (isPreGame ? "start-mission-btn" : "next-wave-button")}
           onClick={onNextWave}
-          className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-2 shrink-0 mb-4"
+          className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-2 shrink-0 mb-4 cursor-pointer active:scale-95"
         >
-          {isPreGame ? t('웨이브 1 출격', 'START MISSION (DEPLOY TO WAVE 1)') : t('다음 웨이브', 'NEXT WAVE')}
+          {actionButtonText}
         </button>
       </div>
     </div>
@@ -610,6 +628,7 @@ export default function GameCanvas() {
   const [lang, setLang] = useState('ko');
   const [upgrades, setUpgrades] = useState({ fireRate: 1, multiShot: 1, piercing: 1, hasAcidShield: false });
   const [isPreGameShop, setIsPreGameShop] = useState(false);
+  const [isContinueShop, setIsContinueShop] = useState(false);
 
   const handleToggleMute = useCallback(() => {
     soundManager.init();
@@ -700,6 +719,9 @@ export default function GameCanvas() {
     
     game.onStateChange = (state) => {
       setGameState(state);
+      if (state !== GameState.SHOP) {
+        setIsContinueShop(false);
+      }
       if (state !== GameState.PLAYING) {
         activePointerIdRef.current = null;
         lastPointerXRef.current = null;
@@ -832,7 +854,26 @@ export default function GameCanvas() {
     gameManagerRef.current?.startGame();
   }, []);
 
-  const continueGame = useCallback(() => {
+  const handleContinueToShop = useCallback(() => {
+    if (gameStateRef.current !== GameState.GAME_OVER) return;
+    setIsPreGameShop(false);
+    setIsContinueShop(true);
+    if (gameManagerRef.current) {
+      gameManagerRef.current.prepareContinue();
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+      setScore(gameManagerRef.current.score);
+      setWave(gameManagerRef.current.level);
+      if (gameManagerRef.current.player) {
+        setHp(gameManagerRef.current.player.hp);
+      }
+    }
+    setGameState(GameState.SHOP);
+  }, []);
+
+  const handleResumeContinuedWave = useCallback(() => {
+    if (gameStateRef.current !== GameState.SHOP) return;
+    setIsContinueShop(false);
     setIsPreGameShop(false);
     if (gameManagerRef.current) {
       gameManagerRef.current.continueGame();
@@ -844,6 +885,23 @@ export default function GameCanvas() {
         setHp(gameManagerRef.current.player.hp);
       }
     }
+    setGameState(GameState.PLAYING);
+  }, []);
+
+  const continueGame = useCallback(() => {
+    setIsPreGameShop(false);
+    setIsContinueShop(false);
+    if (gameManagerRef.current) {
+      gameManagerRef.current.continueGame();
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+      setScore(gameManagerRef.current.score);
+      setWave(gameManagerRef.current.level);
+      if (gameManagerRef.current.player) {
+        setHp(gameManagerRef.current.player.hp);
+      }
+    }
+    setGameState(GameState.PLAYING);
   }, []);
 
   const restartFromBeginning = useCallback(() => {
@@ -1069,7 +1127,7 @@ export default function GameCanvas() {
   return (
     <div className="relative flex flex-col items-center justify-center w-full max-w-[800px] mx-auto">
       {/* 1. Dedicated Canvas Viewport Container (Isolated from Mobile Controls) */}
-      <div className="relative w-full max-w-[600px] aspect-[3/4] rounded-lg overflow-hidden border-4 border-blue-900 shadow-2xl bg-slate-900">
+      <div className="relative w-full max-w-[600px] aspect-[3/4] rounded-lg overflow-hidden border-2 sm:border-4 border-blue-900 shadow-2xl bg-slate-900">
         {/* Canvas Viewport (Memoized container, DPR buffer sizing protected) */}
         <CanvasCore
           canvasRef={canvasRef}
@@ -1239,7 +1297,7 @@ export default function GameCanvas() {
           <ManualModal onClose={handleCloseManual} />
         )}
 
-        {/* Wave Clear Shop Modal */}
+        {/* Shop Modal (Between Waves & Pre-Game & Continue) */}
         {gameState === GameState.SHOP && (
           <ShopModal
             currency={currency}
@@ -1251,8 +1309,10 @@ export default function GameCanvas() {
             onBuyAcidShield={buyAcidShield}
             onBuyHomingMissiles={buyHomingMissiles}
             onRepairTank={repairTank}
-            onNextWave={isPreGameShop ? startGame : startNextWave}
+            onNextWave={isContinueShop ? handleResumeContinuedWave : (isPreGameShop ? startGame : startNextWave)}
             isPreGame={isPreGameShop}
+            isContinue={isContinueShop}
+            wave={wave}
             lang={lang}
           />
         )}
@@ -1271,7 +1331,7 @@ export default function GameCanvas() {
             onBuyAcidShield={buyAcidShield}
             onBuyHomingMissiles={buyHomingMissiles}
             onRepairTank={repairTank}
-            onContinue={continueGame}
+            onContinue={handleContinueToShop}
             onRestart={restartFromBeginning}
             onPlayAgain={restartFromBeginning}
             lang={lang}

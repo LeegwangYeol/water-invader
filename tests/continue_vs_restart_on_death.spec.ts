@@ -61,9 +61,12 @@ test.describe('Continue vs Restart Option on Death Suite', () => {
 
     await expect(page.locator('text=GAME OVER')).toBeVisible();
 
-    // Click Continue
+    // Click Continue -> Opens Shop modal, then click Resume Wave to resume combat
     const continueBtn = page.locator('[data-testid="continue-button"]');
     await continueBtn.click();
+    const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+    await resumeBtn.waitFor({ state: 'visible' });
+    await resumeBtn.click();
     await page.waitForTimeout(200);
 
     // Inspect game manager state
@@ -176,8 +179,11 @@ test.describe('Continue vs Restart Option on Death Suite', () => {
     await multiShotBtn.click();
     await page.waitForTimeout(100);
 
-    // 3. Click Continue
+    // 3. Click Continue -> Resume Wave
     await page.locator('[data-testid="continue-button"]').click();
+    const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+    await resumeBtn.waitFor({ state: 'visible' });
+    await resumeBtn.click();
     await page.waitForTimeout(200);
 
     // Verify upgrade persisted and wave is still 2
@@ -238,6 +244,9 @@ test.describe('Continue vs Restart Option on Death Suite', () => {
     for (let cycle = 1; cycle <= 3; cycle++) {
       await expect(page.locator('text=GAME OVER')).toBeVisible();
       await page.locator('[data-testid="continue-button"]').click();
+      const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+      await resumeBtn.waitFor({ state: 'visible' });
+      await resumeBtn.click();
       await page.waitForTimeout(150);
 
       const status = await page.evaluate(() => {
@@ -351,8 +360,11 @@ test.describe('Continue vs Restart Option on Death Suite', () => {
 
     await expect(page.locator('text=GAME OVER')).toBeVisible();
 
-    // 3. Click Continue
+    // 3. Click Continue -> Resume Wave
     await page.locator('[data-testid="continue-button"]').click();
+    const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+    await resumeBtn.waitFor({ state: 'visible' });
+    await resumeBtn.click();
     await page.waitForTimeout(200);
 
     // 4. Verify game loop resumed, crisis safely cleared, and lockout reset
@@ -444,8 +456,11 @@ test.describe('Continue vs Restart Option on Death Suite', () => {
     const dreadnoughtOnDeath = await page.evaluate(() => (window as any).gameManager.alliedReinforcements);
     expect(dreadnoughtOnDeath).toBeUndefined();
 
-    // 3. Click Continue
+    // 3. Click Continue -> Resume Wave
     await page.locator('[data-testid="continue-button"]').click();
+    const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+    await resumeBtn.waitFor({ state: 'visible' });
+    await resumeBtn.click();
     await page.waitForTimeout(150);
 
     const postContinue = await page.evaluate(() => {
@@ -543,6 +558,10 @@ test.describe('Continue vs Restart Option on Death Suite', () => {
     ]);
 
     await page.waitForTimeout(200);
+    const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+    await resumeBtn.waitFor({ state: 'visible' });
+    await resumeBtn.click();
+    await page.waitForTimeout(200);
 
     // Verify clean single-loop state
     const postContinue = await page.evaluate(() => {
@@ -617,6 +636,9 @@ test.describe('Continue vs Restart Option on Death Suite', () => {
     await expect(continueBtn).toBeVisible();
     await continueBtn.scrollIntoViewIfNeeded();
     await continueBtn.click();
+    const resumeBtn = page.locator('[data-testid="resume-wave-button"]');
+    await resumeBtn.waitFor({ state: 'visible' });
+    await resumeBtn.click();
     await page.waitForTimeout(150);
 
     let currentWave = await page.evaluate(() => (window as any).gameManager.level);
