@@ -293,6 +293,10 @@ export class DimensionalRift extends Entity implements ICrisisRift {
             player.hp -= 1;
             player.invincibilityTimer = 1.0;
             player.hitFlashTimer = 0.15;
+            if (player.hp <= 0) {
+              player.hp = 0;
+              player.isDead = true;
+            }
           }
         }
       }
@@ -530,6 +534,10 @@ export class DimensionalRift extends Entity implements ICrisisRift {
             player.hp -= 1;
             player.invincibilityTimer = 1.0;
             player.hitFlashTimer = 0.15;
+            if (player.hp <= 0) {
+              player.hp = 0;
+              player.isDead = true;
+            }
           }
         }
 

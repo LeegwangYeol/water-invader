@@ -37,68 +37,68 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
 
   return (
-    <div className="bg-slate-800 p-4 sm:p-6 rounded-lg mb-4 sm:mb-8 text-white w-full max-w-sm shrink-0">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center border-b border-slate-600 pb-2">Upgrades (💧 {currency})</h2>
+    <div className="bg-slate-800 p-3 sm:p-6 rounded-lg mb-2 sm:mb-6 text-white w-full max-w-sm shrink-0">
+      <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4 text-center border-b border-slate-600 pb-1.5 sm:pb-2">Upgrades (💧 {currency})</h2>
       
       {/* Tank Repair (+1 HP) */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2 sm:mb-4">
         <div>
-          <p className="font-bold">{t('탱크 수리 (+1 HP)', 'Repair Tank (+1 HP)')} ({hp}/5)</p>
+          <p className="text-sm sm:text-base font-bold">{t('탱크 수리 (+1 HP)', 'Repair Tank (+1 HP)')} ({hp}/5)</p>
           <p className="text-xs sm:text-sm text-slate-400">{t('손상된 정수 탱크 복구', 'Restore water tank hull')}</p>
         </div>
         <button 
           onClick={onRepairTank}
           disabled={currency < 75 || hp >= 5}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 rounded font-bold transition-colors"
+          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 rounded font-bold transition-colors text-xs sm:text-sm cursor-pointer"
         >{hp >= 5 ? 'MAX' : '75 💧'}</button>
       </div>
 
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2 sm:mb-4">
         <div>
-          <p className="font-bold">Fire Rate (Lv. {upgrades.fireRate})</p>
+          <p className="text-sm sm:text-base font-bold">Fire Rate (Lv. {upgrades.fireRate})</p>
           <p className="text-xs sm:text-sm text-slate-400">Shoot faster</p>
         </div>
         <button 
           onClick={onBuyFireRate}
           disabled={currency < 50 || upgrades.fireRate >= 5}
-          className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
+          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors text-xs sm:text-sm cursor-pointer"
         >{upgrades.fireRate >= 5 ? 'MAX' : '50 💧'}</button>
       </div>
       
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2 sm:mb-4">
         <div>
-          <p className="font-bold">Multi-Shot (Lv. {upgrades.multiShot})</p>
+          <p className="text-sm sm:text-base font-bold">Multi-Shot (Lv. {upgrades.multiShot})</p>
           <p className="text-xs sm:text-sm text-slate-400">More projectiles</p>
         </div>
         <button 
           onClick={onBuyMultiShot}
           disabled={currency < 100 || upgrades.multiShot >= 5}
-          className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
+          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors text-xs sm:text-sm cursor-pointer"
         >{upgrades.multiShot >= 5 ? 'MAX' : '100 💧'}</button>
       </div>
       
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2 sm:mb-4">
         <div>
-          <p className="font-bold">Piercing (Lv. {upgrades.piercing})</p>
+          <p className="text-sm sm:text-base font-bold">Piercing (Lv. {upgrades.piercing})</p>
           <p className="text-xs sm:text-sm text-slate-400">Bullets penetrate enemies</p>
         </div>
         <button 
           onClick={onBuyPiercing}
           disabled={currency < 200 || upgrades.piercing >= 5}
-          className="px-4 py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors"
+          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-teal-600 disabled:bg-slate-700 rounded font-bold transition-colors text-xs sm:text-sm cursor-pointer"
         >{upgrades.piercing >= 5 ? 'MAX' : '200 💧'}</button>
       </div>
 
       {/* Acid Shield / 내산성 코팅 */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2 sm:mb-4">
         <div>
-          <p className="font-bold">{t('내산성 코팅 (ACID SHIELD)', 'Acid Shield Coating')}</p>
+          <p className="text-sm sm:text-base font-bold">{t('내산성 코팅 (ACID SHIELD)', 'Acid Shield Coating')}</p>
           <p className="text-xs sm:text-sm text-slate-400">{t('산성 폭풍의 유독성 물방울을 무효화합니다', 'Neutralize toxic acid storm droplets')}</p>
         </div>
         <button 
           onClick={onBuyAcidShield}
           disabled={currency < 150 || !!upgrades.hasAcidShield}
-          className="px-4 py-2 bg-lime-600 hover:bg-lime-500 disabled:bg-slate-700 rounded font-bold transition-colors"
+          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-lime-600 hover:bg-lime-500 disabled:bg-slate-700 rounded font-bold transition-colors text-xs sm:text-sm cursor-pointer"
         >{upgrades.hasAcidShield ? t('보유중', 'OWNED') : '150 💧'}</button>
       </div>
 
@@ -106,7 +106,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
       <div className="flex justify-between items-center">
         <div>
           <div className="flex items-center gap-2">
-            <p className="font-bold">{t('유도 미사일', 'Homing Missiles')} (Lv. {upgrades.homingMissiles || 0})</p>
+            <p className="text-sm sm:text-base font-bold">{t('유도 미사일', 'Homing Missiles')} (Lv. {upgrades.homingMissiles || 0})</p>
             <span className="text-xs bg-indigo-900/80 text-indigo-300 border border-indigo-500/50 px-1.5 py-0.5 rounded font-mono font-bold">
               🚀 Lv.{upgrades.homingMissiles || 0}
             </span>
@@ -119,7 +119,7 @@ export const ShopUpgradePanel = React.memo(function ShopUpgradePanel({
           data-testid="buy-homing-missiles-btn"
           onClick={onBuyHomingMissiles}
           disabled={(upgrades.homingMissiles || 0) >= 5 || currency < HOMING_MISSILE_COSTS[upgrades.homingMissiles || 0]}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 rounded font-bold transition-colors shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 rounded font-bold transition-colors shadow-[0_0_10px_rgba(99,102,241,0.3)] text-xs sm:text-sm cursor-pointer"
         >
           {(upgrades.homingMissiles || 0) >= 5 ? 'MAX' : `${HOMING_MISSILE_COSTS[upgrades.homingMissiles || 0]} 💧`}
         </button>
@@ -161,22 +161,22 @@ export const TopHUD = React.memo(function TopHUD({
 
   return (
     <div className="absolute top-0 left-0 w-full p-4 p-2 sm:p-4 max-sm:!p-2 flex justify-between items-start text-white touch-none z-30 pointer-events-none">
-      <div>
-        <h2 className="text-sm sm:text-2xl font-bold text-blue-400">{t('점수:', 'Score:')} {score}</h2>
-        <p className="text-xs sm:text-base text-blue-200">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
+      <div className="bg-slate-950/40 backdrop-blur-[2px] sm:bg-transparent sm:backdrop-blur-none py-0.5 sm:p-0 rounded">
+        <h2 className="text-sm sm:text-2xl font-bold text-blue-400 leading-tight">{t('점수:', 'Score:')} {score}</h2>
+        <p className="text-xs sm:text-base text-blue-200 leading-tight">{t('정수된 물:', 'Pure Water:')} {currency} 💧</p>
         {gameState === GameState.PLAYING && (
           <div className="flex items-center gap-1 sm:gap-2 mt-0.5 sm:mt-1 flex-wrap">
             <p className="text-xs sm:text-base text-yellow-300 font-bold">WAVE {wave}</p>
             <div className="flex items-center gap-1 ml-0.5 sm:ml-1">
               <span 
                 data-testid="invader-threat-badge" 
-                className="px-1.5 py-0 sm:px-2 sm:py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-red-950/80 text-red-400 border border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.4)] flex items-center gap-0.5 select-none"
+                className="px-1.5 py-0 sm:px-2 sm:py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-red-950/70 text-red-400 border border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.4)] flex items-center gap-0.5 select-none"
               >
                 👾 {invaderCount}
               </span>
               <span 
                 data-testid="rogue-threat-badge" 
-                className="px-1.5 py-0 sm:px-2 sm:py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-lime-950/80 text-lime-400 border border-lime-500/60 shadow-[0_0_8px_rgba(132,204,22,0.4)] flex items-center gap-0.5 select-none"
+                className="px-1.5 py-0 sm:px-2 sm:py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-lime-950/70 text-lime-400 border border-lime-500/60 shadow-[0_0_8px_rgba(132,204,22,0.4)] flex items-center gap-0.5 select-none"
               >
                 ⚡ {rogueCount}
               </span>
@@ -184,7 +184,7 @@ export const TopHUD = React.memo(function TopHUD({
           </div>
         )}
       </div>
-      <div className="text-right flex flex-col items-end">
+      <div className="text-right flex flex-col items-end bg-slate-950/40 backdrop-blur-[2px] sm:bg-transparent sm:backdrop-blur-none py-0.5 sm:p-0 rounded">
         <div className="flex gap-1 justify-end mb-1 sm:mb-2">
           {[...Array(5)].map((_, i) => (
             <div key={i} className={`w-3.5 h-3.5 sm:w-6 sm:h-6 rounded-full ${i < hp ? 'bg-blue-500' : 'bg-gray-600'}`} />
@@ -194,7 +194,7 @@ export const TopHUD = React.memo(function TopHUD({
         <button
           onClick={onToggleMute}
           aria-label={isMuted ? 'Unmute Sound' : 'Mute Sound'}
-          className="px-2 py-0.5 sm:px-3 sm:py-1 bg-slate-800/80 hover:bg-slate-700 text-[10px] sm:text-xs font-bold text-slate-200 rounded border border-slate-600 transition-colors pointer-events-auto select-none mb-0.5 sm:mb-1 z-30"
+          className="px-2 py-0.5 sm:px-3 sm:py-1 bg-slate-800/80 hover:bg-slate-700 text-[10px] sm:text-xs font-bold text-slate-200 rounded border border-slate-600 transition-colors pointer-events-auto select-none mb-0.5 sm:mb-1 z-30 min-h-[22px] flex items-center justify-center cursor-pointer"
         >
           {isMuted ? '🔇 MUTE' : '🔊 SOUND'}
         </button>
@@ -256,11 +256,11 @@ export const MobileControls = React.memo(function MobileControls({
   onTouchEnd,
 }: MobileControlsProps) {
   return (
-    <div className="w-full flex justify-between p-4 mt-2 gap-2 sm:gap-4 touch-none">
-      <div className="flex flex-col gap-1 w-1/2">
-        <div className="flex gap-1 h-1/2">
+    <div className="w-full flex justify-between p-2 sm:p-4 mt-1 sm:mt-2 gap-2 sm:gap-4 touch-none">
+      <div className="flex flex-col gap-1.5 w-full sm:w-1/2">
+        <div className="flex gap-1.5">
           <button 
-            className={`flex-1 rounded-xl text-xs font-bold text-white pointer-events-auto touch-none select-none ${currency >= 50 ? 'bg-green-600 active:bg-green-500' : 'bg-slate-700 opacity-50'}`}
+            className={`flex-1 min-h-[44px] py-2 rounded-xl text-xs sm:text-sm font-bold text-white pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer ${currency >= 50 ? 'bg-green-600 active:bg-green-500' : 'bg-slate-700 opacity-50'}`}
             onPointerDown={onTouchStart('q')}
             onPointerUp={onTouchEnd('q')}
             onPointerLeave={onTouchEnd('q')}
@@ -269,7 +269,7 @@ export const MobileControls = React.memo(function MobileControls({
             ALLY(Q)
           </button>
           <button 
-            className={`flex-1 rounded-xl text-xs font-bold text-white pointer-events-auto touch-none select-none ${ultimate >= 100 ? 'bg-yellow-600 active:bg-yellow-500' : 'bg-slate-700 opacity-50'}`}
+            className={`flex-1 min-h-[44px] py-2 rounded-xl text-xs sm:text-sm font-bold text-white pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer ${ultimate >= 100 ? 'bg-yellow-600 active:bg-yellow-500' : 'bg-slate-700 opacity-50'}`}
             onPointerDown={onTouchStart('e')}
             onPointerUp={onTouchEnd('e')}
             onPointerLeave={onTouchEnd('e')}
@@ -279,7 +279,7 @@ export const MobileControls = React.memo(function MobileControls({
           </button>
         </div>
         <button 
-          className="w-full bg-blue-600/80 active:bg-blue-400 rounded-xl h-1/2 flex items-center justify-center text-xl font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+          className="w-full min-h-[48px] py-2.5 bg-blue-600/80 active:bg-blue-400 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)] cursor-pointer"
           onPointerDown={onTouchStart(' ')}
           onPointerUp={onTouchEnd(' ')}
           onPointerLeave={onTouchEnd(' ')}
@@ -465,12 +465,12 @@ export const ShopModal = React.memo(function ShopModal({
     : (isPreGame ? t('웨이브 1 출격', 'START MISSION (DEPLOY TO WAVE 1)') : t('다음 웨이브', 'NEXT WAVE'));
 
   return (
-    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-2 sm:p-4">
-      <div className="w-full max-h-[98%] overflow-y-auto flex flex-col items-center custom-scrollbar py-2">
-        <h1 className="text-3xl sm:text-5xl font-black text-blue-400 mb-2 text-center">
+    <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center rounded-lg z-20 p-2 sm:p-4">
+      <div className="w-full max-h-[85vh] sm:max-h-[90%] overflow-y-auto flex flex-col items-center custom-scrollbar py-2 px-1">
+        <h1 className="text-2xl sm:text-5xl font-black text-blue-400 mb-1 sm:mb-2 text-center">
           {title}
         </h1>
-        <p className="text-base sm:text-2xl text-white mb-6 text-center px-2">
+        <p className="text-xs sm:text-2xl text-white mb-2 sm:mb-6 text-center px-2">
           {subtitle}
         </p>
         
@@ -491,7 +491,7 @@ export const ShopModal = React.memo(function ShopModal({
           data-testid={isContinue ? "resume-wave-button" : (isPreGame ? "start-mission-button" : "next-wave-button")}
           id={isContinue ? "resume-wave-button" : (isPreGame ? "start-mission-btn" : "next-wave-button")}
           onClick={onNextWave}
-          className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-lg sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-2 shrink-0 mb-4 cursor-pointer active:scale-95"
+          className="px-6 py-3 sm:px-8 sm:py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-base sm:text-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] mt-2 shrink-0 mb-3 cursor-pointer active:scale-95"
         >
           {actionButtonText}
         </button>
@@ -537,19 +537,21 @@ export const GameOverModal = React.memo(function GameOverModal({
 }: GameOverModalProps) {
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
   const handleRestart = onRestart || onPlayAgain;
+  // In GameOverModal, baseline revived HP starts at 3/5 when player HP was <= 0 upon death
+  const displayHp = hp <= 0 ? 3 : hp;
 
   return (
-    <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg z-20 p-2 sm:p-4">
-      <div className="w-full max-h-[98%] overflow-y-auto flex flex-col items-center custom-scrollbar py-2">
-        <h1 className="text-4xl sm:text-5xl font-black text-red-500 mb-2 text-center">GAME OVER</h1>
+    <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center rounded-lg z-20 p-2 sm:p-4">
+      <div className="w-full max-h-[85vh] sm:max-h-[90%] overflow-y-auto flex flex-col items-center custom-scrollbar py-2 px-1">
+        <h1 className="text-3xl sm:text-5xl font-black text-red-500 mb-1 sm:mb-2 text-center">GAME OVER</h1>
         {gameOverReason && (
-          <p className="text-base sm:text-xl text-red-300 font-bold mb-4 text-center px-2">{gameOverReason}</p>
+          <p className="text-xs sm:text-xl text-red-300 font-bold mb-2 sm:mb-4 text-center px-2">{gameOverReason}</p>
         )}
-        <p className="text-xl sm:text-2xl text-white mb-6 text-center">Final {t('점수:', 'Score:')} {score}</p>
+        <p className="text-lg sm:text-2xl text-white mb-2 sm:mb-6 text-center">Final {t('점수:', 'Score:')} {score}</p>
         
         <ShopUpgradePanel
           currency={currency}
-          hp={hp}
+          hp={displayHp}
           upgrades={upgrades}
           onBuyFireRate={onBuyFireRate}
           onBuyMultiShot={onBuyMultiShot}
@@ -560,12 +562,12 @@ export const GameOverModal = React.memo(function GameOverModal({
           lang={lang}
         />
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center mt-2 mb-4 w-full max-w-md px-2">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center mt-2 mb-3 w-full max-w-md px-2 shrink-0">
           <button 
             data-testid="continue-button"
             id="continue-btn"
             onClick={onContinue}
-            className="w-full sm:w-1/2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold rounded-lg text-base sm:text-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] flex flex-col items-center justify-center cursor-pointer"
+            className="w-full sm:w-1/2 px-4 py-2.5 sm:px-6 sm:py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold rounded-lg text-sm sm:text-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] flex flex-col items-center justify-center cursor-pointer shrink-0"
           >
             <span>{t('이어하기', 'Continue')}</span>
             <span className="text-xs font-normal text-emerald-200 mt-0.5">{t('현재 웨이브 유지 (Continue)', 'Resume current wave')}</span>
@@ -575,7 +577,7 @@ export const GameOverModal = React.memo(function GameOverModal({
             data-testid="restart-button"
             id="restart-btn"
             onClick={handleRestart}
-            className="w-full sm:w-1/2 px-6 py-3.5 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-bold rounded-lg text-base sm:text-lg transition-all shadow-[0_0_15px_rgba(239,68,68,0.4)] flex flex-col items-center justify-center cursor-pointer"
+            className="w-full sm:w-1/2 px-4 py-2.5 sm:px-6 sm:py-3.5 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-bold rounded-lg text-sm sm:text-lg transition-all shadow-[0_0_15px_rgba(239,68,68,0.4)] flex flex-col items-center justify-center cursor-pointer shrink-0"
           >
             <span>{t('처음부터 시작', 'Restart from Beginning')}</span>
             <span className="text-xs font-normal text-red-200 mt-0.5">{t('웨이브 1 리셋 (PLAY AGAIN)', 'Reset to Wave 1 (PLAY AGAIN)')}</span>
@@ -730,6 +732,10 @@ export default function GameCanvas() {
       if (state === GameState.GAME_OVER) {
         setHighScore(getSafeStoredHighScore());
         setGameOverReason(game.gameOverReason);
+        if (game.player && game.player.hp <= 0) {
+          game.player.hp = 3;
+          setHp(3);
+        }
       }
     };
     game.onScoreChange = (newScore, newCurrency, newCombo, newWave, newUltimate, newInvaderCount, newRogueCount) => {
@@ -819,20 +825,41 @@ export default function GameCanvas() {
     const syncAllies = () => {
       if (gameManagerRef.current) {
         const helpers = gameManagerRef.current.helpers || [];
-        setSquadronStatus({
-          total: helpers.length,
-          fighters: helpers.filter(h => h.type === 0).length,
-          medics: helpers.filter(h => h.type === 3).length,
-          repairers: helpers.filter(h => h.type === 1).length,
-          tanks: helpers.filter(h => h.type === 2).length,
+        const total = helpers.length;
+        let fighters = 0;
+        let medics = 0;
+        let repairers = 0;
+        let tanks = 0;
+        for (let i = 0; i < helpers.length; i++) {
+          const type = helpers[i].type;
+          if (type === 0) fighters++;
+          else if (type === 3) medics++;
+          else if (type === 1) repairers++;
+          else if (type === 2) tanks++;
+        }
+
+        setSquadronStatus(prev => {
+          if (
+            prev.total === total &&
+            prev.fighters === fighters &&
+            prev.medics === medics &&
+            prev.repairers === repairers &&
+            prev.tanks === tanks
+          ) {
+            return prev;
+          }
+          return { total, fighters, medics, repairers, tanks };
         });
-        if (gameManagerRef.current.alliedReinforcementBannerTimer > 0) {
-          setAlliedReinforcementBanner({
-            active: true,
-            text: gameManagerRef.current.alliedReinforcementBannerText || '✦ MASSIVE ALLIED REINFORCEMENTS ARRIVED! ✦',
+
+        const bannerTimer = gameManagerRef.current.alliedReinforcementBannerTimer || 0;
+        const bannerText = gameManagerRef.current.alliedReinforcementBannerText || '✦ MASSIVE ALLIED REINFORCEMENTS ARRIVED! ✦';
+        if (bannerTimer > 0) {
+          setAlliedReinforcementBanner(prev => {
+            if (prev.active && prev.text === bannerText) return prev;
+            return { active: true, text: bannerText };
           });
         } else {
-          setAlliedReinforcementBanner(prev => prev.active ? { active: false, text: '' } : prev);
+          setAlliedReinforcementBanner(prev => (prev.active ? { active: false, text: '' } : prev));
         }
       }
     };
@@ -859,7 +886,11 @@ export default function GameCanvas() {
     setIsPreGameShop(false);
     setIsContinueShop(true);
     if (gameManagerRef.current) {
+      const currentHpBefore = gameManagerRef.current.player ? gameManagerRef.current.player.hp : 3;
       gameManagerRef.current.prepareContinue();
+      if (gameManagerRef.current.player && currentHpBefore > 3) {
+        gameManagerRef.current.player.hp = Math.max(currentHpBefore, gameManagerRef.current.player.hp);
+      }
       setUpgrades(gameManagerRef.current.getUpgrades());
       setCurrency(gameManagerRef.current.currency);
       setScore(gameManagerRef.current.score);
@@ -972,18 +1003,16 @@ export default function GameCanvas() {
 
   const repairTank = useCallback(() => {
     const game = gameManagerRef.current;
-    if (game && game.player) {
-      const maxHp = game.player.maxHp || 5;
-      if (game.currency >= 75 && game.player.hp < maxHp) {
-        game.currency -= 75;
-        game.player.hp = Math.min(maxHp, game.player.hp + 1);
-        soundManager.playPowerUp();
-        (game as any).updateScoreUI?.();
-        if (game.onPlayerHpChange) {
-          game.onPlayerHpChange(game.player.hp);
-        }
-        setHp(game.player.hp);
+    if (game) {
+      if (game.player && game.player.hp <= 0) {
+        game.player.hp = 3;
+      }
+      if (game.repairTank()) {
+        setUpgrades(game.getUpgrades());
         setCurrency(game.currency);
+        if (game.player) {
+          setHp(game.player.hp);
+        }
       }
     }
   }, []);
@@ -1156,7 +1185,7 @@ export default function GameCanvas() {
         {gameState === GameState.PLAYING && squadronStatus.total > 0 && (
           <div
             data-testid="ally-squadron-hud"
-            className="absolute top-14 left-4 pointer-events-none z-30 px-3 py-1 rounded-lg bg-slate-950/90 border border-emerald-500/80 text-white text-xs font-mono flex items-center gap-2 shadow-[0_0_12px_rgba(34,197,94,0.5)] select-none backdrop-blur-sm"
+            className="absolute top-20 sm:top-24 left-2 sm:left-4 pointer-events-none z-30 px-3 py-1 rounded-lg bg-slate-950/90 border border-emerald-500/80 text-white text-xs font-mono flex items-center gap-2 shadow-[0_0_12px_rgba(34,197,94,0.5)] select-none backdrop-blur-sm"
           >
             <span className="font-bold text-emerald-400">🛡️ ALLIES ({squadronStatus.total}):</span>
             <div className="flex items-center gap-2 text-[11px]">
@@ -1222,21 +1251,46 @@ export default function GameCanvas() {
           </div>
         )}
 
-        {/* Stellaris-Style End-Game Crisis Active Badge Indicator */}
-        {gameState === GameState.PLAYING && endGameCrisisState && endGameCrisisState.isActive && endGameCrisisState.phase !== CrisisPhase.INCURSION && endGameCrisisState.phase !== CrisisPhase.DEFEATED && (
-          <div
-            data-testid="endgame-crisis-active-badge"
-            className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-5 py-1.5 rounded-full bg-purple-950/95 border-2 border-purple-400 text-purple-200 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.7)] animate-pulse select-none"
-          >
-            <span>🌌</span>
-            <span>
-              {endGameCrisisState.phase === CrisisPhase.PHASE_1_SHIELD
-                ? 'PHASE 1: DIMENSIONAL SHIELD ACTIVE'
-                : endGameCrisisState.phase === CrisisPhase.PHASE_2_HULL
-                ? 'PHASE 2: SOVEREIGN HULL EXPOSED'
-                : `PHASE 3: CORE OVERDRIVE (${Math.ceil(endGameCrisisState.enrageTimer)}s)`}
-            </span>
-            <span>🌌</span>
+        {/* Active Status Badges Stack Container (Staggered / Flex column to prevent overlapping) */}
+        {gameState === GameState.PLAYING && (
+          <div className="absolute top-16 sm:top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 flex flex-col items-center gap-1.5 w-max max-w-[90%]">
+            {/* Stellaris-Style End-Game Crisis Active Badge Indicator */}
+            {endGameCrisisState && endGameCrisisState.isActive && endGameCrisisState.phase !== CrisisPhase.INCURSION && endGameCrisisState.phase !== CrisisPhase.DEFEATED && (
+              <div
+                data-testid="endgame-crisis-active-badge"
+                className="px-4 py-1 sm:px-5 sm:py-1.5 rounded-full bg-purple-950/95 border-2 border-purple-400 text-purple-200 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(168,85,247,0.7)] animate-pulse select-none"
+              >
+                <span>🌌</span>
+                <span>
+                  {endGameCrisisState.phase === CrisisPhase.PHASE_1_SHIELD
+                    ? 'PHASE 1: DIMENSIONAL SHIELD ACTIVE'
+                    : endGameCrisisState.phase === CrisisPhase.PHASE_2_HULL
+                    ? 'PHASE 2: SOVEREIGN HULL EXPOSED'
+                    : `PHASE 3: CORE OVERDRIVE (${Math.ceil(endGameCrisisState.enrageTimer)}s)`}
+                </span>
+                <span>🌌</span>
+              </div>
+            )}
+
+            {/* EMP Suppression Visual Indicator */}
+            {crisisState && crisisState.empSuppressionActive && (
+              <div
+                data-testid="emp-suppression-badge"
+                className="px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-cyan-950/90 border border-cyan-400 text-cyan-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-pulse select-none"
+              >
+                <span>⚡</span> WEAPONS SUPPRESSED (EMP ACTIVE) <span>⚡</span>
+              </div>
+            )}
+
+            {/* Toxic Acid Storm Indicator */}
+            {crisisState && crisisState.activeCrisis === 'ACID_STORM' && crisisState.warningTimer <= 0 && (
+              <div
+                data-testid="acid-storm-badge"
+                className="px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-lime-950/90 border border-lime-400 text-lime-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(132,204,22,0.6)] animate-pulse select-none"
+              >
+                <span>☣️</span> TOXIC ACID STORM ACTIVE <span>☣️</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -1257,26 +1311,6 @@ export default function GameCanvas() {
                 IMMINENT THREAT ARRIVAL: {crisisState.warningTimer.toFixed(1)}s
               </div>
             </div>
-          </div>
-        )}
-
-        {/* EMP Suppression Visual Indicator */}
-        {gameState === GameState.PLAYING && crisisState && crisisState.empSuppressionActive && (
-          <div
-            data-testid="emp-suppression-badge"
-            className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-4 py-1.5 rounded-full bg-cyan-950/90 border border-cyan-400 text-cyan-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(34,211,238,0.6)] animate-pulse select-none"
-          >
-            <span>⚡</span> WEAPONS SUPPRESSED (EMP ACTIVE) <span>⚡</span>
-          </div>
-        )}
-
-        {/* Toxic Acid Storm Indicator */}
-        {gameState === GameState.PLAYING && crisisState && crisisState.activeCrisis === 'ACID_STORM' && crisisState.warningTimer <= 0 && (
-          <div
-            data-testid="acid-storm-badge"
-            className="absolute top-20 left-1/2 -translate-x-1/2 pointer-events-none z-30 px-4 py-1.5 rounded-full bg-lime-950/90 border border-lime-400 text-lime-300 text-xs sm:text-sm font-black tracking-wider flex items-center gap-2 shadow-[0_0_15px_rgba(132,204,22,0.6)] animate-pulse select-none"
-          >
-            <span>☣️</span> TOXIC ACID STORM ACTIVE <span>☣️</span>
           </div>
         )}
 

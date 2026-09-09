@@ -125,7 +125,7 @@ export class Bullet extends Entity {
       const centerX = this.position.x + this.size.width / 2;
       const centerY = this.position.y + this.size.height / 2;
       const radius = this.size.width / 2;
-      const shellColor = this.isInterceptable ? '#a855f7' : (this.color || '#ef4444');
+      const shellColor = this.color || (this.isInterceptable ? '#a855f7' : '#ef4444');
 
       // Tier 1: Outer Atmospheric Bloom (Drawn behind outline)
       ctx.globalAlpha = 0.45;
@@ -133,6 +133,18 @@ export class Bullet extends Entity {
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius * 1.6, 0, Math.PI * 2);
       ctx.fill();
+
+      // Interceptable distinctive outer glow / indicator ring
+      if (this.isInterceptable) {
+        ctx.save();
+        ctx.globalAlpha = 0.6;
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius + 3.0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
 
       // Tier 2: 2.0px Black Armor Rim (Drawn ON TOP of outer bloom to ensure >= 7:1 WCAG AAA contrast)
       ctx.globalAlpha = 1.0;

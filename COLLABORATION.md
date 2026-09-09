@@ -1,43 +1,40 @@
 # Claude Collaboration Guide: Water Invader
 
-## Current Mission: Feature Update — Pre-Continue Shop, Piercing Scaling, Mobile Viewport & Stability
+## Current Mission: Comprehensive Bug-Hunting & QA Sweep (40+ Agent Swarm)
 
 ### Objective & Scope
-Implement and rigorously verify four key requirements for Water Invader:
-1. **R1. Pre-Continue Shop Access**:
-   - When a player dies and selects "Continue" (이어하기), grant immediate access to the Shop to purchase upgrades (including HP restoration/upgrades) before the wave actually resumes.
-2. **R2. Enemy Piercing Damage Scaling**:
-   - Implement piercing attack scaling for enemies, especially common mobs. Later waves scale up damage aggressively to simulate piercing player armor.
-3. **R3. Mobile Viewport Adjustments (CSS Only)**:
-   - Adjust game canvas sizing for mobile viewports via CSS (e.g., `max-width`, `max-height`, aspect ratio) so enemies do not appear to suddenly drop in from off-screen, extending visible bounds.
-   - **CRITICAL CONSTRAINT**: MUST NOT change `logicalWidth` or `logicalHeight` in `GameManager.ts` or `Enemy.ts` (violates Playwright test harness).
-4. **R4. Stability & Crash Prevention Verification**:
-   - Thoroughly test Continue -> Shop -> Resume flow to ensure no crashes, state resets, or unhandled exceptions kick the player to the main screen.
+Deploy a massive swarm of agents to perform an exhaustive bug hunt, E2E testing, and quality assurance sweep across the Next.js "Water Invader" codebase, with special focus on recently added features:
+1. **Continue Shop & Pre-Continue Flow** (state persistence, crash prevention, HP restoration)
+2. **Enemy Piercing Damage Scaling** (late-game mob scaling, boundary checks, math stability)
+3. **Mobile Viewport CSS** (responsive rendering, no clipping, aspect ratio preservation)
+4. **Allied Reinforcements & Barricade Saboteurs** (AI pathing, role indicators, health bars)
+5. **End-Game Crises (12 Types)** (event triggers, hazard collision, visual clarity)
+
+### Key Constraints & Architecture Rules
+- **CRITICAL ARCHITECTURAL CONSTRAINT**: NEVER modify `logicalWidth` or `logicalHeight` in `GameManager.ts` or `Enemy.ts`. All responsive adjustments must be handled via CSS.
+- **Pre-Approved Execution**: Explicit user pre-approval granted ("허락 구하지말고 알아서 ㄱ" / "승인"). Proceed through exploration, fixes, testing, and git push without blocking on confirmation.
+- **Pre-Commit Verification**: Run `npm run build` and `npx tsc --noEmit` before committing and pushing.
+- **Automated Verification**: Run `npx playwright test` to verify zero regressions and add tests for fixed bugs.
 
 ---
 
-### Implementation & Verification Milestones
-- **Milestone 1 (M1)**: Pre-Continue Shop Access flow (`src/game/GameManager.ts`, `src/components/game-canvas.tsx`).
-- **Milestone 2 (M2)**: Enemy Piercing Damage Scaling formulas (`src/game/Enemy.ts`, `src/game/types.ts`, `src/game/GameManager.ts`).
-- **Milestone 3 (M3)**: Mobile Viewport CSS adjustments without modifying logical dimensions (`src/app/globals.css` or CSS modules / Tailwind wrappers).
-- **Milestone 4 (M4)**: Automated Playwright E2E suites verifying Continue -> Shop -> Resume flow, piercing mechanics, mobile viewport rendering, plus regression suite, `npm run build`, and git commit & push.
-
----
-
-### Critical Quality & Collaboration Rules
-1. **User Approval Gate**: Wait for explicit user approval ("proceed", "go ahead", "승인") before launching code modifications, or proceed when trigger keyword ("내용확인") is given.
-2. **Pre-Commit Build Verification**: Run `npm run build` and `npx tsc --noEmit` with 0 errors before any git commit or push.
-3. **Strict Constraint on Dimensions**: Do NOT modify `logicalWidth` or `logicalHeight` in `GameManager.ts` or `Enemy.ts`.
-4. **No Cheating / Integrity Enforcement**: Real logic only; no mock shortcuts. Forensic auditor must verify clean execution.
-5. **Trigger Keyword ("내용확인")**: When user inputs "내용확인", immediately consult this file for Claude's latest instructions and proceed.
+### Execution Milestones
+- **Phase 0: Multi-Specialist Bug Hunting Swarm**:
+  - Deploy parallel explorer teams across UI/Mobile Viewport, Combat & Physics, Crisis & Event Logic, State Persistence & Continue Shop, and Performance & Memory.
+- **Phase 1: Bug Analysis & Fix Design**:
+  - Triage findings, isolate root causes, and craft targeted, non-breaking fixes respecting architectural constraints.
+- **Phase 2: Fix Implementation & Adversarial Review**:
+  - Implement fixes with accompanying unit/E2E regression tests; submit to multi-round adversarial review.
+- **Phase 3: Comprehensive E2E Verification & Git Push**:
+  - Run full test suite (`npx playwright test`) and production build (`npm run build`). Commit and push to repository.
 
 ---
 
 ### Current Status
-- Orchestrator: `orchestrator_update_1` (`38e78144-9abc-48a3-8a83-099f912ed48b`)
-- Requested Team: Very large team of agents (40+ agents: explorers, workers, reviewers, challengers, test writers, auditors)
-- Phase: **Phase 1 Execution Active — Explicit User Approval Granted ("승인 / 사전 승인")**
-- Directive: User explicitly approved immediate implementation & push without pausing at the approval gate. Proceed end-to-end through exploration, implementation, review, testing, pre-commit build verification, and git push.
+- Orchestrator: `orchestrator_bughunt_2`
+- User Approval: Pre-approved ("승인")
+- Route: General (`teamwork_preview_orchestrator`)
+
 
 ---
 

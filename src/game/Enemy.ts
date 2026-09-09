@@ -234,7 +234,7 @@ export class Enemy extends Entity {
 
       if (type === EnemyType.ZIGZAG) {
         this.color = '#eab308'; // Yellow
-        this.speedX += this.level * 10 + 50; // faster
+        this.speedX = Math.min(350, this.speedX + this.level * 10 + 50); // faster, clamped to max 350 px/s
         this.hp = standardHp;
       } else if (type === EnemyType.BOSS) {
         this.color = '#dc2626'; // Dark red
@@ -248,7 +248,7 @@ export class Enemy extends Entity {
         this.hp = standardHp;
       } else if (type === EnemyType.DIVER) {
         this.color = '#ef4444'; // Red
-        this.speedX += this.level * 8;
+        this.speedX = Math.min(350, this.speedX + this.level * 8);
         this.hp = standardHp;
       } else if (type === EnemyType.SHIELDED) {
         this.color = '#64748b'; // Slate
@@ -427,8 +427,12 @@ export class Enemy extends Entity {
           }
         } else {
           this.isGnawing = false;
-          // Vertical movement: descend at 30 px/s towards barricade
-          this.position.y += 30 * clampedDt * validSpeedMultiplier;
+          // Vertical movement: descend towards latchY, but clamp so it does not plunge downward into player zone
+          if (this.position.y < latchY) {
+            this.position.y = Math.min(latchY, this.position.y + 30 * clampedDt * validSpeedMultiplier);
+          } else {
+            this.position.y = latchY;
+          }
           if (horizontalContact && this.position.y >= latchY) {
             this.position.y = latchY;
             this.isGnawing = true;
@@ -806,7 +810,7 @@ export class Enemy extends Entity {
   }
 
   public fire(playerPos?: Vector2D, allEnemies: Enemy[] = []): Bullet | null {
-    if (this.isDiving || this.type === EnemyType.SABOTEUR) return null; // divers and saboteurs don't shoot bullets
+    if (this.type === EnemyType.DIVER || this.isDiving || this.type === EnemyType.SABOTEUR) return null; // divers and saboteurs don't shoot bullets
 
     if (this.fireTimer <= 0) {
       // Rogue Faction Dual-Targeting AI
@@ -889,7 +893,7 @@ export class Enemy extends Entity {
             piercing = this.level >= 20 ? 3 : 2;
           } else if (isElite) {
             bulletDamage = 2;
-            piercing = (this.type === EnemyType.ROGUE_MECH) ? (this.level >= 20 ? 3 : 2) : 1;
+            piercing = this.getPiercingCount();
           } else {
             // Common mob: ROGUE_DRONE
             bulletDamage = Math.min(2, 1 + Math.floor(Math.max(0, this.level - 10) / 10));

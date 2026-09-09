@@ -368,6 +368,10 @@ export class GameManager {
     
     this.threatIntensity = 0;
     this.activeThreatLevel = 'NONE';
+    this.emergencyAlliesTriggeredThisWave = false;
+    this.alliedReinforcementBannerTimer = 0;
+    this.alliedReinforcementBannerText = "";
+    if (this.onAlliedReinforcements) this.onAlliedReinforcements(false, "");
 
     this.endGameCrisis = null;
     this.endGameCrisisDefeatedHandled = false;
@@ -531,6 +535,18 @@ export class GameManager {
     this.alliedReinforcements = undefined;
     if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
 
+    // DEF-S2 & DEF-A7: Reset emergency allies lockout flag
+    this.emergencyAlliesTriggeredThisWave = false;
+
+    // DEF-S3: Reset reinforcement banner and notify UI
+    this.alliedReinforcementBannerTimer = 0;
+    this.alliedReinforcementBannerText = "";
+    if (this.onAlliedReinforcements) this.onAlliedReinforcements(false, "");
+
+    // DEF-S4: Reset threat intensity and level
+    this.threatIntensity = 0;
+    this.activeThreatLevel = 'NONE';
+
     // Enter SHOP state paused for continue purchases
     this.state = GameState.SHOP;
     this.isPaused = true;
@@ -592,7 +608,7 @@ export class GameManager {
     };
     this.crisisTimer = 6.0 + Math.random() * 4.0;
     if (this.onCrisisEvent) this.onCrisisEvent(null);
-    if (!this.endGameCrisisDefeatedHandled) {
+    if (!this.endGameCrisisDefeatedHandled && !this.hasEndGameCrisisOccurred) {
       this.hasEndGameCrisisOccurred = false;
     }
     this.endGameCrisis = null;
@@ -600,9 +616,21 @@ export class GameManager {
     this.alliedReinforcements = undefined;
     if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
 
+    // DEF-S2 & DEF-A7: Reset emergency allies lockout flag
+    this.emergencyAlliesTriggeredThisWave = false;
+
+    // DEF-S3: Reset reinforcement banner and notify UI
+    this.alliedReinforcementBannerTimer = 0;
+    this.alliedReinforcementBannerText = "";
+    if (this.onAlliedReinforcements) this.onAlliedReinforcements(false, "");
+
+    // DEF-S4: Reset threat intensity and level
+    this.threatIntensity = 0;
+    this.activeThreatLevel = 'NONE';
+
     this.spawnBarricades();
     this.swarmEchelonsRemaining = (this.level >= 10 && this.level % 5 !== 0) ? (this.level >= 15 ? 2 : 1) : 0;
-    this.spawnWave();
+    this.spawnWave({ isContinue: true });
 
     this.state = GameState.PLAYING;
     this.isPaused = false;
@@ -703,7 +731,11 @@ export class GameManager {
     return this.alliedReinforcements;
   }
 
-  public spawnWave() {
+  public spawnWave(optionsOrIsContinue?: boolean | { isContinue?: boolean }) {
+    const isContinue = typeof optionsOrIsContinue === 'boolean'
+      ? optionsOrIsContinue
+      : (optionsOrIsContinue?.isContinue ?? false);
+
     if (this.level % 5 === 0) {
       this.swarmEchelonsRemaining = 0;
       // Boss wave (F-13: spawn Y lowered to 90)
@@ -748,11 +780,12 @@ export class GameManager {
     this.swarmEchelonsRemaining = this.level >= 10 ? (this.level >= 15 ? 2 : 1) : 0;
 
     // Stage 15+ End-Game Crisis Trigger Evaluation on non-boss waves
-    if (this.level >= 15 && !this.endGameCrisis && !this.hasEndGameCrisisOccurred) {
+    if (!isContinue && this.level >= 15 && !this.endGameCrisis && !this.hasEndGameCrisisOccurred) {
       const isPityTrigger = this.level >= 18;
       const isRandomTrigger = Math.random() < 0.30;
       if (isPityTrigger || isRandomTrigger) {
         this.triggerEndGameCrisis();
+        return;
       }
     }
 
@@ -1685,15 +1718,14 @@ export class GameManager {
     }
     this.particles.length = particleWriteIdx;
     
-    // In-place compaction for barricades
-    let barricadeWriteIdx = 0;
+    // DEF-A1: Preserve fixed 4-barricade layout without compaction so array indices (0, 1, 2, 3) remain fixed
     for (let i = 0; i < this.barricades.length; i++) {
       const b = this.barricades[i];
-      if (!b.isDead) {
-        this.barricades[barricadeWriteIdx++] = b;
+      if (b.hp <= 0) {
+        b.hp = 0;
+        b.isDead = true;
       }
     }
-    this.barricades.length = barricadeWriteIdx;
     
     // Multi-Faction Wave Clear Logic: only clears when all hostile Invaders and Rogues are destroyed
     let remainingHostiles = 0;
@@ -1795,6 +1827,10 @@ export class GameManager {
               break;
             } else {
               barricade.hp -= bullet.damage;
+              if (barricade.hp <= 0) {
+                barricade.hp = 0;
+                barricade.isDead = true;
+              }
               this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 5);
 
               if (bullet.piercing > 1) {
@@ -2032,9 +2068,17 @@ export class GameManager {
       if (bullet.faction !== Faction.PLAYER) {
         let hitHelper = false;
         for (const helper of this.helpers) {
-          if (!helper.isExpired() && bullet.checkCollision(helper)) {
-            bullet.isDead = true;
-            hitHelper = true;
+          const helperKey = (helper as any).id || helper;
+          if (
+            !helper.isExpired() &&
+            !(bullet.hitEntities as Set<any>).has(helper) &&
+            !(bullet.hitEntities as Set<any>).has(helperKey) &&
+            bullet.checkCollision(helper)
+          ) {
+            (bullet.hitEntities as Set<any>).add(helper);
+            if ((helper as any).id !== undefined) {
+              (bullet.hitEntities as Set<any>).add((helper as any).id);
+            }
             if (!helper.isInvincible) {
               helper.hp -= bullet.damage;
               this.createExplosion(bullet.position.x, bullet.position.y, helper.color, 10);
@@ -2042,10 +2086,17 @@ export class GameManager {
                 this.createExplosion(helper.position.x, helper.position.y, '#ef4444', 20);
               }
             }
-            break;
+            if (bullet.piercing > 1) {
+              bullet.piercing--;
+            } else {
+              bullet.piercing = 0;
+              bullet.isDead = true;
+              hitHelper = true;
+              break;
+            }
           }
         }
-        if (hitHelper) continue;
+        if (hitHelper || bullet.isDead) continue;
 
         // 1.5 Bullet vs Player
         if (bullet.checkCollision(this.player)) {
@@ -2101,10 +2152,15 @@ export class GameManager {
             enemy.isDead = true;
             if (barricade.type === BarricadeType.DESTRUCTIBLE) {
               barricade.hp -= 20;
+              if (barricade.hp <= 0) {
+                barricade.hp = 0;
+                barricade.isDead = true;
+              }
             } else {
               this.createExplosion(enemy.position.x, enemy.position.y, '#94a3b8', 20);
             }
             this.createExplosion(enemy.position.x, enemy.position.y, '#ef4444', 30);
+            break;
           } else if (enemy.type === EnemyType.SABOTEUR) {
             if (enemy.isGnawing) {
               enemy.position.y = barricade.position.y - enemy.size.height + 2;

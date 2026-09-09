@@ -37,11 +37,13 @@ export class Barricade extends Entity {
 
   // Bidirectional voxel block synchronization
   public update(deltaTime: number): void {
-    const targetActiveBlocks = Math.round((Math.max(0, this.hp) / this.maxHp) * this.blocks.length);
+    const targetActiveBlocks = Math.min(this.blocks.length, Math.max(0, Math.round((this.hp / this.maxHp) * this.blocks.length)));
     let currentActive = this.blocks.filter(b => b).length;
     if (currentActive > targetActiveBlocks) {
       // Deactivate blocks on damage
-      while (currentActive > targetActiveBlocks) {
+      let attempts = 0;
+      while (currentActive > targetActiveBlocks && attempts < 200) {
+        attempts++;
         const idx = Math.floor(Math.random() * this.blocks.length);
         if (this.blocks[idx]) {
           this.blocks[idx] = false;
@@ -50,7 +52,9 @@ export class Barricade extends Entity {
       }
     } else if (currentActive < targetActiveBlocks) {
       // Reconstruct blocks on healing/repair
-      while (currentActive < targetActiveBlocks) {
+      let attempts = 0;
+      while (currentActive < targetActiveBlocks && attempts < 200) {
+        attempts++;
         const idx = Math.floor(Math.random() * this.blocks.length);
         if (!this.blocks[idx]) {
           this.blocks[idx] = true;
@@ -62,6 +66,8 @@ export class Barricade extends Entity {
     if (this.hp <= 0) {
       this.hp = 0;
       this.isDead = true;
+    } else if (this.hp > 0 && this.isDead) {
+      this.isDead = false;
     }
   }
 

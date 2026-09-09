@@ -136,7 +136,7 @@ test.describe('Milestone 2: End-Game Crisis Incursion Engine & GameManager Integ
       expect(gm.endGameCrisis).not.toBeNull();
       expect(gm.endGameCrisis!.isActive).toBe(true);
       expect(gm.hasEndGameCrisisOccurred).toBe(true);
-      expect(gm.enemies.length).toBeGreaterThan(0); // Standard enemies generated alongside crisis incursion
+      expect(gm.enemies.length).toBe(0); // Standard enemies cleared for existential crisis encounter (DEF-C1)
     } finally {
       Math.random = origRandom;
     }

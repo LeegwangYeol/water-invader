@@ -132,7 +132,7 @@ export class Helper extends Entity {
         this.isInvincible = false;
         break;
       case HelperType.REPAIRER:
-        this.actionInterval = 0.4;
+        this.actionInterval = 0.5; // Documented +8 HP/s (+4 HP every 0.5s)
         this.isInvincible = false;
         break;
       case HelperType.TANK:
@@ -225,24 +225,28 @@ export class Helper extends Entity {
         this.position.x += Math.sign(dx) * Math.min(Math.abs(dx), 320 * deltaTime);
       }
 
-      // Fire twin plasma bolts every 0.3s (speed -500, damage 2, faction PLAYER)
+      // Fire twin plasma bolts every 0.3s (speed -500, damage 2, faction PLAYER) only if valid hostiles exist
       this.fireTimer -= deltaTime;
       if (this.fireTimer <= 0) {
-        this.fireTimer = 0.3;
-        const leftX = this.position.x + this.size.width / 2 - 8;
-        const rightX = this.position.x + this.size.width / 2 + 8;
-        const boltY = this.position.y;
+        if (targetEnemy || hostiles.length > 0) {
+          this.fireTimer = 0.3;
+          const leftX = this.position.x + this.size.width / 2 - 8;
+          const rightX = this.position.x + this.size.width / 2 + 8;
+          const boltY = this.position.y;
 
-        const leftBolt = new Bullet(leftX, boltY, -500, 2, true, 1);
-        leftBolt.faction = Faction.PLAYER;
-        leftBolt.isPlayerBullet = true;
+          const leftBolt = new Bullet(leftX, boltY, -500, 2, true, 1);
+          leftBolt.faction = Faction.PLAYER;
+          leftBolt.isPlayerBullet = true;
 
-        const rightBolt = new Bullet(rightX, boltY, -500, 2, true, 1);
-        rightBolt.faction = Faction.PLAYER;
-        rightBolt.isPlayerBullet = true;
+          const rightBolt = new Bullet(rightX, boltY, -500, 2, true, 1);
+          rightBolt.faction = Faction.PLAYER;
+          rightBolt.isPlayerBullet = true;
 
-        newBullets.push(leftBolt, rightBolt);
-        soundManager.playShoot();
+          newBullets.push(leftBolt, rightBolt);
+          soundManager.playShoot();
+        } else {
+          this.fireTimer = 0; // Ready to fire immediately when a hostile appears
+        }
       }
     } else if (this.type === HelperType.MEDIC) {
       // Targets player. Flanks player horizontally (x = player.x +- 45, y = player.y - 25)
@@ -338,11 +342,11 @@ export class Helper extends Entity {
           y: bestBarricade.position.y + 10
         };
 
-        // If hovering over target barricade (within 40px), repairs every 0.4s
+        // If hovering over target barricade (within 40px), repairs at documented +8 HP/s (+4 HP every 0.5s)
         if (Math.abs(this.position.x - this.targetX) < 40) {
-          if (this.actionTimer >= 0.4) {
+          if (this.actionTimer >= this.actionInterval) {
             this.actionTimer = 0;
-            // +4 HP up to maxHp
+            // +4 HP up to maxHp (+8 HP/s)
             bestBarricade.hp = Math.min(bestBarricade.maxHp, bestBarricade.hp + 4);
             bestBarricade.isDead = false;
             this.feedbackText = '+REPAIR';
@@ -530,9 +534,12 @@ export class Helper extends Entity {
     ctx.fillText(hpText, cx, barY);
 
     // 5. Role Badge Pill (icon + label, high contrast >= 7:1)
-    const badgeY = barY - 14;
-    const badgeWidth = 68;
+    const badgeText = `[${config.icon} ${config.badgeLabel}]`;
+    ctx.font = 'bold 8px sans-serif';
+    const textWidth = (ctx && typeof ctx.measureText === 'function') ? (ctx.measureText(badgeText)?.width || 0) : 0;
+    const badgeWidth = Math.max(84, Math.ceil(textWidth) + 12);
     const badgeHeight = 12;
+    const badgeY = barY - 14;
     const badgeX = cx - badgeWidth / 2;
 
     ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
@@ -548,8 +555,6 @@ export class Helper extends Entity {
       ctx.strokeRect(badgeX, badgeY, badgeWidth, badgeHeight);
     }
 
-    const badgeText = `[${config.icon} ${config.badgeLabel}]`;
-    ctx.font = 'bold 8px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.strokeStyle = '#000000';

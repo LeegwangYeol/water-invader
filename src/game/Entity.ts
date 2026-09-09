@@ -53,6 +53,17 @@ export abstract class Entity {
     };
   }
 
+  public sweptAABB(other: Entity): boolean {
+    const swept1 = this.getSweptRect();
+    const swept2 = other.getSweptRect();
+    return (
+      swept1.x < swept2.x + swept2.width &&
+      swept1.x + swept1.width > swept2.x &&
+      swept1.y < swept2.y + swept2.height &&
+      swept1.y + swept1.height > swept2.y
+    );
+  }
+
   public checkCollision(other: Entity): boolean {
     const rect1 = this.getRect();
     const rect2 = other.getRect();
@@ -67,7 +78,14 @@ export abstract class Entity {
       return true;
     }
 
-    // Continuous Collision Detection (CCD): Swept bounds
+    // Continuous Collision Detection (CCD): Swept-to-swept bounds for opposing high-velocity projectiles
+    if (this.prevPosition && other.prevPosition) {
+      if (this.sweptAABB(other)) {
+        return true;
+      }
+    }
+
+    // Swept 1 vs Rect 2
     if (this.prevPosition) {
       const swept1 = this.getSweptRect();
       if (
@@ -80,6 +98,7 @@ export abstract class Entity {
       }
     }
 
+    // Rect 1 vs Swept 2
     if (other.prevPosition) {
       const swept2 = other.getSweptRect();
       if (
