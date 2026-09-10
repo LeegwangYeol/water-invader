@@ -1,23 +1,16 @@
-## 2026-08-31T09:46:39Z
-You are Reviewer 2 for the Next.js "Water Invader" project.
+## 2026-09-07T16:16:10Z
 
-Your Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2
+# Task Assignment: Reviewer 2 for Milestone 2 (Enemy Piercing Damage Scaling)
 
-Task Assignment: Independent Edge-Case & Systems Review of Milestone M1 & M2
-Scope to Review:
-- `src/game/Enemy.ts`: Check scaling edge cases at level 9 vs level 10 boundary, boss HP scaling at level 5, 10, 15, 20.
-- `src/game/GameManager.ts`: Check CrisisDirector transitions, hazard projectile boundaries, wave clear safety when all crisis enemies die, EMP weapon suppression state resetting cleanly upon crisis end or game restart.
-- `src/game/SoundManager.ts`: Web Audio error resilience (AudioContext state suspended/closed, non-blocking playback).
-- `src/components/game-canvas.tsx`: Canvas HUD rendering stability, pause/resume behavior during crisis warnings.
+- Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2
+- Original Request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Scope Document: /Users/user/src/water-invader/PROJECT.md
+- Collaboration Guide: /Users/user/src/water-invader/COLLABORATION.md
+- Worker M2 Report: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m2_piercing_1/handoff.md
 
-Verification to Execute:
-1. Run `npx tsc --noEmit`.
-2. Run `npm run build`.
-3. Run `npx playwright test`.
-
-MANDATORY REFERENCES:
-- Verbatim request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
-- Scope & roadmap: /Users/user/src/water-invader/PROJECT.md
-- Collaboration guide: /Users/user/src/water-invader/COLLABORATION.md
-
-Write your complete review report in `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_2/handoff.md` with a clear verdict (APPROVE or REQUEST_CHANGES) and report back via send_message.
+## Objective
+Independently review Milestone 2 changes in `src/game/Enemy.ts` and `src/game/GameManager.ts`:
+1. Check balance and anti-one-shot safety: verify that an un-upgraded 3 HP player survives a 2-damage bullet at Wave 20+ with 1 HP remaining and gets 1.0s i-frames.
+2. Check cover penetration dynamics: verify that `piercing` decrements accurately and prevents multi-tick frame leaks on barricades.
+3. Check visual signifiers: orange bloom / indicator for piercing shots.
+4. Run build checks and report verdict: APPROVE or REQUEST_CHANGES in `handoff.md`.

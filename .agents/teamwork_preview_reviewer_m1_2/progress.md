@@ -1,16 +1,20 @@
-# Progress - Reviewer 2 (Milestone M1)
+# Progress - Reviewer 2 (Milestone 1: Pre-Continue Shop Access & Stability)
 
-Last visited: 2026-08-26T11:07:15Z
+Last visited: 2026-09-07T16:10:45Z
 
 ## Status
-Review and adversarial analysis completed. Verdict: APPROVE.
+Milestone 1 review, build verification, and adversarial challenge completed. Verdict: APPROVE.
 
 ## Steps
-- [x] Record DISPATCH and initialize BRIEFING
-- [x] Read references (`ORIGINAL_REQUEST.md`, `PROJECT.md`, `TEST_READY.md`, worker `handoff.md`)
-- [x] Inspect git diff / changes made for M1 across `src/` and `tests/`
-- [x] Run verification commands (`npx tsc --noEmit`, `npm run build`, `npx playwright test ...`)
-- [x] In-depth code review (type safety, memory leaks/Web Audio, edge cases, test integrity, regressions)
-- [x] Adversarial stress test & challenge analysis
-- [x] Formulate findings and verdict: APPROVE
-- [x] Produce `handoff.md` and send message to parent
+- [x] Record DISPATCH and update situational BRIEFING
+- [x] Review requirements and worker report (`ORIGINAL_REQUEST.md`, `PROJECT.md`, `COLLABORATION.md`, Worker M1 `handoff.md`)
+- [x] Inspect source code diffs in `src/components/game-canvas.tsx` and `src/game/GameManager.ts`
+- [x] Forensic verification of rAF leak prevention, animation frame cancellation, and Web Audio cleanup
+- [x] Review UI responsiveness, touch targets, and accessibility (WCAG contrast, bilingual text, testids)
+- [x] State edge case testing: wave preservation, score preservation, currency deductions, 1.5s i-frame window
+- [x] Author targeted unit/integration stress suite `tests/m1_reviewer2_continue_shop_verification.spec.ts` (6/6 pass)
+- [x] Run production build (`npm run build`) and typecheck (`npx tsc --noEmit` exit code 0)
+- [x] Verify integrity: zero facades, zero hardcoded shortcuts, genuine state machine implementation
+- [x] Finalize BRIEFING.md and write comprehensive `handoff.md` report
+- [x] Send completion message to parent
+

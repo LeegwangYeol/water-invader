@@ -1,12 +1,12 @@
-# Progress — Challenger 1 (Milestone M1)
+# Progress — Challenger 1 (Milestone M1: Pre-Continue Shop Access & Stability)
 
-Last visited: 2026-08-26T11:06:00Z
+Last visited: 2026-09-08T01:12:00Z
 
 - [x] Initialized workspace and briefing
-- [x] Read references (ORIGINAL_REQUEST.md, PROJECT.md, TEST_READY.md)
-- [x] Inspected codebase implementation for 3-Way battle, faction rules, scoring, bullet collisions
-- [x] Authored and executed empirical adversarial test suite (`tests/adversarial_m1_challenger_1.spec.ts`)
-- [x] Verified full M1 test suite (57/57 tests passing: 41 in `05_three_way_battle.spec.ts` + 16 in `adversarial_m1_challenger_1.spec.ts`)
-- [x] Verified production build (`npm run build` passed with 0 errors)
-- [x] Compiled comprehensive handoff report (`handoff.md`)
-- [x] Delivered verdict: APPROVE
+- [x] Inspected Worker M1 implementation and git diffs
+- [x] Authored adversarial empirical test suite `tests/adversarial_m1_continue_shop_challenger.spec.ts`
+- [x] Ran automated Playwright tests on state machine transitions: Death -> Continue Click -> Shop Modal Open -> Buy Tank Repair (3 -> 4 -> 5 HP) -> Click Resume Wave -> In-game state has HP 4 or 5, barricades alive, current wave active, 1.5s invincibility timer active (8/8 passed)
+- [x] Stress-tested rapid double/quintuple clicks on Continue and Resume Wave buttons (clean idempotency, no loop leaks or entity duplication)
+- [x] Verified build and type check (`npm run build` passed, `npx tsc --noEmit` passed with 0 errors)
+- [x] Compiled handoff.md with verdict: CONFIRM (APPROVE)
+- [x] Sent final report message to orchestrator parent

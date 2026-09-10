@@ -1,0 +1,29 @@
+# Progress Log — bughunt2_worker_combat_1
+
+- **Last visited**: 2026-09-09T03:00:30Z
+- **Current phase**: Completed & Verified
+- **Tasks**:
+  - [x] Read DISPATCH, ORIGINAL_REQUEST, and handoff files
+  - [x] Create DISPATCH.md, BRIEFING.md, and progress.md
+  - [x] Investigate target files:
+    - [x] `src/game/Enemy.ts` (DEF-P3, DEF-P4, DEF-P6, DEF-A2)
+    - [x] `src/game/Bullet.ts` (DEF-C2)
+    - [x] `src/game/Barricade.ts` (DEF-A3)
+    - [x] `src/game/DimensionalRift.ts` (DEF-C3)
+    - [x] `src/game/Helper.ts` (DEF-A5, DEF-A8, DEF-A9)
+  - [x] Implement code fixes:
+    - [x] DEF-P3: Guard Diver fire before diving (`this.type === EnemyType.DIVER`)
+    - [x] DEF-P4: Rogue Elite piercing parity with `this.getPiercingCount()`
+    - [x] DEF-P6: Clamp Zigzag & Diver speed to max 350 px/s
+    - [x] DEF-A2: Clamp Saboteur lateral descent to `latchY`
+    - [x] DEF-C2: Preserve projectile color for interceptable bullets + glowing ring
+    - [x] DEF-A3: Clamp `targetActiveBlocks` to `[0, blocks.length]` + iteration cap
+    - [x] DEF-C3: Mark `player.isDead = true` on lethal damage from tripwires/fire trails
+    - [x] DEF-A5: Dynamically calculate badge width for `[🔧 REPAIR BOT]` (min 84px)
+    - [x] DEF-A8: Set Repair Bot actionInterval to 0.5s (+8 HP/s)
+    - [x] DEF-A9: Only fire Fighter twin plasma bolts if valid hostiles exist
+  - [x] Type check with `npx tsc --noEmit` (0 errors)
+  - [x] Run existing regression test suites (14 + 42 passed)
+  - [x] Author and run new test suite `tests/unit/bughunt2_combat_qa.test.ts` (9/9 passed)
+  - [x] Generate handoff.md
+  - [ ] Send message to parent

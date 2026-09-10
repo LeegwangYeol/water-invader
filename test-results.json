@@ -4,8 +4,10 @@
       "/Users/user/.nvm/versions/node/v25.8.1/bin/node",
       "/Users/user/src/water-invader/node_modules/.bin/playwright",
       "test",
-      "tests/unit/adversarial_homing_missile_stress.test.ts",
-      "tests/unit/adversarial_swarm_midtier_stress.test.ts"
+      "tests/unit/flagship_features.test.ts",
+      "tests/20_flagship_12_features.spec.ts",
+      "tests/adversarial_flagship_state_transitions.spec.ts",
+      "tests/unit/flagship_adversarial_physics_stress.test.ts"
     ],
     "configFile": "/Users/user/src/water-invader/playwright.config.ts",
     "rootDir": "/Users/user/src/water-invader/tests",
@@ -81,27 +83,677 @@
   },
   "suites": [
     {
-      "title": "unit/adversarial_homing_missile_stress.test.ts",
-      "file": "unit/adversarial_homing_missile_stress.test.ts",
+      "title": "20_flagship_12_features.spec.ts",
+      "file": "20_flagship_12_features.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Adversarial Stress Suite: Homing Missile Weapon System (R1)",
-          "file": "unit/adversarial_homing_missile_stress.test.ts",
-          "line": 60,
+          "title": "Flagship 12 Features Master E2E Suite",
+          "file": "20_flagship_12_features.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "FLAGSHIP-00: All 12 Flagship subsystems are instantiated, mounted, and registered in FlagshipManager",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1017,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:31.339Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-e44573062aa8416efce3",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 21,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-01: Cavitation Torpedo [C] fires ordnance, consumes ammo, and supports remote detonation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 907,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:32.445Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-0e9f63fda10ebb6a8215",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 56,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-02: Bioluminescent Laser [Space] heats up thermodynamic engine and [P] deploys Refraction Prism",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 909,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:33.356Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-6faefbd5552fe2253a25",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 94,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-03: Hydraulic Harpoon [H] launches pneumatic dart and [Shift] triggers winch",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 887,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:34.270Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-d77d02be71d404dcbc40",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 133,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-04: Hydrothermal Vents & Ocean Currents update in environment layers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 848,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:35.161Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-28f65e17108a2d74c46d",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 161,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-05: Biolapse Darkness Cycle [L] headlight, [V] high-beam, and [B] acoustic sonar ping",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 876,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:36.014Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-47644daf525236f11964",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 176,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-06: Modular Submersible Chassis maintains 6-axis radar profiles and selection",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 871,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:36.894Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-192eebe0b83cbd2daf27",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 196,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-07: Veteran Crew Synergy Deck abilities trigger on hotkeys [1], [2], [3], [4]",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 885,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:37.770Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-dfb77120c8488e0d4220",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-08: Hadal Bio-Horrors unit spawning and epigenetic damage telemetry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 847,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:38.659Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-5307b148750f29a8419a",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 239,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-09: Automaton Shield Phalanx drone linking and grid dampening",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 864,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:39.510Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-4b03b14a3090c0020a49",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 256,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-10: Apex Boss Kraken Prime initiates 12,000 EHP encounter with 8 tentacles",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 871,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:40.378Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-684b03571b2c9ee8c54a",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 296,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-11: Roguelike Endless Mode (Endless Descent) DAG generation and ballast purge",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 879,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:41.253Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-4ebb13fd0ee0c5ec966c",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 315,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-12: Sonar/Hydrophone sensory suite rotates sweep beam and generates stress fractures",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 895,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:42.136Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-1fe633baca9c11595a87",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 336,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "adversarial_flagship_state_transitions.spec.ts",
+      "file": "adversarial_flagship_state_transitions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Adversarial Flagship State Transitions & Edge Cases Suite (pitch_challenger_2)",
+          "file": "adversarial_flagship_state_transitions.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CHALLENGE-01: Officer 0 HP Sub-Zero Reactor Purge Revive Mechanics & Zombie Game-Over Desync",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 843,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "CHALLENGE-01 Result: {\n  \"isQuadActive\": true,\n  \"initialCanRevive\": true,\n  \"isQuadGrandResonanceActive\": true,\n  \"stateImmediatelyAfterGameOver\": \"PLAYING\",\n  \"playerIsDeadAfterGameOver\": false,\n  \"hpAfterRevive\": 5,\n  \"canReviveAfterPurge\": false,\n  \"playerMaxHp\": 5,\n  \"willGameLoopResume\": true\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:43.039Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e16f067a8811c5e91029-8ccaf2ef9c499bb03c20",
+              "file": "adversarial_flagship_state_transitions.spec.ts",
+              "line": 5,
+              "column": 7
+            },
+            {
+              "title": "CHALLENGE-02: Kraken Prime Multi-Part Destruction Sequencing, Sequence Breaks, and 0 HP Immortality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 908,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:43.885Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e16f067a8811c5e91029-dc7e8e48ee1e41e3db29",
+              "file": "adversarial_flagship_state_transitions.spec.ts",
+              "line": 91,
+              "column": 7
+            },
+            {
+              "title": "CHALLENGE-03: Biolapse Darkness Rapid Cycles, 0 Battery Ghost Illumination & Recharge Lockout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 842,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:44.796Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e16f067a8811c5e91029-d65b2bd55efb7fe31514",
+              "file": "adversarial_flagship_state_transitions.spec.ts",
+              "line": 183,
+              "column": 7
+            },
+            {
+              "title": "CHALLENGE-04: Endless Descent Hotkey Conflict with Cavitation Torpedo [C] & Permanent Container Depletion",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 853,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:45.642Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e16f067a8811c5e91029-0251e2834efdccfcba0f",
+              "file": "adversarial_flagship_state_transitions.spec.ts",
+              "line": 265,
+              "column": 7
+            },
+            {
+              "title": "CHALLENGE-05: Automaton Phalanx Shield Backlash No-Op Hull Damage & Missing Cascade on Destruction",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 902,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:46.499Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e16f067a8811c5e91029-4b8fed191ed3a4968669",
+              "file": "adversarial_flagship_state_transitions.spec.ts",
+              "line": 349,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "unit/flagship_adversarial_physics_stress.test.ts",
+      "file": "unit/flagship_adversarial_physics_stress.test.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Flagship Adversarial Stress & Physics Challenger",
+          "file": "unit/flagship_adversarial_physics_stress.test.ts",
+          "line": 50,
           "column": 6,
           "specs": [],
           "suites": [
             {
-              "title": "Dimension 1: Target Seeking & Turning Radius Stress Harness",
-              "file": "unit/adversarial_homing_missile_stress.test.ts",
-              "line": 65,
+              "title": "1. Cavitation Torpedo Suction Singularity & Entity Densities",
+              "file": "unit/flagship_adversarial_physics_stress.test.ts",
+              "line": 55,
               "column": 8,
               "specs": [
                 {
-                  "title": "STRESS-1.1: Diving rusher at y = 660 within 80-100px of player (y = 740) is intercepted without overshooting",
+                  "title": "TORPEDO-STRESS-01: 150 entities in suction field pull inward without NaN or Infinity",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -116,12 +768,12 @@
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 79,
+                          "duration": 94,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-03T11:14:36.342Z",
+                          "startTime": "2026-09-10T06:34:47.425Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -129,13 +781,206 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "43197a592b52618380ba-b78bf7c07f8f01a8cf0d",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 67,
+                  "id": "7fa6a3dfb68bf8c7e9e5-069d952ff60201f42fa5",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 57,
                   "column": 9
                 },
                 {
-                  "title": "STRESS-1.2: Boundary orbit prevention (missiles never circle in infinite loops)",
+                  "title": "TORPEDO-STRESS-02: Singularity center singularity guard (distSq <= 4 and distSq = 0)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-10T06:34:47.522Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "7fa6a3dfb68bf8c7e9e5-178f71a0bb6b78eabc19",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 100,
+                  "column": 9
+                },
+                {
+                  "title": "TORPEDO-STRESS-03: Boundary violation check under shockwave radial pushback",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "[EMPIRICAL] Edge enemy position after shockwave: (560, 0)\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-10T06:34:47.525Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "7fa6a3dfb68bf8c7e9e5-33179c6c26b01ccd7de7",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 127,
+                  "column": 9
+                },
+                {
+                  "title": "TORPEDO-STRESS-04: High entity density performance (300 entities)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "[EMPIRICAL] 300 entities x 30 frames singularity update: 0.60ms\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-10T06:34:47.527Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "7fa6a3dfb68bf8c7e9e5-1fe2ea64852278b43df1",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 155,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "2. Harpoon Spring Simulation With Erratic High Delta-Time",
+              "file": "unit/flagship_adversarial_physics_stress.test.ts",
+              "line": 179,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "HARPOON-STRESS-01: Spring pull with erratic dt = 0.2s causes catastrophic overshoot out of bounds",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "[EMPIRICAL] Harpoon dt=0.2s: initialY=400, finalY=591.0151732928698, displacement=191.02px\n"
+                            },
+                            {
+                              "text": "[VERIFIED STABILITY] Harpoon spring simulation with dt=0.2s kept enemy safely bounded at Y=591.0151732928698 <= 800\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-10T06:34:47.531Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "7fa6a3dfb68bf8c7e9e5-232895b608031740c1b1",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 181,
+                  "column": 9
+                },
+                {
+                  "title": "HARPOON-STRESS-02: Erratic high dt sequence [0.016, 0.25, 0.016, 0.3] numerical stability",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-10T06:34:47.534Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "7fa6a3dfb68bf8c7e9e5-44631504172e00409636",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 212,
+                  "column": 9
+                },
+                {
+                  "title": "HARPOON-STRESS-03: 12-Node Verlet Cable integrity under high dt and snap",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -155,7 +1000,7 @@
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-03T11:14:36.464Z",
+                          "startTime": "2026-09-10T06:34:47.537Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -163,13 +1008,13 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "43197a592b52618380ba-f85afcebbc15ac2d697a",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 138,
+                  "id": "7fa6a3dfb68bf8c7e9e5-179a795f1c6cdde9c7f2",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 237,
                   "column": 9
                 },
                 {
-                  "title": "STRESS-1.3: Verification of kinematic parameters (v0=280, a=360, vmax=520, omega=6.2)",
+                  "title": "HARPOON-STRESS-04: Slingshot release under dt = 0.2s",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -184,12 +1029,12 @@
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 7,
+                          "duration": 0,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-03T11:14:36.483Z",
+                          "startTime": "2026-09-10T06:34:47.545Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -197,21 +1042,21 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "43197a592b52618380ba-6eec43bd4aca43465145",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 179,
+                  "id": "7fa6a3dfb68bf8c7e9e5-15bd30eb4d89149cade5",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 262,
                   "column": 9
                 }
               ]
             },
             {
-              "title": "Dimension 2: Rapid Death & High-Density Adversarial Retargeting",
-              "file": "unit/adversarial_homing_missile_stress.test.ts",
-              "line": 202,
+              "title": "3. Laser Raycasting Across Dense Formations",
+              "file": "unit/flagship_adversarial_physics_stress.test.ts",
+              "line": 285,
               "column": 8,
               "specs": [
                 {
-                  "title": "STRESS-2.1: Rapid elimination of 50 enemies while 10 missiles fly -> 0 crashes, instant retargeting or cruise",
+                  "title": "LASER-STRESS-01: Laser raycast across 200 enemies in dense grid formation",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -226,12 +1071,19 @@
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 3688,
+                          "duration": 72,
                           "errors": [],
-                          "stdout": [],
+                          "stdout": [
+                            {
+                              "text": "[EMPIRICAL] 200 enemies x 20 laser raycast ticks: 0.88ms\n"
+                            },
+                            {
+                              "text": "[EMPIRICAL] Number of enemies pierced by direct beam: 30\n"
+                            }
+                          ],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-03T11:14:36.538Z",
+                          "startTime": "2026-09-10T06:34:47.548Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -239,13 +1091,13 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "43197a592b52618380ba-d7d53c116c0421c33552",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 204,
+                  "id": "7fa6a3dfb68bf8c7e9e5-615ee2eacce79c6791f0",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 287,
                   "column": 9
                 },
                 {
-                  "title": "STRESS-2.2: Mass extinction burst (all 50 enemies killed simultaneously on frame 5)",
+                  "title": "LASER-STRESS-02: Prism fan refraction through 150 dense enemies",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -260,12 +1112,16 @@
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 28,
+                          "duration": 0,
                           "errors": [],
-                          "stdout": [],
+                          "stdout": [
+                            {
+                              "text": "[EMPIRICAL] Enemies hit by 5-ray prism fan: 20 / 150\n"
+                            }
+                          ],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.237Z",
+                          "startTime": "2026-09-10T06:34:47.623Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -273,13 +1129,13 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "43197a592b52618380ba-fe68962414fca2ad3c5b",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 279,
+                  "id": "7fa6a3dfb68bf8c7e9e5-a70f71b1ba4434c45f21",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 327,
                   "column": 9
                 },
                 {
-                  "title": "STRESS-2.3: Targeted assassination edge case: target dies every single frame",
+                  "title": "LASER-STRESS-03: Zero-length beam or collinear overlapping enemies",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -294,12 +1150,12 @@
                           "workerIndex": 0,
                           "parallelIndex": 0,
                           "status": "passed",
-                          "duration": 1,
+                          "duration": 0,
                           "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.333Z",
+                          "startTime": "2026-09-10T06:34:47.626Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -307,89 +1163,21 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "43197a592b52618380ba-3024ab9c68243494978a",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 333,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-2.4: Empty array and undefined parameters null safety",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.359Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "43197a592b52618380ba-69ffcd59de5ad5577b66",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 357,
+                  "id": "7fa6a3dfb68bf8c7e9e5-98a28395f4fff449bac1",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 351,
                   "column": 9
                 }
               ]
             },
             {
-              "title": "Dimension 3: Barricade Protection & Penetration at y = 650",
-              "file": "unit/adversarial_homing_missile_stress.test.ts",
-              "line": 371,
+              "title": "4. Hydrothermal Vent Upward Acceleration & Ocean Current Drag",
+              "file": "unit/flagship_adversarial_physics_stress.test.ts",
+              "line": 370,
               "column": 8,
               "specs": [
                 {
-                  "title": "STRESS-3.1: Missiles fly straight through y = 650 barricades with 0 barricade damage",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 24,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.406Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "43197a592b52618380ba-4e28a936a75f2b31a866",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 373,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-3.2: Point-blank missile detonation adjacent to barricade does NOT splash damage barricade",
+                  "title": "VENT-STRESS-01: Upward acceleration on player vessel clamped at capY + 30",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -406,10 +1194,14 @@
                           "status": "passed",
                           "duration": 2,
                           "errors": [],
-                          "stdout": [],
+                          "stdout": [
+                            {
+                              "text": "[EMPIRICAL] Player position after continuous vent updraft: Y=130\n"
+                            }
+                          ],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.463Z",
+                          "startTime": "2026-09-10T06:34:47.629Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -417,21 +1209,127 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "43197a592b52618380ba-727cfa9fb071d6edf062",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 421,
+                  "id": "7fa6a3dfb68bf8c7e9e5-89675b813b714440fe06",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 372,
+                  "column": 9
+                },
+                {
+                  "title": "VENT-STRESS-02: Enemy bullet upward counter-buoyancy deceleration",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "[EMPIRICAL] Enemy bullet velocity before=200, after=148\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-10T06:34:47.633Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "7fa6a3dfb68bf8c7e9e5-61ac8b7487588c6c6b2e",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 391,
+                  "column": 9
+                },
+                {
+                  "title": "VENT-STRESS-03: OceanCurrent drag clamping verification",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-10T06:34:47.636Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "7fa6a3dfb68bf8c7e9e5-42e2aa542945272bd83e",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 410,
+                  "column": 9
+                },
+                {
+                  "title": "VENT-STRESS-04: Mineral nodules boundary containment",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 84,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-10T06:34:47.639Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "7fa6a3dfb68bf8c7e9e5-39b8ee838de112659dc8",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 422,
                   "column": 9
                 }
               ]
             },
             {
-              "title": "Dimension 4: Splash Blast Damage & Kinetic Shield Physics",
-              "file": "unit/adversarial_homing_missile_stress.test.ts",
-              "line": 454,
+              "title": "5. Logical Bounds [0, 600] x [0, 800] & NaN Oracles",
+              "file": "unit/flagship_adversarial_physics_stress.test.ts",
+              "line": 445,
               "column": 8,
               "specs": [
                 {
-                  "title": "STRESS-4.1: Full kinetic shield absorption: splash damage absorbs into shield, 0 HP lost",
+                  "title": "BOUNDS-ORACLE-01: Flagship systems continuous multi-weapon simulation bounds check",
                   "ok": true,
                   "tags": [],
                   "tests": [
@@ -448,10 +1346,14 @@
                           "status": "passed",
                           "duration": 2,
                           "errors": [],
-                          "stdout": [],
+                          "stdout": [
+                            {
+                              "text": "[EMPIRICAL] 120 frames multi-weapon test: NaN count = 0, Out-of-bounds count = 0\n"
+                            }
+                          ],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.482Z",
+                          "startTime": "2026-09-10T06:34:47.726Z",
                           "annotations": [],
                           "attachments": []
                         }
@@ -459,179 +1361,9 @@
                       "status": "expected"
                     }
                   ],
-                  "id": "43197a592b52618380ba-e80c436e28435b2b6ccd",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 456,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-4.2: Partial kinetic shield: shield breaks and remainder bleeds through to base HP",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.492Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "43197a592b52618380ba-37022dcd46015566afbe",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 490,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-4.3: Strict distance cutoff: units outside 45px radius take 0 damage",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.505Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "43197a592b52618380ba-9bb8e3c174e013319d2b",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 517,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-4.4: Dense multi-target cluster splash resolution",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 53,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.537Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "43197a592b52618380ba-f069e06abfb833f8eacc",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 549,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-4.5: Rogue Goliath EMP shockwave triggers safely upon splash shield break without melee crossfire",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.644Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "43197a592b52618380ba-a0c71dffd08eeea799bc",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 600,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-4.6: Rogue Phantom phase dash trigger on splash blast hit",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.660Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "43197a592b52618380ba-78d5609c2b458fd78cf6",
-                  "file": "unit/adversarial_homing_missile_stress.test.ts",
-                  "line": 636,
+                  "id": "7fa6a3dfb68bf8c7e9e5-8bfa8e5e74352d16a2fb",
+                  "file": "unit/flagship_adversarial_physics_stress.test.ts",
+                  "line": 447,
                   "column": 9
                 }
               ]
@@ -641,602 +1373,1911 @@
       ]
     },
     {
-      "title": "unit/adversarial_swarm_midtier_stress.test.ts",
-      "file": "unit/adversarial_swarm_midtier_stress.test.ts",
+      "title": "unit/flagship_features.test.ts",
+      "file": "unit/flagship_features.test.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Adversarial Stress Suite: Enemy Swarms & 3rd Faction Mid-Tier Monsters",
-          "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-          "line": 59,
+          "title": "Flagship Feature 1: Cavitation Torpedo & Implosion Ordnance",
+          "file": "unit/flagship_features.test.ts",
+          "line": 77,
           "column": 6,
-          "specs": [],
-          "suites": [
+          "specs": [
             {
-              "title": "1. Swarm Safety Cap & Frame Rate Benchmark",
-              "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-              "line": 64,
-              "column": 8,
-              "specs": [
+              "title": "TORPEDO-01: State machine transitions from INERT to ARMED after arming distance threshold",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "STRESS-1.1: Extreme continuous spawning flood NEVER exceeds 70 concurrent units",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.736Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 31,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.687Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "85b84655f0a0d1a0e0e7-5d0bc83de05cce389582",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 66,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-1.2: Boundary saturation test at exactly 68 and 69 active units",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.751Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-4b1a4cefa4ea8e95a92c",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 93,
-                  "column": 9
-                },
-                {
-                  "title": "STRESS-1.3: Simultaneous multi-carrier cluster split at near-cap does not exceed 70",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 3,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.764Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-6f95bef2a148c331fc94",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 128,
-                  "column": 9
-                },
-                {
-                  "title": "PERF-1.4: Tick duration / frame rate under 60 concurrent enemies (>= 40-60 FPS)",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 220,
-                          "errors": [],
-                          "stdout": [
-                            {
-                              "text": "[PERF BENCHMARK 60 ENEMIES] Mean: 0.192ms, P95: 0.312ms, P99: 4.592ms, Max: 26.130ms\n"
-                            }
-                          ],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:40.782Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-7f99da3473e80f7911e5",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 162,
-                  "column": 9
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "058173a3041e91a5ac72-9bbe318aaa7c158c997f",
+              "file": "unit/flagship_features.test.ts",
+              "line": 78,
+              "column": 7
             },
             {
-              "title": "2. 3rd Faction AI & Friendly Fire Raycast Suppression",
-              "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-              "line": 218,
-              "column": 8,
-              "specs": [
+              "title": "TORPEDO-02: Remote detonation (double-tap trigger) transitions ARMED torpedo into SINGULARITY",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "AI-2.1: 3-way crossfire targeting: Rogues engage closest hostile (Player vs Invader)",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.739Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 4,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [
-                            {
-                              "text": "(node:79791) Warning: `--localstorage-file` was provided without a valid path\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
-                            }
-                          ],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.031Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "85b84655f0a0d1a0e0e7-cfa73b8683fc2eb92360",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 220,
-                  "column": 9
-                },
-                {
-                  "title": "AI-2.2: Friendly-fire raycast suppression prevents allied Rogues from damaging each other",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 3,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.076Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-8efb601012262a703f42",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 261,
-                  "column": 9
-                },
-                {
-                  "title": "AI-2.3: Hostile Invader in shot path does NOT suppress Rogue fire",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.086Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-752ce9d8c88e862892fc",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 291,
-                  "column": 9
-                },
-                {
-                  "title": "AI-2.4: Allied Rogue BEHIND shooter does NOT suppress forward fire",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.108Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-023670c939c735b2888c",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 320,
-                  "column": 9
-                },
-                {
-                  "title": "AI-2.5: Crossfire Kill awards strategic bonus score and currency",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.121Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-0817282e94f54df80576",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 346,
-                  "column": 9
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "058173a3041e91a5ac72-54e874b9dd6dfbf13e60",
+              "file": "unit/flagship_features.test.ts",
+              "line": 95,
+              "column": 7
             },
             {
-              "title": "3. Mid-Tier Mechanics: Goliath, Phantom, Carrier",
-              "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-              "line": 370,
-              "column": 8,
-              "specs": [
+              "title": "TORPEDO-03: Negative pressure Singularity exerts gravitational pull on nearby hostiles",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "MIDTIER-3.1: Rogue Goliath kinetic shield absorption and EMP shockwave on shield break",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.743Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 9,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.133Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "85b84655f0a0d1a0e0e7-c771ea5f85b71c5a99fb",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 372,
-                  "column": 9
-                },
-                {
-                  "title": "MIDTIER-3.2: Rogue Goliath alternating twin-barrel trajectory",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.159Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-6259d7fe75f9c42160b3",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 419,
-                  "column": 9
-                },
-                {
-                  "title": "MIDTIER-3.3: Rogue Phantom phase dash teleport under sustained damage",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 3,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.167Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-5c8e6197ec359286252c",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 439,
-                  "column": 9
-                },
-                {
-                  "title": "MIDTIER-3.4: Rogue Carrier cluster split on death spawns 2-3 Rogue Drones",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 10,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.175Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-80b340ffbfe4a4888bc5",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 468,
-                  "column": 9
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "058173a3041e91a5ac72-31a1b9dc1f708126dc0f",
+              "file": "unit/flagship_features.test.ts",
+              "line": 115,
+              "column": 7
             },
             {
-              "title": "4. Solitary Boss Integrity (Wave 5)",
-              "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-              "line": 506,
-              "column": 8,
-              "specs": [
+              "title": "TORPEDO-04: Singularity transitions to Shockwave after vacuum duration, vaporizing enemy bullets",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "BOSS-4.1: Wave 5 strictly spawns exactly 1 Boss and 0 minions / mid-tiers",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.746Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 24,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.195Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "85b84655f0a0d1a0e0e7-8db43ddfca6533292125",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 508,
-                  "column": 9
-                },
-                {
-                  "title": "BOSS-4.2: Contrast with Wave 10+ boss waves having escort legions",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.239Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-8dc3c665ad7a08fce6b1",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 535,
-                  "column": 9
-                },
-                {
-                  "title": "BOSS-4.3: Dynamic echelons do not trigger during Wave 5 solitary boss fight",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-03T11:14:41.256Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "85b84655f0a0d1a0e0e7-264c3f8d67dace078383",
-                  "file": "unit/adversarial_swarm_midtier_stress.test.ts",
-                  "line": 555,
-                  "column": 9
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "058173a3041e91a5ac72-80ee0ad0e84d74b877f4",
+              "file": "unit/flagship_features.test.ts",
+              "line": 132,
+              "column": 7
+            },
+            {
+              "title": "TORPEDO-05: Shockwave applies hyperbaric damage and impulse pushback to hostiles",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.749Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-88c5cbfaf80597c4bda4",
+              "file": "unit/flagship_features.test.ts",
+              "line": 155,
+              "column": 7
+            },
+            {
+              "title": "TORPEDO-06: CavitationTorpedoSystem manages ammo reserves, consumption, and recharge cycle",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.751Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-dbe9ddf5f7784cb272ec",
+              "file": "unit/flagship_features.test.ts",
+              "line": 170,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 2: Bioluminescent Laser & Refraction Prisms",
+          "file": "unit/flagship_features.test.ts",
+          "line": 200,
+          "column": 6,
+          "specs": [
+            {
+              "title": "LASER-01: Laser starts in COOL thermodynamic state and heats up when firing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.755Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-4e5c931f9734028280c2",
+              "file": "unit/flagship_features.test.ts",
+              "line": 201,
+              "column": 7
+            },
+            {
+              "title": "LASER-02: Thermodynamic heat zones scale accurately to WARM, SUPERCHARGED, and LOCKOUT",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.758Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-56ae40f85991304567a7",
+              "file": "unit/flagship_features.test.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "LASER-03: Thermal lockout enforces cooldown duration and blocks firing attempts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.761Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-c39dfe124e4a05268b3d",
+              "file": "unit/flagship_features.test.ts",
+              "line": 240,
+              "column": 7
+            },
+            {
+              "title": "LASER-04: Floating Quartz Refraction Prism splits hitscan laser beam into multi-angle fan",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.764Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-3e1f2daeb4e8102689bd",
+              "file": "unit/flagship_features.test.ts",
+              "line": 262,
+              "column": 7
+            },
+            {
+              "title": "LASER-05: Hydrothermal cooling halo accelerates thermal dissipation rate",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.767Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-fda3ade231737a70b8f2",
+              "file": "unit/flagship_features.test.ts",
+              "line": 281,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 3: Hydraulic Harpoon & Kinetic Slingshot",
+          "file": "unit/flagship_features.test.ts",
+          "line": 301,
+          "column": 6,
+          "specs": [
+            {
+              "title": "HARPOON-01: Pneumatic dart launches upward into FLYING state",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.770Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-27547f86ec93c4afb97a",
+              "file": "unit/flagship_features.test.ts",
+              "line": 302,
+              "column": 7
+            },
+            {
+              "title": "HARPOON-02: Dart collision with hostile entity transitions into TETHERED state",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.773Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-88ea5c410841daee9186",
+              "file": "unit/flagship_features.test.ts",
+              "line": 312,
+              "column": 7
+            },
+            {
+              "title": "HARPOON-03: Hydraulic winching reduces cable rest length at configured speed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.775Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-7dbf6e9313d5c1b2cae3",
+              "file": "unit/flagship_features.test.ts",
+              "line": 329,
+              "column": 7
+            },
+            {
+              "title": "HARPOON-04: Saline Electrical Shock Conduction deals damage and triggers EMP burst",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.778Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-ed565c01ae9a0dbacdb4",
+              "file": "unit/flagship_features.test.ts",
+              "line": 348,
+              "column": 7
+            },
+            {
+              "title": "HARPOON-05: Slingshot catapult release launches tethered entity as high-velocity kinetic missile",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.780Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-bf29ee0f93ffcb1cf9bd",
+              "file": "unit/flagship_features.test.ts",
+              "line": 361,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 4: Hydrothermal Vents & Ocean Currents",
+          "file": "unit/flagship_features.test.ts",
+          "line": 382,
+          "column": 6,
+          "specs": [
+            {
+              "title": "VENT-01: Conical plume radius broadens with ascent from seafloor chimney base to cap",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.784Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-01430083cdc5b136d344",
+              "file": "unit/flagship_features.test.ts",
+              "line": 383,
+              "column": 7
+            },
+            {
+              "title": "VENT-02: Thermal cycle strictly transitions DORMANT -> CHARGING -> ERUPTING",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.786Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-c7af44983b9a55dc3c09",
+              "file": "unit/flagship_features.test.ts",
+              "line": 395,
+              "column": 7
+            },
+            {
+              "title": "VENT-03: Erupting hydrothermal plume upgrades passing player bullets to Steam Lance",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.789Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-9edaf6e67ae0cd5064ae",
+              "file": "unit/flagship_features.test.ts",
+              "line": 414,
+              "column": 7
+            },
+            {
+              "title": "VENT-04: Erupting plume exerts upward counter-buoyancy deceleration on enemy bullets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.792Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-0141fc8299148a55662b",
+              "file": "unit/flagship_features.test.ts",
+              "line": 431,
+              "column": 7
+            },
+            {
+              "title": "CURRENT-05: OceanCurrent applies shear drag displacement to traversing entities",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.795Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-e98d15e7de25f4f385f6",
+              "file": "unit/flagship_features.test.ts",
+              "line": 448,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 5: Biolapse Darkness Cycle & Searchlight",
+          "file": "unit/flagship_features.test.ts",
+          "line": 463,
+          "column": 6,
+          "specs": [
+            {
+              "title": "BIOLAPSE-01: Cyclic ambient lux transitions across DIURNAL, TWILIGHT, MIDNIGHT, and DAWN",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.797Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-e645f0276a779129e077",
+              "file": "unit/flagship_features.test.ts",
+              "line": 464,
+              "column": 7
+            },
+            {
+              "title": "BIOLAPSE-02: Searchlight drains battery while active, high-beam drains at accelerated rate",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.801Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-1d419ae1d95a5db4fd83",
+              "file": "unit/flagship_features.test.ts",
+              "line": 492,
+              "column": 7
+            },
+            {
+              "title": "BIOLAPSE-03: Battery depletion down to zero resets high-beam overdrive",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.804Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-f1da181b91969a110d7a",
+              "file": "unit/flagship_features.test.ts",
+              "line": 516,
+              "column": 7
+            },
+            {
+              "title": "BIOLAPSE-04: Enemy kill during midnight recharges searchlight battery",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.807Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-2452e0d5a78e2bcdf510",
+              "file": "unit/flagship_features.test.ts",
+              "line": 530,
+              "column": 7
+            },
+            {
+              "title": "BIOLAPSE-05: Sonar ping triggers acoustic illumination wave in darkness",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.810Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-bb677b4b55214f31de3c",
+              "file": "unit/flagship_features.test.ts",
+              "line": 542,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 6: Modular Submersible Chassis",
+          "file": "unit/flagship_features.test.ts",
+          "line": 555,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CHASSIS-01: All 5 chassis archetypes are available with distinct attributes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.813Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-4c6f641965193ec85d32",
+              "file": "unit/flagship_features.test.ts",
+              "line": 556,
+              "column": 7
+            },
+            {
+              "title": "CHASSIS-02: 6-axis radar profile stats evaluate within normalized [0, 100] range",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.817Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-bfbef7fa4de77792c314",
+              "file": "unit/flagship_features.test.ts",
+              "line": 575,
+              "column": 7
+            },
+            {
+              "title": "CHASSIS-03: Nautilus Hull passive triggers Steam Pulse on qualifying damage",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.822Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-5f6fcef65d264d9d7266",
+              "file": "unit/flagship_features.test.ts",
+              "line": 593,
+              "column": 7
+            },
+            {
+              "title": "CHASSIS-04: RADAR_AXES constant accurately registers the 6 telemetry parameters",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.824Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-52170d9cf8b69a49acc1",
+              "file": "unit/flagship_features.test.ts",
+              "line": 605,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 7: Veteran Crew Synergy Deck",
+          "file": "unit/flagship_features.test.ts",
+          "line": 620,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CREW-01: Crew deck initializes 4 stationed officers with unique stations and perks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.827Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-74ff0b8c4bc2b7e8e573",
+              "file": "unit/flagship_features.test.ts",
+              "line": 621,
+              "column": 7
+            },
+            {
+              "title": "CREW-02: Dr. Lyra Vance active ability deploys Holographic Decoy Pod",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.831Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-7e8c5e8d78f610ed723b",
+              "file": "unit/flagship_features.test.ts",
+              "line": 638,
+              "column": 7
+            },
+            {
+              "title": "CREW-03: Ren active ability initiates Tactical Stasis Bubble",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.834Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-13836e48063813089dff",
+              "file": "unit/flagship_features.test.ts",
+              "line": 651,
+              "column": 7
+            },
+            {
+              "title": "CREW-04: Officer active ability usage incurs fatigue and cooldown lockout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.837Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-dba24e1389a9db4766a4",
+              "file": "unit/flagship_features.test.ts",
+              "line": 662,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 8: Hadal Bio-Horrors & Epigenetics",
+          "file": "unit/flagship_features.test.ts",
+          "line": 681,
+          "column": 6,
+          "specs": [
+            {
+              "title": "HORROR-01: Epigenetic mutation engine adapts Anti-Kinetic Calcification against kinetic damage",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.839Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-7b79b44aa1c3cc04b81f",
+              "file": "unit/flagship_features.test.ts",
+              "line": 682,
+              "column": 7
+            },
+            {
+              "title": "HORROR-02: Engine shifts to Bioluminescent Chaff when missile damage dominates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.842Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-a0010bd74ee1d2fa55df",
+              "file": "unit/flagship_features.test.ts",
+              "line": 697,
+              "column": 7
+            },
+            {
+              "title": "HORROR-03: Parasite Clinger latching and rapid wiggle shake-off counterplay",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.845Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-7828b25f9ac01483a3a2",
+              "file": "unit/flagship_features.test.ts",
+              "line": 710,
+              "column": 7
+            },
+            {
+              "title": "HORROR-04: Colossus bone shield absorbs frontal impacts and shatters upon depletion",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.848Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-0cbc0d57f2e4dc16e586",
+              "file": "unit/flagship_features.test.ts",
+              "line": 735,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 9: Automaton Shield Phalanx",
+          "file": "unit/flagship_features.test.ts",
+          "line": 756,
+          "column": 6,
+          "specs": [
+            {
+              "title": "PHALANX-01: Adjacent automaton drones within link range establish hexagonal barrier links",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.851Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-e4286ed7757fff45b457",
+              "file": "unit/flagship_features.test.ts",
+              "line": 757,
+              "column": 7
+            },
+            {
+              "title": "PHALANX-02: Linked grid dampens incoming hostile damage by 40%",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.854Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-859f468fe8dd2a73dc4e",
+              "file": "unit/flagship_features.test.ts",
+              "line": 793,
+              "column": 7
+            },
+            {
+              "title": "PHALANX-03: Shield collapse triggers grid overload backlash on linked drones",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.856Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-b361edabde0cb147f630",
+              "file": "unit/flagship_features.test.ts",
+              "line": 828,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 10: Apex Boss Kraken Prime",
+          "file": "unit/flagship_features.test.ts",
+          "line": 878,
+          "column": 6,
+          "specs": [
+            {
+              "title": "KRAKEN-01: Multi-part structure possesses 12,000 Total Effective Health Pool",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.860Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-e970ccea246febe5a60c",
+              "file": "unit/flagship_features.test.ts",
+              "line": 879,
+              "column": 7
+            },
+            {
+              "title": "KRAKEN-02: 8 Tentacles solve 5-segment Inverse Kinematics toward target coordinates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.863Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-2ae710e86b6ea328e52a",
+              "file": "unit/flagship_features.test.ts",
+              "line": 889,
+              "column": 7
+            },
+            {
+              "title": "KRAKEN-03: Maw vortex pull applies inward gravitational displacement on player",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.866Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-18a1e600682048a516b1",
+              "file": "unit/flagship_features.test.ts",
+              "line": 906,
+              "column": 7
+            },
+            {
+              "title": "KRAKEN-04: Exposed gullet weakpoint multiplies incoming damage by 2.5x",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.870Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-1b9afe15c6fe0ce0271a",
+              "file": "unit/flagship_features.test.ts",
+              "line": 924,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 11: Roguelike Endless Mode & Pressure Engine",
+          "file": "unit/flagship_features.test.ts",
+          "line": 940,
+          "column": 6,
+          "specs": [
+            {
+              "title": "DESCENT-01: Start expedition initializes depth at 100m with ambient pressure formula",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.872Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-1f33b9f63c1660463074",
+              "file": "unit/flagship_features.test.ts",
+              "line": 941,
+              "column": 7
+            },
+            {
+              "title": "DESCENT-02: Bathymetric DAG generates interconnected stratums with valid path topology",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [
+                        {
+                          "text": "(node:88041) Warning: `--localstorage-file` was provided without a valid path\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.876Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-97d57dc0e1a21538ecec",
+              "file": "unit/flagship_features.test.ts",
+              "line": 951,
+              "column": 7
+            },
+            {
+              "title": "DESCENT-03: Ballast purge venting reduces hull stress percentage",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.879Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-dc12c671ed423d2dc7eb",
+              "file": "unit/flagship_features.test.ts",
+              "line": 969,
+              "column": 7
+            },
+            {
+              "title": "DESCENT-04: Boon draft hand generates 3 distinct tiered cards for drafting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.882Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-3af0e184ec8079ba0aae",
+              "file": "unit/flagship_features.test.ts",
+              "line": 979,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Flagship Feature 12: Tactical Sonar HUD & Sensory Suite",
+          "file": "unit/flagship_features.test.ts",
+          "line": 991,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SONAR-01: Polar radar sweep line rotates at calibrated angular velocity (1.8 rad/s)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.885Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-d87612fe211d15ceaa0b",
+              "file": "unit/flagship_features.test.ts",
+              "line": 992,
+              "column": 7
+            },
+            {
+              "title": "SONAR-02: Sweep line crossing hostile contact registers Doppler contact echo bloom",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.887Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-ecc142b3755d5faf00ee",
+              "file": "unit/flagship_features.test.ts",
+              "line": 1003,
+              "column": 7
+            },
+            {
+              "title": "SONAR-03: 16-band Hydrophone FFT waterfall spectrogram updates frequency bands",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.890Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-aa62e2caf51425a908ec",
+              "file": "unit/flagship_features.test.ts",
+              "line": 1019,
+              "column": 7
+            },
+            {
+              "title": "SONAR-04: Critical hull stress generates acoustic glass fracture branching lines",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-10T06:34:47.893Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "058173a3041e91a5ac72-55b97196ce8616907ad7",
+              "file": "unit/flagship_features.test.ts",
+              "line": 1030,
+              "column": 7
             }
           ]
         }
@@ -1245,9 +3286,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-03T11:14:31.058Z",
-    "duration": 10323.810000000001,
-    "expected": 31,
+    "startTime": "2026-09-10T06:34:29.791Z",
+    "duration": 18145.958,
+    "expected": 87,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

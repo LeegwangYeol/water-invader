@@ -1,145 +1,155 @@
-# Handoff Report: Milestone M1 Quality & Adversarial Review
+# Handoff Report: Milestone 1 (Pre-Continue Shop Access & Stability) Independent Review & Adversarial Audit
 
-- **Reviewer**: Reviewer 1 (M1 Faction System & Multi-Directional Combat Core)
-- **Date**: 2026-08-26
-- **Milestone**: M1
-- **Verdict**: **APPROVE**
+- **Reviewer**: Reviewer 1 (`teamwork_preview_reviewer_m1_1`)
+- **Worker Under Review**: `teamwork_preview_worker_m1_continue_shop_1`
+- **Milestone**: M1 (Pre-Continue Shop Access & Stability)
+- **Assigned Requirements**: R1 (Pre-Continue Shop Access) & R4 (Stability & Crash Prevention)
+- **Reviewed Files**: `src/components/game-canvas.tsx`, `src/game/GameManager.ts`
+- **Date**: 2026-09-08T01:10:00+09:00
+- **Final Verdict**: **APPROVE**
 
 ---
 
 ## 1. Observation
 
-Direct code inspections and terminal verification yielded the following findings across all Milestone M1 deliverables:
+Direct code inspection and telemetry verification of Milestone 1 changes in `src/components/game-canvas.tsx` and `src/game/GameManager.ts` yielded the following findings:
 
-### 1.1 Faction Architecture & Tagging
-- **`src/game/types.ts` (lines 25–29)**:
-  ```typescript
-  export enum Faction {
-    PLAYER = 'PLAYER',
-    INVADER = 'INVADER',
-    ROGUE = 'ROGUE'
-  }
+### 1.1 Tank Repair Unlock in `ShopUpgradePanel` (`src/components/game-canvas.tsx:51`)
+```tsx
+<button 
+  onClick={onRepairTank}
+  disabled={currency < 75 || hp >= 5}
+  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 rounded font-bold transition-colors"
+>{hp >= 5 ? 'MAX' : '75 💧'}</button>
+```
+- The defect condition `|| hp <= 0` was completely removed.
+- When player enters the Continue Shop (where `hp` is initialized to 3 by `prepareContinue()`), the button is interactive if `currency >= 75 && hp < 5`.
+- At 5 HP, it accurately disables and renders `'MAX'`.
+
+### 1.2 `GameOverModal` -> `handleContinueToShop` -> `prepareContinue()` Flow (`src/components/game-canvas.tsx:857–872, 1334`)
+- In `GameOverModal`:
+  ```tsx
+  onContinue={handleContinueToShop}
   ```
-  The `Faction` enum is cleanly declared with three distinct string values matching `PROJECT.md` interface specifications.
-- **`src/game/Entity.ts` (lines 1, 9)**:
-  `Faction` is imported from `./types` and declared with default `public faction: Faction = Faction.PLAYER;` on the base entity class.
-- **`src/game/Player.ts` (line 33)**:
-  `this.faction = Faction.PLAYER;` is explicitly initialized in the constructor. Fired projectiles in `fire()` (line 155) iterate and assign `b.faction = Faction.PLAYER;`.
-- **`src/game/Helper.ts` (line 30)**:
-  `this.faction = Faction.PLAYER;` is set in the constructor.
-- **`src/game/Enemy.ts` (line 43)**:
-  `this.faction = Faction.INVADER;` is initialized in the constructor. Fired bullets in `fire()` (line 205) inherit `b.faction = this.faction;`.
+- In `handleContinueToShop`:
+  ```tsx
+  const handleContinueToShop = useCallback(() => {
+    if (gameStateRef.current !== GameState.GAME_OVER) return;
+    setIsPreGameShop(false);
+    setIsContinueShop(true);
+    if (gameManagerRef.current) {
+      gameManagerRef.current.prepareContinue();
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+      setScore(gameManagerRef.current.score);
+      setWave(gameManagerRef.current.level);
+      if (gameManagerRef.current.player) {
+        setHp(gameManagerRef.current.player.hp);
+      }
+    }
+    setGameState(GameState.SHOP);
+  }, []);
+  ```
+- In `GameManager.prepareContinue()` (`src/game/GameManager.ts:486–549`):
+  - Ensures `this.player` is revived with `this.player.isDead = false;`.
+  - Sets baseline HP: `this.player.hp = Math.max(3, this.player.hp);`.
+  - Clears input keys (`this.clearKeys()`).
+  - Clears lingering volatile entities (`bullets = []`, `enemies = []`, `helpers = []`, `hazardProjectiles = []`, `solarFlares = []`).
+  - Recycles active particles to `particlePool`.
+  - Resets crisis timers and states.
+  - Enters `GameState.SHOP`, sets `isPaused = true`, cancels `animationFrameId`, and resets `this.animationFrameId = 0`.
+  - Fires callbacks: `onPlayerHpChange`, `updateScoreUI`, `updateUpgradesUI`, and `onStateChange`.
 
-### 1.2 Multi-Faction Projectile Model & Backward Compatibility
-- **`src/game/Bullet.ts` (lines 12–20, 29)**:
-  - Backward compatibility getter and setter:
-    ```typescript
-    public get isPlayerBullet(): boolean {
-      return this.faction === Faction.PLAYER;
-    }
-    public set isPlayerBullet(val: boolean) {
-      this.faction = val ? Faction.PLAYER : Faction.INVADER;
-    }
+### 1.3 `ShopModal` Continue Mode Rendering & Test Attributes (`src/components/game-canvas.tsx:446–501, 1300–1318`)
+- Dedicated continue mode headers:
+  - Title: `isContinue ? t('정비소 / 무기고 (이어하기)', 'ARMORY & WORKSHOP (CONTINUE)') : ...`
+  - Subtitle: `isContinue ? t('전투 재개 전 무기와 체력을 정비하세요!', \`Prepare weapons & restore HP before resuming Wave \${wave || 1}!\`) : ...`
+  - Action button label: `isContinue ? t('전투 재개 (RESUME WAVE)', 'RESUME WAVE') : ...`
+  - Test ID & ID attributes:
+    ```tsx
+    data-testid={isContinue ? "resume-wave-button" : (isPreGame ? "start-mission-button" : "next-wave-button")}
+    id={isContinue ? "resume-wave-button" : (isPreGame ? "start-mission-btn" : "next-wave-button")}
     ```
-  - Constructor sets `this.faction = isPlayer ? Faction.PLAYER : Faction.INVADER;`.
-  - Distinct vector rendering in `draw(ctx)` (lines 42–114):
-    - `Faction.PLAYER`: Bright Cyan (`#38bdf8`) with droplet contour and `#ffffff` core highlight.
-    - `Faction.ROGUE`: Neon Lime (`#84cc16`) outer glow with bright Amber (`#fef08a` / `#f59e0b`) core.
-    - `Faction.INVADER`: Glowing Red/Orange (`#ef4444` / `#f97316`) or Purple (`#a855f7` for interceptable/sniper) with bright core.
-
-### 1.3 Generalized 3-Way Collision Matrix & Crossfire Rewards
-- **`src/game/GameManager.ts` (lines 450–718)**:
-  - **Phase 1.1 (Bullet vs Barricades)**: Destructible and indestructible barricades absorb bullets.
-  - **Phase 1.2 (Bullet vs Bullet)**: Checks `bullet.faction !== otherBullet.faction`. Hostile interceptable bullets neutralize each other, spawning `#a855f7` sparks when player is involved and `#f59e0b` sparks + `soundManager.playCrossfireHit()` during inter-faction crossfire.
-  - **Phase 1.3 (Bullet vs Enemies)**: Filters out friendly fire (`bullet.faction === enemy.faction`). Hostile bullets deduct HP (handling Shielded enemy shield HP gating and Splitter child faction inheritance). On defeat:
-    - Player source (`bullet.faction === Faction.PLAYER`): triggers `handleEnemyKill(enemy)` (standard scoring, combo, stress, currency).
-    - Crossfire source (`bullet.faction !== Faction.PLAYER`): triggers `handleCrossfireKill(enemy, bullet.faction)`.
-  - **Phase 1.4 & 1.5 (Bullet vs Helpers / Player)**: Hostile bullets (`bullet.faction !== Faction.PLAYER`) deal damage to helpers or player (respecting player i-frames and applying suppression/stress).
-  - **Phase 2 (Hostile Entity vs Barricade)**: Divers crash dealing burst damage, standard enemies gnaw.
-  - **Phase 3 (Entity vs Entity Clashes)**: Hostile entity pairs (`enemyA.faction !== enemyB.faction`) apply mutual contact damage, trigger hit flash, spawn crossfire sparks, call `soundManager.playCrossfireHit()`, and reward crossfire kills upon defeat.
-- **`src/game/GameManager.ts` (lines 738–761 `handleCrossfireKill`)**:
-  - Sets combo timer to 2.5s (extended tactical window).
-  - Grants +2.0% ultimate gauge.
-  - Awards 1.5x base score (1500 Boss / 150 Normal) and 1.6x base currency (75 Boss / 8 Normal) scaled by combo multiplier.
-  - Spawns cyan salvage explosion (`#38bdf8`, 12 particles) and plays `soundManager.playCrossfireHit()`.
-
-### 1.4 Smart AI Targeting
-- **`src/game/Helper.ts` (lines 71–76)**:
-  Fighter AI targets lowest hostile target across both Invader and Rogue factions:
-  ```typescript
-  if (!e.isDead && e.faction !== this.faction && e.position.y > lowestY) { ... }
+### 1.4 `handleResumeContinuedWave()` -> `continueGame()` Preservation of Repaired HP (`src/components/game-canvas.tsx:874–889`, `src/game/GameManager.ts:551–626`)
+- In `handleResumeContinuedWave`:
+  ```tsx
+  const handleResumeContinuedWave = useCallback(() => {
+    if (gameStateRef.current !== GameState.SHOP) return;
+    setIsContinueShop(false);
+    setIsPreGameShop(false);
+    if (gameManagerRef.current) {
+      gameManagerRef.current.continueGame();
+      setUpgrades(gameManagerRef.current.getUpgrades());
+      setCurrency(gameManagerRef.current.currency);
+      setScore(gameManagerRef.current.score);
+      setWave(gameManagerRef.current.level);
+      if (gameManagerRef.current.player) {
+        setHp(gameManagerRef.current.player.hp);
+      }
+    }
+    setGameState(GameState.PLAYING);
+  }, []);
   ```
-- **`src/game/Helper.ts` (lines 127–132)**:
-  Tank AI targets and intercepts incoming hostile bullets (`!b.isDead && b.faction !== this.faction`).
-- **`src/game/Enemy.ts` (lines 153–164)**:
-  Evasive maneuver filters incoming hostile bullets (`!b.isDead && b.faction !== this.faction`).
+- In `GameManager.continueGame()`:
+  - Preserves purchased/repaired HP via `this.player.hp = Math.max(3, this.player.hp);` (if player repaired to 4 or 5 HP in the continue shop, that HP is maintained).
+  - Sets `player.invincibilityTimer = 1.5;`.
+  - Spawns fresh barricades (`this.spawnBarricades()`) and current wave enemies (`this.spawnWave()`).
+  - Sets `state = GameState.PLAYING`, `isPaused = false`.
+  - Safely cancels existing animation frame, resets `animationFrameId = 0`, and launches single `requestAnimationFrame(this.loop)`.
 
-### 1.5 Procedural Web Audio Synthesis
-- **`src/game/SoundManager.ts` (lines 248–338)**:
-  - `playThirdFactionWarning()`: 5-step siren pitch pulse (880Hz -> 587Hz -> 880Hz -> 587Hz -> 440Hz).
-  - `playRogueShoot()`: High-tech plasma laser sweep (1200Hz -> 280Hz triangle wave).
-  - `playCrossfireHit()`: Metallic clash / crossfire energy impact (750Hz -> 180Hz square wave).
-  - All methods feature state guards (`!this.enabled || !this.audioCtx || this.isMuted`), volume envelopes, and cleanup (`onended` disconnecting nodes).
-
-### 1.6 Integrity Audit
-- Ripgrep scan across `src/game/` for test-specific hooks, hardcoded outputs, dummy branches, or mocking facades returned 0 matches.
-- All mechanics are driven by genuine state transitions and mathematical calculations.
-
-### 1.7 Verification Results
-1. **TypeScript Typecheck**:
-   `npx tsc --noEmit` -> Exit Code 0 (0 errors).
-2. **Next.js Production Build**:
-   `npm run build` -> Exit Code 0 (Compiled successfully in Next.js 16.3.1 Turbopack, 5/5 static pages generated).
-3. **Playwright 3-Way Battle E2E Suite**:
-   `npx playwright test tests/05_three_way_battle.spec.ts` -> 41 passed (40.8s).
-4. **Full Regression Suite**:
-   `npx playwright test tests/01_ui_and_controls.spec.ts tests/03_game_mechanics.spec.ts tests/04_multiwave_progression.spec.ts tests/05_three_way_battle.spec.ts` -> 57 passed (1.0m, 0 failed).
+### 1.5 Build & Test Telemetry
+- `npx tsc --noEmit`: Exit code 0 (0 type errors).
+- `npm run build`: Exit code 0 (Compiled successfully in Next.js 16.3.1 Turbopack, 5/5 static pages generated).
+- `npx playwright test tests/06_shop_economy_max_upgrades.spec.ts`: 8/8 passed (100%).
+- `npx playwright test tests/adversarial_m1_continue_shop_challenger.spec.ts`: 8/8 passed (100% across all adversarial scenarios C1.1–C1.8).
 
 ---
 
 ## 2. Logic Chain
 
-1. **Premise 1**: The 3-way battlefield requires an explicit, scalable faction representation across all game entities and projectiles.
-   - *Observation*: `Faction` enum (`PLAYER`, `INVADER`, `ROGUE`) is attached to `Entity` and `Bullet`, and inherited by all derived classes (`Player`, `Helper`, `Enemy`).
-2. **Premise 2**: Collision resolution must be generalized such that $A \ne B$ implies hostility and $A = B$ implies friendly-fire immunity.
-   - *Observation*: `GameManager.checkCollisions()` strictly applies `A.faction !== B.faction` checks across bullet-bullet, bullet-enemy, bullet-helper, and enemy-enemy collision phases.
-3. **Premise 3**: Strategic player positioning should be rewarded when hostile factions destroy each other in crossfire.
-   - *Observation*: `handleCrossfireKill()` awards bonus score, currency, ultimate gauge, and extended combo duration compared to standard kills.
-4. **Premise 4**: Backward compatibility with legacy systems and tests must be maintained.
-   - *Observation*: `Bullet.isPlayerBullet` getter/setter preserves existing property contracts without breaking legacy test assertions.
-5. **Premise 5**: Audio effects must use procedural Web Audio synthesis with leak-safe node lifecycles.
-   - *Observation*: All new audio synthesis methods disconnect oscillators and gain nodes in `onended` callbacks.
+1. **Requirement R1 (Pre-Continue Shop Access)** requires that selecting "Continue" from death must not immediately resume combat, but instead grant full access to the Shop to purchase upgrades (including HP restoration) before the wave resumes.
+2. Observation 1.1 confirms that `disabled={currency < 75 || hp >= 5}` removes `hp <= 0`, allowing players revived by `prepareContinue()` to purchase tank repairs up to the maximum 5 HP cap.
+3. Observation 1.2 confirms that clicking `continue-button` invokes `handleContinueToShop`, which invokes `prepareContinue()`. This cleanly decouples engine preparation (purging lingering bullets, enemies, helpers, resetting crisis states, setting player baseline HP to 3) from loop execution, pausing the loop and transitioning to `GameState.SHOP` with `isContinueShop = true`.
+4. Observation 1.3 confirms that `<ShopModal>` in continue mode renders high-contrast bilingual titles and subtitles informing the player of the active wave number, and exposes `data-testid="resume-wave-button"`.
+5. Observation 1.4 confirms that clicking `resume-wave-button` invokes `handleResumeContinuedWave()`, which calls `continueGame()`. Crucially, `continueGame()` computes `player.hp = Math.max(3, player.hp)`, preserving repaired HP (3 -> 4 -> 5 HP), restores barricades, retains wave index, applies 1.5s invincibility frames, and resumes single-threaded rAF loop execution without leaks.
+6. Observation 1.5 confirms type safety, clean Next.js 16 production build compilation, and 100% automated pass rates across both unit progression and adversarial stress suites.
 
 ---
 
 ## 3. Caveats
 
-- **Scope Boundary**: Milestone M1 implements the Faction system, generalized 3-way collision matrix, crossfire scoring, and audio synthesis. Specific Rogue unit archetypes (Rogue Drone, Rogue Stalker, Rogue Mech) and procedural wave incursion directors are planned for downstream Milestones M2 and M3.
+1. **Test Suite Adaptation**: Tests in `tests/continue_vs_restart_on_death.spec.ts` (e.g., R1.2) that were authored under the legacy direct-resumption assumption assert `state === 'PLAYING'` immediately after clicking `continue-button`. Under Requirement R1, clicking `continue-button` enters `GameState.SHOP`. Updating those legacy tests to click `resume-wave-button` is assigned to Milestone 4.
+2. **Logical Dimensions Invariant**: Verified that logical width (600) and height (800) in `GameManager.ts` were strictly preserved without modification, honoring `ORIGINAL_REQUEST.md §R3` and `COLLABORATION.md`.
+3. **Integrity Violations Check**: No hardcoded test conditions, facades, fake logs, or shortcuts were found. All mechanics reflect authentic simulation and React state logic.
 
 ---
 
 ## 4. Conclusion
 
-**Verdict: APPROVE**
+Milestone 1 (Pre-Continue Shop Access & Stability) is thoroughly verified, robust against edge cases and concurrency stress, compliant with all architectural constraints, and **APPROVED**.
 
-The implementation of Milestone M1 (Faction System & Multi-Directional Combat Core) meets all architectural, functional, and adversarial quality standards. The code is modular, fully typed, resilient against edge cases, and 100% verified across 57 E2E tests.
+- **Verdict**: **APPROVE**
+- **Quality Assessment**: High quality, clean state encapsulation, idempotent UI handlers, zero loop leaks.
 
 ---
 
 ## 5. Verification Method
 
-To independently reproduce this verification:
+To independently verify these results:
 
 ```bash
-# 1. TypeScript compilation check
+# 1. Verify TypeScript types
 npx tsc --noEmit
 
-# 2. Next.js production build verification
+# 2. Verify Next.js production build
 npm run build
 
-# 3. Playwright 3-Way Battle E2E Test Suite (41 tests)
-npx playwright test tests/05_three_way_battle.spec.ts
+# 3. Run Shop Economy progression suite
+npx playwright test tests/06_shop_economy_max_upgrades.spec.ts
 
-# 4. Full Regression Test Suites (57 tests)
-npx playwright test tests/01_ui_and_controls.spec.ts tests/03_game_mechanics.spec.ts tests/04_multiwave_progression.spec.ts tests/05_three_way_battle.spec.ts
+# 4. Run Adversarial Continue Shop suite
+npx playwright test tests/adversarial_m1_continue_shop_challenger.spec.ts
 ```
+
+All commands exit with code 0.
+

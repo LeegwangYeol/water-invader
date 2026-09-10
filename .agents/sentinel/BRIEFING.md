@@ -24,11 +24,24 @@ Orchestrate General execution (teamwork_preview_orchestrator) with a very large 
 - Major Expansion Orchestrator (Final Verification & Git Sync): 2c02f2d0-480f-41f3-a2d6-d4cb22bd6367
 - Major Expansion Cron 1 Task ID: e047ca5c-667e-42d8-aa5c-b737e38a8d2a/task-37
 - Major Expansion Cron 2 Task ID: e047ca5c-667e-42d8-aa5c-b737e38a8d2a/task-39
-- Major Expansion Victory Auditor: to be spawned on victory claim
-- Active Orchestrator: 2c02f2d0-480f-41f3-a2d6-d4cb22bd6367
-
-
-
+- Major Expansion Victory Auditor: 75d122bc-457a-4eff-a586-cecd900ee4a8 (VICTORY CONFIRMED)
+- Feature Update Orchestrator (Gen 1): 38e78144-9abc-48a3-8a83-099f912ed48b (terminated: broken pipe)
+- Feature Update Orchestrator (Gen 2): 212442fe-f4b2-4336-98cf-91abe2cc0526
+- Feature Update Cron 1 Task ID: 4513a2fd-f95e-4297-8591-add43f114ad7/task-34
+- Feature Update Cron 2 Task ID: 4513a2fd-f95e-4297-8591-add43f114ad7/task-36
+- Feature Update Victory Auditor: 15b39903-3436-47ff-901b-37af2f2130ad
+- Bug-Hunting & QA Sweep Orchestrator: 17c9b6c2-8167-4601-83eb-a48bc12725ca
+- Bug-Hunting Cron 1 Task ID: 55058f56-77b1-43a1-b325-136457bfaa4b/task-35
+- Bug-Hunting Cron 2 Task ID: 55058f56-77b1-43a1-b325-136457bfaa4b/task-37
+- Creative Brainstorming Orchestrator: 8b89e85c-18d5-413c-8630-b672c8d75bba
+- Creative Cron 1 Task ID: fbcf733f-6996-43a4-8664-15fe8e51b167/task-35
+- Creative Cron 2 Task ID: fbcf733f-6996-43a4-8664-15fe8e51b167/task-37
+- Creative Victory Auditor: e8ae499f-cfa0-45d6-aceb-aeeeacf72d47 (VICTORY CONFIRMED)
+- Flagship Implementation Orchestrator: 825a4037-5803-4947-8e62-404f0b0d33b5
+- Flagship Implementation Cron 1 Task ID: c037a359-674f-4a38-8bdb-f0f0f4a727f7/task-35
+- Flagship Implementation Cron 2 Task ID: c037a359-674f-4a38-8bdb-f0f0f4a727f7/task-37
+- Active Orchestrator: 825a4037-5803-4947-8e62-404f0b0d33b5
+- Flagship Implementation Victory Auditor: to be spawned on victory claim
 
 ## 🔒 Key Constraints
 - No technical decisions — relay only
@@ -58,24 +71,52 @@ Orchestrate General execution (teamwork_preview_orchestrator) with a very large 
   - R2: Massive allied reinforcements with visible health bars and clear role indicators (Medic, Repair Bot, Fighter)
   - R3: Barricade saboteur enemy attacking central defenses; barricades fully restored per wave or repaired by Repair Bots
   - Acceptance Criteria: `npm run build` & `npx playwright test` pass without errors; changes committed and pushed to remote repo
+- Feature Update & Balance Constraints (Current Mission):
+  - Route selected: General (teamwork_preview_orchestrator) per Routing Decision Table
+  - Requested team: A very large team of agents (40+ agents)
+  - R1: Pre-Continue Shop Access (Player accesses Shop to buy upgrades/HP after selecting Continue, before gameplay resumes)
+  - R2: Enemy Piercing Damage Scaling (Common enemy attacks scale aggressively in later waves to simulate armor piercing)
+  - R3: Mobile Viewport Adjustments (CSS Only - bounds extended; CRITICAL: NEVER modify `logicalWidth` or `logicalHeight` in `GameManager.ts` or `Enemy.ts`)
+  - R4: Stability & Crash Prevention Verification (Thoroughly test Continue -> Shop -> Resume flow for no crashes/state loss)
+  - Acceptance Criteria: `npm run build` and `npx playwright test` pass without errors; changes committed and pushed to remote repo
+  - User Global Rules: Update COLLABORATION.md first; ensure user approval or trigger keyword alignment before source modifications; pre-commit build verification rules
+- Bug-Hunting & QA Sweep Constraints (Current Mission):
+  - Route selected: General (teamwork_preview_orchestrator) per Routing Decision Table
+  - Requested team: A very large team of agents (40+ agents)
+  - R1: Deep E2E Testing & Bug Hunting across all game systems (Continue Shop, Piercing scaling, Mobile Viewport CSS, Reinforcements, Crises)
+  - R2: Fix found issues respecting architectural constraints (NEVER modify `logicalWidth` or `logicalHeight` in `GameManager.ts` or `Enemy.ts`)
+  - R3: Automated verification (`npm run build` and `npx playwright test`) and git commit/push
+  - Pre-approved execution: Proceed through implementation without waiting at approval gate
+- Creative Brainstorming & Pitch Document Constraints (Current Mission):
+  - Route selected: General (teamwork_preview_orchestrator) per Routing Decision Table
+  - Requested team: A very large team of agents (40+ agents)
+  - R1: Ideate New Features (NO CODING) across weapons, hazards, meta-progression, enemy factions, interactive events
+  - R2: Compile a Comprehensive Pitch Document (`IDEAS_PITCH.md`) containing at least 10 fully fleshed-out game mechanic/feature ideas
+  - R3: STRICT CONSTRAINT: DO NOT MODIFY SOURCE CODE. No modifications to .ts, .tsx, .css. No code implementation, no test runs, no git push.
+  - Pre-approved execution: Proceed through brainstorming and documentation one-stop without waiting at approval gate.
+- Flagship Features Full Implementation Constraints (Current Mission):
+  - Route selected: General (teamwork_preview_orchestrator) per Routing Decision Table
+  - Requested team: A very large team of agents (40+ agents)
+  - R1: Implement ALL 12 Flagship Features from IDEAS_PITCH.md into game code and UI (Cavitation Torpedo, Prism Laser, Hydraulic Harpoon, Hydrothermal Vents, Biolapse Darkness Cycle, Modular Chassis, Crew Synergy Deck, Mutating Bio-Horrors, Automaton Phalanx, Apex Bosses, Roguelike Endless Mode, Sonar/Hydrophone UI)
+  - R2: Strict Architectural Integrity: preserve logicalWidth (600/720) and logicalHeight (800/960) in GameManager.ts and Enemy.ts; responsive adjustments CSS-only
+  - R3: Automated testing (unit & Playwright E2E) and build verification (npm run build); git commit and push to remote
+  - Pre-approved execution: explicit user approval granted ("전부 구현해야지 새끼야", "Proceed", "승인")
 
 ## User Context
-- **Last user request**: "승인" (Approval granted to execute Major Feature Expansion Milestones M1-M4).
+- **Last user request**: Implement ALL 12 Flagship Features from IDEAS_PITCH.md using a very large team of agents (40+ agents). Preserve logicalWidth/logicalHeight. Run Playwright E2E and build tests, then commit and push to origin/master. Pre-approved ("전부 구현해야지 새끼야", "Proceed", "승인").
 - **Pending clarifications**: none
 - **Delivered results**:
-  - Previous: Late-game update complete and pushed (commit beadbf3).
-  - Previous: Continue vs restart feature implemented and verified.
-  - Current: User approval relayed to active orchestrator (9f82c659-c5c1-4ba9-8751-6f745d19b581); implementation underway.
+  - Creative Brainstorming & Pitch Compilation: VICTORY CONFIRMED by Independent Victory Auditor (`e8ae499f-cfa0-45d6-aceb-aeeeacf72d47`).
+  - Master Pitch Document generated: `/Users/user/src/water-invader/IDEAS_PITCH.md` (1,398 lines, 134 KB, 12 Flagship Features with 84 complete design subsections + 30 Compendium Innovations).
 
 ## Project Status
-- **Phase**: complete (Major Feature Expansion)
+- **Phase**: in progress (Flagship Features Implementation Swarm active)
 
 ## Victory Audit Status
-- **Triggered**: yes
-- **Auditor**: 75d122bc-457a-4eff-a586-cecd900ee4a8
-- **Verdict**: VICTORY CONFIRMED
+- **Triggered**: no
+- **Auditor**: to be spawned upon orchestrator victory claim
+- **Verdict**: pending
 - **Retry count**: 0
-
 
 ## Artifact Index
 - /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md — Verbatim user requests
@@ -83,8 +124,8 @@ Orchestrate General execution (teamwork_preview_orchestrator) with a very large 
 - /Users/user/src/water-invader/.agents/sentinel/handoff.md — Sentinel handoff report
 - /Users/user/src/water-invader/COLLABORATION.md — Claude collaboration guide
 - /Users/user/src/water-invader/PROJECT.md — Global project architecture
-- /Users/user/src/water-invader/.agents/orchestrator_expansion_2/ — Major Expansion Orchestrator working directory
-- /Users/user/src/water-invader/.agents/sentinel_victory_auditor_expansion_2/ — Victory Auditor working directory
+- /Users/user/src/water-invader/IDEAS_PITCH.md — Comprehensive Pitch Document with 12 Flagship Features
+- /Users/user/src/water-invader/.agents/orchestrator_pitch_impl_1/ — Flagship Implementation Project Orchestrator working directory
 
 
 

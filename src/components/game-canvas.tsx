@@ -256,30 +256,71 @@ export const MobileControls = React.memo(function MobileControls({
   onTouchEnd,
 }: MobileControlsProps) {
   return (
-    <div className="w-full flex justify-between p-2 sm:p-4 mt-1 sm:mt-2 gap-2 sm:gap-4 touch-none">
-      <div className="flex flex-col gap-1.5 w-full sm:w-1/2">
-        <div className="flex gap-1.5">
-          <button 
-            className={`flex-1 min-h-[44px] py-2 rounded-xl text-xs sm:text-sm font-bold text-white pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer ${currency >= 50 ? 'bg-green-600 active:bg-green-500' : 'bg-slate-700 opacity-50'}`}
-            onPointerDown={onTouchStart('q')}
-            onPointerUp={onTouchEnd('q')}
-            onPointerLeave={onTouchEnd('q')}
-            onPointerCancel={onTouchEnd('q')}
-          >
-            ALLY(Q)
-          </button>
-          <button 
-            className={`flex-1 min-h-[44px] py-2 rounded-xl text-xs sm:text-sm font-bold text-white pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer ${ultimate >= 100 ? 'bg-yellow-600 active:bg-yellow-500' : 'bg-slate-700 opacity-50'}`}
-            onPointerDown={onTouchStart('e')}
-            onPointerUp={onTouchEnd('e')}
-            onPointerLeave={onTouchEnd('e')}
-            onPointerCancel={onTouchEnd('e')}
-          >
-            ULT({ultimate}%)
-          </button>
-        </div>
+    <div className="w-full flex flex-col p-2 sm:p-4 mt-1 sm:mt-2 gap-2 touch-none">
+      <div className="flex gap-1.5 w-full">
         <button 
-          className="w-full min-h-[48px] py-2.5 bg-blue-600/80 active:bg-blue-400 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)] cursor-pointer"
+          className={`flex-1 min-h-[40px] py-1.5 rounded-lg text-xs font-bold text-white pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer ${currency >= 50 ? 'bg-green-600 active:bg-green-500' : 'bg-slate-700 opacity-50'}`}
+          onPointerDown={onTouchStart('q')}
+          onPointerUp={onTouchEnd('q')}
+          onPointerLeave={onTouchEnd('q')}
+          onPointerCancel={onTouchEnd('q')}
+        >
+          ALLY(Q)
+        </button>
+        <button 
+          className={`flex-1 min-h-[40px] py-1.5 rounded-lg text-xs font-bold text-white pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer ${ultimate >= 100 ? 'bg-yellow-600 active:bg-yellow-500' : 'bg-slate-700 opacity-50'}`}
+          onPointerDown={onTouchStart('e')}
+          onPointerUp={onTouchEnd('e')}
+          onPointerLeave={onTouchEnd('e')}
+          onPointerCancel={onTouchEnd('e')}
+        >
+          ULT({ultimate}%)
+        </button>
+        <button 
+          className="flex-1 min-h-[40px] py-1.5 rounded-lg text-xs font-bold text-white bg-cyan-700 active:bg-cyan-500 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer shadow-[0_0_8px_rgba(6,182,212,0.4)]"
+          onPointerDown={onTouchStart('c')}
+          onPointerUp={onTouchEnd('c')}
+          onPointerLeave={onTouchEnd('c')}
+          onPointerCancel={onTouchEnd('c')}
+          title="Cavitation Torpedo (C)"
+        >
+          TORP(C)
+        </button>
+        <button 
+          className="flex-1 min-h-[40px] py-1.5 rounded-lg text-xs font-bold text-white bg-amber-700 active:bg-amber-500 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer shadow-[0_0_8px_rgba(245,158,11,0.4)]"
+          onPointerDown={onTouchStart('h')}
+          onPointerUp={onTouchEnd('h')}
+          onPointerLeave={onTouchEnd('h')}
+          onPointerCancel={onTouchEnd('h')}
+          title="Hydraulic Harpoon (H)"
+        >
+          HARP(H)
+        </button>
+      </div>
+
+      <div className="flex gap-1.5 w-full items-center">
+        <button 
+          className="flex-1 min-h-[38px] py-1 rounded-lg text-[11px] font-bold text-purple-200 bg-purple-900/80 active:bg-purple-700 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer border border-purple-500/30"
+          onPointerDown={onTouchStart('1')}
+          onPointerUp={onTouchEnd('1')}
+          onPointerLeave={onTouchEnd('1')}
+          onPointerCancel={onTouchEnd('1')}
+          title="Weapons Officer: Ballistic Salvo (1)"
+        >
+          OFFICER 1
+        </button>
+        <button 
+          className="flex-1 min-h-[38px] py-1 rounded-lg text-[11px] font-bold text-purple-200 bg-purple-900/80 active:bg-purple-700 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer border border-purple-500/30"
+          onPointerDown={onTouchStart('2')}
+          onPointerUp={onTouchEnd('2')}
+          onPointerLeave={onTouchEnd('2')}
+          onPointerCancel={onTouchEnd('2')}
+          title="Engineer: Ballast Shield (2)"
+        >
+          OFFICER 2
+        </button>
+        <button 
+          className="flex-[2] min-h-[44px] py-2 bg-blue-600/80 active:bg-blue-400 rounded-xl flex items-center justify-center text-base sm:text-lg font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)] cursor-pointer"
           onPointerDown={onTouchStart(' ')}
           onPointerUp={onTouchEnd(' ')}
           onPointerLeave={onTouchEnd(' ')}
@@ -392,6 +433,23 @@ export const ManualModal = React.memo(function ManualModal({
               <li><strong className="text-lime-400">Rogue Cyber-Faction (Neon Lime):</strong> Autonomous third faction (Drones, Stalkers, Mechs) hostile to BOTH Player and Invaders!</li>
               <li><strong className="text-yellow-300">Crossfire Tactics:</strong> Lure Invaders and Rogues into fighting each other! Opposing factions destroying each other awards bonus score, pure water, and instant ultimate charge!</li>
               <li><strong className="text-amber-400">Dynamic Reinforcements:</strong> Beware of sudden Flank Incursions, Spearhead V-Formations, and Rogue Airdrops signaled by alert sirens!</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="text-xl font-bold text-cyan-400 mb-2">Flagship Submersible Arsenal & Crew Tactics</h3>
+            <ul className="list-disc pl-5 space-y-2 text-slate-300 text-sm sm:text-base">
+              <li><strong className="text-cyan-300">Cavitation Torpedo [C / X]:</strong> Launch hyperbaric cavitation torpedoes. Detonates manually or on impact, creating a massive sub-bass shockwave implosion.</li>
+              <li><strong className="text-emerald-300">Bioluminescent Laser [Continuous Space / Hold Click]:</strong> Sustained coherent beam that incinerates targets and lights up dark abyssal zones.</li>
+              <li><strong className="text-amber-300">Hydraulic Harpoon [H / Shift / Right-Click]:</strong> Heavy steel harpoon tether. Grapple leviathans and drag them into explosive hydrothermal vents!</li>
+              <li><strong className="text-blue-300">Active Sonar Sweep [S]:</strong> Sweeps acoustic pings through pitch-black Biolapse darkness cycles to reveal hidden Hadal horrors.</li>
+              <li><strong className="text-purple-300">Crew Officer Bridge [1, 2, 3, 4]:</strong>
+                <br />• <strong>[1] Weapons Officer:</strong> Ballistic salvo & hyper-cavitation overdrive
+                <br />• <strong>[2] Engineer:</strong> Kinetic ramming shield & emergency ballast purge
+                <br />• <strong>[3] Sonar Tech:</strong> Acoustic pulse burst & high-velocity target lock
+                <br />• <strong>[4] Biologist:</strong> Bioluminescent flare & acid neutralizer
+              </li>
+              <li><strong className="text-rose-400">Deep-Sea Factions & Boss:</strong> Face off against Hadal Bio-Horrors, the Automaton Phalanx, and the multi-phase Kraken Prime leviathan!</li>
             </ul>
           </section>
 
@@ -1099,6 +1157,17 @@ export default function GameCanvas() {
     lastPointerXRef.current = Number.isFinite(e.clientX) ? e.clientX : null;
     isDraggingRef.current = true;
 
+    // Forward pointer down to Flagship systems (Modals, Torpedo right-click, etc.)
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      const scaleX = gameManagerRef.current.logicalWidth / (canvas.clientWidth || rect.width);
+      const scaleY = gameManagerRef.current.logicalHeight / (canvas.clientHeight || rect.height);
+      const logicalX = (e.clientX - rect.left) * scaleX;
+      const logicalY = (e.clientY - rect.top) * scaleY;
+      gameManagerRef.current.handlePointer(logicalX, logicalY, true, e.button);
+    }
+
     // Start auto-firing on canvas touch
     gameManagerRef.current.handleKeyDown(' ');
     updateTargetX(e);
@@ -1125,6 +1194,19 @@ export default function GameCanvas() {
       } catch {
         // Fallback
       }
+
+      if (canvasRef.current && gameManagerRef.current) {
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          const scaleX = gameManagerRef.current.logicalWidth / (canvas.clientWidth || rect.width);
+          const scaleY = gameManagerRef.current.logicalHeight / (canvas.clientHeight || rect.height);
+          const logicalX = (e.clientX - rect.left) * scaleX;
+          const logicalY = (e.clientY - rect.top) * scaleY;
+          gameManagerRef.current.handlePointer(logicalX, logicalY, false, e.button);
+        }
+      }
+
       activePointerIdRef.current = null;
       lastPointerXRef.current = null;
       isDraggingRef.current = false;

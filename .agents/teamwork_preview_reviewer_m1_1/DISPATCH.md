@@ -1,25 +1,35 @@
-## 2026-08-26T10:50:55Z
-You are Reviewer 1 for Milestone M1 (Faction System & Multi-Directional Combat Core).
-Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_reviewer_m1_1
+# Task Assignment: Reviewer 1 for Milestone 1 (Pre-Continue Shop Access)
 
-Authoritative references:
-- Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md
-- Read /Users/a7111/src/water-invader/PROJECT.md
-- Read /Users/a7111/src/water-invader/TEST_READY.md
-- Read /Users/a7111/src/water-invader/.agents/teamwork_preview_worker_m1_2/handoff.md
+- Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m1_1
+- Original Request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Scope Document: /Users/user/src/water-invader/PROJECT.md
+- Collaboration Guide: /Users/user/src/water-invader/COLLABORATION.md
+- Worker M1 Report: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m1_continue_shop_1/handoff.md
 
-Review Tasks:
-1. Examine code changes in `src/game/types.ts`, `src/game/Entity.ts`, `src/game/Bullet.ts`, `src/game/Player.ts`, `src/game/Helper.ts`, `src/game/Enemy.ts`, `src/game/GameManager.ts`, and `src/game/SoundManager.ts`.
-2. Verify correctness and completeness of:
-   - Faction enum definition (`PLAYER`, `INVADER`, `ROGUE`).
-   - Projectile styling by faction and backward compatibility of `isPlayerBullet`.
-   - Generalized 3-way collision matrix in `GameManager.checkCollisions()`.
-   - Crossfire rewards in `handleCrossfireKill()`.
-   - SoundManager methods (`playThirdFactionWarning()`, `playRogueShoot()`, `playCrossfireHit()`).
-3. Run verification commands:
-   - `npx tsc --noEmit`
-   - `npm run build`
-   - `npx playwright test tests/05_three_way_battle.spec.ts`
-4. State your verdict clearly: APPROVE or REQUEST_CHANGES.
+## Objective
+Independently review the Milestone 1 changes in `src/components/game-canvas.tsx` and `src/game/GameManager.ts`:
+1. Verify Tank Repair unlock in `ShopUpgradePanel` (`hp <= 0` removed).
+2. Verify `GameOverModal` -> `handleContinueToShop` -> `prepareContinue()` transition to `GameState.SHOP` with `isContinueShop = true`.
+3. Verify `ShopModal` continue mode rendering, title, subtitle, and `data-testid="resume-wave-button"`.
+4. Verify `handleResumeContinuedWave()` -> `continueGame()` resumption preserving purchased HP (`Math.max(3, player.hp)`).
+5. Verify build and type safety (`npm run build`, `npx tsc --noEmit`).
+6. Deliver verdict: APPROVE or REQUEST_CHANGES in `handoff.md`.
 
-Write your report to `/Users/a7111/src/water-invader/.agents/teamwork_preview_reviewer_m1_1/handoff.md` and send a message.
+## 2026-09-07T15:59:31Z
+You are Reviewer 1 for Milestone 1 (Pre-Continue Shop Access & Stability) on Water Invader.
+Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m1_1
+Identity & Assignment: Read /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m1_1/DISPATCH.md
+Authoritative specifications:
+- /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- /Users/user/src/water-invader/PROJECT.md
+- /Users/user/src/water-invader/COLLABORATION.md
+- Worker M1 Report: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m1_continue_shop_1/handoff.md
+
+Objective:
+Independently review the Milestone 1 changes in `src/components/game-canvas.tsx` and `src/game/GameManager.ts`:
+1. Verify Tank Repair unlock in `ShopUpgradePanel` (`hp <= 0` removed).
+2. Verify `GameOverModal` -> `handleContinueToShop` -> `prepareContinue()` transition to `GameState.SHOP` with `isContinueShop = true`.
+3. Verify `ShopModal` continue mode rendering, title, subtitle, and `data-testid="resume-wave-button"`.
+4. Verify `handleResumeContinuedWave()` -> `continueGame()` resumption preserving purchased HP (`Math.max(3, player.hp)`).
+5. Verify build and type safety (`npm run build`, `npx tsc --noEmit`).
+6. Deliver verdict: APPROVE or REQUEST_CHANGES in `handoff.md`.

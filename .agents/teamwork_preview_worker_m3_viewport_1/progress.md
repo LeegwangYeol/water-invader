@@ -1,0 +1,21 @@
+# Progress Log
+
+- Last visited: 2026-09-08T01:23:00+09:00
+- Status: Completed Milestone 3 (Mobile Viewport CSS Adjustments).
+- Completed:
+  - Inspected codebase and surveyed test constraints.
+  - Modified `src/components/game-canvas.tsx`:
+    - Made TopHUD compact on mobile (score, currency, wave, threat badges, HP dots, mute button, ultimate gauge).
+    - Updated canvas container border to `border-2 sm:border-4` while maintaining `aspect-[3/4]`.
+  - Modified `src/app/page.tsx`:
+    - Adjusted main outer padding to `p-2 sm:p-4`.
+    - Streamlined header (`h1` sizes, `hidden sm:block` for keyboard instructions).
+  - Verified compilation: `npx tsc --noEmit` and `npm run build` passed with 0 errors.
+  - Verified test suites:
+    - `tests/adversarial_challenger_m3_1.spec.ts` (17/17 passed)
+    - `tests/m3_verification.spec.ts` (6/6 passed)
+    - `tests/bughunt_ui_responsive_viewports.spec.ts` (25/25 passed)
+    - `tests/cross_device_touch_verification.spec.ts` & `tests/mobile_controls_and_touch_evasion.spec.ts` (40/40 passed)
+  - Next Steps:
+    - Write handoff.md.
+    - Send completion message to parent orchestrator.

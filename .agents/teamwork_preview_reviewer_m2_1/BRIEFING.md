@@ -1,14 +1,14 @@
-# BRIEFING — 2026-08-31T09:53:30Z
+# BRIEFING — 2026-09-08T01:19:30Z
 
 ## Mission
-Independent Review & Verification of Milestone M1 & M2 for Water Invader (Piecewise exponential enemy scaling, Crisis Director system, Sound synthesis, HUD overlay, Type definitions, and Playwright / TypeScript checks).
+Independent Review & Adversarial Verification of Milestone 2 (Enemy Piercing Damage Scaling) on Water Invader.
 
 ## 🔒 My Identity
 - Archetype: reviewer_critic
 - Roles: reviewer, critic
 - Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_1
-- Original parent: c4cd9241-cfaa-4000-94c3-6c5941894621
-- Milestone: M1_M2_Review
+- Original parent: 38e78144-9abc-48a3-8a83-099f912ed48b
+- Milestone: Milestone 2 (Enemy Piercing Damage Scaling)
 - Instance: 1 of 1
 
 ## 🔒 Key Constraints
@@ -18,44 +18,46 @@ Independent Review & Verification of Milestone M1 & M2 for Water Invader (Piecew
 - Comprehensive verification with evidence (tsc, build, playwright, code analysis)
 
 ## Current Parent
-- Conversation ID: c4cd9241-cfaa-4000-94c3-6c5941894621
-- Updated: 2026-08-31T09:53:30Z
+- Conversation ID: 38e78144-9abc-48a3-8a83-099f912ed48b
+- Updated: 2026-09-08T01:19:30Z
 
 ## Review Scope
 - **Files to review**:
   - `src/game/Enemy.ts`
   - `src/game/GameManager.ts`
-  - `src/game/SoundManager.ts`
-  - `src/components/game-canvas.tsx`
-  - `src/game/types.ts`
-- **Interface contracts**: PROJECT.md, SCOPE.md, ORIGINAL_REQUEST.md, COLLABORATION.md
-- **Review criteria**: Correctness, integrity, quality, safety, stage 1-9 regression freedom, crisis director mechanics, sound/HUD integration, performance.
+  - `tests/enemy_piercing_damage_scaling.spec.ts`
+- **Interface contracts**: PROJECT.md, ORIGINAL_REQUEST.md, COLLABORATION.md, Worker M2 Report
+- **Review criteria**:
+  1. Wave-based piercing attack scaling formulas for common mobs and rogue drones.
+  2. Stage 10 test assertion preservation (`normalDamage === 1`, `droneDamage === 1`).
+  3. Destructible barricade penetration when `piercing > 1` and continuous collision deduplication (`hitEntities.add(barricade)`).
+  4. Stone barricades continue to absorb all bullets unconditionally.
+  5. Build and type safety (`npx tsc --noEmit`, `npm run build`).
+  6. Deliver verdict: APPROVE or REQUEST_CHANGES.
 
 ## Review Checklist
 - **Items reviewed**:
-  - `src/game/Enemy.ts`: Stage 10+ piecewise exponential scaling & elite mechanics [VERIFIED]
-  - `src/game/GameManager.ts`: Crisis Director state machine & 5 crisis archetypes [VERIFIED]
-  - `src/game/SoundManager.ts`: Web Audio procedural sirens and crisis synthesis [VERIFIED]
-  - `src/components/game-canvas.tsx`: React HUD overlays, banners, and badges [VERIFIED]
-  - `src/game/types.ts`: CrisisType, CrisisState, HazardProjectile types [VERIFIED]
-  - `tests/12_crisis_director_e2e.spec.ts` & `tests/unit/crisis_director_m2.test.ts` [VERIFIED]
+  - `src/game/Enemy.ts`: `getPiercingMultiplier()`, `getPiercingCount()`, projectile generation in `fire()` for Invader and Rogue factions [VERIFIED]
+  - `src/game/GameManager.ts`: Barricade collision resolution, piercing decrement, CCD registration (`hitEntities.add(barricade)`), and stone barricade unconditional absorption [VERIFIED]
+  - `tests/enemy_piercing_damage_scaling.spec.ts`: Dedicated 4-test suite [VERIFIED - 4/4 PASS]
+  - `tests/12_extreme_difficulty_and_crises.spec.ts`: Stage 10 baseline regression [VERIFIED - 13/13 PASS]
+  - `tests/adversarial_r2_reviewer_deep_crossfire.spec.ts`: Barricade crossfire regression [VERIFIED - 6/6 PASS]
 - **Verdict**: APPROVE
 - **Unverified claims**: None
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - Piecewise HP scaling formula accuracy across Stage 1-9 vs Stage 10+ [CONFIRMED MONOTONIC & PRESERVED]
-  - Crisis Director wave transition soft-locks during warning and active phases [CONFIRMED ZERO SOFT-LOCKS]
-  - EMP suppression and weapon restore lifecycle [CONFIRMED RESTORED CLEANLY]
-  - Acid storm projectile compaction, player/barricade collision and damage limits [CONFIRMED IN-PLACE COMPACTION]
-  - Procedural Web Audio oscillator lifecycle with no node leakage [CONFIRMED DISCONNECTED ON END]
-  - React HUD rendering latency and responsive 1:1 mobile pointer dragging [CONFIRMED MEMOIZED & BOUNDED]
-- **Vulnerabilities found**: 0 critical, 0 integrity violations
-- **Untested angles**: None within M1/M2 scope
+  - Boundary behavior for common mob damage at Wave 10 vs Wave 19 vs Wave 20 [CONFIRMED: damage 1 at W10-19, damage 2 at W20+]
+  - Piercing tier inflection at Wave 14 vs 15 and Wave 24 vs 25 [CONFIRMED: 1 at <15, 2 at 15-24, 3 at 25+]
+  - Barricade multi-frame bullet overlap [CONFIRMED: `hitEntities.has(barricade)` prevents re-collision while passing through cover]
+  - Stone barricade absorption against max piercing bullets [CONFIRMED: `isDead = true` unconditionally]
+  - Player survival under Wave 20 2-damage fire [CONFIRMED: drops 3 -> 1 HP with 1.0s i-frames, no instant one-shot]
+- **Vulnerabilities found**: 0 in Worker M2 implementation. Found 1 test-only bug in peer agent's `tests/adversarial_challenger_m2_piercing_stress.spec.ts` line 124 where `EnemyType` enum had `BOSS: 4` instead of `BOSS: 2` (4 is DIVER).
+- **Untested angles**: None within M2 scope.
 
 ## Key Decisions Made
-- Confirmed full compliance with all acceptance criteria and system integrity rules.
-- Approved Milestone M1 & M2 implementations.
+- Confirmed full compliance with all acceptance criteria and integrity rules.
+- Issued verdict of APPROVE for Milestone 2.
 
 ## Artifact Index
 - `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_1/handoff.md` — Final review report and verdict.

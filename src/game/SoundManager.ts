@@ -656,6 +656,210 @@ export class SoundManager {
     osc.start(now);
     osc.stop(now + 0.35);
   }
+
+  public playCavitationImplosion() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const now = this.audioCtx.currentTime;
+
+    // Vacuum suction snap (high-to-mid sweep)
+    const snapOsc = this.audioCtx.createOscillator();
+    const snapGain = this.audioCtx.createGain();
+    snapOsc.type = 'sawtooth';
+    snapOsc.frequency.setValueAtTime(820, now);
+    snapOsc.frequency.exponentialRampToValueAtTime(140, now + 0.12);
+    snapGain.gain.setValueAtTime(0.24, now);
+    snapGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+    snapOsc.connect(snapGain);
+    snapGain.connect(this.audioCtx.destination);
+
+    // Hyperbaric rebound sub-bass shockwave (120Hz -> 24Hz)
+    const shockOsc = this.audioCtx.createOscillator();
+    const shockGain = this.audioCtx.createGain();
+    shockOsc.type = 'sawtooth';
+    shockOsc.frequency.setValueAtTime(120, now + 0.08);
+    shockOsc.frequency.exponentialRampToValueAtTime(24, now + 0.65);
+    shockGain.gain.setValueAtTime(0.01, now);
+    shockGain.gain.setValueAtTime(0.32, now + 0.08);
+    shockGain.gain.exponentialRampToValueAtTime(0.005, now + 0.65);
+    shockOsc.connect(shockGain);
+    shockGain.connect(this.audioCtx.destination);
+
+    snapOsc.onended = () => {
+      try {
+        snapOsc.disconnect();
+        snapGain.disconnect();
+      } catch (e) {}
+    };
+    shockOsc.onended = () => {
+      try {
+        shockOsc.disconnect();
+        shockGain.disconnect();
+      } catch (e) {}
+    };
+
+    snapOsc.start(now);
+    snapOsc.stop(now + 0.12);
+    shockOsc.start(now + 0.08);
+    shockOsc.stop(now + 0.65);
+  }
+
+  public playPhoticLaserHum() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const now = this.audioCtx.currentTime;
+
+    const osc1 = this.audioCtx.createOscillator();
+    const osc2 = this.audioCtx.createOscillator();
+    const gain = this.audioCtx.createGain();
+
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(360, now);
+    osc1.frequency.linearRampToValueAtTime(370, now + 0.2);
+
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(720, now);
+    osc2.frequency.linearRampToValueAtTime(740, now + 0.2);
+
+    gain.gain.setValueAtTime(0.14, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(this.audioCtx.destination);
+
+    osc1.onended = () => {
+      try {
+        osc1.disconnect();
+        osc2.disconnect();
+        gain.disconnect();
+      } catch (e) {}
+    };
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 0.22);
+    osc2.stop(now + 0.22);
+  }
+
+  public playLaserHum() {
+    this.playPhoticLaserHum();
+  }
+
+  public playHarpoonWinchCreak() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const now = this.audioCtx.currentTime;
+
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sawtooth';
+    // Rising strain pitch (180Hz -> 480Hz)
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.exponentialRampToValueAtTime(480, now + 0.25);
+
+    gainNode.gain.setValueAtTime(0.12, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start(now);
+    osc.stop(now + 0.25);
+  }
+
+  public playHarpoonWinch() {
+    this.playHarpoonWinchCreak();
+  }
+
+  public playSonarPingSweep() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const now = this.audioCtx.currentTime;
+
+    const osc = this.audioCtx.createOscillator();
+    const gainNode = this.audioCtx.createGain();
+
+    osc.type = 'sine';
+    // High-Q pure acoustic ping with slight downward Doppler decay (1740Hz -> 1680Hz)
+    osc.frequency.setValueAtTime(1740, now);
+    osc.frequency.exponentialRampToValueAtTime(1680, now + 1.2);
+
+    // Initial sharp attack, followed by exponential acoustic reverberation ring
+    gainNode.gain.setValueAtTime(0.26, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.002, now + 1.2);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc.onended = () => {
+      try {
+        osc.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc.start(now);
+    osc.stop(now + 1.2);
+  }
+
+  public playSonarPing() {
+    this.playSonarPingSweep();
+  }
+
+  public playVentEruptionHiss() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const now = this.audioCtx.currentTime;
+
+    // Multi-oscillator turbulent steam hiss
+    const osc1 = this.audioCtx.createOscillator();
+    const osc2 = this.audioCtx.createOscillator();
+    const filter = this.audioCtx.createBiquadFilter();
+    const gainNode = this.audioCtx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(420, now);
+    osc1.frequency.linearRampToValueAtTime(840, now + 0.45);
+
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(630, now);
+    osc2.frequency.linearRampToValueAtTime(1260, now + 0.45);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(900, now);
+    filter.frequency.linearRampToValueAtTime(2100, now + 0.45);
+    filter.Q.setValueAtTime(3.0, now);
+
+    gainNode.gain.setValueAtTime(0.18, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+    osc1.connect(filter);
+    osc2.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(this.audioCtx.destination);
+
+    osc1.onended = () => {
+      try {
+        osc1.disconnect();
+        osc2.disconnect();
+        filter.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 0.5);
+    osc2.stop(now + 0.5);
+  }
+
+  public playVentHiss() {
+    this.playVentEruptionHiss();
+  }
 }
 
 // Singleton instance export

@@ -20,3 +20,24 @@ You are an independent Code Reviewer for Milestone 3 of the Water Invader projec
 4. Run npm run build and npx playwright test to verify build and test results.
 5. Write your findings and clear verdict (APPROVE or REQUEST_CHANGES) in C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m3_1\handoff.md.
 6. Send completion message to parent orchestrator.
+
+## 2026-09-07T16:23:28Z
+You are Reviewer 1 for Milestone 3 (Mobile Viewport CSS Adjustments) on Water Invader.
+Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m3_1
+Identity & Assignment: Read /Users/user/src/water-invader/.agents/teamwork_preview_worker_m3_viewport_1/handoff.md
+Authoritative specifications:
+- /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- /Users/user/src/water-invader/PROJECT.md
+- /Users/user/src/water-invader/COLLABORATION.md
+
+Objective:
+Independently review the Milestone 3 changes in `src/components/game-canvas.tsx` and `src/app/page.tsx`:
+1. CRITICAL CONSTRAINT: Verify that `logicalWidth` (600) and `logicalHeight` (800) in `src/game/GameManager.ts` and `src/game/Enemy.ts` were NOT changed.
+2. CSS INVARIANT: Verify that `aspect-[3/4]` on the canvas wrapper div in `src/components/game-canvas.tsx` is preserved.
+3. Verify that TopHUD height was compacted on mobile (`p-4 p-2 sm:p-4 max-sm:!p-2`, responsive font sizes, HP dots, mute button, and ultimate gauge), preventing early wave spawn occlusion.
+4. Verify page layout in `src/app/page.tsx`: outer padding `p-2 sm:p-4`, header streamlined, desktop keyboard hints hidden on mobile (`hidden sm:block`).
+5. Run build and tests:
+   `npx tsc --noEmit`
+   `npm run build`
+   `npx playwright test tests/m3_verification.spec.ts tests/bughunt_ui_responsive_viewports.spec.ts`
+6. Write your handoff report to `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m3_1/handoff.md` with binary verdict: APPROVE or REQUEST_CHANGES.

@@ -1,62 +1,69 @@
-# BRIEFING ? 2026-08-21T18:57:15+09:00
+# BRIEFING — 2026-09-08T01:24:30+09:00
 
 ## Mission
-Independently review, stress-test, and verify Milestone 3 implementation (F-10, F-11, F-13, F-14) in Water Invader.
+Independently review, stress-test, and verify Milestone 3 (Mobile Viewport CSS Adjustments) in Water Invader.
 
-## ?? My Identity
+## 🔒 My Identity
 - Archetype: reviewer_critic
 - Roles: reviewer, critic
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m3_1
-- Original parent: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Milestone: Milestone 3 (UI/UX, HiDPI Scaling, Audio/Visual FX & Boss Polish)
-- Instance: 1 of 1
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m3_1
+- Original parent: 38e78144-9abc-48a3-8a83-099f912ed48b
+- Milestone: Milestone 3 (Mobile Viewport CSS Adjustments)
+- Instance: 1 of 2
 
-## ?? Key Constraints
-- Review-only ? do NOT modify implementation code
-- Check integrity violations (hardcoded values, facade logic, cheats, mock bypasses)
-- Provide tree structure explanation and verify all 5 modified files
-- Run npm run build and playwright tests
+## 🔒 Key Constraints
+- Review-only — do NOT modify implementation code
+- Check integrity violations (hardcoded test outputs, facade logic, cheats, mock bypasses)
+- Verify logicalWidth (600) and logicalHeight (800) in GameManager.ts and Enemy.ts were NOT changed
+- Verify aspect-[3/4] on canvas wrapper div in src/components/game-canvas.tsx is preserved
+- Verify TopHUD height compacted on mobile (`p-4 p-2 sm:p-4 max-sm:!p-2`, responsive font sizes, HP dots, mute button, ultimate gauge)
+- Verify page layout in src/app/page.tsx: outer padding `p-2 sm:p-4`, header streamlined, desktop keyboard hints hidden on mobile (`hidden sm:block`)
+- Run build and tests: `npx tsc --noEmit`, `npm run build`, `npx playwright test tests/m3_verification.spec.ts tests/bughunt_ui_responsive_viewports.spec.ts`
 
 ## Current Parent
-- Conversation ID: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Updated: 2026-08-21T18:57:15+09:00
+- Conversation ID: 38e78144-9abc-48a3-8a83-099f912ed48b
+- Updated: 2026-09-08T01:24:30+09:00
 
 ## Review Scope
-- **Files reviewed**:
-  - src/components/game-canvas.tsx
-  - src/game/SoundManager.ts
-  - src/game/Enemy.ts
-  - src/game/GameManager.ts
-  - src/game/Player.ts
-- **Features verified**:
-  - F-10: Canvas aspect ratio normalization (spect-[3/4] strictly enforced across all screen widths)
-  - F-11: HiDPI / Retina devicePixelRatio scaling + pointer coordinates mapped via logicalWidth / rect.width
-  - F-13: Top HUD overlay occlusion fix (formation Y:80, boss Y:90, zigzag Y:80)
-  - F-14: Boss HP bar, Hit Flash FX (0.08s), Web Audio FX suite (8 sounds), HUD Mute toggle, osc.onended disconnects
+- **Files to review**:
+  - `src/components/game-canvas.tsx`
+  - `src/app/page.tsx`
+  - `src/game/GameManager.ts`
+  - `src/game/Enemy.ts`
+- **Interface contracts**:
+  - `/Users/user/src/water-invader/PROJECT.md`
+  - `/Users/user/src/water-invader/COLLABORATION.md`
+  - `/Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md`
+- **Review criteria**: correctness, CSS invariant compliance, integrity, visual non-regression, responsive viewport bounds.
 
 ## Review Checklist
-- **Items reviewed**: All 5 files examined line-by-line.
+- **Items reviewed**:
+  - `src/components/game-canvas.tsx`: TopHUD compaction (`p-4 p-2 sm:p-4 max-sm:!p-2`, responsive fonts, HP dots, Mute, Ult gauge), canvas wrapper `aspect-[3/4]` & `border-2 sm:border-4`.
+  - `src/app/page.tsx`: outer padding `p-2 sm:p-4`, header streamlined (`mb-1 sm:mb-6`, `text-2xl sm:text-4xl`), desktop instructions hidden on mobile (`hidden sm:block`).
+  - `src/game/GameManager.ts`: verified `logicalWidth = 600`, `logicalHeight = 800` strictly unchanged.
+  - `src/game/Enemy.ts`: verified constructor dimensions unchanged.
 - **Verdict**: APPROVE
-- **Unverified claims**: None. All features independently verified.
+- **Unverified claims**: None. All claims independently verified.
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - Aspect ratio distortion on widescreen/desktop: PASS (strictly 3:4 ratio maintained).
-  - Canvas resolution blur & DPR coordinate desync: PASS (backing buffer matches DPR, pointer scales accurately).
-  - Top HUD card occlusion at wave spawn: PASS (spawn points lowered to Y:80/90).
-  - Boss HP bar rendering and HP math: PASS (accurate ratio clamp and visual styling).
-  - Hit flash visual timing & timer update: PASS (0.08s flash rendered in #ffffff with white glow).
-  - Web Audio memory leak and mute behavior: PASS (leak-free node disconnects and clean mute toggle).
-- **Vulnerabilities found**: 0.
+  - CSS aspect ratio distortion: Tested across 9 viewports (from 320px to 3440px) -> all maintain [3/4] ratio (0.747 ratio, within 0.70-0.80 tolerance).
+  - Horizontal overflow: Tested across MENU, PLAYING, HOW TO PLAY, ARMORY SHOP, and GAME OVER states -> 0 horizontal overflow offenders.
+  - Spawn occlusion: TopHUD height reduced to ~38px on mobile; central corridor widened by >110px.
+  - Touch control hit area clearance: Mobile controls strictly below canvas bottom (`gapFromCanvasBottom = 4px`), no player ship occlusion.
+  - Integrity violation checks: Zero hardcoded results, dummy facades, or test bypasses found.
+- **Vulnerabilities found**: None.
 - **Untested angles**: None.
 
 ## Key Decisions Made
-- Confirmed full build correctness (
-pm run build).
-- Confirmed 100% test pass rate across all 61 tests (M3 verification, core regressions, and adversarial suites).
-- Approved Milestone 3 work.
+- Executed `npx tsc --noEmit` -> 0 errors.
+- Executed `npm run build` -> Next.js production build succeeded in 1.7s with 0 errors.
+- Executed 88 Playwright tests across 4 suites -> 100% pass rate.
+- Issued binary verdict: APPROVE.
 
 ## Artifact Index
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m3_1\BRIEFING.md ? Agent working memory
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m3_1\progress.md ? Liveness heartbeat
-- C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m3_1\handoff.md ? Final review report
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m3_1/BRIEFING.md` — Persistent working memory
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m3_1/progress.md` — Liveness heartbeat
+- `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m3_1/handoff.md` — Final review report
+
+

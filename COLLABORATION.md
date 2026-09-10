@@ -1,55 +1,52 @@
 # Claude Collaboration Guide: Water Invader
 
-## Current Mission: Comprehensive Bug-Hunting & QA Sweep (40+ Agent Swarm)
+## Current Mission: Full Implementation of 12 Flagship Features (40+ Agent Swarm)
 
 ### Objective & Scope
-Deploy a massive swarm of agents to perform an exhaustive bug hunt, E2E testing, and quality assurance sweep across the Next.js "Water Invader" codebase, with special focus on recently added features:
-1. **Continue Shop & Pre-Continue Flow** (state persistence, crash prevention, HP restoration)
-2. **Enemy Piercing Damage Scaling** (late-game mob scaling, boundary checks, math stability)
-3. **Mobile Viewport CSS** (responsive rendering, no clipping, aspect ratio preservation)
-4. **Allied Reinforcements & Barricade Saboteurs** (AI pathing, role indicators, health bars)
-5. **End-Game Crises (12 Types)** (event triggers, hazard collision, visual clarity)
+Deploy a massive swarm of agents (40+ agents) to implement ALL 12 Flagship Features detailed in `IDEAS_PITCH.md` into the Next.js "Water Invader" codebase:
+1. **Cavitation Torpedo** (Weapon)
+2. **Prism Laser** (Weapon)
+3. **Hydraulic Harpoon** (Weapon)
+4. **Hydrothermal Vents** (Hazard)
+5. **Biolapse Darkness Cycle** (Hazard)
+6. **Modular Submersible Chassis** (Player Progression)
+7. **Veteran Crew Synergy Deck** (Player Progression)
+8. **Mutating Bio-Horror Faction** (Enemy Faction)
+9. **Automaton Shield Phalanx** (Enemy Faction)
+10. **Apex Bosses** (Boss Encounters)
+11. **Roguelike Endless Mode** (Game Mode)
+12. **Sonar/Hydrophone UI** (UI/UX & Audio)
 
 ### Key Constraints & Architecture Rules
-- **CRITICAL ARCHITECTURAL CONSTRAINT**: NEVER modify `logicalWidth` or `logicalHeight` in `GameManager.ts` or `Enemy.ts`. All responsive adjustments must be handled via CSS.
-- **Pre-Approved Execution**: Explicit user pre-approval granted ("허락 구하지말고 알아서 ㄱ" / "승인"). Proceed through exploration, fixes, testing, and git push without blocking on confirmation.
-- **Pre-Commit Verification**: Run `npm run build` and `npx tsc --noEmit` before committing and pushing.
-- **Automated Verification**: Run `npx playwright test` to verify zero regressions and add tests for fixed bugs.
+- **Core Game Dimensions**: `logicalWidth` (600/720) and `logicalHeight` (800/960) in `GameManager.ts` and `Enemy.ts` MUST NOT be changed. All responsive adjustments must be strictly CSS-based.
+- **Pre-Approved Execution**: User explicitly authorized full implementation ("전부 구현해야지...", "승인", "Proceed"). Proceed one-stop without blocking at approval gates.
+- **Quality & Pre-Commit Verification**: Run `npm run build` and `npx playwright test` to verify zero regression. Code must compile without errors before commit and push.
+- **Git Sync**: Upon unanimous verification of all systems, commit changes and push to `origin/master`.
 
 ---
 
 ### Execution Milestones
-- **Phase 0: Multi-Specialist Bug Hunting Swarm**:
-  - Deploy parallel explorer teams across UI/Mobile Viewport, Combat & Physics, Crisis & Event Logic, State Persistence & Continue Shop, and Performance & Memory.
-- **Phase 1: Bug Analysis & Fix Design**:
-  - Triage findings, isolate root causes, and craft targeted, non-breaking fixes respecting architectural constraints.
-- **Phase 2: Fix Implementation & Adversarial Review**:
-  - Implement fixes with accompanying unit/E2E regression tests; submit to multi-round adversarial review.
-- **Phase 3: Comprehensive E2E Verification & Git Push**:
-  - Run full test suite (`npx playwright test`) and production build (`npm run build`). Commit and push to repository.
+- **Phase 0: Deep Codebase & Pitch Architecture Survey**:
+  - Analyze existing game systems (`GameManager.ts`, `Player.ts`, `Enemy.ts`, `Weapon.ts`, UI overlay components).
+  - Map modular integration points for each of the 12 features.
+- **Phase 1: Subsystem Implementation Swarm (Parallel Modules)**:
+  - Stream A: Advanced Arsenal (Cavitation Torpedo, Prism Laser, Hydraulic Harpoon).
+  - Stream B: Environmental Dynamics (Hydrothermal Vents, Biolapse Darkness Cycle).
+  - Stream C: Fleet Customization (Modular Chassis, Crew Synergy Deck).
+  - Stream D: Adversary Overhaul (Mutating Bio-Horrors, Automaton Phalanx, Apex Bosses).
+  - Stream E: Modes & Sensory Feedback (Roguelike Endless Mode, Sonar/Hydrophone UI).
+- **Phase 2: Game Loop Integration & Balance**:
+  - Integrate all systems into `GameManager.ts` and UI overlays without breaking coordinate math or loop timing.
+- **Phase 3: Automated Testing & Adversarial Review**:
+  - Unit tests and Playwright E2E suites verifying all 12 systems.
+  - Pre-commit build check (`npm run build`).
+- **Phase 4: Independent Victory Audit & Git Deployment**:
+  - Independent verification before commit and push to remote.
 
 ---
 
 ### Current Status
-- Orchestrator: `orchestrator_bughunt_2`
-- User Approval: Pre-approved ("승인")
+- Sentinel: Active
+- Active Orchestrator: `orchestrator_pitch_impl_1` (spawning)
+- User Approval: Pre-approved ("전부 구현해야지 새끼야", "승인", "Proceed")
 - Route: General (`teamwork_preview_orchestrator`)
-
-
----
-
-## Feature Delivered: Continue vs Restart Option on Death (SWE Light)
-
-### Summary of Implementation
-- **Game Engine (`src/game/GameManager.ts`)**:
-  - `continueGame()`: Revives the player at the current wave preserving score, currency, and upgrades. Resets player death flag, restores player HP to at least 3, grants 1.5s invincibility frames, cleans up active volatile hazards/bullets, clears temporary helper drones, and respawns wave barricades and hostiles for the current wave without loop leaks.
-  - `restartFromBeginning()`: Fully resets the game state to Wave 1, score 0, currency 150, and base upgrades via `this.init({ resetScoreAndCash: true, preserveUpgrades: false })`, then launches `this.startGame()`.
-- **UI (`src/components/game-canvas.tsx`)**:
-  - `GameOverModal` updated with two distinct interactive options:
-    - "Continue" (`data-testid="continue-button"`, Korean: `이어하기`)
-    - "Restart from Beginning" (`data-testid="restart-button"`, Korean: `처음부터 시작`)
-  - Accessible high-contrast color scheme (`bg-emerald-600` vs `bg-red-600`) and responsive mobile layout (`flex-col sm:flex-row`).
-- **Automated Verification**:
-  - Authored comprehensive E2E suite `tests/continue_vs_restart_on_death.spec.ts` (14/14 tests pass).
-  - Verified regression and adversarial suites across 106 tests with 0 failures.
-  - Independent post-victory audit confirmed PASS.

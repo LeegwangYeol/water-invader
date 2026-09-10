@@ -1,24 +1,20 @@
-## 2026-08-31T09:46:39Z
+## 2026-09-08T01:16:11Z
 
-You are Challenger 1 for the Next.js "Water Invader" project.
+# Task Assignment: Challenger 1 for Milestone 2 (Enemy Piercing Damage Scaling)
 
-Your Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_1
+- Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_1
+- Original Request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Scope Document: /Users/user/src/water-invader/PROJECT.md
+- Collaboration Guide: /Users/user/src/water-invader/COLLABORATION.md
+- Worker M2 Report: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m2_piercing_1/handoff.md
 
-Task Assignment: Adversarial Stress Testing of Milestone M1 & M2
-Objective:
-- Write and execute adversarial test harnesses to rigorously challenge the newly implemented Stage 10+ difficulty scaling and CrisisDirector mechanics.
-- Tests to create and run:
-  1. Rapid sequential crisis triggers: Ensure triggering multiple crises in succession does not corrupt state or cause runaway intervals.
-  2. EMP weapon suppression test: Empirically verify player firing is blocked during EMP and automatically restored after duration expires.
-  3. Toxic Acid Storm hazard collision & damage: Verify player HP is depleted when colliding with falling hazard projectiles and that hazard projectiles are cleaned up when off-screen.
-  4. Wave completion verification: Verify wave cleanly advances to SHOP state when all crisis hostiles are cleared.
-  5. Boss Escort formation test: Verify Stage 10 Boss spawns with 4-8 escort minions and that Wave 5 Boss remains solitary.
-
-Run all tests via `npx playwright test` and verify code compilation (`npx tsc --noEmit`).
-
-MANDATORY REFERENCES:
-- Verbatim request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
-- Scope & roadmap: /Users/user/src/water-invader/PROJECT.md
-- Collaboration guide: /Users/user/src/water-invader/COLLABORATION.md
-
-Write your findings and test results in `/Users/user/src/water-invader/.agents/teamwork_preview_challenger_m2_1/handoff.md` with a clear verdict (APPROVE or REQUEST_CHANGES) and report back via send_message.
+## Objective
+Empirically challenge Milestone 2 enemy piercing damage scaling:
+1. Validate damage formula across waves 1 to 30:
+   - Waves 1–19: normal mob damage = 1.
+   - Waves 20+: normal mob damage = 2.
+   - Piercing = 1 for W < 15, Piercing = 2 for 15 <= W < 25, Piercing = 3 for W >= 25.
+2. Validate barricade interaction:
+   - Destructible barricade loses damage and lets piercing bullet punch through.
+   - Stone barricade stops bullet immediately regardless of piercing count.
+3. Run or write empirical Playwright tests and report verdict (CONFIRM / REJECT) in `handoff.md`.

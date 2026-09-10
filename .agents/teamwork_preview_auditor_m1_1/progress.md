@@ -1,12 +1,14 @@
-# Audit Progress — Milestone M1
+# Audit Progress — Milestone 1 (Pre-Continue Shop Access & Stability)
 
-Last visited: 2026-08-26T10:55:55Z
+Last visited: 2026-09-08T01:12:15+09:00
 
 - [x] Initialized workspace and briefing
-- [x] Read authoritative reference files (`ORIGINAL_REQUEST.md`, `PROJECT.md`, `TEST_READY.md`)
-- [x] Phase 1: Source code forensic inspection (facades, hardcoding, dummy returns) — Verified CLEAN
-- [x] Phase 2: Behavioral & mathematical verification (matrix, intercept, crossfire rewards) — Verified CLEAN
-- [x] Phase 3: SoundManager procedural audio analysis (Oscillators, GainNodes, Cleanup) — Verified CLEAN
-- [x] Phase 4: Independent build and TypeScript type-checking (`npx tsc --noEmit` & `npm run build` PASS)
-- [x] Phase 5: Test verification (`npx playwright test tests/05_three_way_battle.spec.ts` -> 41/41 PASSED)
-- [x] Write handoff report and notify parent
+- [x] Read authoritative reference files (`ORIGINAL_REQUEST.md`, `PROJECT.md`, `COLLABORATION.md`, Worker handoff)
+- [x] Phase 1: Git diff inspection on `src/components/game-canvas.tsx` and `src/game/GameManager.ts`
+- [x] Phase 2: Source code forensic analysis (hardcoded test outputs, facades, fake states)
+- [x] Phase 3: Behavioral logic verification (`handleContinueToShop`, `ShopModal`, `ShopUpgradePanel`, `prepareContinue()`, `continueGame()`)
+- [x] Phase 4: Independent build & typecheck (`npx tsc --noEmit` and `npm run build`)
+- [x] Phase 5: Independent test execution & telemetry verification
+- [x] Phase 6: Adversarial stress testing & edge case mining
+- [x] Phase 7: Write handoff report and notify parent orchestrator
+

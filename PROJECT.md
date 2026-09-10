@@ -1,86 +1,104 @@
-# Project: Water Invader - Feature Expansion (Dynamic Backgrounds, Allied Reinforcements & Barricade Saboteurs)
+# Project: Water Invader — 12 Flagship Features (Abyssal Odyssey Major Expansion)
 
-## Architecture
-Water Invader is a Next.js / TypeScript arcade space shooter featuring continuous collision detection, dynamic event crises, allied dreadnoughts, homing missiles, and an interactive shop. This major feature expansion introduces three core systems:
-1. **Dynamic Stage Backgrounds & Threat Signifiers (R1)**:
-   - 5-Tier Biome Progression cycling every 10 stages (`Math.floor((level - 1) / 10)`): Surface Aquifer, Abyssal Trench, Bioluminescent Reef, Toxic Seabed, and Cosmic Void.
-   - Threat Hierarchy (`NONE`, `ELITE`, `BOSS`, `CRISIS`) dynamically driving smooth ($0.4\text{s}$ lerp) radial perimeter threat vignettes (crimson for Bosses, magenta/amber for Elites, theme-tinted for Crises) rendered in Layer 1 before screen shake, maintaining zero GC allocation and $\ge 7:1$ projectile contrast.
-2. **Allied Reinforcements with Roles & UI (R2)**:
-   - Squadron warp-in events (Fighters, Medics, Repair Bots) triggered on wave milestones (every 5 waves) and emergency survival thresholds.
-   - Distinct role behaviors: Fighters target Saboteurs and diving enemies; Medics escort the player and heal $+1\text{ HP}$ (every $3.5\text{s}$); Repair Bots prioritize damaged barricades (+8 HP/s).
-   - Canvas overhead UI ($38\times 5\text{px}$ dynamic health bars, role badges $[⚔️\text{ FIGHTER}]$, $[💚\text{ MEDIC}]$, $[🔧\text{ REPAIR BOT}]$) and React DOM Squadron Status HUD + Arrival Banner.
-3. **Barricade Saboteurs & Repair Mechanics (R3)**:
-   - New enemy `BARRICADE_SABOTEUR` (`EnemyType.SABOTEUR = 13`) targeting central barricades (index 1 & 2), homing in, latching, and dealing $12.0\text{ DPS}$ acid/drill gnaw damage with animated rotary saw teeth.
-   - Dual Counter-Mechanics: Automatic full barricade restoration on wave transition (`startNextWave()`), and active Repair Bot nanite welding with synchronized voxel block reconstruction in `Barricade.update()`.
-   - Dedicated counter-weapon synergy: Player homing missiles explicitly ignore barricades to destroy Saboteurs latched onto cover.
+## Architecture Overview
 
----
+Water Invader is a Next.js 16 / React 19 / TypeScript 5 arcade space shooter built on an HTML5 2D Canvas engine and procedural Web Audio API synthesis. The **Abyssal Odyssey** major expansion integrates 12 Flagship Features into the core engine via a decoupled, zero-GC modular architecture:
 
-## Feature Inventory
-| # | Feature | Description | Milestone | Source | Status |
-|---|---------|-------------|-----------|--------|--------|
-| 1 | 5-Tier Biome Background Cycle | Surface Aquifer, Abyssal Trench, Bioluminescent Reef, Toxic Seabed, Cosmic Void cycling every 10 stages | M1 | ORIGINAL_REQUEST §R1 | PLANNED |
-| 2 | Boss Threat Signifier Vignette | Radial crimson danger vignette and particle acceleration during Boss encounters | M1 | ORIGINAL_REQUEST §R1 | PLANNED |
-| 3 | Elite Threat Signifier Vignette | Menacing magenta/amber danger vignette when Snipers or Rogue Elites are active | M1 | ORIGINAL_REQUEST §R1 | PLANNED |
-| 4 | Threat Interpolation & Zero-GC Pipeline | 0.4s smooth threatIntensity lerp in Layer 1, 60 FPS zero-allocation | M1 | ORIGINAL_REQUEST §R1 | PLANNED |
-| 5 | Role Hierarchy & Invariants | Preserve `FIGHTER = 0`, `REPAIRER = 1`, `TANK = 2`; introduce `MEDIC = 3` | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
-| 6 | Fighter AI & Targeting | Prioritizes Saboteurs and descending invaders; twin plasma bolts | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
-| 7 | Medic Escort & Healing AI | Escorts player ship, heals player HP (+1 HP every 3.5s) and mitigates suppression | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
-| 8 | Repair Bot Barricade Priority | Prioritizes damaged central barricades, beams repair rays (+8 HP/s) | M2, M3 | ORIGINAL_REQUEST §R2, §R3 | PLANNED |
-| 9 | Overhead Health Bar & Role Badges | 38x5px health bar + [⚔️ FIGHTER], [💚 MEDIC], [🔧 REPAIR BOT] high-contrast badges | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
-| 10 | Squadron HUD & Arrival Banner | On-screen squadron counter and massive reinforcement arrival toast banner | M2 | ORIGINAL_REQUEST §R2 | PLANNED |
-| 11 | Barricade Saboteur Enemy (`SABOTEUR`) | Dedicated siege unit targeting central barricades, 12 DPS acid/drill gnawing | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
-| 12 | Procedural Rotary Saw Vector Art | Procedural vector art for Saboteur with rotating saw blades and acid spark FX | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
-| 13 | Wave Barricade Auto-Restoration | `restoreBarricades()` in `startNextWave()` fully restoring HP and 24 voxel blocks | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
-| 14 | Voxel Reconstruction Sync | Reverse voxel block rebuilding loop in `Barricade.update()` as HP increases | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
-| 15 | Homing Missile Anti-Saboteur Synergy | Homing missiles bypass barricade obstruction to eliminate Saboteurs | M3 | ORIGINAL_REQUEST §R3 | PLANNED |
-| 16 | Playwright E2E Dynamic Background Suite | 7-test suite for biomes, threat shifts, continue/restart persistence, contrast | M4 | ORIGINAL_REQUEST §R1 | PLANNED |
-| 17 | Playwright E2E Allied Reinforcements Suite | Unit, combat, healing, and UI tests for Fighters, Medics, Repair Bots | M4 | ORIGINAL_REQUEST §R2 | PLANNED |
-| 18 | Playwright E2E Barricade Saboteur Suite | Targeting, gnawing damage, active bot repair, and wave restoration tests | M4 | ORIGINAL_REQUEST §R3 | PLANNED |
-| 19 | Full Regression & Pre-Commit Git Sync | `npm run build`, `npx tsc --noEmit`, full Playwright suite, commit & push | M4 | ORIGINAL_REQUEST AC | PLANNED |
+```
+src/game/
+├── GameManager.ts             # Core loop, fixed-step physics (60 FPS), 3-layer rendering pipeline
+├── Player.ts                  # Submarine entity, kinematics, hardpoints, chassis stats delegate
+├── Enemy.ts                   # 14 base archetypes (0..13) + 8 flagship types (14..21)
+├── Bullet.ts                  # Projectile base, CCD swept tests, HomingMissile subclass
+├── Barricade.ts               # Voxel grid cover (4 slots, 24 voxels each, repair/damage sync)
+├── Helper.ts                  # Allied squadron units (Fighter, Repair Bot, Tank, Medic)
+├── SoundManager.ts            # 100% procedural Web Audio API synthesis (zero external audio files)
+├── crisis/                    # 12 Stellaris-style Grand Strategy End-Game Crises (5,200 EHP invariant)
+└── flagship/                  # 12 Flagship Features Modular Subsystems & Coordinator
+    ├── types.ts               # Unified contracts, enums, DTOs, and lifecycle interfaces
+    ├── FlagshipManager.ts     # Master coordinator orchestrating all 12 systems & safe fallbacks
+    ├── index.ts               # Barrel export & public facade
+    ├── weapons/               # F-01 Cavitation Torpedo, F-02 Prism Laser, F-03 Hydraulic Harpoon
+    ├── environment/           # F-04 Hydrothermal Vents, F-05 Biolapse Darkness Cycle
+    ├── progression/           # F-06 Modular Submersible Chassis, F-07 Veteran Crew Synergy Deck
+    ├── factions/              # F-08 Hadal Bio-Horrors, F-09 Automaton Phalanx, F-10 Apex Bosses
+    ├── modes/                 # F-11 Roguelike Endless Descent Mode & Bathymetric DAG
+    └── sensory/               # F-12 Tactical Sonar HUD, Waterfall Spectrogram, Hull Stress FX
+```
+
+### Strict Architectural Invariants
+1. **Inviolable Coordinate Grid**: `logicalWidth = 600` and `logicalHeight = 800` in `GameManager.ts` and `Enemy.ts` MUST NOT be changed. All entity positions, physics calculations, and hitboxes operate strictly within this $600 \times 800$ logical coordinate space.
+2. **Strictly CSS-Based Responsiveness**: Mobile and viewport scaling is handled exclusively via CSS (Tailwind `aspect-[3/4]`, `max-w-[600px]`, and DPR buffer scaling `canvas.width = 600 * dpr`), keeping logic coordinates 100% decoupled from DOM presentation.
+3. **Deterministic Timestep**: Fixed simulation accumulator $\Delta t = 1/60\text{ s}$ ($0.01667\text{ s}$) ensures deterministic physics, spring tensions, and thermal decay.
+4. **Zero-GC Hot Loop Guarantee**: High-frequency entities, shockwaves, sonar wavefronts, and particle bursts reuse pre-allocated object pools (`particlePool`, static buffers) to avoid garbage collection frame drops.
+5. **Layered Render Pipeline**:
+   - **Layer 1 (Background)**: Drawn without screen shake. Biomes, hydrothermal vents, ocean currents, threat vignettes.
+   - **Layer 2 (World Entities)**: Drawn with screen shake. Barricades, player, allies, enemies, torpedoes, lasers, harpoons, spore clouds, boss bodies.
+   - **Layer 3 (Foreground / HUD)**: Drawn without screen shake. Biolapse darkness composite mask, tactical sonar radar, hydrophone waterfall, glass fracture lines, crew ability badges, and boss HP overlays.
 
 ---
 
-## Milestones
-| # | Name | Scope | Dependencies | Status |
-|---|------|-------|-------------|--------|
-| 0 | M0: Architecture Survey & Discovery | Codebase mapping, render pipeline analysis, gap identification | None | DONE |
-| 1 | M1: Dynamic Backgrounds & Threat Signifiers | `src/game/GameManager.ts`, `src/game/Enemy.ts`, `src/game/types.ts` | M0 | DONE |
-| 2 | M2: Allied Reinforcements with Roles & UI | `src/game/Helper.ts`, `src/game/GameManager.ts`, `src/components/game-canvas.tsx` | M0 | DONE |
-| 3 | M3: Barricade Saboteurs & Repair Mechanics | `src/game/Barricade.ts`, `src/game/Enemy.ts`, `src/game/GameManager.ts` | M0, M2 | IN_PROGRESS |
-| 4 | M4: Dual-Track Verification, E2E Suites & Git Sync | `tests/`, Playwright runner, pre-commit build & push | M1, M2, M3 | PLANNED |
+## 12 Flagship Features Inventory
+
+| # | Feature | Category | Description | Key Interface / File | Status |
+|---|---------|----------|-------------|----------------------|--------|
+| **F-01** | Cavitation Torpedo | Weapons | Supercavitating acoustic torpedo with inert arming window (100px), double-tap remote detonation, negative pressure vacuum suction well ($r=140\text{px}$), and hyperbaric blast overpressure ($r=150\text{px}$, 120–300 dmg). | `ICavitationTorpedoSystem`<br>`flagship/weapons/CavitationTorpedo.ts` | FOUNDATION READY |
+| **F-02** | Prism Laser & Refraction | Weapons | Continuous Photic Lance raycast with thermodynamic heat gauge (0–100 HU), supercharged sweet spot (+25% DPS at 80–99 HU), 2.2s thermal lockout, and deployable quartz crystal prisms fanning beams into 3-way/5-way arrays. | `IPrismLaserSystem`<br>`flagship/weapons/BioluminescentLaser.ts` | FOUNDATION READY |
+| **F-03** | Hydraulic Harpoon & Slingshot | Weapons | Barbed pneumatic grapple penetrating chaff to impale elites, constrained by a damped harmonic spring ($k_s=95\text{ N/px}$), hydraulic winch reel ($240\text{px/s}$), and kinetic slingshot catapult ($+720\text{px/s}$, 180 dmg). | `IHydraulicHarpoon`<br>`flagship/weapons/HydraulicHarpoon.ts` | FOUNDATION READY |
+| **F-04** | Hydrothermal Vents & Currents | Environment | Benthic black smoker chimneys ($380^\circ\text{C}$) venting buoyant updrafts ($-360\text{px/s}$), superheating player shots into Steam Lances (+35% dmg), $+250\%$ laser cooling in halo, and stratified shear ocean currents ($\pm 75\text{px/s}$). | `IHydrothermalVentManager`<br>`flagship/environment/HydrothermalVent.ts` | FOUNDATION READY |
+| **F-05** | Biolapse Darkness Cycle | Environment | 4-phase day/night cycle (60s Diurnal $\to$ 5s Twilight $\to$ 25s Midnight $\to$ 5s Dawn). Total blackness requires directional prow headlight cone ($440\text{px}$) with kinetic dynamo battery and active sonar ping wireframe reveals. | `IBiolapseManager`<br>`flagship/environment/BiolapseDarknessCycle.ts` | FOUNDATION READY |
+| **F-06** | Modular Submersible Chassis | Progression | 5 specialized hull archetypes (Nautilus Dreadnought, Stingray Interceptor, Kraken Bioship, Leviathan Harvester, Ghost Stealth Sub) featuring 6-axis stat radars, unique hitboxes, base HP curves, and signature combat passives. | `IChassisManager`<br>`flagship/progression/ModularChassis.ts` | FOUNDATION READY |
+| **F-07** | Veteran Crew Synergy Deck | Progression | 4 bridge officers (Ingrid Vane, Jax Callahan, Ren Thorne, Dr. Lyra Vance) slotted into stations, granting active tactical abilities (`[1]-[4]`), 6 dual resonance combos, and a Quad Grand Resonance (*The Abyssal Leviathan Matrix*). | `ICrewManager`<br>`flagship/progression/CrewOfficerDeck.ts` | FOUNDATION READY |
+| **F-08** | Mutating Bio-Horror Faction | Factions | Hadal Chitin Hive (Parasite Clinger, Spore Siphoner, Carapace Colossus, Abyssal Angler) governed by an Epigenetic Mutation Engine tracking player weapon damage ratios over 2 waves to evolve reactive defenses (max 40% cap). | `IBioHorrorManager`<br>`flagship/factions/HadalBioHorrors.ts` | FOUNDATION READY |
+| **F-09** | Automaton Shield Phalanx | Factions | Ancient machine network (Aegis Drone, EMP Prowler, Rail Sentinel). Aegis drones link barriers when within 160px for 40% harmonic damage sharing; breaking a barrier trips an Inductive Backlash cascade stunning linked units. | `IAutomatonPhalanxManager`<br>`flagship/factions/AutomatonPhalanx.ts` | FOUNDATION READY |
+| **F-10** | Multi-Stage Apex Bosses | Encounters | 12,000 EHP multi-stage leviathans: Charybdis Prime (segmented tentacles IK, vortex inhalation maw, ink blackout), SMS Leviathan (destructible turrets, carrier deck, spinal railgun), and Hadal Patriarch. | `IApexBossManager`<br>`flagship/factions/KrakenPrimeBoss.ts` | FOUNDATION READY |
+| **F-11** | Roguelike Endless Descent | Game Modes | Bathymetric DAG node map (0m $\to$ 11,000m+) across 5 Depth Sectors (Combat, Elite, Supply, Shrine, Hazard). Hydrostatic pressure engine degrades Max HP containers; 3-card boon drafting (24 boons + 6 curses); Abyssal Pearl meta-currency. | `IEndlessDescentManager`<br>`flagship/modes/EndlessDescent.ts` | FOUNDATION READY |
+| **F-12** | Tactical Sonar & Sensory UI | Sensory & UI | Polar radar range rings (50m–250m) with rotating phosphor sweep ($\omega=1.8\text{ rad/s}$), acoustic detonation wavefronts, real-time 16-band Web Audio hydrophone waterfall spectrogram, and procedural cockpit glass fracture lines. | `ISonarRenderer`<br>`flagship/sensory/TacticalSonarHUD.ts` | FOUNDATION READY |
 
 ---
 
-## Interface Contracts
+## Swarm Milestones & Execution Roadmap
 
-### GameManager ↔ Background & Threat State
-- `GameManager.BIOMES: readonly BiomeTheme[]`: Static array of 5 aquatic/cosmic biomes.
-- `GameManager.getCurrentBiome(): BiomeTheme`: Returns active biome based on `Math.floor((level - 1) / 10)`.
-- `GameManager.getThreatState(): ThreatState`: Returns `{ level: ThreatLevel, threatColor: string, threatIntensity: number }`.
-- `Enemy.isBoss: boolean`: Public getter returning `this.type === EnemyType.BOSS`.
-- `Enemy.isElite: boolean`: Public getter returning `isMidTier || type === EnemyType.SNIPER || ...`.
-
-### Helper ↔ Roles & UI
-- `HelperType`: Preserves `FIGHTER = 0`, `REPAIRER = 1`, `TANK = 2`; adds `MEDIC = 3`.
-- `Helper.update(deltaTime, barricades, enemies, bullets, player)`: Receives `player` reference for Medic healing and buffs.
-- `Helper.draw(ctx)`: Renders vector chassis, 38x5px health bar, and role badge pill with black stroke outline.
-- `GameManager.triggerMassiveAlliedReinforcements()`: Spawns full strike squadron (2 Fighters, 1 Medic, 1-2 Repair Bots) with hyperspace warp FX.
-
-### Barricade ↔ Saboteur & Repair Bot
-- `EnemyType.SABOTEUR = 13`: Siege invader seeking central stone barricades (index 1 & 2).
-- `Barricade.update(deltaTime)`: Synchronizes both block destruction (on damage) and block reconstruction (on repair).
-- `GameManager.restoreBarricades()`: Fully restores all 4 barricade slots and 24 voxel blocks at `startNextWave()`.
+| Phase | Milestone Name | Scope & Deliverables | Status |
+|:---|:---|:---|:---|
+| **Phase 0** | Authoritative Specification Mining | Deep analysis of `IDEAS_PITCH.md`, production code, mathematical modeling, and contract definition (`pitch_spec_miner_1`, `pitch_spec_miner_2`, `pitch_explorer_arch_1`). | **COMPLETED** |
+| **Phase 1** | Flagship Foundation & Types Architecture | Implementation of `src/game/flagship/types.ts`, `FlagshipManager.ts` (with coordinator lifecycle hooks and safe fallback stubs), `index.ts`, and `PROJECT.md` update (`pitch_worker_foundation_1`). | **IN_PROGRESS** |
+| **Phase 2** | Subsystem Implementation Swarm | Parallel development of all 12 feature modules across dedicated files under `src/game/flagship/`: <br>• **Stream A**: Advanced Arsenal (`weapons/`)<br>• **Stream B**: Deep Environment (`environment/`)<br>• **Stream C**: Fleet Progression (`progression/`)<br>• **Stream D**: Adversary Ecology (`factions/`)<br>• **Stream E**: Modes & Sensory (`modes/`, `sensory/`). | **QUEUED** |
+| **Phase 3** | Game Loop & UI Facade Integration | Linking `FlagshipManager` into `GameManager.ts`, `Player.ts`, `Enemy.ts`, and `src/components/game-canvas.tsx` overlays without altering logical dimensions. | **PLANNED** |
+| **Phase 4** | Automated Verification & Playwright Suites | Unit testing, mathematical validation, and Playwright E2E suites covering all 12 flagship systems. Build check `npm run build` and `npx tsc --noEmit`. | **PLANNED** |
+| **Phase 5** | Independent Victory Audit & Git Push | Teamwork auditor independent verification, commit creation, and push to `origin/master`. | **PLANNED** |
 
 ---
 
-## Code Layout
-- `src/game/Entity.ts`: Base entity class with AABB and Continuous Collision Detection (CCD).
-- `src/game/Barricade.ts`: Voxel grid barricade representation, block destruction & reconstruction.
-- `src/game/Bullet.ts`: Projectile class and `HomingMissile extends Bullet` (with `ignoreBarricades = true`).
-- `src/game/Player.ts`: Player ship state, controls, primary weapons, homing missile pod.
-- `src/game/Enemy.ts`: Enemy state, AI, Saboteur gnaw logic, procedural vector art.
-- `src/game/Helper.ts`: Allied units, roles (Fighter, Medic, Repair Bot), overhead health bars and role badges.
-- `src/game/GameManager.ts`: Game loop, wave spawning, dynamic biomes, threat signifiers, massive reinforcements, collision resolution.
-- `src/components/game-canvas.tsx`: React wrapper, HUD overlays, Squadron Status HUD, Reinforcement banner.
-- `tests/`: Playwright E2E integration test suites.
+## Interface Contracts & Coordinator Integration
+
+### FlagshipManager Lifecycle Hooks
+- `FlagshipManager.init()`: Initializes all 12 sub-systems and custom extensions.
+- `FlagshipManager.update(deltaTime: number, context: FlagshipUpdateContext)`: Dispatches fixed-timestep simulation updates across all active systems with access to `player`, `enemies`, `bullets`, `barricades`, `helpers`, `particles`, `level`, `score`, `currency`, `createExplosion`, and `triggerScreenShake`.
+- `FlagshipManager.drawBackground(ctx, time)`: Renders background ocean currents, hydrothermal vents, and ambient thermal plumes in Layer 1.
+- `FlagshipManager.drawWorld(ctx, time)`: Renders torpedoes, laser beams, harpoon cables, spore clouds, automaton link conduits, and boss multi-part sprites in Layer 2 (inside screen shake).
+- `FlagshipManager.drawForeground(ctx, time)`: Renders biolapse darkness masks, polar sonar sweep, contact blooms, hydrophone waterfall, glass fracture lines, and crew HUD in Layer 3 (outside screen shake).
+- `FlagshipManager.handleInput(key, isDown, context): boolean`: Dispatches key events (`C` for torpedo/ballast, `F` for headlights, `1`–`4` for bridge crew abilities).
+- `FlagshipManager.reset(preserveUpgrades, isContinue)`: Resets state during run restarts, preserving unlocks and upgrades when continuing.
+- `FlagshipManager.onWaveComplete(wave, context)`: Triggers epigenetic bio-horror adaptation updates and descent strata advancements.
+- `FlagshipManager.onEnemyKilled(enemy, context)`: Triggers salvage bonuses and photophore drops during darkness.
+- `FlagshipManager.onPlayerDamage(amount, context)`: Triggers chassis damage mitigation passives and cockpit glass stress fractures.
+
+### Subsystem Registration API
+Downstream workers plug in concrete implementations seamlessly without modifying coordinator internals:
+```typescript
+flagshipManager.registerCavitationTorpedoSystem(system: ICavitationTorpedoSystem);
+flagshipManager.registerPrismLaserSystem(system: IPrismLaserSystem);
+flagshipManager.registerHydraulicHarpoon(system: IHydraulicHarpoon);
+flagshipManager.registerHydrothermalVentManager(manager: IHydrothermalVentManager);
+flagshipManager.registerBiolapseManager(manager: IBiolapseManager);
+flagshipManager.registerChassisManager(manager: IChassisManager);
+flagshipManager.registerCrewManager(manager: ICrewManager);
+flagshipManager.registerBioHorrorManager(manager: IBioHorrorManager);
+flagshipManager.registerAutomatonPhalanxManager(manager: IAutomatonPhalanxManager);
+flagshipManager.registerApexBossManager(manager: IApexBossManager);
+flagshipManager.registerEndlessDescentManager(manager: IEndlessDescentManager);
+flagshipManager.registerSonarRenderer(renderer: ISonarRenderer);
+flagshipManager.registerCustomSubsystem(subsystem: IFlagshipSubsystem);
+```
+

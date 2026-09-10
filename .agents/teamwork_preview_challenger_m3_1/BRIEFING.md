@@ -1,46 +1,59 @@
-# BRIEFING — 2026-08-21T18:57:30+09:00
+# BRIEFING — 2026-09-08T01:27:45+09:00
 
 ## Mission
-Adversarially verify and stress test Milestone 3 features: F-10 (Canvas Aspect Ratio), F-11 (HiDPI / Retina devicePixelRatio scaling & pointer interaction), and F-13 (Top HUD occlusion).
+Empirically challenge and stress-test Milestone 3 Mobile Viewport CSS adjustments on Water Invader to issue a CONFIRM or REJECT verdict.
 
 ## 🔒 My Identity
-- Archetype: EMPIRICAL CHALLENGER
+- Archetype: challenger
 - Roles: critic, specialist
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m3_1
-- Original parent: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Milestone: Milestone 3
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_challenger_m3_1
+- Original parent: 38e78144-9abc-48a3-8a83-099f912ed48b
+- Milestone: Milestone 3 (Mobile Viewport CSS Adjustments)
 - Instance: 1 of 1
 
 ## 🔒 Key Constraints
 - Review-only — do NOT modify implementation code
-- Empirical verification required (run tests / scripts directly)
-- Do NOT trust unverified claims
-- Keep BRIEFING under 100 lines
+- Run all tests and verification code independently (do NOT trust worker claims/logs)
+- EMPIRICAL: If cannot reproduce or verify empirically, it does not count
+- Pre-commit/build checks if any code/test changes are introduced
 
 ## Current Parent
-- Conversation ID: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Updated: 2026-08-21T18:57:30+09:00
+- Conversation ID: 38e78144-9abc-48a3-8a83-099f912ed48b
+- Updated: 2026-09-08T01:27:45+09:00
 
 ## Review Scope
-- **Files to review**: `src/components/game-canvas.tsx`, `src/game/GameManager.ts`, `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`
-- **Features**: F-10 (3:4 Aspect Ratio), F-11 (HiDPI / Retina DPR scaling & pointer mapping), F-13 (Top HUD occlusion)
-- **Review criteria**: Correctness, responsiveness across viewports (375px to 1920px), DPR scaling (1, 2, 3, 4), coordinate mapping accuracy, enemy spawn Y >= 80
+- **Files to review**:
+  - Worker handoff: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m3_viewport_1/handoff.md
+  - Tests: `tests/adversarial_challenger_m3_1.spec.ts`, `tests/bughunt_ui_responsive_viewports.spec.ts`, `tests/m3_verification.spec.ts`, `tests/cross_device_touch_verification.spec.ts`, `tests/mobile_controls_and_touch_evasion.spec.ts`
+  - CSS / Components modified by worker: `src/app/page.tsx`, `src/components/game-canvas.tsx`
+- **Interface contracts**:
+  - PROJECT.md
+  - ORIGINAL_REQUEST.md
+  - COLLABORATION.md
+- **Review criteria**:
+  - `tests/adversarial_challenger_m3_1.spec.ts` passes 100% (CONFIRMED: 17/17 passed)
+  - `tests/bughunt_ui_responsive_viewports.spec.ts` passes 100% across 5 viewports (CONFIRMED: 25/25 passed)
+  - Center corridor between left and right HUD is >= 110px wider on mobile, preventing enemy drop-in occlusion (CONFIRMED: +111.00px to +117.67px net widening, current corridor 115.61px - 159.28px)
+  - Build succeeds without errors (CONFIRMED: `tsc --noEmit` and `next build` pass with 0 errors)
 
 ## Attack Surface
-- **Hypotheses tested**: Multi-viewport aspect ratio (F-10), DPR 1~4 buffer scaling & pointer mapping (F-11), Wave 1~20 & Boss spawn Y clearance (F-13)
-- **Vulnerabilities found**: F-10 Defect: Tailwind CSS v4 does not compile `aspect-[3/4]` or `max-w-2xl`, causing wrapper to expand to 1264px~3440px with aspect ratio 1.57:1 ~ 4.25:1.
-- **Untested angles**: None within M3 scope
+- **Hypotheses tested**:
+  1. H1: Does compaction of TopHUD break existing Playwright selectors like `.p-4` or `aspect-[3/4]`? (DISPROVEN: Worker safely preserved `.p-4` while applying `max-sm:!p-2`, and kept `aspect-[3/4]`; all 17 adversarial tests pass).
+  2. H2: Does mobile viewport resizing cause horizontal overflow or player touch controls collision? (DISPROVEN: T2 and T3 pass across all 5 viewports with 0 horizontal overflow and positive clearance).
+  3. H3: Is the center corridor truly >= 110px wider on mobile, or did worker miscalculate? (PROVEN: Empirical measurement verifies net corridor widening of +111.00px in dynamic T5 audit and +117.67px in isolated DOM audit; current gap >= 115.61px, preventing drop-in occlusion).
+  4. H4: Do enemy spawns at logical Y = 70..90 clip behind the compacted TopHUD? (DISPROVEN: TopHUD height is reduced from 86-95px to 50-55px, and center corridor spans the entire spawn formation width).
+- **Vulnerabilities found**: None. All constraints and responsive layout requirements are satisfied.
+- **Untested angles**: None. Covered all 5 viewports plus narrow mobile (320x800) and tablet/desktop aspect ratios.
 
 ## Loaded Skills
-- None required
+- None specified by orchestrator
 
 ## Key Decisions Made
-- Empirical verdict `CHALLENGE_FAILED` issued due to F-10 Tailwind v4 CSS compilation defect.
-- Proposed 5 remediation methods with Method 1 (inline style on container/wrapper) chosen as best approach.
+- Executed all 91 test cases across 5 test suites.
+- Created `tests/challenger_m3_corridor_validation.spec.ts` to empirically verify the center corridor expansion and spawn clearance.
+- Verdict: CONFIRM.
 
 ## Artifact Index
-- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m3_1\DISPATCH.md — Dispatch log
-- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m3_1\BRIEFING.md — Situational awareness
-- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m3_1\progress.md — Liveness & heartbeat
-- C:\src\SpaceInvader\.agents\teamwork_preview_challenger_m3_1\handoff.md — Final handoff report
-- C:\src\SpaceInvader\tests\adversarial_challenger_m3_1.spec.ts — Playwright adversarial test suite
+- handoff.md — Empirical challenge report with CONFIRM verdict
+- progress.md — Liveness and task execution status
+- tests/challenger_m3_corridor_validation.spec.ts — Playwright corridor expansion test suite

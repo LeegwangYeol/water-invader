@@ -119,8 +119,8 @@ export class Enemy extends Entity {
     const validY = Number.isFinite(y) ? y : 80;
     super(validX, validY, 40, 30);
     this.faction = Faction.INVADER;
-    this.canvasWidth = Number.isFinite(canvasWidth) ? Math.max(100, canvasWidth) : 720;
-    this.canvasHeight = Number.isFinite(canvasHeight) ? Math.max(100, canvasHeight) : 960;
+    this.canvasWidth = Number.isFinite(canvasWidth) && canvasWidth >= 100 ? canvasWidth : 720;
+    this.canvasHeight = Number.isFinite(canvasHeight) && canvasHeight >= 100 ? canvasHeight : 960;
     this.startY = validY;
     this.prevY = validY;
     this.position.x = Math.max(0, Math.min(validX, this.canvasWidth - this.size.width));

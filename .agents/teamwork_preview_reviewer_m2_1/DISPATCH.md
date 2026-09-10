@@ -1,20 +1,19 @@
-## 2026-08-31T09:46:38Z
+## 2026-09-07T16:16:10Z
 
-Task Assignment: Independent Review & Verification of Milestone M1 & M2
-Scope to Review:
-- `src/game/Enemy.ts`: Stage 10+ piecewise exponential HP scaling, attack cooldowns, projectile velocities, 2-damage elite shots, boss scaling.
-- `src/game/GameManager.ts`: CrisisDirector state machine, 5 crisis archetypes (Titan Horde, Acid Storm, Swarm Blitz, EMP Disruption, Total War), 2.0s warning phase, boss minion escorts, zero soft-lock wave transitions.
-- `src/game/SoundManager.ts`: Procedural Web Audio synthesizers (`playCrisisAlarm`, `playEmpDisruptionSound`, `playAcidStormSound`).
-- `src/components/game-canvas.tsx`: React HUD overlay with animated crisis banners, EMP suppression badge, acid storm indicator.
-- `src/game/types.ts`: Type definitions for `CrisisType`, `HazardProjectile`, `CrisisState`.
+You are Reviewer 1 for Milestone 2 (Enemy Piercing Damage Scaling) on Water Invader.
+Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_1
+Identity & Assignment: Read /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m2_1/DISPATCH.md
+Authoritative specifications:
+- /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- /Users/user/src/water-invader/PROJECT.md
+- /Users/user/src/water-invader/COLLABORATION.md
+- Worker M2 Report: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m2_piercing_1/handoff.md
 
-Verification to Execute:
-1. Run `npx tsc --noEmit` and verify 0 type errors.
-2. Run `npm run build` and verify successful production Next.js build.
-3. Run `npx playwright test` and verify test suite status.
-4. Verify code cleanliness, absence of regressions for Waves 1–9, and proper error handling.
-
-MANDATORY REFERENCES:
-- Verbatim request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
-- Scope & roadmap: /Users/user/src/water-invader/PROJECT.md
-- Collaboration guide: /Users/user/src/water-invader/COLLABORATION.md
+Objective:
+Independently review Milestone 2 changes in `src/game/Enemy.ts` and `src/game/GameManager.ts`:
+1. Verify wave-based piercing attack scaling formulas for common mobs and rogue drones.
+2. Verify Stage 10 test assertion preservation (`normalDamage === 1`, `droneDamage === 1`).
+3. Verify destructible barricade penetration when `piercing > 1` and continuous collision deduplication (`hitEntities.add(barricade)`).
+4. Verify stone barricades continue to absorb all bullets unconditionally.
+5. Verify build and type safety (`npx tsc --noEmit`, `npm run build`).
+6. Deliver verdict: APPROVE or REQUEST_CHANGES in `handoff.md`.

@@ -9,6 +9,7 @@ import { soundManager } from './SoundManager';
 import { EndGameCrisis } from './crisis/EndGameCrisis';
 import { CrisisArchetype, CrisisPhase, EndGameCrisisState } from './crisis/types';
 import { AlliedReinforcements } from './crisis/AlliedReinforcements';
+import { FlagshipManager, FlagshipUpdateContext } from './flagship';
 
 export const HOMING_MISSILE_COSTS = [250, 450, 700, 1000, 1400];
 
@@ -32,6 +33,7 @@ export class GameManager {
   private particlePool: Particle[] = [];
   public barricades: Barricade[] = [];
   public helpers: Helper[] = [];
+  public flagshipManager!: FlagshipManager;
   
   private lastTime: number = 0;
   private animationFrameId: number = 0;
@@ -178,12 +180,14 @@ export class GameManager {
     this.dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
     this.canvas.width = this.logicalWidth * this.dpr;
     this.canvas.height = this.logicalHeight * this.dpr;
+    this.flagshipManager = new FlagshipManager(this.logicalWidth, this.logicalHeight);
     if (typeof window !== 'undefined') {
       (window as any).Bullet = Bullet;
       (window as any).Enemy = Enemy;
       (window as any).Helper = Helper;
       (window as any).Faction = Faction;
       (window as any).EnemyType = EnemyType;
+      (window as any).flagshipManager = this.flagshipManager;
     }
     this.init();
   }
@@ -382,9 +386,31 @@ export class GameManager {
     this.spawnBarricades();
     this.spawnWave();
     
+    if (this.flagshipManager) {
+      this.flagshipManager.reset(shouldPreserve);
+      this.flagshipManager.init();
+    }
+
     if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
     this.updateScoreUI();
     this.updateUpgradesUI();
+  }
+
+  public getFlagshipContext(): FlagshipUpdateContext {
+    return {
+      player: this.player,
+      enemies: this.enemies,
+      bullets: this.bullets,
+      barricades: this.barricades,
+      helpers: this.helpers,
+      particles: this.particles,
+      level: this.level,
+      score: this.score,
+      currency: this.currency,
+      createExplosion: (x: number, y: number, color?: string, count?: number, scale?: number) =>
+        this.createExplosion(x, y, color || '#38bdf8', count || 15, scale || 1.0),
+      triggerScreenShake: (duration: number, _amount?: number) => this.triggerScreenShake(duration),
+    };
   }
   
   private spawnBarricades() {
@@ -441,6 +467,9 @@ export class GameManager {
     if (this.onEndGameCrisisEvent) this.onEndGameCrisisEvent(null);
     this.emergencyAlliesTriggeredThisWave = false;
     this.level++;
+    if (this.flagshipManager) {
+      this.flagshipManager.onWaveComplete(this.level, this.getFlagshipContext());
+    }
     this.restoreBarricades();
     this.swarmEchelonsRemaining = (this.level >= 10 && this.level % 5 !== 0) ? (this.level >= 15 ? 2 : 1) : 0;
     this.spawnWave();
@@ -1234,6 +1263,7 @@ export class GameManager {
         ) {
           if (this.endGameCrisis.sovereign.checkCollision(this.player)) {
             this.player.hp -= 1;
+            if (this.flagshipManager) this.flagshipManager.onPlayerDamage(1, this.getFlagshipContext());
             this.player.hitFlashTimer = 0.08;
             this.player.invincibilityTimer = 1.0;
             soundManager.playPlayerHit();
@@ -1466,6 +1496,7 @@ export class GameManager {
                 this.createExplosion(hz.x, hz.y, '#38bdf8', 10);
               } else {
                 this.player.hp -= hz.damage;
+                if (this.flagshipManager) this.flagshipManager.onPlayerDamage(hz.damage, this.getFlagshipContext());
                 this.player.hitFlashTimer = 0.08;
                 this.player.invincibilityTimer = 1.0;
                 soundManager.playPlayerHit();
@@ -1531,6 +1562,7 @@ export class GameManager {
               if (px + pw >= flare.x && px <= flare.x + flare.width) {
                 flare.damageDealt = true;
                 this.player.hp -= 1;
+                if (this.flagshipManager) this.flagshipManager.onPlayerDamage(1, this.getFlagshipContext());
                 this.player.hitFlashTimer = 0.08;
                 this.player.invincibilityTimer = 1.0;
                 soundManager.playPlayerHit();
@@ -1586,6 +1618,7 @@ export class GameManager {
 
           if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
             this.player.hp -= 1;
+            if (this.flagshipManager) this.flagshipManager.onPlayerDamage(1, this.getFlagshipContext());
             this.player.hitFlashTimer = 0.08;
             this.player.invincibilityTimer = 1.0;
             soundManager.playPlayerHit();
@@ -1602,6 +1635,7 @@ export class GameManager {
           this.createExplosion(enemy.position.x + enemy.size.width/2, this.logicalHeight - 10, enemy.color, 15);
           if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
              this.player.hp -= 1;
+             if (this.flagshipManager) this.flagshipManager.onPlayerDamage(1, this.getFlagshipContext());
              this.player.hitFlashTimer = 0.08;
              this.player.invincibilityTimer = 1.0;
              soundManager.playPlayerHit();
@@ -1639,6 +1673,15 @@ export class GameManager {
       
       // Collision
       this.checkCollisions(deltaTime);
+
+      // Flagship Subsystems Update (Weapons, Environment, Progression, Factions, Modes, Sensory)
+      if (this.flagshipManager) {
+        this.flagshipManager.update(deltaTime, this.getFlagshipContext());
+      }
+    } else if (this.state === GameState.SHOP) {
+      if (this.flagshipManager) {
+        this.flagshipManager.update(deltaTime, this.getFlagshipContext());
+      }
     }
     
     // Allied reinforcement banner timer
@@ -1748,6 +1791,9 @@ export class GameManager {
       (this.crisisState.activeCrisis === null || (this.crisisState.activeCrisis !== 'ACID_STORM' || this.crisisState.timer <= 0))
     ) {
       this.state = GameState.SHOP;
+      if (this.flagshipManager) {
+        this.flagshipManager.onWaveComplete(this.level, this.getFlagshipContext());
+      }
       this.warningTimer = 0;
       this.warningMessage = "";
       this.warningText = "";
@@ -2103,6 +2149,7 @@ export class GameManager {
           bullet.isDead = true;
           if (!this.isGodMode && this.player.invincibilityTimer <= 0) {
             this.player.hp -= bullet.damage;
+            if (this.flagshipManager) this.flagshipManager.onPlayerDamage(bullet.damage, this.getFlagshipContext());
             this.player.hitFlashTimer = 0.08;
             this.player.invincibilityTimer = 1.0;
             soundManager.playPlayerHit();
@@ -2116,9 +2163,16 @@ export class GameManager {
             if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
 
             if (this.player.hp <= 0) {
-              this.createExplosion(this.player.position.x + this.player.size.width / 2, this.player.position.y + this.player.size.height / 2, '#38bdf8', 200, 3.5);
-              this.triggerScreenShake(1);
-              this.gameOver("정수기가 파괴되었습니다. (체력 소진)");
+              const revived = this.flagshipManager ? this.flagshipManager.checkRevive(this.getFlagshipContext()) : false;
+              if (revived) {
+                this.player.hp = this.player.maxHp;
+                this.player.isDead = false;
+                if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
+              } else {
+                this.createExplosion(this.player.position.x + this.player.size.width / 2, this.player.position.y + this.player.size.height / 2, '#38bdf8', 200, 3.5);
+                this.triggerScreenShake(1);
+                this.gameOver("정수기가 파괴되었습니다. (체력 소진)");
+              }
             }
           }
         } else {
@@ -2225,6 +2279,9 @@ export class GameManager {
   }
 
   private handleEnemyKill(enemy?: Enemy) {
+    if (enemy && this.flagshipManager) {
+      this.flagshipManager.onEnemyKilled(enemy, this.getFlagshipContext());
+    }
     this.combo++;
     this.comboTimer = 2.0; // 2 seconds to keep combo
 
@@ -2315,6 +2372,14 @@ export class GameManager {
   public gameOverReason: string = "";
 
   private gameOver(reason: string) {
+    if (this.flagshipManager && this.flagshipManager.checkRevive(this.getFlagshipContext())) {
+      if (this.player) {
+        this.player.hp = this.player.maxHp;
+        this.player.isDead = false;
+      }
+      if (this.onPlayerHpChange && this.player) this.onPlayerHpChange(this.player.hp);
+      return;
+    }
     this.gameOverReason = reason;
     this.state = GameState.GAME_OVER;
     if (this.player) {
@@ -2510,6 +2575,11 @@ export class GameManager {
     }
     this.ctx.fill();
 
+    // 1.7 Flagship Background Subsystems (Hydrothermal Vents & Ocean Currents)
+    if (this.flagshipManager) {
+      this.flagshipManager.drawBackground(this.ctx, time);
+    }
+
     // =========================================================================
     // LAYER 2: WORLD LAYER (Save context, apply screen shake, render world)
     // =========================================================================
@@ -2640,6 +2710,11 @@ export class GameManager {
       this.alliedReinforcements.drawPlayerNanoShield(this.ctx, this.player);
     }
 
+    // 2.7 Flagship Subsystems World Layer (Torpedoes, Lasers, Harpoon Cables, Bio-Horrors, Automaton Phalanx, Apex Kraken)
+    if (this.flagshipManager) {
+      this.flagshipManager.drawWorld(this.ctx, time);
+    }
+
     this.ctx.restore(); // Exit shake layer
 
     // =========================================================================
@@ -2711,6 +2786,11 @@ export class GameManager {
     // 3.4 Allied Reinforcements In-Game Announcement Banner
     if (this.alliedReinforcements && this.alliedReinforcements.hasActiveBanner()) {
       this.alliedReinforcements.drawUI(this.ctx, this.logicalWidth, this.logicalHeight);
+    }
+
+    // 3.5 Flagship Foreground & HUD Layer (Darkness mask, Sonar radar, Spectrogram, Glass fractures, Crew deck, Endless HUD)
+    if (this.flagshipManager) {
+      this.flagshipManager.drawForeground(this.ctx, time);
     }
 
     this.ctx.restore();
@@ -2805,6 +2885,11 @@ export class GameManager {
     const k = key.toLowerCase();
     this.keysPressed[k] = true;
 
+    // Forward to FlagshipManager
+    if (this.flagshipManager && this.player) {
+      this.flagshipManager.handleInput(key, true, this.getFlagshipContext());
+    }
+
     if (this.state === GameState.PLAYING) {
       if (k === 'arrowleft' || k === 'a') this.player.isMovingLeft = true;
       if (k === 'arrowright' || k === 'd') this.player.isMovingRight = true;
@@ -2832,6 +2917,10 @@ export class GameManager {
     const k = key.toLowerCase();
     this.keysPressed[k] = false;
 
+    if (this.flagshipManager && this.player) {
+      this.flagshipManager.handleInput(key, false, this.getFlagshipContext());
+    }
+
     if (k === 'arrowleft' || k === 'a') {
       this.player.isMovingLeft = !!(this.keysPressed['arrowleft'] || this.keysPressed['a']);
     }
@@ -2841,6 +2930,13 @@ export class GameManager {
     if (k === ' ' || k === 'spacebar' || k === 'space') {
       this.player.isShooting = !!(this.keysPressed[' '] || this.keysPressed['spacebar'] || this.keysPressed['space']);
     }
+  }
+
+  public handlePointer(x: number, y: number, isDown: boolean, button: number = 0): boolean {
+    if (this.flagshipManager && this.player) {
+      return this.flagshipManager.handlePointer(x, y, isDown, this.getFlagshipContext(), button);
+    }
+    return false;
   }
 
   public getUpgrades(): { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean; homingMissiles: number } {

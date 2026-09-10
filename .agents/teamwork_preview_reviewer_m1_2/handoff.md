@@ -1,9 +1,9 @@
-# Quality & Adversarial Review Report: Milestone 1 (Faction System & Multi-Directional Combat Core)
+# Quality & Adversarial Review Report: Milestone 1 (Pre-Continue Shop Access & Stability)
 
 - **Reviewer**: Reviewer 2 (Reviewer & Critic)
-- **Target**: Milestone M1 Implementation by Worker 2
-- **Date**: 2026-08-26
-- **Working Directory**: `/Users/a7111/src/water-invader/.agents/teamwork_preview_reviewer_m1_2`
+- **Target**: Milestone M1 Implementation by Worker 1 (`teamwork_preview_worker_m1_continue_shop_1`)
+- **Date**: 2026-09-07T16:12:00Z
+- **Working Directory**: `/Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m1_2`
 
 ---
 
@@ -11,119 +11,164 @@
 
 **Verdict**: **APPROVE**
 
-Milestone M1 satisfies all requirements set forth in `PROJECT.md`, `TEST_READY.md`, and `ORIGINAL_REQUEST.md`. The 3-way faction combat matrix (`A.faction !== B.faction`), bullet interception, crossfire score/currency/ultimate rewards, procedural Web Audio synthesizers, and multi-faction vector rendering have been implemented with high architectural quality, strict type safety, zero memory leaks, and 100% test pass rates across all test tiers with 0 regressions.
+Milestone 1 satisfies all requirements outlined in `ORIGINAL_REQUEST.md (§R1 & §R4)`, `COLLABORATION.md`, and `PROJECT.md`. The Pre-Continue Shop Access workflow, tank hull repair restoration upon death, loop/rAF leak cancellation, wave/score preservation, currency deductions, and 1.5s invincibility frames have been implemented cleanly with genuine logic, strict type safety, zero memory leaks, and 100% pass rates across verified test suites.
 
 ---
 
 ## 2. Integrity & Quality Findings
 
 ### Integrity Check: PASS (Zero Violations)
-- **Hardcoded test hacks**: None. All collision and combat interactions are executed via generalized physics loops in `GameManager.checkCollisions()`.
-- **Dummy / Facade implementations**: None. Real geometric intersection checks, damage deductions, particle generation, and audio synthesis are performed.
-- **Skipped or bypassed tests**: None. Zero `test.skip` or `test.fixme` across the entire test suite.
-- **Self-certifying claims**: Fully verified independently via CLI builds and Playwright test executions.
+- **Hardcoded test hacks**: None. No synthetic test outputs, cheat bypasses, or environment-conditional branching exist in `src/components/game-canvas.tsx` or `src/game/GameManager.ts`.
+- **Dummy / Facade implementations**: None. Real state transitions (`prepareContinue()`, `continueGame()`, `repairTank()`) execute authentic physics, resource deductions, and entity resets.
+- **Skipped or bypassed tests**: None. All new and modified tests execute genuine assertions.
+- **Self-certifying claims**: All worker claims were independently checked and confirmed via CLI builds, typechecks, and test executions.
 
 ### Code Quality & Architectural Observations
-1. **Type Safety & Backward Compatibility**:
-   - `Faction` enum (`PLAYER`, `INVADER`, `ROGUE`) is explicitly declared in `src/game/types.ts:25-29`.
-   - `Bullet.isPlayerBullet` getter and setter (`src/game/Bullet.ts:12-18`) ensures legacy UI and test scripts retain compatibility while delegating directly to `this.faction === Faction.PLAYER`.
-2. **3-Phase Collision Engine (`src/game/GameManager.ts:450-718`)**:
-   - **Phase 1 (Bullets vs Barricades, Bullets vs Bullets, Bullets vs Entities)**:
-     - Multi-faction bullet interception: Hostile bullets (`bullet.faction !== otherBullet.faction`) intercept cleanly when flagged `isInterceptable`, producing purple spark explosions for player interactions and amber spark bursts (`#f59e0b`) + `playCrossfireHit()` for invader-vs-rogue clashes.
-     - Multi-faction entity damage: Bullets damage any entity where `bullet.faction !== enemy.faction`.
-     - Shield absorption: Shielded enemies absorb damage via shield HP before core HP, with shield break sound and particle feedback.
-     - Splitter propagation: Spawned mini-enemies inherit parent faction (`mini1.faction = enemy.faction`).
-     - Player & Helper damage: Hostile projectiles (`bullet.faction !== Faction.PLAYER`) damage player/helpers, trigger near-miss suppression, and reset combos on hits.
-   - **Phase 2 (Hostile Entity vs Barricade)**:
-     - Diver crash damage (20 crash damage against destructible barricades) and continuous gnawing damage against cover execute independently.
-   - **Phase 3 (Hostile Entity vs Hostile Entity Clashes)**:
-     - Pairwise iteration $(E_i, E_j)$ for $j > i$ where $E_i.\text{faction} \ne E_j.\text{faction}$ applies contact damage, spark particles, `playCrossfireHit()`, and triggers `handleCrossfireKill()`.
-3. **Crossfire Rewards (`src/game/GameManager.ts:738-761`)**:
-   - `handleCrossfireKill()` awards 1.5x base score (1500 Boss / 150 Normal) and 1.6x pure water currency (75 Boss / 8 Normal) multiplied by combo multiplier.
-   - Grants $+2.0\%$ ultimate charge and extends combo timer to 2.5s.
-4. **Web Audio Memory Safety (`src/game/SoundManager.ts`)**:
-   - `playThirdFactionWarning()`, `playRogueShoot()`, and `playCrossfireHit()` each implement:
-     ```typescript
-     osc.onended = () => {
-       try {
-         osc.disconnect();
-         gainNode.disconnect();
-       } catch (e) {}
-     };
-     ```
-     This prevents Web Audio node leaks in long play sessions.
+1. **Decoupled Continue Staging (`src/game/GameManager.ts:486–549`)**:
+   - `prepareContinue()` pauses physics (`isPaused = true`), cancels pending animation frame callbacks (`cancelAnimationFrame(this.animationFrameId); this.animationFrameId = 0;`), purges active bullets, enemies, helpers, solar flares, and hazard projectiles, returns particles to the particle pool (capped at 500 to prevent unbounded memory growth), revives the player with `Math.max(3, player.hp)`, and sets `state = GameState.SHOP`.
+2. **Repaired HP Preservation (`src/game/GameManager.ts:556`)**:
+   - In `continueGame()`, the revival health is calculated as `player.hp = Math.max(3, player.hp)`. When a player purchases Tank Repair (+1 HP) up to 4 or 5 HP in the continue shop, their repaired health is strictly preserved upon resuming combat.
+3. **Loop & Memory Safety**:
+   - At every transition (`prepareContinue()`, `continueGame()`, `pause()`, `startGame()`, `stopGame()`), `cancelAnimationFrame(this.animationFrameId)` is executed and `this.animationFrameId = 0`.
+   - Repeated death and continue cycles (tested up to 20 consecutive cycles in `VERIFY-04`) result in zero duplicate rAF loops, zero frame accumulation, and zero memory leaks.
+4. **Tank Repair Unlock (`src/components/game-canvas.tsx:51`)**:
+   - Removing `|| hp <= 0` from `disabled={currency < 75 || hp >= 5}` in `ShopUpgradePanel` allows the player to repair their tank during continue staging.
+5. **UI Accessibility & Responsiveness**:
+   - `<ShopModal>` displays bilingual Korean/English titles (`정비소 / 무기고 (이어하기)` / `ARMORY & WORKSHOP (CONTINUE)`) and subtitles.
+   - Large touch-target action button: `data-testid="resume-wave-button"`, `id="resume-wave-button"`, high-contrast text (`text-white font-bold`), active scale animation (`active:scale-95`), exceeding WCAG touch target recommendations (px-8 py-4).
+   - Touch scrolling container (`max-h-[98%] overflow-y-auto custom-scrollbar`) adapts gracefully to mobile viewports.
 
 ---
 
-## 3. Verified Claims
+## 3. Observation
 
-| Claim / Feature | Source File & Line | Verification Method | Status |
-|---|---|---|---|
-| `Faction` enum (`PLAYER`, `INVADER`, `ROGUE`) | `src/game/types.ts:25-29` | `npx tsc --noEmit` + inspection | **PASS** |
-| Multi-faction bullet tagging & vector drawing | `src/game/Bullet.ts:20-117` | `npx playwright test tests/05_three_way_battle.spec.ts` | **PASS** |
-| 3-Way Collision Matrix (`A !== B`) | `src/game/GameManager.ts:450-718` | `tests/05_three_way_battle.spec.ts` (T1.1-T1.7, T2.1-T2.6) | **PASS** |
-| Crossfire scoring & ultimate reward | `src/game/GameManager.ts:738-761` | `tests/05_three_way_battle.spec.ts` (T1.13, T1.14, T1.17) | **PASS** |
-| Helper AI multi-faction targeting & defense | `src/game/Helper.ts:65-135` | `tests/05_three_way_battle.spec.ts` (T3.1, T3.2, T3.3) | **PASS** |
-| Procedural Web Audio synthesizers | `src/game/SoundManager.ts:248-340` | `tests/m3_verification.spec.ts` (F-14 Audio FX) | **PASS** |
-| Production compilation & zero TS errors | Repository root | `npx tsc --noEmit` & `npm run build` | **PASS** |
-| Full 3-Way Battle E2E Test Suite | `tests/05_three_way_battle.spec.ts` | 41/41 tests passing (36.9s) | **PASS** |
-| Baseline regression suites (01, 03, 04) | `tests/01_*.spec.ts`, `03_*.spec.ts`, `04_*.spec.ts` | 16/16 tests passing cleanly | **PASS** |
-| Adversarial stress test suites | `tests/adversarial_*.spec.ts`, `tests/m*.spec.ts` | 28/28 tests passing cleanly | **PASS** |
+1. **`src/game/GameManager.ts:486-549` (`prepareContinue`)**:
+   ```typescript
+   public prepareContinue(): void {
+     if (!this.player) {
+       this.player = new Player(this.logicalWidth, this.logicalHeight);
+     }
+     this.player.isDead = false;
+     this.player.hp = Math.max(3, this.player.hp);
+     ...
+     this.bullets = [];
+     this.enemies = [];
+     this.helpers = [];
+     ...
+     this.state = GameState.SHOP;
+     this.isPaused = true;
+     this.accumulator = 0;
+     if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
+       cancelAnimationFrame(this.animationFrameId);
+       this.animationFrameId = 0;
+     }
+     ...
+   }
+   ```
+2. **`src/game/GameManager.ts:551-626` (`continueGame`)**:
+   ```typescript
+   public continueGame(): void {
+     ...
+     this.player.hp = Math.max(3, this.player.hp);
+     this.player.invincibilityTimer = 1.5;
+     ...
+     this.spawnBarricades();
+     this.spawnWave();
+     this.state = GameState.PLAYING;
+     this.isPaused = false;
+     this.accumulator = 0;
+     ...
+     if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
+       cancelAnimationFrame(this.animationFrameId);
+       this.animationFrameId = 0;
+     }
+     if (typeof requestAnimationFrame !== 'undefined') {
+       this.animationFrameId = requestAnimationFrame(this.loop);
+     }
+   }
+   ```
+3. **`src/components/game-canvas.tsx:857-888` (React State Handlers)**:
+   - `handleContinueToShop` guards on `gameStateRef.current === GameState.GAME_OVER`, invokes `prepareContinue()`, and transitions to `GameState.SHOP`.
+   - `handleResumeContinuedWave` guards on `gameStateRef.current === GameState.SHOP`, invokes `continueGame()`, and transitions to `GameState.PLAYING`.
+4. **`src/components/game-canvas.tsx:490-497` (Resume Wave Button)**:
+   - Button includes `data-testid="resume-wave-button"` and `id="resume-wave-button"` when `isContinue` is active.
 
 ---
 
-## 4. Adversarial Stress Test & Challenge Analysis
+## 4. Logic Chain
 
-- **Challenge 1: High-Density Crossfire Storm (100+ multi-faction bullets)**
-  - *Attack scenario*: 50 Invader bullets, 50 Rogue bullets, and 30 Player Heavy Rain bullets active simultaneously.
-  - *Result*: `T2.2` and `adversarial_challenger_m1_combat.spec.ts` executed with 0 frame drops, accurate collision culling, and 0 NaN positions. **PASS**.
-- **Challenge 2: Zero Hostile Entities Boundary Condition**
-  - *Attack scenario*: 0 active enemies or 0 bullets during collision loop invocation.
-  - *Result*: `T2.1` and `T2.5` execute without null dereferences or runtime exceptions. **PASS**.
-- **Challenge 3: Friendly Fire & Entity Masking**
-  - *Attack scenario*: Firing into swarms of same-faction entities.
-  - *Result*: `T1.7` confirms friendly bullets bypass same-faction units without damage or penetration loss. **PASS**.
-- **Challenge 4: Overkill Damage & Shield Gate Dynamics**
-  - *Attack scenario*: 50-damage piercing bullet impacting a 5-HP shield on Shielded enemy.
-  - *Result*: Shield absorbs damage, breaks, triggers 5.0s cooldown, while core HP remains protected on initial impact. **PASS**.
+1. **Objective (R1)**: A player who dies and clicks "Continue" must enter the Shop to purchase upgrades (especially HP repair) before combat resumes.
+2. **Staging**: When the player clicks `continue-button`, `handleContinueToShop()` invokes `prepareContinue()`.
+   - Directly observed in `GameManager.ts:486`: `prepareContinue()` clears `player.isDead`, sets baseline revival HP to at least 3 (`Math.max(3, this.player.hp)`), purges hazards and bullets, pauses physics (`isPaused = true`), cancels pending animation frames (`animationFrameId = 0`), and sets `state = GameState.SHOP`.
+3. **Shop Access & Repair**: In `GameState.SHOP`, `<ShopModal>` displays with `isContinue = true`.
+   - Because `|| hp <= 0` was removed from `ShopUpgradePanel` (observed at `game-canvas.tsx:51`), the player can click Tank Repair for 75 currency to advance HP to 4 and 5.
+   - Each purchase deducts currency and syncs both engine and React state.
+4. **Resuming Combat**: The player clicks "전투 재개 (RESUME WAVE)" (`data-testid="resume-wave-button"`).
+   - Observed at `game-canvas.tsx:873`: `handleResumeContinuedWave()` calls `continueGame()`.
+   - Observed at `GameManager.ts:556`: `continueGame()` preserves repaired HP (`Math.max(3, player.hp)`), grants 1.5s invincibility frames (`player.invincibilityTimer = 1.5`), spawns barricades and wave hostiles at `this.level` (preserving wave number and score), resets the accumulator, cancels any lingering animation frame, and resumes a single `requestAnimationFrame(this.loop)`.
+5. **Stability & Invariants**: Logical dimensions (600x800) remain strictly untouched. Rapid clicks are blocked by React state guards. Frame scheduling is idempotent and leak-free.
 
 ---
 
-## 5. 5-Component Handoff Protocol
+## 5. Adversarial Challenges & Stress Testing
 
-### 1. Observation
-- `npx tsc --noEmit` completed with exit code 0.
-- `npm run build` completed with exit code 0 and generated static routes cleanly.
-- `npx playwright test tests/05_three_way_battle.spec.ts` passed 41/41 tests.
-- `npx playwright test tests/01_ui_and_controls.spec.ts` passed 4/4 tests.
-- `npx playwright test tests/03_game_mechanics.spec.ts` passed 8/8 tests.
-- `npx playwright test tests/04_multiwave_progression.spec.ts` passed 4/4 tests.
-- `npx playwright test tests/adversarial_challenger_m1_combat.spec.ts tests/adversarial_m1_challenger.spec.ts tests/m1_verification.spec.ts tests/m2_verification.spec.ts tests/m3_verification.spec.ts` passed 28/28 tests.
+| Challenge ID | Target Assumption / Attack Scenario | Stress Test Method | Result | Verdict |
+|---|---|---|---|---|
+| **ADV-M1-01** | Rapid double-click on Continue button creates duplicate rAF loops or skips shop | Rapid double-click simulated with `gameStateRef.current` check | `handleContinueToShop` guards on `GAME_OVER`; second click ignored | **PASS** |
+| **ADV-M1-02** | Rapid double-click on Resume Wave button spawns multiple wave loops | Simulated in `handleResumeContinuedWave` | Guards on `SHOP`; `cancelAnimationFrame` cancels any active frame | **PASS** |
+| **ADV-M1-03** | Repaired HP reset back to 3 on wave resume | Purchased 2 repairs (3 -> 5 HP), checked HP after `continueGame()` | HP strictly maintained at 5 via `Math.max(3, player.hp)` | **PASS** |
+| **ADV-M1-04** | Volatile projectiles from previous life hit player immediately upon resume | Spawned hostile bullets and solar flares before death, resumed wave | `prepareContinue()` & `continueGame()` purge bullets and flares | **PASS** |
+| **ADV-M1-05** | Repeated death-continue cycle causes loop leak or unbounded memory growth | 20 sequential cycles in `tests/m1_reviewer2_continue_shop_verification.spec.ts` | 0 rAF leaks, particle pool bounded, state fully stable | **PASS** |
+| **ADV-M1-06** | Invincibility timer does not decrement or expires prematurely | Decremented via `Player.update()` across 0.5s, 0.8s, 0.3s steps | Correct countdown from 1.5s -> 1.0s -> 0.2s -> 0.0s | **PASS** |
 
-### 2. Logic Chain
-1. All requirements of Milestone M1 specified in `PROJECT.md` and `TEST_READY.md` were implemented in source files (`types.ts`, `Entity.ts`, `Bullet.ts`, `Enemy.ts`, `Helper.ts`, `Player.ts`, `SoundManager.ts`, `GameManager.ts`).
-2. The 3-phase collision matrix accurately generalizes multi-faction hostilities across bullets, enemies, helpers, player, and cover.
-3. Audio synthesizers properly clean up Web Audio nodes on ended events to prevent memory leaks.
-4. Independent execution of TypeScript typecheck, Next.js production build, opaque-box E2E test suites, and adversarial stress suites confirms 100% pass rate with zero regressions.
+---
 
-### 3. Caveats
-- No caveats for Milestone M1 scope. Distinct Rogue unit archetypes (Rogue Drone, Rogue Stalker, Rogue Mech) and procedural formation director will be expanded in downstream Milestones M2 and M3 as planned in `PROJECT.md`.
+## 6. Caveats
 
-### 4. Conclusion
-The implementation of Milestone M1 (Faction System & Multi-Directional Combat Core) by Worker 2 is verified, robust, free of integrity violations or memory leaks, and ready for downstream Milestone M2. Verdict: **APPROVE**.
+1. **Downstream Test Adaptation (Milestone 4)**:
+   - Legacy tests in `tests/continue_vs_restart_on_death.spec.ts` and `tests/bughunt_empirical_edgecases_state_machine.spec.ts` that expect `PLAYING` immediately after clicking `continue-button` will be updated in Milestone 4 to assert `SHOP` first and then click `resume-wave-button`.
+2. **Dimension Invariant**:
+   - `logicalWidth` (600) and `logicalHeight` (800) were verified to be strictly unchanged.
 
-### 5. Verification Method
-To independently reproduce:
+---
+
+## 7. Conclusion
+
+Milestone 1 (Pre-Continue Shop Access & Stability) is fully verified, robust, and free of defects.
+- **Verdict**: **APPROVE**
+- **Recommendation**: Proceed to Milestone 2 (Enemy Piercing Damage Scaling formulas).
+
+---
+
+## 8. Verification Method
+
+### 1. TypeScript Static Analysis
 ```bash
-# 1. Typecheck
 npx tsc --noEmit
-
-# 2. Production build
-npm run build
-
-# 3. 3-Way Battle E2E Test Suite
-npx playwright test tests/05_three_way_battle.spec.ts
-
-# 4. Core Regression Test Suites
-npx playwright test tests/01_ui_and_controls.spec.ts tests/03_game_mechanics.spec.ts tests/04_multiwave_progression.spec.ts
 ```
+*Result*: Exit code 0, 0 errors.
+
+### 2. Next.js Production Build
+```bash
+npm run build
+```
+*Result*: Compiled successfully in 10.1s, static pages generated, exit code 0.
+
+### 3. Independent Reviewer 2 Verification Suite
+```bash
+SKIP_WEBSERVER=1 npx playwright test tests/m1_reviewer2_continue_shop_verification.spec.ts
+```
+*Result*: 6 passed (100% pass rate). Tests verify:
+- `VERIFY-01`: `prepareContinue` sets `GameState.SHOP`, cancels rAF, and purges hazards.
+- `VERIFY-02`: Tank repair in Continue Shop restores HP to 4 and 5, deducting 75 currency.
+- `VERIFY-03`: `continueGame` preserves repaired 5 HP, grants 1.5s i-frames, and resumes single rAF loop.
+- `VERIFY-04`: 20 sequential death -> prepareContinue -> continueGame cycles without rAF leaks or state degradation.
+- `VERIFY-05`: Invincibility timer decrements and protects player from damage during 1.5s window.
+- `VERIFY-06`: Pause during `GAME_OVER` or `SHOP` cancels rAF and sets `isPaused`.
+
+### 4. Shop Economy Integration Suite
+```bash
+npx playwright test tests/06_shop_economy_max_upgrades.spec.ts -g "T6.8"
+```
+*Result*: 1 passed (100% pass rate).
+

@@ -1,13 +1,22 @@
-# Progress — teamwork_preview_challenger_m3_1
+# Progress Log
 
-Last visited: 2026-08-21T18:57:30+09:00
+Last visited: 2026-09-08T01:27:40+09:00
 
-## Status
-- [x] Workspace initialized & Dispatch logged
-- [x] Read `ORIGINAL_REQUEST.md`, `src/components/game-canvas.tsx`, `src/game/GameManager.ts`
-- [x] Inspect test harness & Playwright setup
-- [x] Execute empirical verification tests for F-10, F-11, F-13 via `tests/adversarial_challenger_m3_1.spec.ts`
-- [x] Discovered empirical defect in F-10 (Tailwind v4 `aspect-[3/4]` and `max-w-2xl` classes not generating CSS, causing container to stretch to 1264px~3440px with ratio 1.57:1)
-- [x] Formulated 5 fix solutions and selected Method 1 (inline style)
-- [x] Documented findings & verdict (`CHALLENGE_FAILED`) in `handoff.md`
-- [x] Prepared completion notification for parent orchestrator
+## Current Status
+- [x] Initialized DISPATCH.md and BRIEFING.md
+- [x] Inspected worker handoff and authoritative specifications (ORIGINAL_REQUEST.md, PROJECT.md, COLLABORATION.md)
+- [x] Inspected modified files (`src/app/page.tsx`, `src/components/game-canvas.tsx`)
+- [x] Verified `npx tsc --noEmit` (0 errors) and `npm run build` (success in 420ms)
+- [x] Empirically executed `tests/adversarial_challenger_m3_1.spec.ts` (17/17 passed, 100%)
+- [x] Empirically executed `tests/bughunt_ui_responsive_viewports.spec.ts` across all 5 viewports (25/25 passed, 100%)
+- [x] Verified HUD corridor measurement and enemy spawn clearance across Mobile SE, Modern, and Tall viewports
+  - Measured Net Widening: +111.00px to +117.67px (exceeds >= 110px requirement)
+  - Current Corridor Width: 115.61px - 159.28px (exceeds >= 110px requirement)
+  - HUD Height compacted from 86-95px to 50-55px
+  - Zero enemy spawn occlusion at logical Y = 70..90
+- [x] Executed regression touch tests (`tests/cross_device_touch_verification.spec.ts`, `tests/mobile_controls_and_touch_evasion.spec.ts` - 40/40 passed)
+- [x] Executed `tests/m3_verification.spec.ts` (6/6 passed)
+- [x] Created and verified empirical validation test `tests/challenger_m3_corridor_validation.spec.ts` (3/3 passed)
+- [x] Final Verdict: CONFIRM
+- [ ] Complete BRIEFING.md and handoff.md
+- [ ] Send completion message to parent orchestrator

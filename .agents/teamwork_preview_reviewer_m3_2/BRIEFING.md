@@ -1,57 +1,56 @@
-# BRIEFING — 2026-08-21T10:01:05Z
+# BRIEFING — 2026-09-07T16:29:40Z
 
 ## Mission
-Milestone 3 작업 내용에 대한 독립적인 코드 리뷰, 회귀 검증 및 적대적 평가(Adversarial Critic) 수행
+Independently review Milestone 3 (Mobile Viewport CSS Adjustments) on Water Invader for mobile UX, touch responsiveness, layout stability, container overflow, and test selector preservation.
 
 ## 🔒 My Identity
-- Archetype: reviewer / critic
+- Archetype: reviewer
 - Roles: reviewer, critic
-- Working directory: C:\src\SpaceInvader\.agents\teamwork_preview_reviewer_m3_2
-- Original parent: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Milestone: Milestone 3
+- Working directory: /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m3_2
+- Original parent: 38e78144-9abc-48a3-8a83-099f912ed48b
+- Milestone: Milestone 3 (Mobile Viewport CSS Adjustments)
 - Instance: 2 of 2
 
 ## 🔒 Key Constraints
-- Review-only — do NOT modify implementation code (기존 소스 코드 무단 수정 금지)
-- Independent verification (빌드 및 Playwright 테스트 직접 실행)
-- Integrity violation check (치팅, 하드코딩, 더미 구현, 위조된 검증 결과 엄격 확인)
+- Review-only — do NOT modify implementation code
+- Binary verdict required: APPROVE or REQUEST_CHANGES
+- Verify integrity: no hardcoded test results, dummy code, or bypasses
+- Never trust unverified claims; execute builds/tests independently
 
 ## Current Parent
-- Conversation ID: aa58656e-7777-4ab2-9c0f-0179e582567e
-- Updated: 2026-08-21T10:01:05Z
+- Conversation ID: 38e78144-9abc-48a3-8a83-099f912ed48b
+- Updated: not yet
 
 ## Review Scope
-- **Files to review**:
-  - `src/components/game-canvas.tsx`
-  - `src/game/SoundManager.ts`
-  - `src/game/Enemy.ts`
-  - `src/game/GameManager.ts`
-  - `src/game/Player.ts`
-- **Interface contracts**: `C:\src\SpaceInvader\.agents\ORIGINAL_REQUEST.md`, `C:\src\SpaceInvader\.agents\teamwork_preview_worker_m3\handoff.md`
-- **Review criteria**: correctness, edge cases, React render cycles, canvas context state leakage (`ctx.save()` / `ctx.restore()`), Web Audio leaks, visual glitches, conformance, test execution.
+- **Files to review**: src/components/game-canvas.tsx, src/app/page.tsx
+- **Interface contracts**: /Users/user/src/water-invader/PROJECT.md, /Users/user/src/water-invader/COLLABORATION.md, /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- **Review criteria**: mobile UX, touch responsiveness, layout stability across 375x667, 390x844, 412x915; vertical/horizontal overflow prevention; touch controls accessibility; test selector preservation; test pass rate.
 
 ## Review Checklist
 - **Items reviewed**:
-  - F-10: Canvas aspect ratio normalization (`aspect-[3/4]`)
-  - F-11: HiDPI / Retina devicePixelRatio canvas buffer scaling & pointer mapping
-  - F-13: Top HUD overlay occlusion fix (Spawn Y lowered to 80 / Boss 90)
-  - F-14: Boss HP bar, Hit Flash FX (0.08s white silhouette), 8-FX Audio suite with mute & node disconnection
+  - `src/components/game-canvas.tsx` (TopHUD mobile compacting, border-2 sm:border-4, aspect-[3/4] preservation, mobile controls wrapper)
+  - `src/app/page.tsx` (justify-start on mobile, responsive padding, hidden keyboard hints on mobile)
+  - `tests/cross_device_touch_verification.spec.ts` (30/30 passed)
+  - `tests/mobile_controls_and_touch_evasion.spec.ts` (10/10 passed)
+  - `tests/bughunt_ui_responsive_viewports.spec.ts` (25/25 passed)
+  - `tests/m3_verification.spec.ts` (6/6 passed)
+  - `tests/adversarial_challenger_m3_1.spec.ts` (17/17 passed)
 - **Verdict**: APPROVE
-- **Unverified claims**: None (All verified via direct execution)
+- **Unverified claims**: None. All core claims independently verified.
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - Canvas context state leak across nested draw calls -> PASS (All save/restore paired)
-  - Web Audio memory leaks from undisconnected oscillators -> PASS (`osc.onended` disconnections verified)
-  - HiDPI Retina coordinate desync on arbitrary DPR -> PASS (Logical coordinates fixed at 600x800)
-  - Rapid hit flash damage underflow / overflow -> PASS (Clamped cleanly)
-- **Vulnerabilities found**: 0
-- **Untested angles**: None
+  - CSS specificity collision between `p-4` and `max-sm:!p-2`: verified `!p-2` wins on mobile while `.p-4` class selector remains present in DOM.
+  - Vertical canvas overflow on small viewports (375x667): verified canvas top at Y:48, fits entire canvas + controls within 667px without scrolling.
+  - Center corridor enemy spawn occlusion: verified corridor widened from 41.6px to >152px on mobile tall.
+  - Multi-touch, boundary clamping, and dynamic resizing: passed all cross-device tests across Galaxy S25+, iPhone 16 Pro, iPhone 14, iPhone SE, and Galaxy Z Fold.
+- **Vulnerabilities found**: 0 vulnerabilities, 0 integrity violations.
+- **Untested angles**: None. Full matrix of mobile viewports tested.
 
 ## Key Decisions Made
-- 검증 완료: npm run build (Pass, Code 0), m3_verification (6/6), Core regression (33/33), Adversarial (33/33).
-- 최종 판정: APPROVE.
+- Independent test execution performed for all assigned suites.
+- Type check (`npx tsc --noEmit`) and production build (`npm run build`) confirmed clean (0 errors).
+- Binary verdict decided: APPROVE.
 
 ## Artifact Index
-- `handoff.md` — Final review report and verdict (APPROVE)
-- `progress.md` — Liveness heartbeat and milestone progress
+- /Users/user/src/water-invader/.agents/teamwork_preview_reviewer_m3_2/handoff.md — Final review report

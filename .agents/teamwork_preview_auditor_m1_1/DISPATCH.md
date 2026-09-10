@@ -1,28 +1,30 @@
-## 2026-08-26T10:50:55Z
-You are the Forensic Auditor for Milestone M1 (Faction System & Multi-Directional Combat Core).
-Working directory: /Users/a7111/src/water-invader/.agents/teamwork_preview_auditor_m1_1
+# Task Assignment: Forensic Auditor for Milestone 1 (Pre-Continue Shop Access)
 
-Authoritative references:
-- Read /Users/a7111/src/water-invader/.agents/ORIGINAL_REQUEST.md
-- Read /Users/a7111/src/water-invader/PROJECT.md
-- Read /Users/a7111/src/water-invader/TEST_READY.md
+- Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_auditor_m1_1
+- Original Request: /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- Scope Document: /Users/user/src/water-invader/PROJECT.md
+- Collaboration Guide: /Users/user/src/water-invader/COLLABORATION.md
+- Worker M1 Report: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m1_continue_shop_1/handoff.md
 
-Audit Mission:
-Perform forensic integrity inspection on all modified files:
-- `src/game/types.ts`
-- `src/game/Entity.ts`
-- `src/game/Bullet.ts`
-- `src/game/Player.ts`
-- `src/game/Helper.ts`
-- `src/game/Enemy.ts`
-- `src/game/GameManager.ts`
-- `src/game/SoundManager.ts`
+## Objective
+Perform forensic integrity verification of Milestone 1 changes in `src/components/game-canvas.tsx` and `src/game/GameManager.ts`:
+1. Check for integrity violations: NO hardcoded test results, NO dummy/facade implementations, NO fake state outputs.
+2. Verify that `handleContinueToShop`, `ShopModal`, `ShopUpgradePanel`, `prepareContinue()`, and `continueGame()` execute genuine logic.
+3. Report binary verdict: CLEAN or INTEGRITY VIOLATION in `handoff.md`.
 
-Integrity Checks:
-1. Check for hardcoded test results, bypasses, dummy or facade logic designed solely to satisfy tests without real computation.
-2. Check that the multi-faction collision matrix, bullet interception, and crossfire rewards calculate genuine mathematics and state updates.
-3. Check that procedural Web Audio synthesis in `SoundManager.ts` creates real oscillators/gains and cleans them up properly.
-4. Run `npx tsc --noEmit` and `npm run build`.
-5. State your verdict: CLEAN or INTEGRITY VIOLATION.
+## 2026-09-07T15:59:32Z
+You are the Forensic Auditor for Milestone 1 (Pre-Continue Shop Access & Stability) on Water Invader.
+Working Directory: /Users/user/src/water-invader/.agents/teamwork_preview_auditor_m1_1
+Identity & Assignment: Read /Users/user/src/water-invader/.agents/teamwork_preview_auditor_m1_1/DISPATCH.md
+Authoritative specifications:
+- /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md
+- /Users/user/src/water-invader/PROJECT.md
+- /Users/user/src/water-invader/COLLABORATION.md
+- Worker M1 Report: /Users/user/src/water-invader/.agents/teamwork_preview_worker_m1_continue_shop_1/handoff.md
 
-Write your report to `/Users/a7111/src/water-invader/.agents/teamwork_preview_auditor_m1_1/handoff.md` and send a message.
+Objective:
+Perform forensic integrity verification of Milestone 1 changes in `src/components/game-canvas.tsx` and `src/game/GameManager.ts`:
+1. Check for integrity violations: NO hardcoded test results, NO dummy/facade implementations, NO fake state outputs.
+2. Verify that `handleContinueToShop`, `ShopModal`, `ShopUpgradePanel`, `prepareContinue()`, and `continueGame()` execute genuine logic.
+3. Report binary verdict: CLEAN or INTEGRITY VIOLATION in `handoff.md`.
+
