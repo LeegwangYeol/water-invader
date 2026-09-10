@@ -322,7 +322,9 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
     const speedRatio = Math.max(0.25, 1.0 - 0.25 * n);
     // Adjust player speed according to attached count
     if (n > 0) {
-      player.speed = 300 * speedRatio;
+      player.speed = (player.baseSpeed || 300) * speedRatio;
+    } else {
+      player.speed = player.baseSpeed || 300;
     }
 
     // 3. Scrape off Clingers against Barricades
@@ -463,10 +465,12 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
 
               // Swallowed into bladder
               if (dist < (unit.currentSacRadius || 24)) {
-                b.isDead = true;
-                unit.absorbedBullets = (unit.absorbedBullets || 0) + 1;
-                unit.currentSacRadius = Math.min(80, (unit.currentSacRadius || 24) + 4);
-                createExplosion(b.position.x, b.position.y, '#84cc16', 5, 0.6);
+                if (!b.piercing) {
+                  b.isDead = true;
+                  unit.absorbedBullets = (unit.absorbedBullets || 0) + 1;
+                  unit.currentSacRadius = Math.min(80, (unit.currentSacRadius || 24) + 4);
+                  createExplosion(b.position.x, b.position.y, '#84cc16', 5, 0.6);
+                }
               }
             }
           }
@@ -646,6 +650,16 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
             }
           } else if (isFrontalHit && !unit.isShieldShattered) {
             // 85% damage mitigation on frontal bone shield!
+            if (unit.boneShieldHp !== undefined) {
+              unit.boneShieldHp = Math.max(0, unit.boneShieldHp - rawDamage);
+              if (unit.boneShieldHp <= 0) {
+                unit.boneShieldHp = 0;
+                unit.isShieldShattered = true;
+                unit.stunTimer = 2.5;
+                createExplosion(unit.position.x, unit.position.y, '#cbd5e1', 25, 2.0);
+                triggerScreenShake(0.25, 6);
+              }
+            }
             rawDamage *= 0.15;
             createExplosion(b.position.x, b.position.y, '#94a3b8', 6, 0.7);
           } else if (isRearHit) {

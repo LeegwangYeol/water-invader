@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GameManager, HOMING_MISSILE_COSTS } from '../game/GameManager';
 import { GameState, CrisisState, EndGameCrisisState, CrisisPhase } from '../game/types';
 import { soundManager } from '../game/SoundManager';
+import { DeepSeaHangar } from './DeepSeaHangar';
+import { BridgeCrewRoster } from './BridgeCrewRoster';
 
 // ============================================================================
 // Memoized Sub-Components (Prevents DOM diffing on Score / Combo / Timer tick)
@@ -298,29 +300,49 @@ export const MobileControls = React.memo(function MobileControls({
         </button>
       </div>
 
-      <div className="flex gap-1.5 w-full items-center">
+      <div className="flex gap-1 w-full items-center">
         <button 
-          className="flex-1 min-h-[38px] py-1 rounded-lg text-[11px] font-bold text-purple-200 bg-purple-900/80 active:bg-purple-700 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer border border-purple-500/30"
+          className="flex-1 min-h-[38px] py-1 rounded-lg text-[10px] font-bold text-amber-200 bg-amber-950/80 active:bg-amber-700 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer border border-amber-500/30"
           onPointerDown={onTouchStart('1')}
           onPointerUp={onTouchEnd('1')}
           onPointerLeave={onTouchEnd('1')}
           onPointerCancel={onTouchEnd('1')}
-          title="Weapons Officer: Ballistic Salvo (1)"
+          title="Chief Engineer Ingrid: SCRAM Purge (1)"
         >
           OFFICER 1
         </button>
         <button 
-          className="flex-1 min-h-[38px] py-1 rounded-lg text-[11px] font-bold text-purple-200 bg-purple-900/80 active:bg-purple-700 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer border border-purple-500/30"
+          className="flex-1 min-h-[38px] py-1 rounded-lg text-[10px] font-bold text-red-200 bg-red-950/80 active:bg-red-700 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer border border-red-500/30"
           onPointerDown={onTouchStart('2')}
           onPointerUp={onTouchEnd('2')}
           onPointerLeave={onTouchEnd('2')}
           onPointerCancel={onTouchEnd('2')}
-          title="Engineer: Ballast Shield (2)"
+          title="Master Gunner Jax: Titan Salvo (2)"
         >
           OFFICER 2
         </button>
         <button 
-          className="flex-[2] min-h-[44px] py-2 bg-blue-600/80 active:bg-blue-400 rounded-xl flex items-center justify-center text-base sm:text-lg font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)] cursor-pointer"
+          className="flex-1 min-h-[38px] py-1 rounded-lg text-[10px] font-bold text-emerald-200 bg-emerald-950/80 active:bg-emerald-700 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer border border-emerald-500/30"
+          onPointerDown={onTouchStart('3')}
+          onPointerUp={onTouchEnd('3')}
+          onPointerLeave={onTouchEnd('3')}
+          onPointerCancel={onTouchEnd('3')}
+          title="Hydro-Officer Ren: Stasis Pulse (3)"
+        >
+          OFFICER 3
+        </button>
+        <button 
+          className="flex-1 min-h-[38px] py-1 rounded-lg text-[10px] font-bold text-cyan-200 bg-cyan-950/80 active:bg-cyan-700 pointer-events-auto touch-none select-none flex items-center justify-center cursor-pointer border border-cyan-500/30"
+          onPointerDown={onTouchStart('4')}
+          onPointerUp={onTouchEnd('4')}
+          onPointerLeave={onTouchEnd('4')}
+          onPointerCancel={onTouchEnd('4')}
+          title="Dr. Lyra Vance: Bio-Decoy (4)"
+        >
+          OFFICER 4
+        </button>
+        <button 
+          className="flex-[1.8] min-h-[44px] py-2 bg-blue-600/80 active:bg-blue-400 rounded-xl flex items-center justify-center text-base sm:text-lg font-black text-white select-none touch-none shadow-[0_0_15px_rgba(59,130,246,0.5)] cursor-pointer"
           onPointerDown={onTouchStart(' ')}
           onPointerUp={onTouchEnd(' ')}
           onPointerLeave={onTouchEnd(' ')}
@@ -490,6 +512,8 @@ interface ShopModalProps {
   isContinue?: boolean;
   wave?: number;
   lang: string;
+  gameManager?: GameManager | null;
+  onChassisSelect?: (chassisId: any) => void;
 }
 
 export const ShopModal = React.memo(function ShopModal({
@@ -507,6 +531,8 @@ export const ShopModal = React.memo(function ShopModal({
   isContinue,
   wave,
   lang,
+  gameManager,
+  onChassisSelect,
 }: ShopModalProps) {
   const t = (ko: string, en: string) => (lang === 'ko' ? ko : en);
 
@@ -531,6 +557,20 @@ export const ShopModal = React.memo(function ShopModal({
         <p className="text-xs sm:text-2xl text-white mb-2 sm:mb-6 text-center px-2">
           {subtitle}
         </p>
+
+        {/* Deep-Sea Hangar & Modular Chassis Selector */}
+        <DeepSeaHangar
+          gameManager={gameManager}
+          lang={lang}
+          onChassisSelect={onChassisSelect}
+        />
+
+        {/* Bridge Crew Officer Deck & Synergy Roster */}
+        <BridgeCrewRoster
+          gameManager={gameManager}
+          currency={currency}
+          lang={lang}
+        />
         
         <ShopUpgradePanel
           currency={currency}
@@ -1019,6 +1059,12 @@ export default function GameCanvas() {
     setGameState(GameState.SHOP);
   }, []);
 
+  const handleChassisSelect = useCallback(() => {
+    if (gameManagerRef.current?.player) {
+      setHp(gameManagerRef.current.player.hp);
+    }
+  }, []);
+
   const buyFireRate = useCallback(() => {
     if (gameManagerRef.current) {
       gameManagerRef.current.upgradeFireRate();
@@ -1416,6 +1462,7 @@ export default function GameCanvas() {
         {/* Shop Modal (Between Waves & Pre-Game & Continue) */}
         {gameState === GameState.SHOP && (
           <ShopModal
+            gameManager={gameManagerRef.current}
             currency={currency}
             hp={hp}
             upgrades={upgrades}
@@ -1426,6 +1473,7 @@ export default function GameCanvas() {
             onBuyHomingMissiles={buyHomingMissiles}
             onRepairTank={repairTank}
             onNextWave={isContinueShop ? handleResumeContinuedWave : (isPreGameShop ? startGame : startNextWave)}
+            onChassisSelect={handleChassisSelect}
             isPreGame={isPreGameShop}
             isContinue={isContinueShop}
             wave={wave}

@@ -28,6 +28,9 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
   public currentDraftCards: BoonCard[] = [];
   public selectedDraftIndex: number = -1;
 
+  // Pressure debuff state tracking
+  public isSpeedThrottled: boolean = false;
+
   // Emergency Ballast Jettison one-time run flag
   public emergencyJettisonUsed: boolean = false;
 
@@ -77,6 +80,7 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
     this.runState.draftedBoons = [];
     this.runState.rerollsAvailable = 2;
     this.emergencyJettisonUsed = false;
+    this.isSpeedThrottled = false;
 
     // Generate Sector 1 DAG
     this.runState.mapNodes = BathymetricDAG.generateSectorDAG(1);
@@ -197,7 +201,8 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
 
       case DescentNodeType.COMBAT:
       case DescentNodeType.HAZARD_ANOMALY:
-        // Normal combat - draft reward granted on clearing
+      case DescentNodeType.APEX_BOSS:
+        // Combat encounter - draft reward granted on clearing
         break;
     }
   }
@@ -238,13 +243,13 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
 
   /**
    * Update degradation of Max HP containers according to hydrostatic stress:
-   * Stress < 75%: 0 crushed hearts
-   * 75% <= Stress < 95%: 1 crushed heart
+   * Stress < 80%: 0 crushed hearts
+   * 80% <= Stress < 95%: 1 crushed heart (Max HP temporarily throttled by -1)
    * Stress >= 95%: 2 crushed hearts
    */
   private updateDegradedContainers(): void {
     const stress = this.runState.pressure.stressPercentage;
-    if (stress < 75) {
+    if (stress < 80) {
       this.runState.pressure.degradedHeartContainers = 0;
     } else if (stress < 95) {
       this.runState.pressure.degradedHeartContainers = 1;
@@ -260,12 +265,13 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
   public update(deltaTime: number, context: FlagshipUpdateContext): void {
     if (!this.runState.isActive) return;
 
-    // 1. Continuous Hydrostatic Depth & Pressure Progression
+    // 1. Continuous Hydrostatic Depth & Pressure Progression (dP/dt = kd * Depth / 1000)
     const depth = this.runState.pressure.currentDepthMeters;
     this.runState.pressure.ambientPressureBar = Number((1.0 + depth * 0.1).toFixed(1));
 
-    // Base stress build rate: ~0.55% / sec scaled by depth (Depth / 2500)
-    let accumulationRate = 0.55 * (1.0 + depth / 2500.0);
+    // Base stress build rate: dP/dt = kd * (Depth / 1000)
+    const kd = 0.55;
+    let accumulationRate = kd * Math.max(1.0, depth / 1000.0);
 
     // Boons & Curses modifiers
     if (this.runState.draftedBoons.some((b) => b.id === 'boon_titanium_bulkhead')) {
@@ -280,7 +286,18 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
       this.runState.pressure.stressPercentage + accumulationRate * deltaTime
     );
 
-    // 2. Throttle Max HP containers based on stress
+    // 2. 50% Pressure: movement speed -15%
+    if (this.runState.pressure.stressPercentage >= 50) {
+      if (!this.isSpeedThrottled && context.player) {
+        context.player.speed *= 0.85;
+        this.isSpeedThrottled = true;
+      }
+    } else if (this.isSpeedThrottled && context.player) {
+      context.player.speed /= 0.85;
+      this.isSpeedThrottled = false;
+    }
+
+    // 3. 80% Pressure: Throttle Max HP containers based on stress (-1 at 80%)
     this.updateDegradedContainers();
     const effectiveMaxHp = Math.max(
       1,
@@ -291,7 +308,7 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
       context.player.hp = Math.min(context.player.hp, context.player.maxHp);
     }
 
-    // 3. Hull Breach Leak Damage Engine
+    // 4. Hull Breach Leak Damage Engine (1 damage every 12s until vented)
     const breachThreshold = this.runState.draftedBoons.some(
       (b) => b.id === 'curse_corrupted_singularity'
     )
@@ -302,8 +319,8 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
       this.runState.pressure.isHullBreached = true;
       this.runState.pressure.leakDamageTimer += deltaTime;
 
-      // Leak damage tick every 8 seconds
-      if (this.runState.pressure.leakDamageTimer >= 8.0) {
+      // Leak damage tick every 12 seconds until vented
+      if (this.runState.pressure.leakDamageTimer >= 12.0) {
         this.runState.pressure.leakDamageTimer = 0;
         context.player.hp = Math.max(1, context.player.hp - 1);
         context.triggerScreenShake(0.4, 8);
@@ -422,6 +439,7 @@ export class EndlessDescent implements IEndlessDescentManager, IFlagshipSubsyste
     }
     this.isMapModalOpen = false;
     this.isDraftModalOpen = false;
+    this.isSpeedThrottled = false;
     this.currentDraftCards = [];
     this.selectedDraftIndex = -1;
   }

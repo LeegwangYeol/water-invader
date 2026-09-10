@@ -140,6 +140,7 @@ export interface IPrismLaserSystem extends IFlagshipSubsystem {
   isLockedOut: boolean;
   lockoutTimer: number;     // 2.2 s
   activePrisms: RefractionPrism[];
+  inCoolingHalo?: boolean;
   getHeatZone(): LaserHeatZone;
   deployPrism(x: number, y: number): boolean;
   setFiring(firing: boolean): void;
@@ -390,6 +391,8 @@ export interface ICrewManager extends IFlagshipSubsystem {
   promoteOfficer(officerId: OfficerId): boolean;
   triggerAbility(officerId: OfficerId, context: FlagshipUpdateContext): boolean;
   triggerSubZeroPurge?(context: FlagshipUpdateContext): boolean;
+  isPerkActive(perkId: string): boolean;
+  handlePointer?(x: number, y: number, context: FlagshipUpdateContext): boolean;
   drawHUD(ctx: CanvasRenderingContext2D): void;
 }
 
@@ -535,6 +538,7 @@ export enum DescentNodeType {
   SUNKEN_SHRINE = 'SUNKEN_SHRINE',
   HAZARD_ANOMALY = 'HAZARD_ANOMALY',
   OUTPOST = 'OUTPOST',
+  APEX_BOSS = 'APEX_BOSS',
 }
 
 export type BoonRarity = 'COMMON' | 'RARE' | 'LEGENDARY' | 'CORRUPTED';
@@ -650,6 +654,9 @@ export interface HydrophoneWaterfallState {
 export interface ISonarRenderer extends IFlagshipSubsystem {
   radarState: SonarRadarState;
   waterfallState: HydrophoneWaterfallState;
+  spectrogram?: any;
+  hullStress?: any;
+  stressFX?: any;
   spawnWavefront(x: number, y: number, color?: string, maxRadius?: number): void;
   addFracture(stressPercentage: number): void;
   drawSonarRadar(ctx: CanvasRenderingContext2D): void;
@@ -690,7 +697,7 @@ export interface IFlagshipManager {
 
   // Game Event Callbacks
   onWaveComplete(wave: number, context: FlagshipUpdateContext): void;
-  onEnemyKilled(enemy: Enemy, context: FlagshipUpdateContext): void;
+  onEnemyKilled(enemy: Enemy, context: FlagshipUpdateContext, weaponType?: 'kinetic' | 'missile' | 'pierce'): void;
   onPlayerDamage(amount: number, context: FlagshipUpdateContext): void;
   checkRevive?(context: FlagshipUpdateContext): boolean;
 }

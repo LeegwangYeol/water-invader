@@ -376,7 +376,16 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
             if (distToPlayer <= 240) {
               // Overload weapon heat sinks: fire rate -50% for 3s
               player.suppressionLevel = Math.min(100, player.suppressionLevel + 40);
+              (player as any).empFireRateDebuffTimer = 3.0;
+              (player as any).empFireRateMultiplier = 0.5;
               createExplosion(player.position.x + 20, player.position.y, '#00f0ff', 15, 1.5);
+            }
+
+            // Halt barricade repairs for 4.0s
+            if (context.barricades) {
+              for (const b of context.barricades) {
+                (b as any).repairPausedTimer = Math.max((b as any).repairPausedTimer || 0, 4.0);
+              }
             }
           }
           break;

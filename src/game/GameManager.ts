@@ -397,6 +397,7 @@ export class GameManager {
   }
 
   public getFlagshipContext(): FlagshipUpdateContext {
+    const self = this;
     return {
       player: this.player,
       enemies: this.enemies,
@@ -405,8 +406,18 @@ export class GameManager {
       helpers: this.helpers,
       particles: this.particles,
       level: this.level,
-      score: this.score,
-      currency: this.currency,
+      get score() {
+        return self.score;
+      },
+      set score(val: number) {
+        self.score = val;
+      },
+      get currency() {
+        return self.currency;
+      },
+      set currency(val: number) {
+        self.currency = val;
+      },
       createExplosion: (x: number, y: number, color?: string, count?: number, scale?: number) =>
         this.createExplosion(x, y, color || '#38bdf8', count || 15, scale || 1.0),
       triggerScreenShake: (duration: number, _amount?: number) => this.triggerScreenShake(duration),
@@ -498,6 +509,9 @@ export class GameManager {
       this.animationFrameId = 0;
     }
     soundManager.init();
+    if (this.flagshipManager && this.player) {
+      this.flagshipManager.modularChassis.applyToPlayer(this.player);
+    }
     this.state = GameState.PLAYING;
     this.isPaused = false;
     this.accumulator = 0;
@@ -519,6 +533,9 @@ export class GameManager {
       this.player = new Player(this.logicalWidth, this.logicalHeight);
     }
     this.player.isDead = false;
+    if (this.flagshipManager && this.player) {
+      this.flagshipManager.modularChassis.applyToPlayer(this.player);
+    }
     this.player.hp = Math.max(3, this.player.hp);
     this.player.position.x = this.logicalWidth / 2 - 25;
     this.player.position.y = this.logicalHeight - 60;
@@ -596,6 +613,9 @@ export class GameManager {
       this.player = new Player(this.logicalWidth, this.logicalHeight);
     }
     this.player.isDead = false;
+    if (this.flagshipManager && this.player) {
+      this.flagshipManager.modularChassis.applyToPlayer(this.player);
+    }
     this.player.hp = Math.max(3, this.player.hp);
     this.player.position.x = this.logicalWidth / 2 - 25;
     this.player.position.y = this.logicalHeight - 60;
@@ -1817,6 +1837,9 @@ export class GameManager {
     if (count > 5) {
       soundManager.playExplosion();
     }
+    if (this.flagshipManager?.sonarRenderer) {
+      this.flagshipManager.sonarRenderer.spawnWavefront(x, y, color, Math.max(120, count * 15));
+    }
     for (let i = 0; i < count; i++) {
       let p = this.particlePool.pop();
       if (p) {
@@ -1828,8 +1851,11 @@ export class GameManager {
     }
   }
 
-  private triggerScreenShake(duration: number) {
+  private triggerScreenShake(duration: number, amount?: number) {
     this.shakeTimer = duration;
+    if (amount && this.flagshipManager?.sonarRenderer?.hullStress) {
+      this.flagshipManager.sonarRenderer.hullStress.triggerTrauma(Math.min(1.0, amount / 14));
+    }
   }
 
   private checkCollisions(deltaTime: number = 1 / 60) {
@@ -1965,11 +1991,15 @@ export class GameManager {
             if (remainingDmg > 0) {
               enemy.hp -= remainingDmg;
             }
+            if (isPlayerSource) {
+              (enemy as any).lastHitWeaponType = isHoming ? 'missile' : (bullet.piercing ? 'pierce' : 'kinetic');
+            }
           } else {
             // Standard Damage
             enemy.hp -= bullet.damage;
             enemy.hitFlashTimer = 0.08;
             if (isPlayerSource) {
+              (enemy as any).lastHitWeaponType = isHoming ? 'missile' : (bullet.piercing ? 'pierce' : 'kinetic');
               soundManager.playEnemyHit();
               this.createExplosion(bullet.position.x, bullet.position.y, '#3b82f6', 5);
             } else {
@@ -2047,7 +2077,8 @@ export class GameManager {
                     this.handleCarrierSplit(adjEnemy);
                   }
                   if (isPlayerSource) {
-                    this.handleEnemyKill(adjEnemy);
+                    (adjEnemy as any).lastHitWeaponType = 'missile';
+                    this.handleEnemyKill(adjEnemy, bullet);
                   } else {
                     this.handleCrossfireKill(adjEnemy, bullet.faction);
                   }
@@ -2099,7 +2130,7 @@ export class GameManager {
             }
 
             if (isPlayerSource) {
-              this.handleEnemyKill(enemy);
+              this.handleEnemyKill(enemy, bullet);
             } else {
               this.handleCrossfireKill(enemy, bullet.faction);
             }
@@ -2278,9 +2309,19 @@ export class GameManager {
     }
   }
 
-  private handleEnemyKill(enemy?: Enemy) {
+  private handleEnemyKill(enemy?: Enemy, bullet?: Bullet | any) {
     if (enemy && this.flagshipManager) {
-      this.flagshipManager.onEnemyKilled(enemy, this.getFlagshipContext());
+      let weaponType: 'kinetic' | 'missile' | 'pierce' = 'kinetic';
+      if (bullet) {
+        if (bullet instanceof HomingMissile) {
+          weaponType = 'missile';
+        } else if (bullet.piercing) {
+          weaponType = 'pierce';
+        }
+      } else if ((enemy as any)?.lastHitWeaponType) {
+        weaponType = (enemy as any).lastHitWeaponType;
+      }
+      this.flagshipManager.onEnemyKilled(enemy, this.getFlagshipContext(), weaponType);
     }
     this.combo++;
     this.comboTimer = 2.0; // 2 seconds to keep combo
@@ -2584,10 +2625,14 @@ export class GameManager {
     // LAYER 2: WORLD LAYER (Save context, apply screen shake, render world)
     // =========================================================================
     this.ctx.save();
-    if (this.shakeTimer > 0) {
+    const trauma = this.flagshipManager?.sonarRenderer?.hullStress?.screenShakeTrauma ?? 0;
+    if (this.shakeTimer > 0 || trauma > 0) {
       let shakeAmount = 2;
       if (this.warningTimer > 0) {
         shakeAmount = 5;
+      }
+      if (trauma > 0) {
+        shakeAmount = Math.max(shakeAmount, trauma * 14);
       }
       const offsetX = (Math.random() - 0.5) * shakeAmount;
       const offsetY = (Math.random() - 0.5) * shakeAmount;
@@ -2937,6 +2982,17 @@ export class GameManager {
       return this.flagshipManager.handlePointer(x, y, isDown, this.getFlagshipContext(), button);
     }
     return false;
+  }
+
+  public selectChassis(id: any): boolean {
+    if (!this.flagshipManager?.modularChassis) return false;
+    const res = this.flagshipManager.modularChassis.selectChassis(id);
+    if (res && this.player) {
+      this.flagshipManager.modularChassis.applyToPlayer(this.player);
+      this.updateScoreUI();
+      this.updateUpgradesUI();
+    }
+    return res;
   }
 
   public getUpgrades(): { fireRate: number; multiShot: number; piercing: number; hasAcidShield: boolean; homingMissiles: number } {

@@ -6,6 +6,7 @@
 
 import { GlassFractureLine, FlagshipUpdateContext } from '../types';
 import { Vector2D } from '../../types';
+import { soundManager } from '../../SoundManager';
 
 export class HullStressFX {
   public fractureLines: GlassFractureLine[] = [];
@@ -18,6 +19,7 @@ export class HullStressFX {
 
   // Time accumulator for groaning pulse and bubble animation
   private animTime: number = 0;
+  private hullGroanCooldown: number = 0;
 
   constructor() {
     this.fractureLines = [];
@@ -105,6 +107,20 @@ export class HullStressFX {
     // Decay trauma over 0.22s
     if (this.screenShakeTrauma > 0) {
       this.screenShakeTrauma = Math.max(0, this.screenShakeTrauma - deltaTime * 4.5);
+    }
+
+    // Composite hull stress: accumulate from player HP degradation (100 * (1 - HP / maxHP))
+    if (context.player && context.player.maxHp > 0) {
+      const hpStress = Math.max(0, Math.min(100, (1 - context.player.hp / context.player.maxHp) * 100));
+      this.currentStress = Math.max(this.currentStress, hpStress);
+    }
+
+    // Periodic low-frequency hull groan audio when stress > 50
+    if (this.hullGroanCooldown > 0) {
+      this.hullGroanCooldown -= deltaTime;
+    } else if (this.currentStress > 50) {
+      soundManager.playHullGroan();
+      this.hullGroanCooldown = 6.0 + Math.random() * 4.0;
     }
 
     // Spawn micro-bubbles along cracks when stress is high

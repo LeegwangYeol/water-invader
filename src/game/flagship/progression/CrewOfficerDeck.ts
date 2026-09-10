@@ -57,6 +57,8 @@ export class CrewOfficerDeckManager implements ICrewManager {
   public activeStasisTimer: number = 0; // Ren's Stasis duration timer
   public aegisReflectCooldown: number = 0; // Ingrid + Ren 12s reflect cooldown
   public barricadeRetaliationCooldown: number = 0; // Steam & Thunder cooldown
+  public ingridRegenTimer: number = 0;
+  public renEvasionTimer: number = 0;
 
   private previousBarricadeHpSum: number = 0;
   private activeBanners: TacticalBanner[] = [];
@@ -462,6 +464,16 @@ export class CrewOfficerDeckManager implements ICrewManager {
     return true;
   }
 
+  public isPerkActive(perkId: string): boolean {
+    for (const officer of Object.values(this.state.officers)) {
+      if (this.state.stationAssignments[officer.station] === officer.id && !officer.isExhausted) {
+        const perk = officer.perks.find((p) => p.id === perkId);
+        if (perk && perk.isActive) return true;
+      }
+    }
+    return false;
+  }
+
   // --------------------------------------------------------------------------
   // Resonances Evaluation: 6 Dual + 1 Quad
   // --------------------------------------------------------------------------
@@ -490,8 +502,8 @@ export class CrewOfficerDeckManager implements ICrewManager {
         nameEn: 'Steam & Thunder',
         officerA: 'INGRID',
         officerB: 'JAX',
-        descriptionKo: '바리케이드 피격 시 2발의 고온 증기 유도 미사일 자동 반격',
-        descriptionEn: 'Barricade damage triggers 2 superheated steam retaliation missiles',
+        descriptionKo: '바리케이드 수복 시 4발의 고온 증기 유도 미사일 자동 발사',
+        descriptionEn: 'Barricade repairs auto-fire 4 superheated steam missiles',
         isActive: true,
       });
     }
@@ -621,21 +633,66 @@ export class CrewOfficerDeckManager implements ICrewManager {
   public handleInput(key: string, isDown: boolean, context: FlagshipUpdateContext): boolean {
     if (!isDown) return false;
 
-    // Keybindings: [1]/Q, [2]/E, [3]/R, [4]/F
-    if (key === '1' || key === 'q' || key === 'Q') {
+    // Keybindings: [1], [2], [3], [4] strictly for bridge officers (no Q/E/F conflict)
+    if (key === '1') {
       return this.triggerAbility('INGRID', context);
     }
-    if (key === '2' || key === 'e' || key === 'E') {
+    if (key === '2') {
       return this.triggerAbility('JAX', context);
     }
-    if (key === '3' || key === 'r' || key === 'R') {
+    if (key === '3') {
       return this.triggerAbility('REN', context);
     }
-    if (key === '4' || key === 'f' || key === 'F') {
+    if (key === '4') {
       return this.triggerAbility('LYRA', context);
     }
 
     return false;
+  }
+
+  public handlePointer(x: number, y: number, context: FlagshipUpdateContext): boolean {
+    const officerIds: OfficerId[] = ['INGRID', 'JAX', 'REN', 'LYRA'];
+    const startX = 12;
+    const startY = 82;
+    const cardW = 124;
+    const cardH = 36;
+    const gapY = 8;
+
+    for (let i = 0; i < officerIds.length; i++) {
+      const cy = startY + i * (cardH + gapY);
+      if (x >= startX && x <= startX + cardW && y >= cy && y <= cy + cardH) {
+        return this.triggerAbility(officerIds[i], context);
+      }
+    }
+    return false;
+  }
+
+  public onWaveStart(_wave: number, context: FlagshipUpdateContext): void {
+    if (this.isPerkActive('PERK_INGRID_2')) {
+      for (const b of context.barricades) {
+        if (!b.isDead) {
+          b.hp = Math.min(b.maxHp, b.hp + Math.round(b.maxHp * 0.25));
+        }
+      }
+    }
+  }
+
+  public onWaveComplete(wave: number, context: FlagshipUpdateContext): void {
+    this.onWaveStart(wave, context);
+  }
+
+  public onEnemyKilled(enemy: any, context: FlagshipUpdateContext): void {
+    if (this.isPerkActive('PERK_LYRA_1') && context.player) {
+      const pX = context.player.position.x + context.player.size.width / 2;
+      const pY = context.player.position.y + context.player.size.height / 2;
+      const eX = enemy.position.x + enemy.size.width / 2;
+      const eY = enemy.position.y + enemy.size.height / 2;
+      if (Math.hypot(eX - pX, eY - pY) <= 150) {
+        context.currency += 10;
+        context.player.stressLevel = Math.max(0, context.player.stressLevel - 5);
+        context.createExplosion(eX, eY, '#06b6d4', 10, 1.0);
+      }
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -646,6 +703,63 @@ export class CrewOfficerDeckManager implements ICrewManager {
     this.runTime += deltaTime;
     const player = context.player;
     if (!player) return;
+
+    // Synchronize officer passive perks with player
+    const jax1Active = this.isPerkActive('PERK_JAX_1');
+    player.bulletSpeedMultiplier = jax1Active ? 1.25 : 1.0;
+    player.fireRateIntervalMultiplier = jax1Active ? 0.88 : 1.0;
+    player.hasHyperKineticPerk = this.isPerkActive('PERK_JAX_3');
+
+    const ingrid1Active = this.isPerkActive('PERK_INGRID_1');
+    if (ingrid1Active) {
+      if (player.maxHp <= 5) {
+        player.maxHp = 6;
+        player.hp = Math.min(player.maxHp, player.hp + 1);
+      }
+      player.collisionDamageMitigation = 0.30;
+    } else {
+      player.collisionDamageMitigation = 0;
+    }
+
+    if (this.isPerkActive('PERK_INGRID_3') && player.stressLevel > 50) {
+      player.speed = player.baseSpeed * 1.20;
+      this.ingridRegenTimer = (this.ingridRegenTimer || 0) + deltaTime;
+      if (this.ingridRegenTimer >= 25.0) {
+        this.ingridRegenTimer = 0;
+        player.hp = Math.min(player.maxHp, player.hp + 1);
+      }
+    }
+
+    if (this.isPerkActive('PERK_REN_2')) {
+      const pX = player.position.x + player.size.width / 2;
+      const pY = player.position.y + player.size.height / 2;
+      for (const b of context.bullets) {
+        if (!b.isPlayerBullet) {
+          const d = Math.hypot(b.position.x - pX, b.position.y - pY);
+          if (d <= 40) {
+            this.renEvasionTimer = 0.6;
+            break;
+          }
+        }
+      }
+      if (this.renEvasionTimer > 0) {
+        this.renEvasionTimer -= deltaTime;
+        player.speed = player.baseSpeed * 1.15;
+      }
+    }
+
+    if (this.isPerkActive('PERK_REN_3')) {
+      const pX = player.position.x + player.size.width / 2;
+      const pY = player.position.y + player.size.height / 2;
+      for (const e of context.enemies) {
+        if (!e.isDead && (e as any).isCamouflaged) {
+          const d = Math.hypot(e.position.x + e.size.width / 2 - pX, e.position.y + e.size.height / 2 - pY);
+          if (d <= 250) {
+            (e as any).isCamouflaged = false;
+          }
+        }
+      }
+    }
 
     // 1. Tick officer ability cooldowns & gradual fatigue recovery
     for (const id of ['INGRID', 'JAX', 'REN', 'LYRA'] as OfficerId[]) {
@@ -660,13 +774,25 @@ export class CrewOfficerDeckManager implements ICrewManager {
       }
     }
 
-    // 2. Ren's Stasis Pulse Active duration: Slow enemy bullets by 70%
+    // 2. Ren's Stasis Pulse Active duration: Constant 70% slow (v = v_base * 0.30)
     if (this.activeStasisTimer > 0) {
       this.activeStasisTimer -= deltaTime;
       for (const bullet of context.bullets) {
         if (!bullet.isPlayerBullet) {
-          bullet.velocity.x *= 0.85;
-          bullet.velocity.y *= 0.85;
+          if ((bullet as any).stasisOriginalVelocity === undefined) {
+            (bullet as any).stasisOriginalVelocity = { x: bullet.velocity.x, y: bullet.velocity.y };
+            bullet.velocity.x *= 0.30;
+            bullet.velocity.y *= 0.30;
+          }
+        }
+      }
+      if (this.activeStasisTimer <= 0) {
+        for (const bullet of context.bullets) {
+          if (!bullet.isPlayerBullet && (bullet as any).stasisOriginalVelocity) {
+            bullet.velocity.x = (bullet as any).stasisOriginalVelocity.x;
+            bullet.velocity.y = (bullet as any).stasisOriginalVelocity.y;
+            delete (bullet as any).stasisOriginalVelocity;
+          }
         }
       }
     }
@@ -696,7 +822,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
       }
     }
 
-    // 4. Dual Resonance: Steam & Thunder (Retaliate on Barricade damage)
+    // 4. Dual Resonance: Steam & Thunder (Fires 4 steam missiles on Barricade REPAIR)
     const hasSteamAndThunder = this.state.activeResonances.some((r) => r.id === 'RESONANCE_STEAM_THUNDER');
     if (hasSteamAndThunder) {
       let currentBarricadeHp = 0;
@@ -706,20 +832,21 @@ export class CrewOfficerDeckManager implements ICrewManager {
 
       if (this.previousBarricadeHpSum === 0) {
         this.previousBarricadeHpSum = currentBarricadeHp;
-      } else if (currentBarricadeHp < this.previousBarricadeHpSum) {
-        // Barricade took damage!
+      } else if (currentBarricadeHp > this.previousBarricadeHpSum) {
+        // Barricade repaired!
         this.previousBarricadeHpSum = currentBarricadeHp;
         if (this.barricadeRetaliationCooldown <= 0) {
-          this.barricadeRetaliationCooldown = 1.8;
-          // Launch 2 retaliation missiles
+          this.barricadeRetaliationCooldown = 1.0;
+          // Launch 4 superheated steam missiles
           const pX = player.position.x + player.size.width / 2;
           const pY = player.position.y - 10;
-          const m1 = new HomingMissile(pX - 12, pY, 15);
-          const m2 = new HomingMissile(pX + 12, pY, 15);
-          m1.faction = Faction.PLAYER;
-          m2.faction = Faction.PLAYER;
-          context.bullets.push(m1, m2);
-          context.createExplosion(pX, pY, '#f59e0b', 8, 1.0);
+          for (let k = 0; k < 4; k++) {
+            const offset = (k - 1.5) * 12;
+            const m = new HomingMissile(pX + offset, pY, 15);
+            m.faction = Faction.PLAYER;
+            context.bullets.push(m);
+          }
+          context.createExplosion(pX, pY, '#f59e0b', 12, 1.2);
         }
       } else {
         this.previousBarricadeHpSum = currentBarricadeHp;

@@ -6,6 +6,7 @@ export class Player extends Entity {
   public canvasWidth: number;
   public canvasHeight: number;
   public speed: number = 300;
+  public baseSpeed: number = 300;
   public hp: number = 3;
   public maxHp: number = 5;
   
@@ -16,6 +17,7 @@ export class Player extends Entity {
   public hasAcidShield: boolean = false; // Acid Rain immunity shield
   public homingMissiles: number = 0; // 0 = unpurchased, 1..5 = upgrade level
   public ultimateGauge: number = 0; // 0 to 100
+  public isCloaked: boolean = false; // Ghost Sub Sonar Cloak (70% translucent)
 
   public static readonly MISSILE_SPECS = [
     { interval: 2.0, count: 1, damage: 3 }, // Lv 1
@@ -30,6 +32,15 @@ export class Player extends Entity {
   public stressLevel: number = 0; // 0 to 100. High = faster fire rate
   public invincibilityTimer: number = 0; // 0 to 1.0s i-frames
   public hitFlashTimer: number = 0;
+  public empFireRateDebuffTimer: number = 0;
+  public empFireRateMultiplier: number = 1.0;
+  
+  // Crew Officer Deck passive modifiers
+  public bulletSpeedMultiplier: number = 1.0;
+  public fireRateIntervalMultiplier: number = 1.0;
+  public shotCount: number = 0;
+  public hasHyperKineticPerk: boolean = false;
+  public collisionDamageMitigation: number = 0;
   
   private fireTimer: number = 0;
   private missileTimer: number = 0;
@@ -101,6 +112,10 @@ export class Player extends Entity {
       this.stressLevel -= 10 * deltaTime;
       if (this.stressLevel < 0) this.stressLevel = 0;
     }
+    if (this.empFireRateDebuffTimer > 0) {
+      this.empFireRateDebuffTimer -= deltaTime;
+      if (this.empFireRateDebuffTimer < 0) this.empFireRateDebuffTimer = 0;
+    }
     
     let generatedBullets: Bullet[] = [];
     if (this.isShooting) {
@@ -152,7 +167,8 @@ export class Player extends Entity {
   public fire(): Bullet[] {
     // Stress decreases fire rate timer (shoots faster)
     // max stress (100) -> 3x faster
-    const currentFireRate = this.baseFireRate / (1 + (this.stressLevel / 50));
+    const empRate = this.empFireRateDebuffTimer > 0 ? (this.empFireRateMultiplier || 0.5) : 1.0;
+    const currentFireRate = ((this.baseFireRate * this.fireRateIntervalMultiplier) / empRate) / (1 + (this.stressLevel / 50));
     
     if (this.fireTimer > 0) return [];
     
@@ -166,18 +182,24 @@ export class Player extends Entity {
     // Function to calculate random spread velocity
     const getSpread = () => (Math.random() - 0.5) * 2 * spread;
 
+    // Shot counting for Jax Tier 3 Hyper-Kinetic Slug
+    this.shotCount++;
+    const isHyperShot = this.hasHyperKineticPerk && (this.shotCount % 4 === 0);
+    const effectivePiercing = isHyperShot ? (this.piercing + 3) : this.piercing;
+    const effectiveDamage = isHyperShot ? 2 : 1;
+
     // Multi-shot logic
     const centerX = this.position.x + this.size.width / 2 - 3;
-    const baseSpeed = 400;
+    const baseSpeed = 400 * this.bulletSpeedMultiplier;
 
     if (this.multiShot === 1) {
-      const b = new Bullet(centerX, this.position.y, -baseSpeed, 1, true, this.piercing);
+      const b = new Bullet(centerX, this.position.y, -baseSpeed, effectiveDamage, true, effectivePiercing);
       b.velocity.x = getSpread();
       bullets.push(b);
     } else if (this.multiShot === 2) {
-      const b1 = new Bullet(this.position.x + 10, this.position.y, -baseSpeed, 1, true, this.piercing);
+      const b1 = new Bullet(this.position.x + 10, this.position.y, -baseSpeed, effectiveDamage, true, effectivePiercing);
       b1.velocity.x = getSpread() - 20;
-      const b2 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -baseSpeed, 1, true, this.piercing);
+      const b2 = new Bullet(this.position.x + this.size.width - 10 - 6, this.position.y, -baseSpeed, effectiveDamage, true, effectivePiercing);
       b2.velocity.x = getSpread() + 20;
       bullets.push(b1, b2);
     } else if (this.multiShot === 3) {
@@ -185,7 +207,7 @@ export class Player extends Entity {
       angles.forEach((angle, index) => {
         const rad = angle * (Math.PI / 180);
         const offsetX = (index - 1) * 15;
-        const b = new Bullet(centerX + offsetX, this.position.y - (angle === 0 ? 5 : 0), -baseSpeed * Math.cos(rad), 1, true, this.piercing);
+        const b = new Bullet(centerX + offsetX, this.position.y - (angle === 0 ? 5 : 0), -baseSpeed * Math.cos(rad), effectiveDamage, true, effectivePiercing);
         b.velocity.x = baseSpeed * Math.sin(rad) + getSpread();
         bullets.push(b);
       });
@@ -194,7 +216,7 @@ export class Player extends Entity {
       angles.forEach((angle, index) => {
         const rad = angle * (Math.PI / 180);
         const offsetX = (index - 1.5) * 10;
-        const b = new Bullet(centerX + offsetX, this.position.y, -baseSpeed * Math.cos(rad), 1, true, this.piercing);
+        const b = new Bullet(centerX + offsetX, this.position.y, -baseSpeed * Math.cos(rad), effectiveDamage, true, effectivePiercing);
         b.velocity.x = baseSpeed * Math.sin(rad) + getSpread();
         bullets.push(b);
       });
@@ -204,7 +226,7 @@ export class Player extends Entity {
       angles.forEach((angle, index) => {
         const rad = angle * (Math.PI / 180);
         const offsetX = (index - 2) * 8;
-        const b = new Bullet(centerX + offsetX, this.position.y - (angle === 0 ? 5 : 0), -baseSpeed * Math.cos(rad), 1, true, this.piercing);
+        const b = new Bullet(centerX + offsetX, this.position.y - (angle === 0 ? 5 : 0), -baseSpeed * Math.cos(rad), effectiveDamage, true, effectivePiercing);
         b.velocity.x = baseSpeed * Math.sin(rad) + getSpread();
         bullets.push(b);
       });
@@ -212,6 +234,11 @@ export class Player extends Entity {
     
     bullets.forEach(b => {
       b.faction = Faction.PLAYER;
+      if (isHyperShot) {
+        (b as any).isHyperKinetic = true;
+        b.size = { width: 6, height: 14 };
+        b.color = '#f87171';
+      }
     });
 
     return bullets;
@@ -224,6 +251,11 @@ export class Player extends Entity {
     if (this.invincibilityTimer > 0) {
       const isFlicker = Math.floor(this.timeAlive * 30) % 2 === 0;
       ctx.globalAlpha = isFlicker ? 0.3 : 0.85;
+    }
+    
+    // Ghost Sub: Sonar Cloak (70% translucent / 30% opacity)
+    if (this.isCloaked) {
+      ctx.globalAlpha *= 0.3;
     }
     
     const isFlashing = this.hitFlashTimer > 0;

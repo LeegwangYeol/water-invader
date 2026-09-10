@@ -396,3 +396,34 @@ With a feature drop this massive, regression bugs are highly likely. The agent s
 즉시 40명 이상의 초대형 개발 에이전트 부대를 편성하여 `IDEAS_PITCH.md`에 명시된 **12개의 메인(Flagship) 기능을 전부 게임 소스 코드에 구현(Coding & Implementation)**하십시오. 
 물리 엔진, UI, 적군 AI, 신규 모드 등 모든 시스템을 개발하되, 기존 `logicalWidth`/`logicalHeight`는 절대 변경하지 마십시오. 코딩, 테스트, 그리고 Github 배포(Push)까지 원스톱으로 끝까지 밀어붙이십시오. 승인(Proceed)합니다.
 
+## 2026-09-10T10:37:58Z
+
+# Teamwork Project Prompt
+
+> Status: Launched
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: Use a very large team of agents (30+ agents)
+
+Extensive manual QA playtesting and visual inspection of the newly implemented 12 Flagship Features using browser automation and troubleshooting tools.
+
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Deep Visual & Interactive Playtesting
+Use a very large team of agents (30+) to start the Next.js development server and connect to it using browser automation / Chrome DevTools (troubleshooting). Actively play the game, trigger the 12 new flagship features (e.g., Harpoons, Torpedoes, Vents, Bosses), and observe the visual rendering and interactive physics.
+
+### R2. Runtime Error & Layout Verification
+Monitor the browser console for any warnings, memory leaks, or unhandled exceptions that unit tests might have missed. Verify that the CSS responsiveness holds up and the core 600x800 logical canvas is not visually clipped or distorted on different viewport sizes.
+
+### R3. Automated Remediation
+If any visual bugs, console errors, or gameplay physics desyncs are discovered during live playtesting, implement the fixes in the codebase, verify the fixes in the browser, and push the changes to `origin/master`.
+
+## Acceptance Criteria
+
+### Quality & Deployment
+- [ ] A comprehensive playtest report is generated detailing the visual and interactive integrity of the 12 features.
+- [ ] Browser console is free of errors and memory leak warnings after extended gameplay sessions.
+- [ ] Any discovered bugs are fixed, committed, and pushed successfully.
+

@@ -224,7 +224,7 @@ export class BathymetricDAG {
 
     // Stratum 8: Final milestone
     if (stratum === totalStrata) {
-      return DescentNodeType.ELITE;
+      return DescentNodeType.APEX_BOSS;
     }
 
     // Stratum 7: Guaranteed decompression outpost & supply cache
@@ -368,6 +368,17 @@ export class BathymetricDAG {
           nameEn: 'Pressure Outpost',
           descKo: '선체 감압 챔버, 탄약 재장전 및 심해 암시장 거래.',
           descEn: 'Decompression chamber, ammo restock, and benthic black market.',
+        };
+      case DescentNodeType.APEX_BOSS:
+        return {
+          color: '#e11d48',
+          border: '#be123c',
+          glow: 'rgba(225, 29, 72, 0.65)',
+          symbol: '👑',
+          nameKo: '심연 군주 보스',
+          nameEn: 'Apex Boss',
+          descKo: '크라켄 프라임 또는 SMS 레비아탄 출현. 섹터 최종 관문.',
+          descEn: 'Kraken Prime or SMS Leviathan encounter. Final sector gate.',
         };
     }
   }

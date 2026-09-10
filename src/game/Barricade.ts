@@ -14,6 +14,7 @@ export class Barricade extends Entity {
   private cols = 6;
   private rows = 4;
   public blocks: boolean[];
+  public repairPausedTimer: number = 0;
 
   constructor(x: number, y: number, type: BarricadeType) {
     super(x, y, 60, 40);
@@ -37,6 +38,10 @@ export class Barricade extends Entity {
 
   // Bidirectional voxel block synchronization
   public update(deltaTime: number): void {
+    if (this.repairPausedTimer > 0) {
+      this.repairPausedTimer -= deltaTime;
+      if (this.repairPausedTimer < 0) this.repairPausedTimer = 0;
+    }
     const targetActiveBlocks = Math.min(this.blocks.length, Math.max(0, Math.round((this.hp / this.maxHp) * this.blocks.length)));
     let currentActive = this.blocks.filter(b => b).length;
     if (currentActive > targetActiveBlocks) {

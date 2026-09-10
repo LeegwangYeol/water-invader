@@ -80,6 +80,25 @@ export class BiolapseDarknessCycle implements IBiolapseManager {
   public readonly canvasWidth: number = 600;
   public readonly canvasHeight: number = 800;
 
+  // Offscreen canvas buffer to prevent destination-out transparency puncture on main canvas
+  private overlayCanvas: any = null;
+  private overlayCtx: any = null;
+
+  private getOverlayContext(): any {
+    if (typeof document === 'undefined') return null;
+    if (!this.overlayCanvas) {
+      this.overlayCanvas = document.createElement('canvas');
+      this.overlayCanvas.width = this.canvasWidth;
+      this.overlayCanvas.height = this.canvasHeight;
+      this.overlayCtx = this.overlayCanvas.getContext('2d');
+    }
+    if (this.overlayCanvas.width !== this.canvasWidth || this.overlayCanvas.height !== this.canvasHeight) {
+      this.overlayCanvas.width = this.canvasWidth;
+      this.overlayCanvas.height = this.canvasHeight;
+    }
+    return this.overlayCtx;
+  }
+
   constructor(canvasWidth: number = 600, canvasHeight: number = 800) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
@@ -385,10 +404,15 @@ export class BiolapseDarknessCycle implements IBiolapseManager {
 
         // Fully targetable by homing missiles
         (enemy as any).isCamouflaged = false;
+        (enemy as any).diveHasteMultiplier = 1.0;
       } else {
         // Unlit enemy in deep darkness: Predator Ambush State
         if (this.ambientLux < 0.3) {
           (enemy as any).isCamouflaged = true; // Prevents homing missile lock
+          (enemy as any).diveHasteMultiplier = 1.35;
+        } else {
+          (enemy as any).isCamouflaged = false;
+          (enemy as any).diveHasteMultiplier = 1.0;
         }
       }
     }
@@ -414,20 +438,27 @@ export class BiolapseDarknessCycle implements IBiolapseManager {
 
     const darknessAlpha = (1.0 - this.ambientLux) * 0.95;
 
-    // 1. Fullscreen darkness veil (#030712)
-    ctx.fillStyle = `rgba(3, 7, 18, ${darknessAlpha})`;
-    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+    const overlayCtx = this.getOverlayContext();
+    const targetCtx = overlayCtx || ctx;
 
-    // 2. Cut out searchlight beam using destination-out
+    if (overlayCtx) {
+      overlayCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    }
+
+    // 1. Fullscreen darkness veil (#030712)
+    targetCtx.fillStyle = `rgba(3, 7, 18, ${darknessAlpha})`;
+    targetCtx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    // 2. Cut out searchlight beam using destination-out on dedicated buffer
     if (this.isLightOn && this.battery > 0) {
-      ctx.globalCompositeOperation = 'destination-out';
+      targetCtx.globalCompositeOperation = 'destination-out';
 
       const beamAngle = this.getBeamAngle(playerVx);
       const halfAngle = this.getBeamHalfAngle();
       const beamRange = this.getBeamRange();
 
       // Conical searchlight cutout
-      const beamGrad = ctx.createRadialGradient(
+      const beamGrad = targetCtx.createRadialGradient(
         prowX,
         prowY,
         15,
@@ -439,15 +470,15 @@ export class BiolapseDarknessCycle implements IBiolapseManager {
       beamGrad.addColorStop(0.75, 'rgba(0, 0, 0, 0.85)');
       beamGrad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
 
-      ctx.fillStyle = beamGrad;
-      ctx.beginPath();
-      ctx.moveTo(prowX, prowY);
-      ctx.arc(prowX, prowY, beamRange, beamAngle - halfAngle, beamAngle + halfAngle);
-      ctx.closePath();
-      ctx.fill();
+      targetCtx.fillStyle = beamGrad;
+      targetCtx.beginPath();
+      targetCtx.moveTo(prowX, prowY);
+      targetCtx.arc(prowX, prowY, beamRange, beamAngle - halfAngle, beamAngle + halfAngle);
+      targetCtx.closePath();
+      targetCtx.fill();
 
       // Tactile hull aura cutout around player sub
-      const hullAuraGrad = ctx.createRadialGradient(
+      const hullAuraGrad = targetCtx.createRadialGradient(
         prowX,
         playerPos.y + this.cachedPlayerHeight / 2,
         5,
@@ -458,13 +489,18 @@ export class BiolapseDarknessCycle implements IBiolapseManager {
       hullAuraGrad.addColorStop(0, 'rgba(0, 0, 0, 0.95)');
       hullAuraGrad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
 
-      ctx.fillStyle = hullAuraGrad;
-      ctx.beginPath();
-      ctx.arc(prowX, playerPos.y + this.cachedPlayerHeight / 2, 55, 0, Math.PI * 2);
-      ctx.fill();
+      targetCtx.fillStyle = hullAuraGrad;
+      targetCtx.beginPath();
+      targetCtx.arc(prowX, playerPos.y + this.cachedPlayerHeight / 2, 55, 0, Math.PI * 2);
+      targetCtx.fill();
 
       // Reset composite operation
-      ctx.globalCompositeOperation = 'source-over';
+      targetCtx.globalCompositeOperation = 'source-over';
+
+      // Blit offscreen buffer onto main canvas
+      if (overlayCtx && this.overlayCanvas) {
+        ctx.drawImage(this.overlayCanvas, 0, 0);
+      }
 
       // 3. Volumetric light shaft glow overlay
       const shaftGrad = ctx.createRadialGradient(
@@ -509,6 +545,10 @@ export class BiolapseDarknessCycle implements IBiolapseManager {
             ctx.fill();
           }
         }
+      }
+    } else {
+      if (overlayCtx && this.overlayCanvas) {
+        ctx.drawImage(this.overlayCanvas, 0, 0);
       }
     }
 
@@ -583,7 +623,7 @@ export class BiolapseDarknessCycle implements IBiolapseManager {
       : this.isLightOn
       ? 'SEARCHLIGHT [-4U/s]'
       : 'DYNAMO [+3U/s]';
-    ctx.fillText(`BATTERY: ${Math.round(this.battery)}% [F: LIGHT]`, x, y - 6);
+    ctx.fillText(`BATTERY: ${Math.round(this.battery)}% [F / L: LIGHT]`, x, y - 6);
     ctx.fillStyle = this.isLightOn ? '#38bdf8' : '#34d399';
     ctx.fillText(modeText, x, y + h + 10);
 

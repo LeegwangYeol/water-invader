@@ -214,7 +214,7 @@ export class HomingMissile extends Bullet {
     if (enemies && enemies.length > 0) {
       for (let i = 0; i < enemies.length; i++) {
         const e = enemies[i];
-        if (!e.isDead && e.faction !== Faction.PLAYER) {
+        if (!e.isDead && e.faction !== Faction.PLAYER && !(e as any).isCamouflaged) {
           // Verify candidate within active tactical envelope
           if (
             e.position.x >= -60 &&
@@ -271,6 +271,7 @@ export class HomingMissile extends Bullet {
     const isTargetValid =
       this.target &&
       !this.target.isDead &&
+      !(this.target as any).isCamouflaged &&
       this.target.position.y > -60 &&
       this.target.position.y < 860 &&
       this.target.position.x > -60 &&

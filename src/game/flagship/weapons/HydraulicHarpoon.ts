@@ -192,6 +192,9 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
 
     if (typeof (this.tetheredEntity as any).takeDamage === 'function') {
       (this.tetheredEntity as any).takeDamage(shockDamage);
+      if ((this.tetheredEntity as any).hp <= 0) {
+        (this.tetheredEntity as any).isDead = true;
+      }
     }
 
     // Acoustic EMP burst (R = 90 px) centered on target
@@ -225,13 +228,17 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
       y: context.player.position.y - 4,
     };
 
+    if (this.prevPlayerPos.x === 0 && this.prevPlayerPos.y === 0) {
+      this.prevPlayerPos = { x: playerProw.x, y: playerProw.y };
+    }
+
     if (deltaTime > 0) {
       this.playerVelocity = {
         x: (playerProw.x - this.prevPlayerPos.x) / deltaTime,
         y: (playerProw.y - this.prevPlayerPos.y) / deltaTime,
       };
+      this.prevPlayerPos = { x: playerProw.x, y: playerProw.y };
     }
-    this.prevPlayerPos = { x: playerProw.x, y: playerProw.y };
 
     // Update active Slingshot Projectiles
     this.updateSlingshotProjectiles(deltaTime, context.enemies);
@@ -242,7 +249,7 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
     // State machine updates
     switch (this.state) {
       case HarpoonState.FLYING:
-        this.updateFlying(deltaTime, playerProw, context.enemies);
+        this.updateFlying(deltaTime, playerProw, context.enemies, context);
         break;
       case HarpoonState.TETHERED:
         this.updateTethered(deltaTime, playerProw, context);
@@ -271,7 +278,12 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
   /**
    * Phase 1: Dart flying upward through the water column.
    */
-  private updateFlying(deltaTime: number, playerProw: Vector2D, enemies: Entity[]): void {
+  private updateFlying(
+    deltaTime: number,
+    playerProw: Vector2D,
+    enemies: Entity[],
+    context?: FlagshipUpdateContext
+  ): void {
     this.headPosition.y += this.headVelocity.y * deltaTime;
     this.headPosition.x += this.headVelocity.x * deltaTime;
 
@@ -303,6 +315,12 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
         // Deal 35 initial kinetic penetration damage
         if (typeof (enemy as any).takeDamage === 'function') {
           (enemy as any).takeDamage(35);
+          if ((enemy as any).hp <= 0) {
+            enemy.isDead = true;
+            if (context?.createExplosion) {
+              context.createExplosion(enemy.position.x + enemy.size.width / 2, enemy.position.y + enemy.size.height / 2, '#ef4444', 8, 1.0);
+            }
+          }
         }
 
         // If target survived, lock grapple onto it
@@ -337,6 +355,12 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
   ): void {
     const enemy = this.tetheredEntity;
     if (!enemy || enemy.isDead || (enemy as any).hp <= 0) {
+      if (enemy && (enemy as any).hp <= 0 && !enemy.isDead) {
+        enemy.isDead = true;
+        if (context.createExplosion) {
+          context.createExplosion(enemy.position.x + enemy.size.width / 2, enemy.position.y + enemy.size.height / 2, '#ef4444', 8, 1.0);
+        }
+      }
       this.tetheredEntity = null;
       this.state = HarpoonState.RETRACTING;
       this.isWinching = false;
@@ -458,9 +482,21 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
 
           if (typeof (other as any).takeDamage === 'function') {
             (other as any).takeDamage(slamDamage);
+            if ((other as any).hp <= 0) {
+              other.isDead = true;
+              if (context.createExplosion) {
+                context.createExplosion(ox, oy, '#ef4444', 10, 1.0);
+              }
+            }
           }
           if (typeof (enemy as any).takeDamage === 'function') {
             (enemy as any).takeDamage(Math.round(slamDamage * 0.4));
+            if ((enemy as any).hp <= 0) {
+              enemy.isDead = true;
+              if (context.createExplosion) {
+                context.createExplosion(enemyCenter.x, enemyCenter.y, '#ef4444', 8, 1.0);
+              }
+            }
           }
 
           // Visual explosion spark
@@ -485,6 +521,12 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
         b.isDead = true;
         if (typeof (enemy as any).takeDamage === 'function') {
           (enemy as any).takeDamage(b.damage);
+          if ((enemy as any).hp <= 0) {
+            enemy.isDead = true;
+            if (context.createExplosion) {
+              context.createExplosion(bx, by, '#ef4444', 8, 1.0);
+            }
+          }
         }
         context.createExplosion(bx, by, '#38bdf8', 4, 0.8);
       }
@@ -596,6 +638,9 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
           proj.hitEntities.add(enemy);
           if (typeof (enemy as any).takeDamage === 'function') {
             (enemy as any).takeDamage(proj.damage);
+            if ((enemy as any).hp <= 0) {
+              enemy.isDead = true;
+            }
           }
         }
       }
@@ -810,5 +855,7 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
     this.effectiveRestLength = this.config.restLength;
     this.slingshotProjectiles = [];
     this.activeEmpBursts = [];
+    this.prevPlayerPos = { x: 0, y: 0 };
+    this.playerVelocity = { x: 0, y: 0 };
   }
 }

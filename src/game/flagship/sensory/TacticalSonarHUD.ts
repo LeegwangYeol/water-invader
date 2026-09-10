@@ -20,8 +20,8 @@ export class TacticalSonarHUD {
 
   // Sweep line parameters
   public readonly sweepAngularSpeed: number = 1.8; // rad/s
-  public readonly rangeRingsMeters: number[] = [50, 100, 150, 200, 250];
-  public readonly ringPixelRadii: number[] = [60, 120, 180, 240, 300];
+  public readonly rangeRingsMeters: number[] = [80, 160, 240, 320, 400];
+  public readonly ringPixelRadii: number[] = [80, 160, 240, 320, 400];
 
   // Static Object Pool for Acoustic Wavefronts (FIFO recycling, max 16)
   private readonly MAX_WAVEFRONTS: number = 16;

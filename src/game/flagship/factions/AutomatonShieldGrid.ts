@@ -27,7 +27,7 @@ export class AutomatonShieldGrid implements ShieldPhalanxGrid {
 
   private static readonly COUPLING_DIST_SQ = 160 * 160; // 25,600 px^2 (avoid Math.sqrt)
   private static readonly ALIGNMENT_COS_25 = 0.9063;    // cos(25 degrees)
-  private static readonly SHIELD_ARC_COS = 0.50;        // 60-degree total arc (30 deg half-angle: cos(60) = 0.5)
+  private static readonly SHIELD_ARC_COS = Math.cos(Math.PI / 4); // 45-degree off-axis flanking deflection (~0.7071)
 
   // Visual shockwave & arc spark particle storage
   public arcParticles: Array<{
@@ -268,7 +268,7 @@ export class AutomatonShieldGrid implements ShieldPhalanxGrid {
    * through all connected drones in the component:
    * - Shields dissolve for 3.5s
    * - 80 true hull damage (or 35% Max HP)
-   * - 1.8s EMP stun/stagger
+   * - 3.5s EMP stun/stagger
    */
   public triggerInductiveBacklash(brokenDroneId: number): void {
     const cluster = this.getConnectedCluster(brokenDroneId);
@@ -276,7 +276,7 @@ export class AutomatonShieldGrid implements ShieldPhalanxGrid {
     for (const drone of cluster) {
       drone.isFrontalShieldActive = false;
       drone.isBacklashStunned = true;
-      drone.stunTimer = 1.8;
+      drone.stunTimer = 3.5;
       // True hull damage (80 true hull damage or 35% of max HP)
       const dmg = Math.max(80, Math.round((drone.maxHp ?? 200) * 0.35));
       if (drone.hp !== undefined) {

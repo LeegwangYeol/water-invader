@@ -1,5 +1,6 @@
 export class SoundManager {
   private audioCtx: AudioContext | null = null;
+  private analyser: AnalyserNode | null = null;
   private enabled: boolean = false;
   public isMuted: boolean = false;
 
@@ -12,12 +13,29 @@ export class SoundManager {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioContextClass) {
         this.audioCtx = new AudioContextClass();
+        try {
+          this.analyser = this.audioCtx.createAnalyser();
+          this.analyser.fftSize = 64;
+          this.analyser.connect(this.audioCtx.destination);
+        } catch (e) {
+          console.warn('Failed to initialize master AnalyserNode:', e);
+        }
         this.enabled = true;
       }
     }
     if (this.audioCtx && this.audioCtx.state === 'suspended') {
       this.audioCtx.resume();
     }
+  }
+
+  public get destinationNode(): AudioNode {
+    if (this.analyser) return this.analyser;
+    if (this.audioCtx) return this.audioCtx.destination;
+    throw new Error('AudioContext not initialized');
+  }
+
+  public getAnalyser(): AnalyserNode | null {
+    return this.analyser;
   }
 
   public toggleMute(): boolean {
@@ -41,7 +59,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.1);
     
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
     
     osc.onended = () => {
       try {
@@ -68,7 +86,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.3);
     
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
     
     osc.onended = () => {
       try {
@@ -95,7 +113,7 @@ export class SoundManager {
     gainNode.gain.linearRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.3);
     
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
     
     osc.onended = () => {
       try {
@@ -121,7 +139,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.15);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -147,7 +165,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.05);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -173,7 +191,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.25);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -203,7 +221,7 @@ export class SoundManager {
     gainNode.gain.linearRampToValueAtTime(0.01, now + 0.6);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -232,7 +250,7 @@ export class SoundManager {
     gainNode.gain.linearRampToValueAtTime(0.01, now + 0.7);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -265,7 +283,7 @@ export class SoundManager {
     gainNode.gain.linearRampToValueAtTime(0.01, now + 0.6);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -294,7 +312,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -323,7 +341,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -356,7 +374,7 @@ export class SoundManager {
     gainNode.gain.linearRampToValueAtTime(0.01, now + 0.75);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -386,7 +404,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -415,7 +433,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -448,7 +466,7 @@ export class SoundManager {
     gainNode.gain.linearRampToValueAtTime(0.01, now + 0.9);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -478,7 +496,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -508,7 +526,7 @@ export class SoundManager {
     gainNode.gain.linearRampToValueAtTime(0.01, now + 0.5);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -539,7 +557,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -568,7 +586,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -597,7 +615,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     // Booster hiss
     const hissOsc = this.audioCtx.createOscillator();
@@ -611,7 +629,7 @@ export class SoundManager {
     hissGain.gain.linearRampToValueAtTime(0.005, now + 0.22);
 
     hissOsc.connect(hissGain);
-    hissGain.connect(this.audioCtx.destination);
+    hissGain.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -644,7 +662,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -670,7 +688,7 @@ export class SoundManager {
     snapGain.gain.setValueAtTime(0.24, now);
     snapGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
     snapOsc.connect(snapGain);
-    snapGain.connect(this.audioCtx.destination);
+    snapGain.connect(this.destinationNode);
 
     // Hyperbaric rebound sub-bass shockwave (120Hz -> 24Hz)
     const shockOsc = this.audioCtx.createOscillator();
@@ -682,7 +700,7 @@ export class SoundManager {
     shockGain.gain.setValueAtTime(0.32, now + 0.08);
     shockGain.gain.exponentialRampToValueAtTime(0.005, now + 0.65);
     shockOsc.connect(shockGain);
-    shockGain.connect(this.audioCtx.destination);
+    shockGain.connect(this.destinationNode);
 
     snapOsc.onended = () => {
       try {
@@ -724,7 +742,7 @@ export class SoundManager {
 
     osc1.connect(gain);
     osc2.connect(gain);
-    gain.connect(this.audioCtx.destination);
+    gain.connect(this.destinationNode);
 
     osc1.onended = () => {
       try {
@@ -760,7 +778,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -794,7 +812,7 @@ export class SoundManager {
     gainNode.gain.exponentialRampToValueAtTime(0.002, now + 1.2);
 
     osc.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc.onended = () => {
       try {
@@ -840,7 +858,7 @@ export class SoundManager {
     osc1.connect(filter);
     osc2.connect(filter);
     filter.connect(gainNode);
-    gainNode.connect(this.audioCtx.destination);
+    gainNode.connect(this.destinationNode);
 
     osc1.onended = () => {
       try {
@@ -855,6 +873,59 @@ export class SoundManager {
     osc2.start(now);
     osc1.stop(now + 0.5);
     osc2.stop(now + 0.5);
+  }
+
+  public playHullGroan() {
+    if (!this.enabled || !this.audioCtx || this.isMuted) return;
+    const now = this.audioCtx.currentTime;
+
+    // Synthesized low-frequency FM rumble (Carrier 55->42Hz modulated by 7.5->4Hz)
+    const carrier = this.audioCtx.createOscillator();
+    const modulator = this.audioCtx.createOscillator();
+    const modGain = this.audioCtx.createGain();
+    const gainNode = this.audioCtx.createGain();
+    const filter = this.audioCtx.createBiquadFilter();
+
+    carrier.type = 'sawtooth';
+    carrier.frequency.setValueAtTime(55, now);
+    carrier.frequency.linearRampToValueAtTime(42, now + 1.8);
+
+    modulator.type = 'sine';
+    modulator.frequency.setValueAtTime(7.5, now);
+    modulator.frequency.linearRampToValueAtTime(4.0, now + 1.8);
+
+    modGain.gain.setValueAtTime(25, now);
+    modGain.gain.linearRampToValueAtTime(8, now + 1.8);
+
+    modulator.connect(modGain);
+    modGain.connect(carrier.frequency);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(140, now);
+    filter.frequency.exponentialRampToValueAtTime(65, now + 1.8);
+
+    gainNode.gain.setValueAtTime(0.01, now);
+    gainNode.gain.linearRampToValueAtTime(0.20, now + 0.35);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 1.8);
+
+    carrier.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(this.destinationNode);
+
+    carrier.onended = () => {
+      try {
+        carrier.disconnect();
+        modulator.disconnect();
+        modGain.disconnect();
+        filter.disconnect();
+        gainNode.disconnect();
+      } catch (e) {}
+    };
+
+    modulator.start(now);
+    carrier.start(now);
+    modulator.stop(now + 1.8);
+    carrier.stop(now + 1.8);
   }
 
   public playVentHiss() {

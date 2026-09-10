@@ -113,11 +113,11 @@ export class EpigeneticMutationEngine {
     if (mutation === 'NONE') {
       this.alertBannerText = '⚠️ 군체 돌연변이 퇴화 // 생체 저항 정상화';
     } else if (mutation === 'ANTI_KINETIC_CALCIFICATION') {
-      this.alertBannerText = '⚠️ 하달 군체 변태 감지 // 다이아몬드 갑각 경화 (운동 에너지 방어 +40%)';
+      this.alertBannerText = '⚠️ HIVE METAMORPHOSIS DETECTED (하달 군체 변태 감지) // 다이아몬드 갑각 경화 (운동 에너지 방어 +40%)';
     } else if (mutation === 'BIOLUMINESCENT_CHAFF') {
-      this.alertBannerText = '⚠️ 하달 군체 변태 감지 // 발광성 페로몬 채프 (유도 미사일 교란)';
+      this.alertBannerText = '⚠️ HIVE METAMORPHOSIS DETECTED (하달 군체 변태 감지) // 발광성 페로몬 채프 (유도 미사일 교란)';
     } else if (mutation === 'AMOEBIC_VISCOUS_FLESH') {
-      this.alertBannerText = '⚠️ 하달 군체 변태 감지 // 아메바형 점성 육질 (관통 충격 흡수)';
+      this.alertBannerText = '⚠️ HIVE METAMORPHOSIS DETECTED (하달 군체 변태 감지) // 아메바형 점성 육질 (관통 충격 흡수)';
     }
     this.alertBannerTimer = this.bannerDuration;
   }

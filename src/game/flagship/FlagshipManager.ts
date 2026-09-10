@@ -35,6 +35,7 @@ import { AutomatonPhalanx } from './factions/AutomatonPhalanx';
 import { KrakenPrimeBoss } from './factions/KrakenPrimeBoss';
 import { EndlessDescent } from './modes/EndlessDescent';
 import { SonarRenderer } from './sensory/index';
+import { soundManager } from '../SoundManager';
 
 // ============================================================================
 // CENTRAL FLAGSHIP MANAGER CLASS
@@ -43,6 +44,7 @@ import { SonarRenderer } from './sensory/index';
 export class FlagshipManager implements IFlagshipManager {
   public readonly logicalWidth: number;
   public readonly logicalHeight: number;
+  private analyserAttached: boolean = false;
 
   // 12 Flagship Subsystems
   public cavitationTorpedo: ICavitationTorpedoSystem;
@@ -164,8 +166,32 @@ export class FlagshipManager implements IFlagshipManager {
   }
 
   public update(deltaTime: number, context: FlagshipUpdateContext): void {
+    // Environmental convective cooling halo synergy with weapon systems (+250% heat dissipation)
+    if (context.player && context.player.position && this.hydrothermalVents?.vents) {
+      const playerCenterX = context.player.position.x + (context.player.size?.width ?? 32) / 2;
+      const playerCenterY = context.player.position.y + (context.player.size?.height ?? 32) / 2;
+      const inHalo = this.hydrothermalVents.vents.some((v) => v.isInHalo(playerCenterX, playerCenterY));
+      if (this.prismLaser && 'inCoolingHalo' in this.prismLaser) {
+        this.prismLaser.inCoolingHalo = inHalo;
+      }
+    }
+
+    // Connect Web Audio AnalyserNode to hydrophone spectrogram
+    if (!this.analyserAttached) {
+      const analyser = soundManager.getAnalyser();
+      if (analyser && this.sonarRenderer?.spectrogram) {
+        this.sonarRenderer.spectrogram.attachAnalyser(analyser);
+        this.analyserAttached = true;
+      }
+    }
+
     for (const sub of this.getSubsystems()) {
       sub.update(deltaTime, context);
+    }
+
+    // 50% Pressure: cockpit glass develops micro-fractures
+    if (this.endlessDescent?.runState?.isActive && this.endlessDescent.runState.pressure.stressPercentage >= 50) {
+      this.sonarRenderer.addFracture(this.endlessDescent.runState.pressure.stressPercentage);
     }
   }
 
@@ -240,9 +266,9 @@ export class FlagshipManager implements IFlagshipManager {
       return true;
     }
 
-    // 2. Officer skills: [1]/[Q], [2]/[E], [3]/[R], [4]/[F]
+    // 2. Officer skills: [1], [2], [3], [4]
     if (isDown) {
-      if (['1', '2', '3', '4', 'q', 'Q', 'e', 'E', 'r', 'R', 'f', 'F'].includes(key)) {
+      if (['1', '2', '3', '4'].includes(key)) {
         if (this.crewDeck.handleInput && this.crewDeck.handleInput(key, isDown, context)) {
           return true;
         }
@@ -270,9 +296,9 @@ export class FlagshipManager implements IFlagshipManager {
       }
     }
 
-    // 6. Biolapse Searchlight toggle [L], High-Beam [V], Sonar Ping [B]
+    // 6. Biolapse Searchlight toggle [L] / [F], High-Beam [V], Sonar Ping [B]
     if (isDown) {
-      if (key === 'l' || key === 'L') {
+      if (key === 'l' || key === 'L' || key === 'f' || key === 'F') {
         this.biolapseDarkness.toggleLight();
         return true;
       }
@@ -356,6 +382,11 @@ export class FlagshipManager implements IFlagshipManager {
       }
     }
 
+    // Crew Officer deck card tap on touchscreen
+    if (this.crewDeck && typeof (this.crewDeck as any).handlePointer === 'function') {
+      if ((this.crewDeck as any).handlePointer(x, y, context)) return true;
+    }
+
     return false;
   }
 
@@ -392,7 +423,7 @@ export class FlagshipManager implements IFlagshipManager {
     }
   }
 
-  public onEnemyKilled(enemy: Enemy, context: FlagshipUpdateContext): void {
+  public onEnemyKilled(enemy: Enemy, context: FlagshipUpdateContext, weaponType?: 'kinetic' | 'missile' | 'pierce'): void {
     // 1. Check biolapse battery recharge on kill in midnight
     if (this.biolapseDarkness.currentPhase === BiolapsePhase.MIDNIGHT) {
       this.biolapseDarkness.battery = Math.min(
@@ -402,30 +433,60 @@ export class FlagshipManager implements IFlagshipManager {
     }
 
     // 2. Track damage telemetry for epigenetic mutation engine
+    const resolvedWeapon = weaponType || (enemy as any)?.lastHitWeaponType || 'kinetic';
     if (this.bioHorror && typeof this.bioHorror.recordDamageDealt === 'function') {
-      this.bioHorror.recordDamageDealt('kinetic', enemy.maxHp || 10);
+      this.bioHorror.recordDamageDealt(resolvedWeapon, enemy.maxHp || 10);
     }
 
     // 3. Forward to subsystems with onEnemyKilled
     for (const sub of this.getSubsystems()) {
       if (typeof (sub as any).onEnemyKilled === 'function') {
-        (sub as any).onEnemyKilled(enemy, context);
+        (sub as any).onEnemyKilled(enemy, context, resolvedWeapon);
       }
     }
   }
 
   public onPlayerDamage(amount: number, context: FlagshipUpdateContext): void {
-    // 1. Add glass fracture if under high stress
-    if (this.endlessDescent.runState.pressure.stressPercentage > 50) {
-      this.sonarRenderer.addFracture(this.endlessDescent.runState.pressure.stressPercentage);
+    // 1. Calculate composite hull stress from HP loss & depth pressure
+    const hpStress = context.player && context.player.maxHp > 0
+      ? (1 - context.player.hp / context.player.maxHp) * 100
+      : 0;
+    const compositeStress = Math.max(
+      this.endlessDescent?.runState?.pressure?.stressPercentage || 0,
+      hpStress
+    );
+
+    if (compositeStress > 50) {
+      this.sonarRenderer.addFracture(compositeStress);
+    }
+    if (compositeStress > 80) {
+      this.sonarRenderer.hullStress.triggerTrauma(0.8);
+      if (context.triggerScreenShake) {
+        context.triggerScreenShake(0.22, 14);
+      }
     }
 
     // 2. Check modular chassis damage mitigation & passives
     if (this.modularChassis.activeChassis && this.modularChassis.activeChassis.onTakeDamage) {
       const result = this.modularChassis.activeChassis.onTakeDamage(context.player.hp, amount);
       if (result.triggeredEffect === 'STEAM_PULSE') {
-        context.createExplosion(context.player.position.x + 20, context.player.position.y, '#ffffff', 25, 2.0);
+        context.createExplosion(context.player.position.x + context.player.size.width / 2, context.player.position.y + context.player.size.height / 2, '#ffffff', 25, 2.0);
         context.triggerScreenShake(0.3, 8);
+        // Clear enemy bullets within 120px radius shockwave
+        const px = context.player.position.x + context.player.size.width / 2;
+        const py = context.player.position.y + context.player.size.height / 2;
+        for (let i = context.bullets.length - 1; i >= 0; i--) {
+          const b = context.bullets[i];
+          if (!b.isPlayerBullet) {
+            const distSq = (b.position.x - px) ** 2 + (b.position.y - py) ** 2;
+            if (distSq <= 120 * 120) {
+              context.createExplosion(b.position.x, b.position.y, '#ffffff', 8, 0.8);
+              context.bullets.splice(i, 1);
+            }
+          }
+        }
+        // Grant 1.5s invulnerability
+        context.player.invincibilityTimer = Math.max(context.player.invincibilityTimer, 1.5);
       }
     }
 

@@ -1,81 +1,61 @@
-# Sentinel Handoff Report: 12 Flagship Features Full Implementation Swarm
+# Sentinel Handoff Report: 12 Flagship Features Live QA Playtesting & Visual Inspection Swarm
 
 - **Archetype**: Sentinel (`user_liaison`, `sentinel_reporter`, `dispatcher`, `task_router`)
 - **Workspace**: `/Users/user/src/water-invader`
 - **Working Directory**: `/Users/user/src/water-invader/.agents/sentinel`
-- **Orchestrator**: `orchestrator_pitch_impl_1` (`825a4037-5803-4947-8e62-404f0b0d33b5`)
-- **Crons Active**:
-  - Progress Reporting Cron (`*/8 * * * *`): Task `task-35`
-  - Liveness Check Cron (`*/10 * * * *`): Task `task-37`
-- **Victory Auditor**: To be spawned upon orchestrator victory claim
-- **Verdict**: In Progress
-- **Status**: **IN PROGRESS**
+- **Active Orchestrator**: `orchestrator_qa_playtest_1` (`efe1d016-c809-41a1-b0ba-aa528a160dca`)
+- **Cron 1 (Progress Reporting)**: `d6c81654-cf53-46f3-b358-f9434a3fe851/task-30` (`*/8 * * * *`)
+- **Cron 2 (Liveness Check)**: `d6c81654-cf53-46f3-b358-f9434a3fe851/task-32` (`*/10 * * * *`)
+- **Status**: **IN PROGRESS (Swarm Dispatched)**
 
 ---
 
 ## 1. Observation
 
 1. **User Request & Requirements**:
-   - **R1. Implement ALL Pitch Features**: Implement ALL 12 Flagship Features detailed in `IDEAS_PITCH.md` into the Next.js "Water Invader" game's source code and UI:
-     1. Cavitation Torpedo
-     2. Prism Laser
-     3. Hydraulic Harpoon
-     4. Hydrothermal Vents
-     5. Biolapse Darkness Cycle
-     6. Modular Submersible Chassis
-     7. Veteran Crew Synergy Deck
-     8. Mutating Bio-Horror Faction
-     9. Automaton Shield Phalanx
-     10. Apex Bosses
-     11. Roguelike Endless Mode
-     12. Sonar/Hydrophone UI
-   - **R2. Strict Architectural Integrity**: Core game dimensions `logicalWidth` (600/720) and `logicalHeight` (800/960) in `GameManager.ts` and `Enemy.ts` must NOT be changed. Any responsiveness must remain strictly CSS-based.
-   - **R3. Automated Testing & Deployment**: Swarm must write unit and E2E Playwright tests for the new systems. Ensure `npm run build` and `npx playwright test` pass cleanly without errors. Once verified, commit changes to Git and push to `origin/master`.
-   - **Pre-Approved Execution**: Explicit user approval was granted ("전부 구현해야지 새끼야", "Proceed", "승인").
+   - **R1. Deep Visual & Interactive Playtesting**:
+     - Deploy a very large team of agents (30+ agents) to start the Next.js dev server and connect via browser automation / Chrome DevTools.
+     - Actively play the game, trigger the 12 Flagship Features (Cavitation Torpedo, Prism Laser, Hydraulic Harpoon, Hydrothermal Vents, Biolapse Darkness Cycle, Modular Chassis, Crew Synergy Deck, Mutating Bio-Horrors, Automaton Shield Phalanx, Apex Bosses, Roguelike Endless Mode, Sonar/Hydrophone UI), and observe visual rendering and interactive physics.
+   - **R2. Runtime Error & Layout Verification**:
+     - Monitor browser console for warnings, memory leaks, unhandled exceptions, and audio context issues.
+     - Verify CSS responsiveness and ensure the core 600x800 logical canvas is not visually clipped or distorted on different viewport sizes.
+   - **R3. Automated Remediation**:
+     - If bugs, console errors, or desyncs are discovered, implement fixes in the codebase, verify in the browser, run `npm run build` & `npx playwright test`, and push changes to `origin/master`.
+   - **Acceptance Criteria**:
+     - Comprehensive playtest report generated (`QA_REPORT.md`).
+     - Browser console free of errors and memory leak warnings.
+     - Any discovered bugs fixed, committed, and pushed.
 
-2. **Claude Collaboration**:
-   - Updated `COLLABORATION.md` outlining the full mission, pre-approval status, architecture constraints, and execution milestones.
+2. **Routing & Dispatch**:
+   - Route determined: **General** (`teamwork_preview_orchestrator`).
+   - Project Orchestrator spawned: `efe1d016-c809-41a1-b0ba-aa528a160dca` in `/Users/user/src/water-invader/.agents/orchestrator_qa_playtest_1`.
+   - `ORIGINAL_REQUEST.md`, `COLLABORATION.md`, and `BRIEFING.md` updated with the new mission context.
+   - Sentinel monitoring crons (Cron 1: progress reporting every 8m; Cron 2: liveness check every 10m) successfully scheduled.
 
 ---
 
 ## 2. Logic Chain
 
-1. **Routing**:
-   - Analyzed incoming user request per Routing Decision Table.
-   - Massive full-code implementation across multiple gameplay systems with 40+ agents requested → routed to **General** (`teamwork_preview_orchestrator`).
-2. **Dispatch**:
-   - Created orchestrator working directory `.agents/orchestrator_pitch_impl_1/`.
-   - Invoked `teamwork_preview_orchestrator` (`825a4037-5803-4947-8e62-404f0b0d33b5`) with project root, specification pointers, pre-approval notice, and architectural rules.
-3. **Monitoring**:
-   - Scheduled Progress Reporting Cron (`task-35`, every 8 minutes).
-   - Scheduled Liveness Check Cron (`task-37`, every 10 minutes).
-4. **Independent Victory Audit Protocol**:
-   - Once orchestrator signals completion, sentinel will spawn an independent `teamwork_preview_victory_auditor` to verify all 12 flagship features, test passes, build success, and git sync.
+1. Evaluated task per Routing Decision Table: requires extensive multi-agent manual QA playtesting, visual inspection, console error detection, layout testing across multiple viewports, and potential codebase remediation with git push. This is a large-scale SWE QA operation, correctly routed to `teamwork_preview_orchestrator`.
+2. Initialized orchestrator directory and dispatched comprehensive task instructions adhering to user rules, architecture constraints (logical 600x800 canvas bounds strictly preserved), and pre-approved status.
+3. Crons scheduled to maintain live monitoring and reporting.
 
 ---
 
-## 3. Caveats
+## 3. Caveats & Invariants
 
-- Game core dimensions (`600x800` default, `720x960` high-res) are strict invariants. All responsive canvas sizing must be CSS/container-level.
-- Pre-commit build verification rule (`npm run build`) is mandatory before git push.
-
----
-
-## 4. Conclusion
-
-- Swarm orchestrator `825a4037-5803-4947-8e62-404f0b0d33b5` successfully launched.
-- Dual monitoring crons established.
-- Claude collaboration guide updated.
-- Sentinel entered proactive monitoring mode.
-
----
+1. **Canvas Integrity**: The logical canvas dimensions (`logicalWidth = 600`, `logicalHeight = 800`) in `src/game/GameManager.ts` and `Enemy.ts` MUST NOT be altered.
+2. **Pre-Commit Verification**: Any code remediation requires `npm run build` and `npx playwright test` to pass with 0 errors before committing or pushing.
+3. **Mandatory Victory Audit**: Project completion will NOT be reported until an independent `teamwork_preview_victory_auditor` validates all deliverables.
 
 ## 5. Verification Method
 
-- Project Orchestrator Working Directory: `/Users/user/src/water-invader/.agents/orchestrator_pitch_impl_1`
-- Collaboration Guide: `/Users/user/src/water-invader/COLLABORATION.md`
-- Original Request Log: `/Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md`
-- Active Crons: `task-35` (progress), `task-37` (liveness)
+- Dev server launch: `npm run dev`
+- Browser live inspection / troubleshooting
+- Test suites: `npm run build` & `npx playwright test`
+- Production report: `/Users/user/src/water-invader/QA_REPORT.md`
+- Git sync verification: `git status` and `git log -1 origin/master`
+
 
 
 

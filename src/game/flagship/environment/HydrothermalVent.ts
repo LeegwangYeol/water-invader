@@ -265,11 +265,8 @@ export class HydrothermalVent implements IHydrothermalVent {
         const dps = 28 + 0.06 * maxHp;
         const damageThisFrame = dps * deltaTime;
 
-        if (typeof (enemy as any).takeDamage === 'function') {
-          (enemy as any).takeDamage(damageThisFrame);
-        } else if (typeof (enemy as any).hp === 'number') {
-          (enemy as any).hp -= damageThisFrame;
-        }
+        (enemy as any).hp -= damageThisFrame;
+        (enemy as any).hitFlashTimer = 0.08;
 
         // Suppress boss shield regeneration while submerged in scalding core
         (enemy as any).shieldRegenSuppressed = true;

@@ -33,6 +33,10 @@ export class SonarRenderer implements ISonarRenderer, IFlagshipSubsystem {
     this.stressFX = new HullStressFX();
   }
 
+  public get hullStress(): HullStressFX {
+    return this.stressFX;
+  }
+
   public get radarState(): SonarRadarState {
     // Keep synchronised with internal components
     this.hud.radarState.glassFractureLines = this.stressFX.fractureLines;

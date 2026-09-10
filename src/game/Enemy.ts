@@ -62,6 +62,16 @@ export class Enemy extends Entity {
   public isRushing: boolean = false;
   public aggressionMode: boolean = false;
 
+  // Status effects (Biolapse, Stun, Vulnerability)
+  public isStunned: boolean = false;
+  public stunTimer: number = 0;
+  public vulnerabilityTimer: number = 0;
+  public vulnerabilityMultiplier: number = 1.0;
+  public isCamouflaged: boolean = false;
+  public diveHasteMultiplier: number = 1.0;
+  public isAcousticMarked: boolean = false;
+  public acousticMarkTimer: number = 0;
+
   // Smarter Friendly-Fire AI & Tactical Lateral Repositioning
   public slideDir: number = 0;
   public slideTimer: number = 0;
@@ -341,6 +351,38 @@ export class Enemy extends Entity {
     this.gnawedThisFrame = false;
     const clampedDt = Math.min(deltaTime, 0.1); // Guard against massive lag spikes / tab throttle jumps
 
+    // Tick stun status effect
+    if (this.stunTimer > 0) {
+      this.stunTimer -= clampedDt;
+      if (this.stunTimer <= 0) {
+        this.stunTimer = 0;
+        this.isStunned = false;
+      }
+    }
+
+    // Tick vulnerability status effect
+    if (this.vulnerabilityTimer > 0) {
+      this.vulnerabilityTimer -= clampedDt;
+      if (this.vulnerabilityTimer <= 0) {
+        this.vulnerabilityTimer = 0;
+        this.vulnerabilityMultiplier = 1.0;
+      }
+    }
+
+    // Tick acoustic mark status effect
+    if (this.acousticMarkTimer > 0) {
+      this.acousticMarkTimer -= clampedDt;
+      if (this.acousticMarkTimer <= 0) {
+        this.acousticMarkTimer = 0;
+        this.isAcousticMarked = false;
+      }
+    }
+
+    // Stunned enemies pause movement and actions completely
+    if (this.isStunned || this.stunTimer > 0) {
+      return;
+    }
+
     if (this.hitFlashTimer > 0) {
       this.hitFlashTimer -= deltaTime;
       if (this.hitFlashTimer < 0) this.hitFlashTimer = 0;
@@ -367,8 +409,9 @@ export class Enemy extends Entity {
     const validSpeedMultiplier = Number.isFinite(speedMultiplier) && speedMultiplier > 0 ? speedMultiplier : 1.0;
     const gnawMultiplier = this.isGnawing ? 0.2 : 1.0;
     const rushMod = this.isAggressive ? this.rushVelocityModifier : 1.0;
+    const hasteMod = this.diveHasteMultiplier || 1.0;
     const currentSpeedX = this.speedX * validSpeedMultiplier * gnawMultiplier;
-    const currentSpeedY = this.speedY * validSpeedMultiplier * gnawMultiplier * rushMod;
+    const currentSpeedY = this.speedY * validSpeedMultiplier * gnawMultiplier * rushMod * hasteMod;
 
     // Barricade Saboteur AI: Target living central barricades (1 & 2), then flanks (0 & 3)
     if (this.type === EnemyType.SABOTEUR) {
@@ -810,6 +853,7 @@ export class Enemy extends Entity {
   }
 
   public fire(playerPos?: Vector2D, allEnemies: Enemy[] = []): Bullet | null {
+    if (this.isStunned || this.stunTimer > 0) return null;
     if (this.type === EnemyType.DIVER || this.isDiving || this.type === EnemyType.SABOTEUR) return null; // divers and saboteurs don't shoot bullets
 
     if (this.fireTimer <= 0) {
@@ -1064,7 +1108,14 @@ export class Enemy extends Entity {
   }
 
   public takeDamage(damage: number): number {
-    let remainingDamage = damage;
+    let effectiveDamage = damage;
+    if (this.isAcousticMarked) {
+      effectiveDamage *= 1.30;
+    }
+    if (this.vulnerabilityMultiplier && this.vulnerabilityMultiplier > 1.0) {
+      effectiveDamage *= this.vulnerabilityMultiplier;
+    }
+    let remainingDamage = effectiveDamage;
     if (this.shieldHp > 0) {
       const absorbed = Math.min(this.shieldHp, remainingDamage);
       this.shieldHp -= absorbed;

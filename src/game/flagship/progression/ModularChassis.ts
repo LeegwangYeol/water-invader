@@ -264,7 +264,7 @@ export class ModularChassisManager implements IChassisManager {
         description: '육중한 장갑과 이중 현측 터렛을 갖춘 심해 결전 결사 잠수함. 방어력 특화 요새형 함선.',
         baseHp: 7,
         maxHp: 9,
-        baseSpeed: 300,
+        baseSpeed: 220,
         hitboxWidth: 64,
         hitboxHeight: 46,
         radarStats: {
@@ -411,10 +411,17 @@ export class ModularChassisManager implements IChassisManager {
     if (!player) return;
 
     player.maxHp = this.activeChassis.maxHp;
-    player.hp = Math.min(player.hp, player.maxHp);
+    player.hp = this.activeChassis.baseHp;
     player.speed = this.activeChassis.baseSpeed;
     player.size.width = this.activeChassis.hitboxWidth;
     player.size.height = this.activeChassis.hitboxHeight;
+
+    // Stingray +25% fire rate bonus (0.4s interval vs 0.5s baseline)
+    if (this.activeChassis.id === ChassisId.STINGRAY) {
+      player.baseFireRate = 0.4;
+    } else {
+      player.baseFireRate = 0.5;
+    }
 
     // Environmental immunities
     if (this.activeChassis.id === ChassisId.KRAKEN) {
@@ -597,6 +604,7 @@ export class ModularChassisManager implements IChassisManager {
         if (this.ghostIdleFireTimer >= 1.5) {
           this.isGhostCloaked = true;
           this.ghostAmbushReady = true;
+          player.isCloaked = true;
         }
       } else {
         if (this.isGhostCloaked && this.ghostAmbushReady) {
@@ -604,6 +612,7 @@ export class ModularChassisManager implements IChassisManager {
           this.isGhostCloaked = false;
           this.ghostAmbushReady = false;
           this.ghostIdleFireTimer = 0;
+          player.isCloaked = false;
 
           const ambushBullet = new Bullet(
             player.position.x + player.size.width / 2 - 5,
@@ -620,9 +629,30 @@ export class ModularChassisManager implements IChassisManager {
         } else {
           this.isGhostCloaked = false;
           this.ghostIdleFireTimer = 0;
+          player.isCloaked = false;
         }
       }
+    } else {
+      player.isCloaked = false;
     }
+  }
+
+  public onEnemyKilled(enemy: Enemy, context: FlagshipUpdateContext): void {
+    if (this.activeChassis.id !== ChassisId.LEVIATHAN) return;
+
+    // Full-screen Pure Water magnetosphere: +35% currency from mobs, +50% from elites/bosses
+    const isBossOrElite = enemy.isBoss || enemy.type === 4 || enemy.type === 7;
+    const bonusPct = isBossOrElite ? 0.50 : 0.35;
+    const baseReward = isBossOrElite ? 50 : 5;
+    const bonus = Math.max(1, Math.round(baseReward * bonusPct));
+    context.currency += bonus;
+
+    // Visual magnetic particle draw from enemy to player
+    const px = context.player.position.x + context.player.size.width / 2;
+    const py = context.player.position.y + context.player.size.height / 2;
+    const ex = enemy.position.x + enemy.size.width / 2;
+    const ey = enemy.position.y + enemy.size.height / 2;
+    context.createExplosion((px + ex) / 2, (py + ey) / 2, '#06b6d4', 6, 0.6);
   }
 
   // --------------------------------------------------------------------------
