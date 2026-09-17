@@ -244,8 +244,8 @@ export class HydrothermalVent implements IHydrothermalVent {
         player.position.y = Math.max(capCeiling, player.position.y - lift);
       }
 
-      // Radial lateral outward dispersion near the plume cap with prevailing ambient surface drift
-      const inPlumeCap = (inHalo || inCore) || (this.anchorX <= 200 && playerCenterY <= this.capY + 120 && playerCenterX >= this.anchorX && playerCenterX <= 420);
+      // Radial lateral outward dispersion near the plume cap
+      const inPlumeCap = inHalo || inCore;
       if (inPlumeCap) {
         const capCeiling = this.capY + 30;
         const depthAboveCap = Math.max(0, playerCenterY - capCeiling);
@@ -254,9 +254,12 @@ export class HydrothermalVent implements IHydrothermalVent {
           const dispersionRatio = 1.0 - liftRatio;
           const dispersionSpeed = (this.state === VentState.ERUPTING ? 120 : 80) * dispersionRatio * deltaTime;
           const sign = playerCenterX >= this.anchorX ? 1 : -1;
-          // Prevailing ambient surface drift (+60 px/s Eastward) carries dispersing fluid out of the central stagnation zone
-          const ambientSurfaceDrift = (playerCenterX >= this.anchorX ? 60 : 0) * dispersionRatio * deltaTime;
-          player.position.x += sign * dispersionSpeed + ambientSurfaceDrift;
+          player.position.x += sign * dispersionSpeed;
+
+          // Clamp player within logical horizontal boundaries
+          const canvasW = (player as any).canvasWidth || 600;
+          const playerW = player.size?.width ?? 32;
+          player.position.x = Math.max(0, Math.min(canvasW - playerW, player.position.x));
         }
       }
 
@@ -548,7 +551,15 @@ export class HydrothermalVentManager implements IHydrothermalVentManager {
       );
     }
 
-    // 3. Update Mineral Nodules & Player Collection
+    // 3. Central Overlap Confluence Turbulence
+    this.applyConfluenceTurbulence(context.player, deltaTime);
+    if (context.enemies && Array.isArray(context.enemies)) {
+      for (const enemy of context.enemies) {
+        this.applyConfluenceTurbulence(enemy, deltaTime);
+      }
+    }
+
+    // 4. Update Mineral Nodules & Player Collection
     const playerBounds = {
       x: context.player.position.x,
       y: context.player.position.y,
@@ -633,6 +644,57 @@ export class HydrothermalVentManager implements IHydrothermalVentManager {
 
       ctx.restore();
     }
+  }
+
+  /**
+   * Resolves hydrodynamic turbulence and convective recirculation at the confluence
+   * of overlapping hydrothermal plumes near the surface cap.
+   * Colliding plumes dissipate vertical upward thrust and generate downwelling & lateral divergence,
+   * preventing passive entities from getting permanently pinned at the ceiling.
+   */
+  private applyConfluenceTurbulence(entity: Entity, deltaTime: number): void {
+    if (!entity || !entity.position) return;
+
+    const width = entity.size?.width ?? 32;
+    const height = entity.size?.height ?? 32;
+    const centerX = entity.position.x + width / 2;
+    const centerY = entity.position.y + height / 2;
+
+    // Only active in the upper plume dissipation zone near the ceiling (y <= 240)
+    if (centerY > 240) return;
+
+    // Identify vents whose convective plumes overlap this entity
+    const overlappingVents = (this.vents as HydrothermalVent[]).filter(
+      (v) => v.isInHalo(centerX, centerY) || v.isInCore(centerX, centerY)
+    );
+
+    // Confluence requires 2 or more intersecting plumes
+    if (overlappingVents.length < 2) return;
+
+    // 1. Buoyancy Dissipation:
+    // Plume upward momentum collides and stalls against adjacent plume, neutralizing vertical updraft
+    (entity as any).isInUpdraft = false;
+    (entity as any).isBallastActive = true;
+
+    // 2. Convective Downwelling Recirculation:
+    // Colliding fluid forces downwelling circulation away from ceiling cap (y=130)
+    const capCeiling = 130;
+    const depthAboveCap = Math.max(0, centerY - capCeiling);
+    const dissipationRatio = Math.max(0, 1.0 - depthAboveCap / 110);
+    const downwellingSpeed = 180 * dissipationRatio * deltaTime;
+    entity.position.y += downwellingSpeed;
+
+    // 3. Lateral Divergence / Eddy Ejection:
+    // Fluid diverges outward from the central saddle point between the two chimneys
+    const midX = (overlappingVents[0].anchorX + overlappingVents[1].anchorX) / 2;
+    const offset = centerX - midX;
+    const dir = offset >= 0 ? 1 : -1;
+    const divergenceSpeed = 80 * dissipationRatio * deltaTime;
+    entity.position.x += dir * divergenceSpeed;
+
+    // Clamp horizontal position within canvas bounds
+    const canvasW = (entity as any).canvasWidth || this.canvasWidth;
+    entity.position.x = Math.max(0, Math.min(canvasW - width, entity.position.x));
   }
 
   public reset(): void {

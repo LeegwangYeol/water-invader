@@ -69,6 +69,7 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
 
   // Harpoon Grapple Head Kinematics (When FLYING or RETRACTING)
   public headPosition: Vector2D = { x: 0, y: 0 };
+  public prevHeadPosition: Vector2D = { x: 0, y: 0 };
   public headVelocity: Vector2D = { x: 0, y: 0 };
 
   // 12-Node Verlet Physics Cable
@@ -112,6 +113,7 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
 
     this.state = HarpoonState.FLYING;
     this.headPosition = { x: origin.x, y: origin.y };
+    this.prevHeadPosition = { x: origin.x, y: origin.y };
     this.headVelocity = { x: 0, y: -this.config.launchSpeed };
     this.effectiveRestLength = this.config.restLength;
     this.tetheredEntity = null;
@@ -276,6 +278,53 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
   }
 
   /**
+   * Continuous swept line-segment CCD between (x0, y0) and (x1, y1) against [minX, minY, maxX, maxY].
+   */
+  private segmentIntersectsAABB(
+    x0: number, y0: number,
+    x1: number, y1: number,
+    minX: number, minY: number,
+    maxX: number, maxY: number
+  ): boolean {
+    if ((x0 >= minX && x0 <= maxX && y0 >= minY && y0 <= maxY) ||
+        (x1 >= minX && x1 <= maxX && y1 >= minY && y1 <= maxY)) {
+      return true;
+    }
+
+    const dx = x1 - x0;
+    const dy = y1 - y0;
+
+    let tMin = 0;
+    let tMax = 1;
+
+    // X slab
+    if (Math.abs(dx) < 1e-9) {
+      if (x0 < minX || x0 > maxX) return false;
+    } else {
+      let tx1 = (minX - x0) / dx;
+      let tx2 = (maxX - x0) / dx;
+      if (tx1 > tx2) { const tmp = tx1; tx1 = tx2; tx2 = tmp; }
+      tMin = Math.max(tMin, tx1);
+      tMax = Math.min(tMax, tx2);
+      if (tMin > tMax) return false;
+    }
+
+    // Y slab
+    if (Math.abs(dy) < 1e-9) {
+      if (y0 < minY || y0 > maxY) return false;
+    } else {
+      let ty1 = (minY - y0) / dy;
+      let ty2 = (maxY - y0) / dy;
+      if (ty1 > ty2) { const tmp = ty1; ty1 = ty2; ty2 = tmp; }
+      tMin = Math.max(tMin, ty1);
+      tMax = Math.min(tMax, ty2);
+      if (tMin > tMax) return false;
+    }
+
+    return tMin <= tMax && tMax >= 0 && tMin <= 1;
+  }
+
+  /**
    * Phase 1: Dart flying upward through the water column.
    */
   private updateFlying(
@@ -284,8 +333,15 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
     enemies: Entity[],
     context?: FlagshipUpdateContext
   ): void {
+    const prevX = this.headPosition.x;
+    const prevY = this.headPosition.y;
+    this.prevHeadPosition = { x: prevX, y: prevY };
+
     this.headPosition.y += this.headVelocity.y * deltaTime;
     this.headPosition.x += this.headVelocity.x * deltaTime;
+
+    const currX = this.headPosition.x;
+    const currY = this.headPosition.y;
 
     const dx = this.headPosition.x - playerProw.x;
     const dy = this.headPosition.y - playerProw.y;
@@ -297,7 +353,7 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
       return;
     }
 
-    // Check collision against hostile entities
+    // Check collision against hostile entities via continuous swept line-segment CCD
     for (const enemy of enemies) {
       if (enemy.isDead) continue;
       const ex = enemy.position.x;
@@ -305,13 +361,13 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
       const ew = enemy.size.width;
       const eh = enemy.size.height;
 
-      // Bounding box hit check
-      if (
-        this.headPosition.x >= ex &&
-        this.headPosition.x <= ex + ew &&
-        this.headPosition.y >= ey &&
-        this.headPosition.y <= ey + eh
-      ) {
+      // Swept line-segment CCD against enemy bounding box
+      const isHit = this.segmentIntersectsAABB(
+        prevX, prevY, currX, currY,
+        ex, ey, ex + ew, ey + eh
+      );
+
+      if (isHit) {
         // Deal 35 initial kinetic penetration damage
         if (typeof (enemy as any).takeDamage === 'function') {
           (enemy as any).takeDamage(35);

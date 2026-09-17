@@ -402,6 +402,7 @@ export class Helper extends Entity {
     if (this.position.x + this.size.width > this.canvasWidth) {
       this.position.x = this.canvasWidth - this.size.width;
     }
+    this.position.y = Math.max(30, Math.min(this.canvasHeight - 50, this.position.y));
 
     return newBullets;
   }

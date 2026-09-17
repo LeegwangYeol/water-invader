@@ -1,0 +1,14 @@
+{
+  "03_game_mechanics.spec.ts": [
+    {
+      "title": "Simulate player keyboard movement and boundary clamping",
+      "line": 10,
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m550\u001b[39m\nReceived: \u001b[31m536\u001b[39m"
+    },
+    {
+      "title": "Simulate shooting mechanism and player bullet generation",
+      "line": 44,
+      "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m-400\u001b[39m\nReceived: \u001b[31m-500\u001b[39m"
+    }
+  ]
+}

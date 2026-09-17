@@ -1,14 +1,14 @@
-# BRIEFING — 2026-09-17T03:23:31Z
+# BRIEFING — 2026-09-17T08:12:23Z
 
 ## Mission
-Orchestrating resolution of the Upward Buoyant Drift Bug via Project Orchestrator (bd5b0c5d-7349-4270-bc7f-be21cf043787) with full specialist swarm, monitoring progress via crons, and enforcing mandatory independent victory audit.
+Orchestrating comprehensive codebase-wide physics & mechanical edge-case audit and remediation via Project Orchestrator (a6b982e7-d1a2-4856-a461-1d227c9eea67) with 100+ specialist swarm across Streams A-E, monitoring progress via crons, and enforcing mandatory independent victory audit.
 
 ## 🔒 My Identity
 - Archetype: sentinel
 - Working directory: /Users/user/src/water-invader/.agents/sentinel
 - Orchestrator: 4a7f4a07-058b-47d1-a2a1-3e7f9530fb7a
 - Victory Auditor: d8680672-cb32-460b-8f57-15dfbc680ef6
-- Active Orchestrator: 4a7f4a07-058b-47d1-a2a1-3e7f9530fb7a
+- Active Orchestrator: a6b982e7-d1a2-4856-a461-1d227c9eea67
 - Cron 1 Task ID: febfa24a-ade3-4c0b-971d-640489ee1443/task-29
 - Cron 2 Task ID: febfa24a-ade3-4c0b-971d-640489ee1443/task-31
 - Late-Game Orchestrator: 64f804cc-0c89-4eaf-b63c-7323a06289e4
@@ -40,15 +40,16 @@ Orchestrating resolution of the Upward Buoyant Drift Bug via Project Orchestrato
 - Flagship Implementation Orchestrator: 825a4037-5803-4947-8e62-404f0b0d33b5
 - Flagship Implementation Cron 1 Task ID: c037a359-674f-4a38-8bdb-f0f0f4a727f7/task-35
 - Flagship Implementation Cron 2 Task ID: c037a359-674f-4a38-8bdb-f0f0f4a727f7/task-37
-- Active Orchestrator: 825a4037-5803-4947-8e62-404f0b0d33b5
 - Flagship Implementation Victory Auditor: d7631f42-44cf-4c24-8907-e70e2b362ce6 (VICTORY CONFIRMED)
 - QA Playtest Orchestrator: efe1d016-c809-41a1-b0ba-aa528a160dca
 - QA Playtest Cron 1 Task ID: d6c81654-cf53-46f3-b358-f9434a3fe851/task-30
 - QA Playtest Cron 2 Task ID: d6c81654-cf53-46f3-b358-f9434a3fe851/task-32
-- Active Orchestrator: bd5b0c5d-7349-4270-bc7f-be21cf043787
 - Upward Buoyant Drift Bug Orchestrator: bd5b0c5d-7349-4270-bc7f-be21cf043787
 - Upward Buoyant Drift Bug Cron 1 Task ID: 30a9a77b-4962-49f1-8c42-8da8e8dca8f9/task-86
 - Upward Buoyant Drift Bug Cron 2 Task ID: 30a9a77b-4962-49f1-8c42-8da8e8dca8f9/task-88
+- Physics Audit Orchestrator: a6b982e7-d1a2-4856-a461-1d227c9eea67
+- Physics Audit Cron 1 Task ID: aa3d0aa4-2034-462c-9fa8-d92887ab5144/task-62
+- Physics Audit Cron 2 Task ID: aa3d0aa4-2034-462c-9fa8-d92887ab5144/task-64
 
 ## 🔒 Key Constraints
 - No technical decisions — relay only
@@ -127,26 +128,38 @@ Orchestrating resolution of the Upward Buoyant Drift Bug via Project Orchestrato
     3. Running `npx tsc --noEmit` and `npm run build` exits with 0 errors.
     4. Independent reviewing agent confirms upward physics feels natural and core vent mechanics intact.
   - User Global Rules: Update COLLABORATION.md first; ALWAYS wait for explicit user approval before proceeding with implementation. Prompt status: 'Ready for launch — awaiting user approval'.
+- Physics Edge-Case Audit & Remediation Constraints (Current Mission):
+  - Route selected: General (teamwork_preview_orchestrator) per Routing Decision Table
+  - Requested team: Use a very large team of agents (100+)
+  - R1: Comprehensive Physics Edge-Case Audit across GameManager.ts, Player.ts, weapons, environments, factions, boss mechanics for entrapment, boundary escape, infinite/NaN velocity, input lockout, unrecoverable states.
+  - R2: Robust Remediation preserving core mechanics, invariants (logicalWidth=600, logicalHeight=800), without arbitrary teleportation.
+  - Acceptance Criteria:
+    1. New Playwright reproduction test for every discovered issue.
+    2. Tests verify fixes resolve vulnerability without side effects.
+    3. Running `npx playwright test` passes 100% of all existing and newly created tests.
+    4. Running `npx tsc --noEmit` and `npm run build` exits with 0 errors.
+    5. Independent reviewing agent confirms fixes feel natural from a player's perspective with no frustration or entrapment remaining.
+  - User Global Rules: Update COLLABORATION.md first; ALWAYS wait for explicit user approval before proceeding with implementation. Prompt status: 'Ready for launch — awaiting user approval'.
 
 ## User Context
-- **Last user request**: Fix upward buoyant lift lock bug in Water Invader game where player submarine gets stuck at top of screen from hydrothermal vents/currents.
-- **Pending clarifications**: User approval granted ("승인"). Implementation authorized and launched.
+- **Last user request**: Explicit user approval granted ("승인"). Proceed with codebase-wide physics audit and remediation swarm.
+- **Pending clarifications**: None.
 - **Delivered results**:
-  - Request recorded in `/Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md` (verbatim under `## 2026-09-17T03:23:31Z` and `## 2026-09-17T04:49:29Z`).
-  - Claude collaboration guide updated in `/Users/user/src/water-invader/COLLABORATION.md`.
-  - Orchestrator `orchestrator_physics_buoyancy_1` (`bd5b0c5d-7349-4270-bc7f-be21cf043787`) spawned and dispatched.
-  - Dual monitoring crons active (Progress Reporting `task-86`, Liveness Check `task-88`).
+  - Request recorded in `/Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md` (verbatim under `## 2026-09-17T08:10:29Z` and `## 2026-09-17T08:12:23Z`).
+  - Claude collaboration guide updated in `/Users/user/src/water-invader/COLLABORATION.md` to Launched status.
+  - Project Orchestrator spawned (`a6b982e7-d1a2-4856-a461-1d227c9eea67`) at `/Users/user/src/water-invader/.agents/orchestrator_physics_audit_1`.
+  - Dual monitoring crons active: Progress Reporting (`aa3d0aa4-2034-462c-9fa8-d92887ab5144/task-62`) and Liveness Check (`aa3d0aa4-2034-462c-9fa8-d92887ab5144/task-64`).
 
 ## Project Status
 - **Phase**: complete (VICTORY CONFIRMED)
 
 ## Victory Audit Status
 - **Triggered**: yes
-- **Auditor**: d94deea3-d126-4710-b317-227ffe858406
+- **Auditor**: a47742e5-e9e5-4214-9d6d-11230df4e825
+- **Working Directory**: /Users/user/src/water-invader/.agents/sentinel_victory_auditor_physics_1
 - **Verdict**: VICTORY CONFIRMED
 - **Retry count**: 0
-- **Working Directory**: /Users/user/src/water-invader/.agents/sentinel_victory_auditor_buoyancy_1
-- **Audit Report**: /Users/user/src/water-invader/.agents/sentinel_victory_auditor_buoyancy_1/audit_report.md
+- **Audit Report**: /Users/user/src/water-invader/.agents/sentinel_victory_auditor_physics_1/audit_report.md
 
 ## Artifact Index
 - /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md — Verbatim user requests
@@ -154,18 +167,12 @@ Orchestrating resolution of the Upward Buoyant Drift Bug via Project Orchestrato
 - /Users/user/src/water-invader/.agents/sentinel/handoff.md — Sentinel handoff report
 - /Users/user/src/water-invader/COLLABORATION.md — Claude collaboration guide
 - /Users/user/src/water-invader/PROJECT.md — Global project architecture
-- /Users/user/src/water-invader/.agents/orchestrator_physics_buoyancy_1/ — Bugfix Orchestrator working directory
-- /Users/user/src/water-invader/.agents/orchestrator_physics_buoyancy_1/handoff.md — Orchestrator Handoff Report
-- /Users/user/src/water-invader/.agents/sentinel_victory_auditor_buoyancy_1/audit_report.md — Independent Victory Audit Report
-- /Users/user/src/water-invader/tests/playtest_buoyancy_drift_escape.spec.ts — Official Playwright reproduction and regression test suite
-- /Users/user/src/water-invader/tests/adversarial_buoyancy_gate2_verification.spec.ts — Multi-chassis passive descent verification suite
-- /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md — Verbatim user requests
-- /Users/user/src/water-invader/.agents/sentinel/BRIEFING.md — Sentinel working memory
-- /Users/user/src/water-invader/.agents/sentinel/handoff.md — Sentinel handoff report
-- /Users/user/src/water-invader/COLLABORATION.md — Claude collaboration guide
-- /Users/user/src/water-invader/PROJECT.md — Global project architecture
-- /Users/user/src/water-invader/IDEAS_PITCH.md — Comprehensive Pitch Document with 12 Flagship Features
-- /Users/user/src/water-invader/QA_REPORT.md — Comprehensive Playtest Report
-- /Users/user/src/water-invader/src/game/flagship/environment/HydrothermalVent.ts — Hydrothermal Vent buoyancy updraft logic
-- /Users/user/src/water-invader/src/game/Player.ts — Player submarine kinematics and controls
-- /Users/user/src/water-invader/tests/playtest_stream_b_vents_currents.spec.ts — Existing Playwright vent test suite
+- /Users/user/src/water-invader/.agents/orchestrator_physics_audit_1/ — Physics Audit Orchestrator directory
+- /Users/user/src/water-invader/.agents/sentinel_victory_auditor_physics_1/audit_report.md — Independent Victory Audit Report
+- /Users/user/src/water-invader/tests/physics_edgecase_comprehensive.spec.ts — 531-line Playwright physics reproduction & regression test suite
+- /Users/user/src/water-invader/src/game/GameManager.ts — Core physics and game loop
+- /Users/user/src/water-invader/src/game/Player.ts — Player kinematics and ballast controls
+
+
+
+

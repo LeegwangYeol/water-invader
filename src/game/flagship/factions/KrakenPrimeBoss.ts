@@ -11,7 +11,7 @@ import {
   ApexBossType,
   IBossSubsystem,
 } from '../types';
-import { Bullet } from '../../Bullet';
+import { Bullet, HomingMissile } from '../../Bullet';
 import { Player } from '../../Player';
 import { Barricade } from '../../Barricade';
 import { Vector2D, Rect } from '../../types';
@@ -95,11 +95,24 @@ export class CharybdisTentacle implements IBossSubsystem {
       // Target direction influence
       const dx = targetX - prevX;
       const dy = targetY - prevY;
-      const targetAngle = Math.atan2(dy, dx);
+      const dist = Math.hypot(dx, dy);
+      const prevSegAngle = i > 0 ? this.joints[i - 1].angle : joint.angle;
+      const targetAngle = dist < 4 ? prevSegAngle : Math.atan2(dy, dx);
 
       // Blend target angle with wave undulation
       const blend = (i + 1) / segCount;
-      joint.angle = (1 - blend * 0.6) * (Math.PI / 2 + wave) + blend * 0.6 * targetAngle;
+      let desiredAngle = (1 - blend * 0.6) * (Math.PI / 2 + wave) + blend * 0.6 * targetAngle;
+
+      if (i > 0) {
+        let diff = desiredAngle - this.joints[i - 1].angle;
+        while (diff < -Math.PI) diff += 2 * Math.PI;
+        while (diff > Math.PI) diff -= 2 * Math.PI;
+        const maxDelta = 0.6;
+        diff = Math.max(-maxDelta, Math.min(maxDelta, diff));
+        desiredAngle = this.joints[i - 1].angle + diff;
+      }
+
+      joint.angle = desiredAngle;
 
       joint.x = prevX + Math.cos(joint.angle) * joint.length;
       joint.y = prevY + Math.sin(joint.angle) * joint.length;
@@ -354,7 +367,7 @@ export class KrakenPrimeBoss implements IApexBossManager, IFlagshipSubsystem {
 
       // Active Missile Swat: If a missile is near tentacle, whip across and swat it
       for (const b of bullets) {
-        if (!b.isDead && ((b as any).isHoming || (b as any).homing)) {
+        if (!b.isDead && ((b as any).isHoming || (b as any).homing || (b as any).target !== undefined || b instanceof HomingMissile)) {
           const distToTip = Math.hypot(t.localBounds.x - b.position.x, t.localBounds.y - b.position.y);
           if (distToTip <= 70 && t.swatCooldown <= 0 && !t.isDestroyed) {
             t.swatCooldown = 1.2; // Fatigue cooldown
@@ -409,7 +422,11 @@ export class KrakenPrimeBoss implements IApexBossManager, IFlagshipSubsystem {
       this.activeBoss.vortexPullForce = pullSpeed;
 
       // Pull player upward toward the maw!
-      player.position.y = Math.max(220, player.position.y - pullSpeed * deltaTime);
+      let effectivePull = pullSpeed;
+      if ((player.velocity && player.velocity.y > 0) || (player as any).isMovingDown) {
+        effectivePull = Math.max(0, pullSpeed * 0.25 - (player.velocity ? player.velocity.y : 0));
+      }
+      player.position.y = Math.max(220, player.position.y - effectivePull * deltaTime);
 
       // Periodically spit tooth shrapnel
       if (Math.random() < deltaTime * 3.5) {
@@ -452,7 +469,8 @@ export class KrakenPrimeBoss implements IApexBossManager, IFlagshipSubsystem {
         if (this.position.x < -100 || this.position.x > 700) {
           this.isCharging = false;
           this.chargeCooldown = 6.0;
-          this.position.x = this.chargeDir > 0 ? 550 : 50;
+          this.position.x = this.chargeDir > 0 ? 420 : 180;
+          this.velocity.x = this.chargeDir > 0 ? -Math.abs(this.velocity.x) : Math.abs(this.velocity.x);
         }
 
         // Damage player if caught in breach charge path

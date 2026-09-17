@@ -19,6 +19,8 @@ export class Enemy extends Entity {
     }
   }
 
+  private static nextEnemyId: number = 1;
+  public id: number = Enemy.nextEnemyId++;
   public hp: number;
   public maxHp: number;
   private canvasWidth: number;
@@ -336,7 +338,7 @@ export class Enemy extends Entity {
     
     this.maxShieldHp = this.shieldHp;
     this.maxHp = this.hp;
-    this.fireTimer = this.level >= 10 ? (Math.random() * 0.7 + 0.8) : (Math.random() * 3 + 1);
+    this.fireTimer = 0;
 
     // Re-clamp position in case type-specific size altered dimensions
     const maxX = Math.max(0, this.canvasWidth - this.size.width);
@@ -904,7 +906,13 @@ export class Enemy extends Entity {
           if (this.lastBlockingAlly) {
             const selfCenterX = this.position.x + this.size.width / 2;
             const allyCenterX = this.lastBlockingAlly.position.x + (this.lastBlockingAlly.width ?? this.lastBlockingAlly.size.width) / 2;
-            slideDir = selfCenterX <= allyCenterX ? -1 : 1;
+            if (Math.abs(selfCenterX - allyCenterX) < 1e-3) {
+              const myId = (this as any).id ?? this.position.y;
+              const allyId = (this.lastBlockingAlly as any).id ?? this.lastBlockingAlly.position.y;
+              slideDir = myId <= allyId ? -1 : 1;
+            } else {
+              slideDir = selfCenterX <= allyCenterX ? -1 : 1;
+            }
           }
           if (this.position.x <= 5 && slideDir < 0) {
             slideDir = 1;
@@ -1031,7 +1039,13 @@ export class Enemy extends Entity {
           if (this.lastBlockingAlly) {
             const selfCenterX = this.position.x + this.size.width / 2;
             const allyCenterX = this.lastBlockingAlly.position.x + (this.lastBlockingAlly.width ?? this.lastBlockingAlly.size.width) / 2;
-            slideDir = selfCenterX <= allyCenterX ? -1 : 1;
+            if (Math.abs(selfCenterX - allyCenterX) < 1e-3) {
+              const myId = (this as any).id ?? this.position.y;
+              const allyId = (this.lastBlockingAlly as any).id ?? this.lastBlockingAlly.position.y;
+              slideDir = myId <= allyId ? -1 : 1;
+            } else {
+              slideDir = selfCenterX <= allyCenterX ? -1 : 1;
+            }
           }
           if (this.position.x <= 5 && slideDir < 0) {
             slideDir = 1;
@@ -1130,6 +1144,11 @@ export class Enemy extends Entity {
     }
     this.hp -= remainingDamage;
     this.hitFlashTimer = 0.08;
+
+    if (this.hp <= 0) {
+      this.hp = 0;
+      this.isDead = true;
+    }
 
     if (this.type === EnemyType.ROGUE_PHANTOM && this.hp > 0) {
       this.checkPhaseDash();

@@ -213,6 +213,14 @@ export class GameManager {
     }
   }
 
+  public syncInputState(): void {
+    if (this.player) {
+      this.player.isMovingLeft = !!(this.keysPressed['arrowleft'] || this.keysPressed['a']);
+      this.player.isMovingRight = !!(this.keysPressed['arrowright'] || this.keysPressed['d']);
+      this.player.isShooting = !!(this.keysPressed[' '] || this.keysPressed['spacebar'] || this.keysPressed['space']);
+    }
+  }
+
   public pause(): void {
     if (this.state === GameState.PLAYING || this.state === GameState.SHOP || this.state === GameState.GAME_OVER) {
       this.isPaused = true;
@@ -228,6 +236,7 @@ export class GameManager {
   public resume(): void {
     if (this.state === GameState.PLAYING && this.isPaused) {
       this.isPaused = false;
+      this.syncInputState();
       this.accumulator = 0;
       this.lastTime = performance.now();
       if (this.animationFrameId) {
@@ -301,14 +310,16 @@ export class GameManager {
 
     if (!this.player) {
       this.player = new Player(this.logicalWidth, this.logicalHeight);
+      this.player.position.x = (this.logicalWidth - this.player.size.width) / 2;
+      this.player.position.y = this.player.baselineY;
     } else if (!shouldPreserve) {
       this.player.hp = 3;
       this.player.stressLevel = 0;
       this.player.suppressionLevel = 0;
       this.player.invincibilityTimer = 0;
       this.player.ultimateGauge = 0;
-      this.player.position.x = this.logicalWidth / 2 - 25;
-      this.player.position.y = this.logicalHeight - 60;
+      this.player.position.x = (this.logicalWidth - this.player.size.width) / 2;
+      this.player.position.y = this.player.baselineY;
       this.player.baseFireRate = 0.5;
       this.player.multiShot = 1;
       this.player.piercing = 1;
@@ -318,8 +329,8 @@ export class GameManager {
       // Preserve player upgrades (baseFireRate, multiShot, piercing, maxHp, hp, hasAcidShield, homingMissiles)
       this.player.isDead = false;
       this.player.hp = Math.max(3, this.player.hp);
-      this.player.position.x = this.logicalWidth / 2 - 25;
-      this.player.position.y = this.logicalHeight - 60;
+      this.player.position.x = (this.logicalWidth - this.player.size.width) / 2;
+      this.player.position.y = this.player.baselineY;
       this.player.stressLevel = 0;
       this.player.suppressionLevel = 0;
       this.player.invincibilityTimer = 0;
@@ -451,6 +462,7 @@ export class GameManager {
 
   public startNextWave() {
     this.state = GameState.PLAYING;
+    this.syncInputState();
     this.isPaused = false;
     this.accumulator = 0;
     this.warningTimer = 0;
@@ -513,6 +525,7 @@ export class GameManager {
       this.flagshipManager.modularChassis.applyToPlayer(this.player);
     }
     this.state = GameState.PLAYING;
+    this.syncInputState();
     this.isPaused = false;
     this.accumulator = 0;
     if (this.onStateChange) this.onStateChange(this.state);
@@ -537,8 +550,8 @@ export class GameManager {
       this.flagshipManager.modularChassis.applyToPlayer(this.player);
     }
     this.player.hp = Math.max(3, this.player.hp);
-    this.player.position.x = this.logicalWidth / 2 - 25;
-    this.player.position.y = this.logicalHeight - 60;
+    this.player.position.x = (this.logicalWidth - this.player.size.width) / 2;
+    this.player.position.y = this.player.baselineY;
     this.player.stressLevel = 0;
     this.player.suppressionLevel = 0;
 
@@ -617,8 +630,8 @@ export class GameManager {
       this.flagshipManager.modularChassis.applyToPlayer(this.player);
     }
     this.player.hp = Math.max(3, this.player.hp);
-    this.player.position.x = this.logicalWidth / 2 - 25;
-    this.player.position.y = this.logicalHeight - 60;
+    this.player.position.x = (this.logicalWidth - this.player.size.width) / 2;
+    this.player.position.y = this.player.baselineY;
     this.player.stressLevel = 0;
     this.player.suppressionLevel = 0;
     this.player.invincibilityTimer = 1.5;
@@ -682,6 +695,7 @@ export class GameManager {
     this.spawnWave({ isContinue: true });
 
     this.state = GameState.PLAYING;
+    this.syncInputState();
     this.isPaused = false;
     this.accumulator = 0;
     if (this.onPlayerHpChange) this.onPlayerHpChange(this.player.hp);
@@ -1212,12 +1226,18 @@ export class GameManager {
   private loop = (timestamp: number) => {
     if (this.state === GameState.MENU) return;
 
-    let frameTime = Math.max(0, (timestamp - this.lastTime) / 1000);
-    this.lastTime = timestamp;
+    let frameTime = (timestamp - this.lastTime) / 1000;
+    if (!Number.isFinite(frameTime) || frameTime < 0) {
+      frameTime = 0;
+    }
+    this.lastTime = Number.isFinite(timestamp) ? timestamp : performance.now();
     
     // Guard against spiral of death on lag spikes or tab switching
     if (frameTime > 0.1) {
       frameTime = 0.1;
+    }
+    if (!Number.isFinite(this.accumulator)) {
+      this.accumulator = 0;
     }
     this.accumulator += frameTime;
 
@@ -1248,6 +1268,7 @@ export class GameManager {
     this.updateThreatState(deltaTime);
 
     if (this.state === GameState.PLAYING) {
+      this.syncInputState();
       this.checkSwarmEchelons();
 
       if (this.player.position.y < (this.player as any).baselineY) {
@@ -1704,7 +1725,45 @@ export class GameManager {
       }
     } else if (this.state === GameState.SHOP) {
       if (this.flagshipManager) {
-        this.flagshipManager.update(deltaTime, this.getFlagshipContext());
+        // When in GameState.SHOP, environmental hazard forces must not displace or harm the player
+        const savedPlayer = this.player;
+        const prevX = savedPlayer ? savedPlayer.position.x : 0;
+        const prevY = savedPlayer ? savedPlayer.position.y : 0;
+        const prevHp = savedPlayer ? savedPlayer.hp : 0;
+        const prevUpdraft = savedPlayer ? savedPlayer.isInUpdraft : false;
+        const prevBallast = savedPlayer ? (savedPlayer as any).isBallastActive : false;
+
+        const isolatedPlayer = savedPlayer
+          ? (Object.create(savedPlayer, {
+              position: {
+                value: { x: prevX, y: prevY },
+                writable: true,
+                enumerable: true,
+                configurable: true,
+              },
+              takeDamage: {
+                value: () => {},
+                writable: true,
+                enumerable: true,
+                configurable: true,
+              },
+            }) as Player)
+          : savedPlayer;
+
+        const shopContext = {
+          ...this.getFlagshipContext(),
+          player: isolatedPlayer,
+        };
+
+        this.flagshipManager.update(deltaTime, shopContext);
+
+        if (savedPlayer) {
+          savedPlayer.position.x = prevX;
+          savedPlayer.position.y = prevY;
+          savedPlayer.hp = prevHp;
+          savedPlayer.isInUpdraft = prevUpdraft;
+          (savedPlayer as any).isBallastActive = prevBallast;
+        }
       }
     }
     
@@ -2940,11 +2999,7 @@ export class GameManager {
     }
 
     if (this.state === GameState.PLAYING) {
-      if (k === 'arrowleft' || k === 'a') this.player.isMovingLeft = true;
-      if (k === 'arrowright' || k === 'd') this.player.isMovingRight = true;
-      if (k === ' ' || k === 'spacebar' || k === 'space') {
-        this.player.isShooting = true;
-      }
+      this.syncInputState();
       if (k === 'e' || k === 'shift') {
         this.triggerUltimate();
       }

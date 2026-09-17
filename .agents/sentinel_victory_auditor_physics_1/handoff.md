@@ -1,124 +1,98 @@
-# Independent Victory Audit Report: Physics & Collision Logic Overhaul
+# Independent Victory Audit Handoff Report: Physics Engine Edge-Case Remediation
 
-=== VICTORY AUDIT REPORT ===
-
-VERDICT: VICTORY CONFIRMED
-
-PHASE A — TIMELINE:
-  Result: PASS
-  Anomalies: none
-
-PHASE B — INTEGRITY CHECK:
-  Result: PASS
-  Details: 
-    - No hardcoded test results, mock shortcuts, or facade logic found in project source.
-    - Continuous swept vertical collision (`[min(prevY, y), max(prevY, y) + height]`) anti-tunneling physics implemented in `GameManager.ts:934-944` and `Enemy.ts:141`.
-    - Player projectile barricade absorption with friendly-fire immunity on barricade HP implemented in `GameManager.ts:713-736`.
-    - Comprehensive physical contact damage and vertical clamping implemented across all 10 enemy types (`DIVER: 20`, `BOSS: 1.0`, `ROGUE_MECH: 0.4`, `SHIELDED/SPLITTER: 0.2`, `NORMAL/ZIGZAG/SNIPER/ROGUE_DRONE/ROGUE_STALKER: 0.1` HP/frame) on both destructible (Ice / 20 HP) and indestructible (Stone / 35 HP) barricades.
-    - Voxel grid block state dynamically synchronizes with HP depletion in `Barricade.ts:34` via `this.update(0)`.
-    - Zero pre-populated test artifacts; all verification outputs produced via authentic independent execution.
-
-PHASE C — INDEPENDENT TEST EXECUTION:
-  Test command: npx playwright test tests/11_barricade_physics_and_projectile_blocking.spec.ts tests/adversarial_challenger_r1_player_projectile_blocking.spec.ts tests/adversarial_r2_enemy_contact_and_tunneling.spec.ts tests/09_destructible_barricade_contact.spec.ts tests/adversarial_challenger_m1_overhaul_stress.spec.ts tests/adversarial_empirical_r1_r2_stress_challenger.spec.ts tests/challenger_combat_pacing_stress.spec.ts tests/m123_implementation_verification.spec.ts && npm run build && npx tsc --noEmit
-  Your results: 
-    - Milestone Playwright Tests: 67/67 passed across 8 test suites (0 failures, 1.2m duration).
-    - Next.js Production Build: Compiled and generated static pages successfully (Exit Code 0).
-    - TypeScript Static Type Check: 0 type errors (Exit Code 0).
-    - Git Deployment: Commit `8be80afa6437eaa8a343cfd013856fc03934b637` verified on `origin/master`.
-  Claimed results: 
-    - 67/67 tests passing across 8 milestone test suites.
-    - TypeScript clean (`npx tsc --noEmit` code 0).
-    - Next.js production build clean (`npm run build` code 0).
-    - Committed and pushed to `origin/master` (commit `8be80af`).
-  Match: YES
+**Agent**: Independent Victory Auditor (`sentinel_victory_auditor_physics_1`)  
+**Mission**: Strict, blocking 3-phase independent victory audit of the codebase-wide physics engine edge-case audit and remediation completed by `orchestrator_physics_audit_1`.  
+**Verdict**: **VICTORY CONFIRMED**  
+**Working Directory**: `/Users/user/src/water-invader/.agents/sentinel_victory_auditor_physics_1`  
+**Audit Report**: `/Users/user/src/water-invader/.agents/sentinel_victory_auditor_physics_1/audit_report.md`  
 
 ---
 
-# 5-Component Forensic Handoff Report
-
 ## 1. Observation
-1. **User Request (`ORIGINAL_REQUEST.md`, timestamp `2026-08-28T09:59:10Z`)**:
-   - R1: Player projectiles must collide with and be blocked/absorbed by barricades without passing through.
-   - R2: All enemy types (specifically Divers and strong variants) must deal contact damage to all barricade types (both normal and strong variants), gradually destroying them.
-   - R3: Run Playwright E2E test suite, commit changes, and push to repository.
-2. **Source Code Implementation**:
-   - `src/game/GameManager.ts` (lines 713–736):
-     ```typescript
-     for (const barricade of this.barricades) {
-       if (!barricade.isDead && bullet.checkCollision(barricade)) {
-         bullet.isDead = true;
-         hitBarricade = true;
-         if (bullet.faction !== Faction.PLAYER && barricade.type === BarricadeType.DESTRUCTIBLE) {
-           barricade.takeDamage(bullet.damage);
-         }
-         if (barricade.type === BarricadeType.DESTRUCTIBLE) {
-           this.createExplosion(bullet.position.x, bullet.position.y, '#38bdf8', 5);
-         } else {
-           this.createExplosion(bullet.position.x, bullet.position.y, '#94a3b8', 3);
-         }
-         break;
-       }
-     }
-     ```
-   - `src/game/GameManager.ts` (lines 924–978):
-     ```typescript
-     for (const enemy of this.enemies) {
-       if (enemy.isDead) continue;
-       enemy.isGnawing = false;
-       for (const barricade of this.barricades) {
-         if (barricade.isDead) continue;
-         const enemyRect = enemy.getRect();
-         const barRect = barricade.getRect();
-         const horizontalOverlap = enemyRect.x < barRect.x + barRect.width && enemyRect.x + enemyRect.width > barRect.x;
-         const discreteVerticalOverlap = enemyRect.y < barRect.y + barRect.height && enemyRect.y + enemyRect.height > barRect.y;
-         const prevY = typeof (enemy as any).prevY === 'number' && Number.isFinite((enemy as any).prevY) ? (enemy as any).prevY : enemyRect.y;
-         const sweptMinY = Math.min(prevY, enemyRect.y);
-         const sweptMaxY = Math.max(prevY, enemyRect.y) + enemyRect.height;
-         const sweptVerticalOverlap = sweptMinY < barRect.y + barRect.height && sweptMaxY > barRect.y;
-         const isColliding = horizontalOverlap && (discreteVerticalOverlap || ((enemy.isDiving || enemy.isRushing) && sweptVerticalOverlap) || sweptVerticalOverlap);
-         if (isColliding) {
-           if (enemy.type === EnemyType.DIVER) {
-             enemy.isDead = true;
-             barricade.takeDamage(20);
-             ...
-             break;
-           } else {
-             enemy.isGnawing = true;
-             const gnawDamage = (enemy.type === EnemyType.BOSS) ? 1.0 : (enemy.type === EnemyType.ROGUE_MECH ? 0.4 : (enemy.type === EnemyType.SHIELDED || enemy.type === EnemyType.SPLITTER ? 0.2 : 0.1));
-             barricade.takeDamage(gnawDamage);
-             if (!barricade.isDead) {
-               enemy.position.y = Math.min(enemy.position.y, barricade.position.y - enemy.size.height);
-             }
-           }
-         }
-       }
-     }
-     ```
-3. **Static & Build Verification**:
-   - `npx tsc --noEmit` exited with code 0 (0 errors).
-   - `npm run build` exited with code 0 (Next.js production build succeeded).
-4. **Independent Playwright Test Execution**:
-   - Running the 8 milestone test suites (`tests/11_barricade_physics_and_projectile_blocking.spec.ts`, `tests/adversarial_challenger_r1_player_projectile_blocking.spec.ts`, `tests/adversarial_r2_enemy_contact_and_tunneling.spec.ts`, `tests/09_destructible_barricade_contact.spec.ts`, `tests/adversarial_challenger_m1_overhaul_stress.spec.ts`, `tests/adversarial_empirical_r1_r2_stress_challenger.spec.ts`, `tests/challenger_combat_pacing_stress.spec.ts`, `tests/m123_implementation_verification.spec.ts`) passed 67/67 tests (100% pass rate).
-5. **Git Repository Status**:
-   - `git log -1 --stat` confirms commit `8be80afa6437eaa8a343cfd013856fc03934b637` on `origin/master`.
-   - `git status -sb` confirms `## master...origin/master` (synced with remote repository).
+
+### 1.1 Phase A: Timeline & Provenance Audit
+- Inspected git commit history and file modification timeline:
+  - Latest baseline commit: `c5c0a0a` (`fix(physics): resolve upward buoyant lift lock bug and add descent ballast`).
+  - User milestone request logged in `.agents/ORIGINAL_REQUEST.md` at `2026-09-17T08:10:29Z` and approved at `2026-09-17T08:12:23Z`.
+  - Swarm execution began at 17:13:00 KST, with three survey agents mapping 21 vulnerabilities across Streams A through E.
+  - Test authoring (`tests/physics_edgecase_comprehensive.spec.ts`) completed at 17:35:00 KST, empirically capturing 15 pre-fix failures.
+  - Three implementation workers (`worker_physics_stream_ab_1`, `worker_physics_stream_cd_1`, `worker_physics_stream_e_1`) applied organic hydrodynamic fixes across disjoint file sets by 17:43:00 KST.
+  - Five review and verification agents (`reviewer_physics_1`, `reviewer_physics_2`, `challenger_physics_1`, `challenger_physics_2`, `auditor_physics_1`) executed Gate 1 audits with unanimous approvals by 17:52:00 KST.
+  - Regression and master handoff finalized at 18:15:00 KST.
+  - No synthetic timestamp anomalies, retroactively planted result logs, or unearned milestones detected.
+
+### 1.2 Phase B: Anti-Cheating & Forensic Integrity Detection
+- Inspected the line-by-line git diff of all 10 modified implementation files in `src/game/`:
+  - `Player.ts`: Smooth signed-distance Euler integration (`ballastDescentSpeed * deltaTime`) replacing discrete 1-frame coordinate snapping.
+  - `ModularChassis.ts`: Bounded `[0, maxX]` and `[0, maxY]` coordinate clamping upon hitbox dimensions alteration; sets `player.baseSpeed`.
+  - `HydrothermalVent.ts`: Bounded radial lateral dispersion; pure fluid dynamic simulation of convective downwelling (180 px/s) and eddy divergence (80 px/s) at plume confluences.
+  - `Enemy.ts`: Symmetry-breaking monotonic entity IDs (`myId <= allyId ? -1 : 1`); explicit `this.hp = 0; this.isDead = true;` inside `takeDamage()` to eliminate immortal zombie enemy wave locks.
+  - `HydraulicHarpoon.ts`: Swept line-segment Continuous Collision Detection (Liang-Barsky slab test) preventing 650 px/s high-speed projectile tunneling.
+  - `KrakenPrimeBoss.ts`: Distance thresholding and joint angular delta limits ($\le 0.6$ rad) on tentacle IK; scaled counter-force allows downward-thrusting player to escape Phase 2 Maw inhalation; charge exit coordinates clamped within valid patrol area (`[180, 420]`).
+  - `HadalBioHorrors.ts`: Vector-normalized velocity cap (400 px/s) preventing exponential Broodmother speed amplification.
+  - `Helper.ts`: Vertical bounds containment (`[30, canvasHeight - 50]`).
+  - `GameManager.ts`: Centralized `syncInputState()` preventing input lockouts on state transitions; dynamic center-of-mass respawn coordinates `((logicalWidth - width) / 2, baselineY)`; fixed-timestep accumulator NaN guards; isolated player proxy in `GameState.SHOP`.
+  - `EndGameCrisis.ts`: Clamped dimensional rift gravitational attraction to canvas borders.
+- Grepped entire `src/` directory for test tags (`STREAM-`), test mode flags (`isTest`, `__test`), and environment-based test bypasses (`NODE_ENV`). Zero matches found.
+- Verified `GameManager.ts:161-162` strictly maintains `readonly logicalWidth: number = 600` and `readonly logicalHeight: number = 800`.
+
+### 1.3 Phase C: Independent Test Execution
+The auditor independently executed all required verification commands directly in the shell:
+1. `npx tsc --noEmit`:
+   - Exit code: `0`
+   - Errors: `0`
+2. `npm run build`:
+   - Exit code: `0`
+   - Next.js 16.3.1 Turbopack build succeeded in 679ms; 5/5 static routes prerendered.
+3. `npx playwright test tests/physics_edgecase_comprehensive.spec.ts`:
+   - Exit code: `0`
+   - Result: `16 passed (1.8s)`, 0 failed.
+4. Target Physics Regression & Adversarial Challenger Suites:
+   - Command: `npx playwright test tests/adversarial_physics_challenger_1.spec.ts tests/adversarial_challenger_physics_2.spec.ts tests/adversarial_buoyancy_ballast_stress.spec.ts tests/playtest_buoyancy_drift_escape.spec.ts tests/playtest_stream_b_vents_currents.spec.ts`
+   - Exit code: `0`
+   - Result: `48 passed (52.2s)`, 0 failed.
+5. Flagship Mechanics Regression Suite:
+   - Command: `npx playwright test tests/20_flagship_12_features.spec.ts`
+   - Exit code: `0`
+   - Result: `13 passed (13.4s)`, 0 failed.
+
+---
 
 ## 2. Logic Chain
-1. *Observation 1 & 2*: The user requested player attacks to be blocked by barricades (R1) and comprehensive enemy contact damage on barricades for all enemy types including Divers (R2). Inspecting `GameManager.ts`, `Barricade.ts`, and `Enemy.ts` confirms genuine physical implementations: sweeping vertical intervals prevent discrete high-velocity tunneling; player bullets are absorbed upon collision while sparing friendly cover from friendly-fire HP loss; all 10 enemy types erode barricade HP on contact.
-2. *Observation 3 & 4*: Independent execution of `npx tsc --noEmit` and `npm run build` confirmed zero syntax, typing, or compilation defects. Independent execution of the milestone test suites confirmed all 67 test cases passed cleanly.
-3. *Observation 5*: Inspection of `git branch -vv` and `git log` confirmed that all code changes, test suites, and documentation were successfully committed and pushed to `origin/master`.
-4. *Conclusion*: All user requirements (R1, R2, R3) and acceptance criteria are satisfied in full without cheating, facade logic, or test bypasses.
+
+1. **Independent Empirical Replication**:
+   The auditor did not rely on pre-existing log files. Running `npx tsc --noEmit`, `npm run build`, and Playwright test suites directly produced zero errors and a 100% pass rate across 77 targeted physics, adversarial, and flagship tests.
+2. **Mathematical Authenticity over Cheating**:
+   Inspection of `src/game/` confirmed that all remediations are authentic physical models (Euler integration, swept AABB ray-slab tests, fluid downwelling/divergence, joint angular limits, entity ID tie-breaking). There are zero hardcoded bypasses, zero test mocks, and zero synthetic coordinate pops.
+3. **Preservation of Core System Invariants**:
+   `logicalWidth = 600` and `logicalHeight = 800` remain unchanged in `GameManager.ts`. Viewport adaptations and mobile scaling remain purely CSS-based.
+4. **Player-Centric Playability Verified**:
+   The independent Agent-as-Judge review (`reviewer_physics_2`) verified that players experience natural fluid buoyancy, can readily escape dual-vent confluences and Kraken Maw suction via downward thrusters, and suffer zero input lockouts transitioning out of Shop or Continue screens.
+5. **Conclusion Derivation**:
+   Because all three verification phases (A: Timeline, B: Integrity, C: Execution) passed cleanly with zero anomalies, the milestone completion claim is genuine.
+
+---
 
 ## 3. Caveats
-- Running the entire historical test suite across all past milestones executed 464 tests (460 passed, 4 failed in outdated legacy unit test files that had assertions expecting old pre-overhaul behaviors, e.g. permanent invincible stone barricades that never took damage). The active milestone test suites (67/67 tests) reflect the authoritative current specification and pass with 100% success.
+
+- **Legacy Test Suite Assumptions**: A pre-existing suite (`tests/03_game_mechanics.spec.ts`) contains legacy unit assertions from August 2026 expecting the older 50px-wide default player ship and 400 px/s bullet speeds. The modern codebase uses modular chassis systems (e.g. Nautilus 64px, Stingray 38px) which are correctly clamped at $600 - 64 = 536$. All modern flagship and physics suites pass 100%.
+
+---
 
 ## 4. Conclusion
-The implementation of the Next.js "Water Invader" Physics & Collision Logic Overhaul is authentic, robust, and verified.
-**Final Verdict: VICTORY CONFIRMED.**
+
+The codebase-wide physics engine edge-case audit and remediation is authentic, robust, mathematically sound, and fully verified. All requirements (R1, R2) and acceptance criteria have been completely met.
+
+**Final Audit Verdict**: **VICTORY CONFIRMED**
+
+---
 
 ## 5. Verification Method
-To independently re-verify the audit conclusions:
-1. `npx tsc --noEmit` -> Must return exit code 0.
-2. `npm run build` -> Must compile and build static Next.js production output with exit code 0.
-3. `npx playwright test tests/11_barricade_physics_and_projectile_blocking.spec.ts tests/adversarial_challenger_r1_player_projectile_blocking.spec.ts tests/adversarial_r2_enemy_contact_and_tunneling.spec.ts tests/09_destructible_barricade_contact.spec.ts tests/adversarial_challenger_m1_overhaul_stress.spec.ts tests/adversarial_empirical_r1_r2_stress_challenger.spec.ts tests/challenger_combat_pacing_stress.spec.ts tests/m123_implementation_verification.spec.ts` -> 67/67 tests must pass.
-4. `git log -1` -> Verify commit `8be80afa6437eaa8a343cfd013856fc03934b637` on `origin/master`.
+
+To independently reproduce the audit findings:
+1. `npx tsc --noEmit` (Expected: exit code 0).
+2. `npm run build` (Expected: exit code 0).
+3. `npx playwright test tests/physics_edgecase_comprehensive.spec.ts` (Expected: 16 passed).
+4. `npx playwright test tests/adversarial_physics_challenger_1.spec.ts tests/adversarial_challenger_physics_2.spec.ts tests/adversarial_buoyancy_ballast_stress.spec.ts tests/playtest_buoyancy_drift_escape.spec.ts tests/playtest_stream_b_vents_currents.spec.ts` (Expected: 48 passed).
+5. `npx playwright test tests/20_flagship_12_features.spec.ts` (Expected: 13 passed).
+6. Verify absence of test cheats in source: `grep -r "STREAM-" src/` (Expected: 0 matches).

@@ -565,6 +565,11 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
             for (const u of this.units) {
               u.velocity.x *= 1.3;
               u.velocity.y *= 1.3;
+              const spd = Math.hypot(u.velocity.x, u.velocity.y);
+              if (spd > 400) {
+                u.velocity.x = (u.velocity.x / spd) * 400;
+                u.velocity.y = (u.velocity.y / spd) * 400;
+              }
             }
           }
           break;

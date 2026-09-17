@@ -320,6 +320,7 @@ export class EndGameCrisis {
         const dist = Math.sqrt(distSq);
         const force = (1 - dist / pullRadius) * pullForce * deltaTime;
         player.position.x += (dx / dist) * force;
+        player.position.x = Math.max(0, Math.min(this.logicalWidth - player.size.width, player.position.x));
       }
     }
 
@@ -363,6 +364,7 @@ export class EndGameCrisis {
         const dist = Math.sqrt(distSq);
         const force = (1 - dist / pullRadius) * pullForce * deltaTime * direction;
         player.position.x += (dx / dist) * force;
+        player.position.x = Math.max(0, Math.min(this.logicalWidth - player.size.width, player.position.x));
       }
     }
 

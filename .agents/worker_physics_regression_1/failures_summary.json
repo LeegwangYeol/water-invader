@@ -1,0 +1,470 @@
+{
+  "02_rendering_and_vector_art.spec.ts": [
+    {
+      "num": "1",
+      "title": "R1: Canvas Rendering & Vector Graphics Verification Suite \u203a Player Cute Droplet vector rendering and state transitions "
+    }
+  ],
+  "03_game_mechanics.spec.ts": [
+    {
+      "num": "2",
+      "title": "R2: Game Mechanics & State Simulation Suite \u203a Simulate player keyboard movement and boundary clamping "
+    },
+    {
+      "num": "3",
+      "title": "R2: Game Mechanics & State Simulation Suite \u203a Simulate shooting mechanism and player bullet generation "
+    }
+  ],
+  "06_shop_economy_max_upgrades.spec.ts": [
+    {
+      "num": "4",
+      "title": "R6: Shop Economy, Upgrade Progression & Hull Repair Suite \u203a T6.5 [Repair Tank] Repair Tank (+1 HP) restores damaged player hull health and caps at 5 HP "
+    },
+    {
+      "num": "5",
+      "title": "R6: Shop Economy, Upgrade Progression & Hull Repair Suite \u203a T6.7 [Persistence & Gameplay Execution] Upgrades persist into next wave and fire full 5-way piercing spread "
+    }
+  ],
+  "12_extreme_difficulty_and_crises.spec.ts": [
+    {
+      "num": "6",
+      "title": "Milestone M4: Extreme Difficulty Scaling & Emergency Crisis Suite \u203a T1-04 [5 CRISES]: All 5 Emergency Crisis archetypes trigger and instantiate correct unit formations "
+    }
+  ],
+  "13_qol_and_crisis_mechanics.spec.ts": [
+    {
+      "num": "7",
+      "title": "E2E Integration: QoL, Event Balancing, Crisis Variety & Pre-Game Shop \u203a QOL-03: Pre-game purchased upgrades persist seamlessly into Wave 1 gameplay "
+    }
+  ],
+  "18_allied_reinforcements_and_roles.spec.ts": [
+    {
+      "num": "8",
+      "title": "18: Allied Reinforcements & Roles E2E Suite (Requirement R2) \u203a T18-03: Medic escort formation and player healing (+1 HP) "
+    }
+  ],
+  "20_flagship_12_features.spec.ts": [
+    {
+      "num": "9",
+      "title": "Flagship 12 Features Master E2E Suite \u203a FLAGSHIP-03: Hydraulic Harpoon [H] launches pneumatic dart and [Shift] triggers winch "
+    }
+  ],
+  "adversarial_buoyancy_gate2_verification.spec.ts": [
+    {
+      "num": "10",
+      "title": "Gate 2 Adversarial Verification: Overlap Zone Passive Drift Across 6 Hulls \u203a 1. 6-Hull Passive Drift Trajectory Analysis \u203a GATE2-CHASSIS: Default Submersible (DEFAULT) baseline descent evaluation "
+    },
+    {
+      "num": "11",
+      "title": "Gate 2 Adversarial Verification: Overlap Zone Passive Drift Across 6 Hulls \u203a 1. 6-Hull Passive Drift Trajectory Analysis \u203a GATE2-CHASSIS: Nautilus Dreadnought (NAUTILUS) baseline descent evaluation "
+    },
+    {
+      "num": "12",
+      "title": "Gate 2 Adversarial Verification: Overlap Zone Passive Drift Across 6 Hulls \u203a 1. 6-Hull Passive Drift Trajectory Analysis \u203a GATE2-CHASSIS: Stingray Interceptor (STINGRAY) baseline descent evaluation "
+    },
+    {
+      "num": "13",
+      "title": "Gate 2 Adversarial Verification: Overlap Zone Passive Drift Across 6 Hulls \u203a 1. 6-Hull Passive Drift Trajectory Analysis \u203a GATE2-CHASSIS: Kraken Bioship (KRAKEN) baseline descent evaluation "
+    },
+    {
+      "num": "14",
+      "title": "Gate 2 Adversarial Verification: Overlap Zone Passive Drift Across 6 Hulls \u203a 1. 6-Hull Passive Drift Trajectory Analysis \u203a GATE2-CHASSIS: Leviathan Harvester (LEVIATHAN) baseline descent evaluation "
+    },
+    {
+      "num": "15",
+      "title": "Gate 2 Adversarial Verification: Overlap Zone Passive Drift Across 6 Hulls \u203a 1. 6-Hull Passive Drift Trajectory Analysis \u203a GATE2-CHASSIS: Ghost Stealth Sub (GHOST) baseline descent evaluation "
+    },
+    {
+      "num": "16",
+      "title": "Gate 2 Adversarial Verification: Overlap Zone Passive Drift Across 6 Hulls \u203a GATE2-GRID: Spatial grid sampling across entire overlap zone [286, 314] at y=130 "
+    },
+    {
+      "num": "17",
+      "title": "Gate 2 Adversarial Verification: Overlap Zone Passive Drift Across 6 Hulls \u203a GATE2-MECHANICS: Empirical proof of limit cycle trap at liftRatio = 0.5 "
+    }
+  ],
+  "adversarial_buoyancy_modular_overlap.spec.ts": [
+    {
+      "num": "18",
+      "title": "Adversarial Stress Test: Modular Chassis Hulls & Multi-Vent Overlap Zone \u203a 2. Multi-Vent Overlap Zone Interaction Analysis \u203a VENT-OVERLAP-EMPIRICAL-04: Extended 30s passive drift test across all 6 modular chassis hulls in overlap zone "
+    }
+  ],
+  "adversarial_challenger_m1_2.spec.ts": [
+    {
+      "num": "19",
+      "title": "Challenger M1 Adversarial Verification Suite (teamwork_preview_challenger_m1_2) \u203a EMP-WAVE-01: Exhaustive Wave Scaling & Boundary Invariants (Waves 1 to 50) "
+    }
+  ],
+  "adversarial_challenger_m1_m2_stress.spec.ts": [
+    {
+      "num": "20",
+      "title": "Adversarial Stress Harness: Milestone M1 & M2 (Stage 10+ Scaling & Crisis Director) \u203a Challenge 3: Toxic Acid Storm Hazard Collision & Cleanup \u203a 3.3 Lethal Acid Storm hazard hit triggers Game Over when player HP reaches 0 "
+    },
+    {
+      "num": "50",
+      "title": "Adversarial Stress Harness: Milestone M1 & M2 (Stage 10+ Scaling & Crisis Director) \u203a Challenge 3: Toxic Acid Storm Hazard Collision & Cleanup \u203a 3.3 Lethal Acid Storm hazard hit triggers Game Over when player HP reaches 0 "
+    }
+  ],
+  "adversarial_challenger_m2_2.spec.ts": [
+    {
+      "num": "21",
+      "title": "Adversarial Challenger Suite: Milestone 2 (F-12, F-16, F-17) \u203a F-16 Adversarial Challenge: Player Initial HP Synchronization (3/5) \u203a B1: Engine & React HUD match 3 HP and 5 Max HP at init and across 5 restart cycles "
+    }
+  ],
+  "adversarial_challenger_m2.spec.ts": [
+    {
+      "num": "22",
+      "title": "Adversarial Challenger M2: Deep Stress & Boundary Validation Suite \u203a Challenge 2: F-05 Multi-Shot Lv 4 & Lv 5 Trajectory Physics & Shop Upgrades \u203a 2.1 Multi-Shot Lv 4 spawns exactly 4 bullets with verified trigonometric trajectories and distinct spread "
+    },
+    {
+      "num": "23",
+      "title": "Adversarial Challenger M2: Deep Stress & Boundary Validation Suite \u203a Challenge 2: F-05 Multi-Shot Lv 4 & Lv 5 Trajectory Physics & Shop Upgrades \u203a 2.2 Multi-Shot Lv 5 spawns exactly 5 bullets with center straight trajectory and symmetric spread "
+    },
+    {
+      "num": "24",
+      "title": "Adversarial Challenger M2: Deep Stress & Boundary Validation Suite \u203a Challenge 3: F-09 Wave 2 Modal Open/Close 5x State Preservation & Loop Safety \u203a 3.2 Delta time explosion protection: 10-second simulated pause does not spike deltaTime on resume "
+    }
+  ],
+  "adversarial_challenger_m3_1.spec.ts": [
+    {
+      "num": "25",
+      "title": "Adversarial Challenger M3-1: F-10 (Aspect Ratio), F-11 (HiDPI / Retina), F-13 (Top HUD Clearance) \u203a Challenge 3: F-13 Top HUD Safe Zone & Spawning Occlusion Adversarial Suite \u203a 3.1 Full 20-wave formation sweep guarantees min Y >= 80 and Boss Y >= 90 "
+    }
+  ],
+  "adversarial_m1_continue_shop_challenger.spec.ts": [
+    {
+      "num": "26",
+      "title": "Adversarial M1 Challenger: Pre-Continue Shop Access & Stability \u203a C1.1 [Full Transition & Double Repair]: Death -> Continue -> Shop Modal Open -> Buy Tank Repair (3 -> 4 -> 5 HP) -> Resume Wave maintains HP 5, barricades, wave 3, and 1.5s i-frames "
+    },
+    {
+      "num": "27",
+      "title": "Adversarial M1 Challenger: Pre-Continue Shop Access & Stability \u203a C1.2 [Single Repair to 4 HP]: Death -> Continue -> Buy 1 Tank Repair (3 -> 4 HP) -> Resume Wave maintains HP 4 "
+    },
+    {
+      "num": "28",
+      "title": "Adversarial M1 Challenger: Pre-Continue Shop Access & Stability \u203a C1.3 [Zero Repair Baseline]: Death -> Continue -> No Repair bought -> Resume Wave maintains baseline HP 3 "
+    },
+    {
+      "num": "29",
+      "title": "Adversarial M1 Challenger: Pre-Continue Shop Access & Stability \u203a C1.4 [Stress: Rapid Continue Clicks]: Quintuple rapid clicks on Continue button do not corrupt state or leak loops "
+    },
+    {
+      "num": "30",
+      "title": "Adversarial M1 Challenger: Pre-Continue Shop Access & Stability \u203a C1.6 [Multi-Cycle Longevity]: 3 consecutive Death -> Continue -> Shop -> Resume cycles maintain clean state "
+    },
+    {
+      "num": "31",
+      "title": "Adversarial M1 Challenger: Pre-Continue Shop Access & Stability \u203a C1.8 [Combined Upgrades Persistence]: Buying both Tank Repair and Fire Rate in Continue Shop correctly applies both to active combat "
+    }
+  ],
+  "adversarial_math_physics_m1_m2_c2.spec.ts": [
+    {
+      "num": "32",
+      "title": "Adversarial Challenger 2: Mathematical & Physics Verification (M1 & M2) \u203a Task 2: 2-Damage Elite Projectile Impact on Max-Level Player (5 HP) \u203a T2.1: Invader SNIPER elite projectile deals 2 damage (5 HP -> 3 HP -> 1 HP -> GameOver) "
+    },
+    {
+      "num": "33",
+      "title": "Adversarial Challenger 2: Mathematical & Physics Verification (M1 & M2) \u203a Task 4: Enemy Attack Tempo Cooldown Bounds (0.8s ~ 1.5s at Stage 10+) \u203a T4.1: Initial spawn fireTimer bounds across 2,000 enemy instantiations at Stage 10 "
+    },
+    {
+      "num": "34",
+      "title": "Adversarial Challenger 2: Mathematical & Physics Verification (M1 & M2) \u203a Task 5: Crisis Physics Stability & Zero Coordinate Corruption \u203a T5.1: Physics integrity & zero NaN during TITAN_HORDE crisis event "
+    },
+    {
+      "num": "35",
+      "title": "Adversarial Challenger 2: Mathematical & Physics Verification (M1 & M2) \u203a Task 5: Crisis Physics Stability & Zero Coordinate Corruption \u203a T5.2: Physics integrity & zero NaN during ACID_STORM crisis event "
+    },
+    {
+      "num": "36",
+      "title": "Adversarial Challenger 2: Mathematical & Physics Verification (M1 & M2) \u203a Task 5: Crisis Physics Stability & Zero Coordinate Corruption \u203a T5.3: Physics integrity & zero NaN during SWARM_BLITZ crisis event "
+    },
+    {
+      "num": "37",
+      "title": "Adversarial Challenger 2: Mathematical & Physics Verification (M1 & M2) \u203a Task 5: Crisis Physics Stability & Zero Coordinate Corruption \u203a T5.4: Physics integrity & zero NaN during EMP_DISRUPTION crisis event "
+    },
+    {
+      "num": "38",
+      "title": "Adversarial Challenger 2: Mathematical & Physics Verification (M1 & M2) \u203a Task 5: Crisis Physics Stability & Zero Coordinate Corruption \u203a T5.5: Physics integrity & zero NaN during TOTAL_WAR crisis event "
+    }
+  ],
+  "adversarial_opt_challenger_1.spec.ts": [
+    {
+      "num": "39",
+      "title": "Challenger 1: Adversarial Mechanics & Stress Testing Suite \u203a Domain 4.2: Indestructible Stone Barricades Immune to Bullets and Gnawing "
+    }
+  ],
+  "adversarial_r1_reviewer_crossfire_stress.spec.ts": [
+    {
+      "num": "40",
+      "title": "Adversarial Reviewer R1: Crossfire, Friendly Fire & Score/Cash Persistence Suite \u203a ADV-R1.1: Multi-death loop compounds score and cash monotonically across successive game overs "
+    },
+    {
+      "num": "41",
+      "title": "Adversarial Reviewer R1: Crossfire, Friendly Fire & Score/Cash Persistence Suite \u203a ADV-R1.2: Simultaneous Boss crossfire elimination and Player Acid Storm death frame "
+    }
+  ],
+  "adversarial_r2_reviewer_deep_crossfire.spec.ts": [
+    {
+      "num": "42",
+      "title": "Adversarial R2 Reviewer Deep Crossfire & Edge-Case Suite \u203a ADV-R2.3: Currency spent in Shop/GameOver persists correctly across death and respawn "
+    }
+  ],
+  "adversarial_r3_reviewer_crossfire_stress.spec.ts": [
+    {
+      "num": "43",
+      "title": "Adversarial R3 Reviewer: Comprehensive Crossfire & Score Persistence Suite \u203a ADV-R3.1: Multi-Cycle Death & Respawn: Score, Currency & Post-Death Upgrades monotonically persist "
+    }
+  ],
+  "adversarial_stream_d_factions_combat.spec.ts": [
+    {
+      "num": "44",
+      "title": "Stream D Adversarial: Feature 8 Hadal Bio-Horrors \u203a ADV-MUTATION-04 [INTEGRATION FLAW]: FlagshipManager hardcodes kinetic on every enemy kill "
+    }
+  ],
+  "bughunt_empirical_edgecases_state_machine.spec.ts": [
+    {
+      "num": "45",
+      "title": "Empirical Verification: State Machine Transitions & Boundary Conditions \u203a 1. Rapid Pause & Unpause Toggles \u203a 1.1 Extreme simulated pause (5 seconds) bounds delta-time to 0.1s and prevents position skips "
+    },
+    {
+      "num": "46",
+      "title": "Empirical Verification: State Machine Transitions & Boundary Conditions \u203a 2. Simultaneous Win/Loss Resolution \u203a 2.1 Wave Boss (EnemyType.BOSS) and Player reaching 0 HP on exact same frame deterministically resolves to GAME_OVER "
+    },
+    {
+      "num": "47",
+      "title": "Empirical Verification: State Machine Transitions & Boundary Conditions \u203a 2. Simultaneous Win/Loss Resolution \u203a 2.2 End-Game Crisis Sovereign Core and Player reaching 0 HP on exact same frame deterministically resolves to GAME_OVER "
+    },
+    {
+      "num": "48",
+      "title": "Empirical Verification: State Machine Transitions & Boundary Conditions \u203a 2. Simultaneous Win/Loss Resolution \u203a 2.3 Player lethal contact with Boss body deterministically triggers GAME_OVER without crash "
+    },
+    {
+      "num": "49",
+      "title": "Empirical Verification: State Machine Transitions & Boundary Conditions \u203a 4. Stage Progression & Restart Lifecycle \u203a 4.3 Game restart via Continue vs Restart from Beginning options "
+    },
+    {
+      "num": "50",
+      "title": "Empirical Verification: State Machine Transitions & Boundary Conditions \u203a 4. Stage Progression & Restart Lifecycle \u203a 4.4 10 consecutive deaths and PLAY AGAIN restarts maintain loop stability and zero entity leakage "
+    }
+  ],
+  "bughunt2_viewport_persistence_adversarial.spec.ts": [
+    {
+      "num": "51",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 1: Game Over Tank Repair Economy carries +1 HP into Pre-Continue Shop (4/5) and live wave without clamp to 3 "
+    },
+    {
+      "num": "52",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x500 "
+    },
+    {
+      "num": "53",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x568 "
+    },
+    {
+      "num": "54",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x600 "
+    },
+    {
+      "num": "55",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x667 "
+    },
+    {
+      "num": "56",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x700 "
+    },
+    {
+      "num": "57",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x750 "
+    },
+    {
+      "num": "58",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x800 "
+    },
+    {
+      "num": "59",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x844 "
+    },
+    {
+      "num": "60",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 3A: Mobile Touch Controls (ALLY, ULT, FIRE) maintain >= 44px height at viewport 375x900 "
+    },
+    {
+      "num": "61",
+      "title": "Adversarial Bughunt 2: Viewport UI & Pre-Continue Shop State Persistence \u203a Challenge 4: Modal action buttons in GameOverModal and ShopModal are fully accessible and clickable on Mobile SE (375x667) "
+    }
+  ],
+  "continue_vs_restart_on_death.spec.ts": [
+    {
+      "num": "62",
+      "title": "Continue vs Restart Option on Death Suite \u203a R1.2: Selecting \"Continue\" respawns the player on the current wave with score and upgrades intact "
+    },
+    {
+      "num": "63",
+      "title": "Continue vs Restart Option on Death Suite \u203a R1.3: Selecting \"Restart from Beginning\" fully resets game state to Wave 1, score 0, and base upgrades "
+    },
+    {
+      "num": "64",
+      "title": "Continue vs Restart Option on Death Suite \u203a R1.8: Player death during Stage 15 End-Game Crisis permits Continue without crisis lockout "
+    },
+    {
+      "num": "65",
+      "title": "Continue vs Restart Option on Death Suite \u203a R1.10: Player death during active Allied Reinforcement warp-in animation allows Continue without visual or entity leaks "
+    },
+    {
+      "num": "667",
+      "title": "Continue vs Restart Option on Death Suite \u203a R1.2: Selecting \"Continue\" respawns the player on the current wave with score and upgrades intact "
+    }
+  ],
+  "cross_device_touch_verification.spec.ts": [
+    {
+      "num": "66",
+      "title": "Cross-Device Touch Verification: Samsung Galaxy S25+ \u203a 3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots "
+    },
+    {
+      "num": "67",
+      "title": "Cross-Device Touch Verification: iPhone 16 Pro / 15 Pro \u203a 3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots "
+    },
+    {
+      "num": "68",
+      "title": "Cross-Device Touch Verification: iPhone 14 / 13 \u203a 3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots "
+    },
+    {
+      "num": "69",
+      "title": "Cross-Device Touch Verification: iPhone SE \u203a 3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots "
+    },
+    {
+      "num": "70",
+      "title": "Cross-Device Touch Verification: Samsung Galaxy Z Fold \u203a 3. Boundary Clamping Verification: Left Clamp (0) & Right Clamp (550) with Screenshots "
+    }
+  ],
+  "crossfire_and_score_persistence.spec.ts": [
+    {
+      "num": "71",
+      "title": "Crossfire & Score/Cash Persistence Verification Suite \u203a R1.1: Score and Currency persist when player dies and game respawns/restarts via continueGame() "
+    }
+  ],
+  "m1_reviewer2_continue_shop_verification.spec.ts": [
+    {
+      "num": "72",
+      "title": "Milestone 1 Reviewer 2: Pre-Continue Shop Access & Stability Verification \u203a VERIFY-01: prepareContinue sets GameState.SHOP, cancels rAF, and purges hazards "
+    },
+    {
+      "num": "73",
+      "title": "Milestone 1 Reviewer 2: Pre-Continue Shop Access & Stability Verification \u203a VERIFY-02: Tank repair in Continue Shop restores HP to 4 and 5, deducting 75 currency per repair "
+    },
+    {
+      "num": "74",
+      "title": "Milestone 1 Reviewer 2: Pre-Continue Shop Access & Stability Verification \u203a VERIFY-03: continueGame preserves repaired 5 HP, grants 1.5s i-frames, and resumes single rAF loop "
+    },
+    {
+      "num": "75",
+      "title": "Milestone 1 Reviewer 2: Pre-Continue Shop Access & Stability Verification \u203a VERIFY-04: Stress test: 20 sequential death -> prepareContinue -> continueGame cycles without rAF leaks or state degradation "
+    }
+  ],
+  "m1_verification.spec.ts": [
+    {
+      "num": "76",
+      "title": "Milestone 1: Core Engine & Collision Fixes Verification Suite \u203a F-08 [HIGH]: Near-miss suppression triggers only once per bullet (hasTriggeredNearMiss) "
+    }
+  ],
+  "m2_verification.spec.ts": [
+    {
+      "num": "77",
+      "title": "Milestone 2: Gameplay Mechanics, Upgrades & Controls Verification Suite \u203a F-16 [MEDIUM]: Starting Player HP initializes to 3 out of max 5 in Player instance, GameManager, and HUD "
+    }
+  ],
+  "stress/bughunt_physics_adversarial_stress.spec.ts": [
+    {
+      "num": "78",
+      "title": "Empirical Bug Hunt: Physics, Friendly-Fire AI, Bullet Tunneling, Boundary & NaN/Infinity Safety \u203a SCENARIO-1.1: Dense 5x5 Grid (25 units, vertical gap 5px) with all fire timers ready "
+    }
+  ],
+  "stress/challenger_exp_1_friendly_fire_crisis_stress.spec.ts": [
+    {
+      "num": "79",
+      "title": "Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doubling) & R3 (Friendly-Fire Avoidance) \u203a STRESS-FF-01: Pure Column Aligned Suppression preserves zero allied friendly-fire in vertical corridors "
+    },
+    {
+      "num": "80",
+      "title": "Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doubling) & R3 (Friendly-Fire Avoidance) \u203a STRESS-FF-02 [EMPIRICAL ADVERSARIAL CHALLENGE]: Staggered & Diagonal Formations expose Friendly-Fire Vulnerability "
+    },
+    {
+      "num": "81",
+      "title": "Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doubling) & R3 (Friendly-Fire Avoidance) \u203a CROSSFIRE-01: Line-of-Sight does NOT block opposing faction targets and direct hits register damage "
+    },
+    {
+      "num": "82",
+      "title": "Adversarial Stress Test & Empirical Challenge: R1 (Crisis Doubling) & R3 (Friendly-Fire Avoidance) \u203a CROSSFIRE-02: 20-unit opposing skirmish produces active crossfire damage while exposing Rogue-on-Rogue upward blind spot "
+    }
+  ],
+  "stress/challenger_piercing_particle_empirical.spec.ts": [
+    {
+      "num": "83",
+      "title": "Challenger Empirical Verification: G-01 Piercing & G-04 Particle Pooling \u203a G-01 [EMPIRICAL 3]: Piercing=3 cleanly penetrates and damages 3 distinct enemies in a vertical column "
+    },
+    {
+      "num": "84",
+      "title": "Challenger Empirical Verification: G-01 Piercing & G-04 Particle Pooling \u203a G-01 [EMPIRICAL 4]: Standard Bullet (Piercing=1) destroys on first enemy and does not touch subsequent enemies "
+    }
+  ],
+  "tier5_adversarial_combat.spec.ts": [
+    {
+      "num": "85",
+      "title": "Tier 5 Adversarial Combat Hardening Suite (Milestone M5) \u203a 3. Simultaneous Crossfire Annihilation & Entity List Integrity \u203a T5.6 [Annihilation] Symmetrical crossfire bullet trade eliminates both formations simultaneously with proper reward attribution "
+    }
+  ],
+  "unit/acid_rain_counterplay.test.ts": [
+    {
+      "num": "86",
+      "title": "Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics \u203a ACID-02: Unshielded player collision with Acid Rain droplet deducts 1 HP and marks droplet dead "
+    },
+    {
+      "num": "87",
+      "title": "Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics \u203a ACID-03: Fatal unshielded acid droplet collision triggers Game Over when HP drops to 0 "
+    },
+    {
+      "num": "88",
+      "title": "Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics \u203a ACID-04: Shielded player (hasAcidShield = true) safely deflects Acid Rain droplets with 0 damage "
+    },
+    {
+      "num": "89",
+      "title": "Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics \u203a ACID-06: Swarm Stress Test: Deflecting 20 simultaneous acid storm droplets with 0 damage leakage "
+    }
+  ],
+  "unit/adversarial_empirical_challenger_stress.test.ts": [
+    {
+      "num": "90",
+      "title": "Empirical Adversarial Stress Suite: Combat Simulations & Hazard Mechanics \u203a 1. High-Density Acid Storm Stress \u203a STRESS-ACID-01: High-Density 120-droplet barrage WITHOUT Acid Shield (Damage & Invariants) "
+    },
+    {
+      "num": "91",
+      "title": "Empirical Adversarial Stress Suite: Combat Simulations & Hazard Mechanics \u203a 1. High-Density Acid Storm Stress \u203a STRESS-ACID-02: Ultra-Density 250-droplet barrage WITH Acid Shield (100% Deflection, 0 Leakage) "
+    },
+    {
+      "num": "92",
+      "title": "Empirical Adversarial Stress Suite: Combat Simulations & Hazard Mechanics \u203a 1. High-Density Acid Storm Stress \u203a STRESS-ACID-03: Extreme boundary check: 500 simultaneous droplets update & particle stability "
+    },
+    {
+      "num": "93",
+      "title": "Empirical Adversarial Stress Suite: Combat Simulations & Hazard Mechanics \u203a 2. Multi-Hazard Simultaneous Combat Convergence \u203a STRESS-MULTI-02: Solar Flare Damage Resolution & Hit Confirmation "
+    }
+  ],
+  "unit/friendly_fire_ai.test.ts": [
+    {
+      "num": "94",
+      "title": "Unit Simulation: Smarter Enemy Friendly-Fire AI & Line-of-Sight System \u203a FF-10 [180-Frame Zero Friendly-Fire Damage Benchmark]: Full physics simulation produces 0 friendly damage "
+    }
+  ],
+  "unit/gamestate_edgecases_audit.test.ts": [
+    {
+      "num": "95",
+      "title": "Remediation Verification & State Machine Edge-Cases Audit \u203a DEFECT-B2: GameManager dispatches onPlayerHpChange when Allied Reinforcements heals player "
+    }
+  ],
+  "unit/physics_and_math.test.ts": [
+    {
+      "num": "96",
+      "title": "Unit Tests: Milestone M1 \u2014 Extreme Difficulty Scaling & Piecewise Math (Stage 10+) \u203a Attack tempo and firing cooldown: Stage 10+ rapid tempo vs Wave 1-9 "
+    }
+  ]
+}

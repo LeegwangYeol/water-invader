@@ -100,11 +100,13 @@ export class Player extends Entity {
     // Smooth hydrodynamic ballast restoration
     if (this.isBallastActive && !this.isInUpdraft) {
       const targetY = this.baselineY;
-      if (this.position.y < targetY) {
-        this.position.y = Math.min(targetY, this.position.y + this.ballastDescentSpeed * deltaTime);
-      } else {
+      const diff = targetY - this.position.y;
+      const step = this.ballastDescentSpeed * deltaTime;
+      if (Math.abs(diff) <= step) {
         this.position.y = targetY;
         this.isBallastActive = false;
+      } else {
+        this.position.y += Math.sign(diff) * step;
       }
     }
     this.isInUpdraft = false;

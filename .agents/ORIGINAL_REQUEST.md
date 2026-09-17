@@ -465,3 +465,40 @@ The solution must organically integrate with the existing `GameManager.ts` and e
 ## 2026-09-17T04:49:29Z
 
 승인
+
+## 2026-09-17T08:10:29Z
+
+# Teamwork Project Prompt
+
+> Status: Ready for launch — awaiting user approval
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: Use a very large team of agents (100+)
+
+Perform a comprehensive, codebase-wide audit and remediation of all physical/mechanical edge cases in the Water Invader game physics engine. The goal is to proactively identify and fix any UX/physics entrapment bugs, infinite loops, NaN coordinates, or boundary violations so that past mistakes are not repeated. Use a very large team of agents.
+
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Comprehensive Physics Edge-Case Audit
+Thoroughly inspect all subsystems (`GameManager.ts`, `Player.ts`, weapons, environments, factions, and boss mechanics) for physics vulnerabilities. Look for scenarios where players or entities can get permanently stuck, escape the 600x800 logical boundary, reach infinite/NaN velocity, experience input lockouts, or suffer from unrecoverable states.
+
+### R2. Robust Remediation
+Fix any identified physics errors organically. All fixes must preserve the core game mechanics, invariants (`logicalWidth=600`, `logicalHeight=800`), and existing expected behaviors without relying on arbitrary teleportation.
+
+## Acceptance Criteria
+
+### Automated Verification
+- [ ] For every physics error or vulnerability discovered, a new Playwright automated test MUST be written that specifically reproduces the issue.
+- [ ] The new tests must verify that the applied fix successfully resolves the vulnerability without side effects.
+- [ ] Running `npx playwright test` passes 100% of all existing regression tests and all newly created bugfix tests.
+- [ ] Running `npx tsc --noEmit` and `npm run build` exits with 0 errors.
+
+### Independent Audit (Agent-as-Judge)
+- [ ] An independent reviewing agent (or team of reviewers) confirms that all fixes feel natural from a player's perspective.
+- [ ] The reviewers must simulate edge cases as a human player would and confirm that no frustration, entrapment, or unrecoverable states remain.
+
+## 2026-09-17T08:12:23Z
+
+승인

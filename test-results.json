@@ -4,7 +4,7 @@
       "/Users/user/.nvm/versions/node/v25.8.1/bin/node",
       "/Users/user/src/water-invader/node_modules/.bin/playwright",
       "test",
-      "tests/14_responsive_warning_background_and_contrast.spec.ts"
+      "tests/20_flagship_12_features.spec.ts"
     ],
     "configFile": "/Users/user/src/water-invader/playwright.config.ts",
     "rootDir": "/Users/user/src/water-invader/tests",
@@ -71,24 +71,29 @@
     "updateSourceMethod": "patch",
     "version": "1.62.1",
     "workers": 1,
-    "webServer": null
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
   },
   "suites": [
     {
-      "title": "14_responsive_warning_background_and_contrast.spec.ts",
-      "file": "14_responsive_warning_background_and_contrast.spec.ts",
+      "title": "20_flagship_12_features.spec.ts",
+      "file": "20_flagship_12_features.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "R2: Responsive Warning Backgrounds & Projectile Contrast Suite",
-          "file": "14_responsive_warning_background_and_contrast.spec.ts",
+          "title": "Flagship 12 Features Master E2E Suite",
+          "file": "20_flagship_12_features.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "V1: Viewport [Desktop HD (1280x800)] crisis warning banner strictly matches canvas bounds",
+              "title": "FLAGSHIP-00: All 12 Flagship subsystems are instantiated, mounted, and registered in FlagshipManager",
               "ok": true,
               "tags": [],
               "tests": [
@@ -103,12 +108,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 495,
+                      "duration": 1013,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-17T05:43:56.647Z",
+                      "startTime": "2026-09-17T09:19:52.530Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -116,285 +121,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "dbb281066fe2719e6c9e-c2662895991957a1f28d",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 13,
-              "column": 9
-            },
-            {
-              "title": "V1-B: Viewport [Desktop HD (1280x800)] endgame crisis warning banner matches canvas bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 366,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-17T05:43:57.229Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "dbb281066fe2719e6c9e-93eff9648290797b4e57",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 53,
-              "column": 9
-            },
-            {
-              "title": "V1: Viewport [Mobile iPhone 12/13/14 (390x844)] crisis warning banner strictly matches canvas bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 342,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-17T05:43:57.599Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "dbb281066fe2719e6c9e-8a1c17356f0ede72074c",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 13,
-              "column": 9
-            },
-            {
-              "title": "V1-B: Viewport [Mobile iPhone 12/13/14 (390x844)] endgame crisis warning banner matches canvas bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 387,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-17T05:43:57.946Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "dbb281066fe2719e6c9e-e1dd9970cea9cca1a475",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 53,
-              "column": 9
-            },
-            {
-              "title": "V1: Viewport [Mobile iPhone SE (375x667)] crisis warning banner strictly matches canvas bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 355,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-17T05:43:58.337Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "dbb281066fe2719e6c9e-c32260b3858f2e6df31c",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 13,
-              "column": 9
-            },
-            {
-              "title": "V1-B: Viewport [Mobile iPhone SE (375x667)] endgame crisis warning banner matches canvas bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 388,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-17T05:43:58.696Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "dbb281066fe2719e6c9e-b7879a0673d9c8af45b1",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 53,
-              "column": 9
-            },
-            {
-              "title": "V1: Viewport [Tablet iPad Mini (Portrait) (768x1024)] crisis warning banner strictly matches canvas bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 351,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-17T05:43:59.088Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "dbb281066fe2719e6c9e-d412b1a68471e71f3225",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 13,
-              "column": 9
-            },
-            {
-              "title": "V1-B: Viewport [Tablet iPad Mini (Portrait) (768x1024)] endgame crisis warning banner matches canvas bounds",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 384,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-17T05:43:59.443Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "dbb281066fe2719e6c9e-d461f2a74719e8a3a962",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 53,
-              "column": 9
-            },
-            {
-              "title": "V2: Canvas bitmap corner sampling verifies 100% full-viewport warning fill without gaps",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 357,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-17T05:43:59.830Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "dbb281066fe2719e6c9e-32afee70b70ace7f7d63",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 92,
+              "id": "17ebcfe8fbaa8e6433a7-e44573062aa8416efce3",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 21,
               "column": 7
             },
             {
-              "title": "V3: Pixel contrast measurement verifies enemy projectiles maintain >= 7:1 contrast ratio against warning background",
+              "title": "FLAGSHIP-01: Cavitation Torpedo [C] fires ordnance, consumes ammo, and supports remote detonation",
               "ok": true,
               "tags": [],
               "tests": [
@@ -409,12 +142,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 326,
+                      "duration": 898,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-17T05:44:00.191Z",
+                      "startTime": "2026-09-17T09:19:53.630Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -422,13 +155,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "dbb281066fe2719e6c9e-aa2e13f8e635753c79f0",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 132,
+              "id": "17ebcfe8fbaa8e6433a7-0e9f63fda10ebb6a8215",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 56,
               "column": 7
             },
             {
-              "title": "V4: Player projectiles maintain high visibility with black armor rim and vibrant core",
+              "title": "FLAGSHIP-02: Bioluminescent Laser [Space] heats up thermodynamic engine and [P] deploys Refraction Prism",
               "ok": true,
               "tags": [],
               "tests": [
@@ -443,12 +176,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 342,
+                      "duration": 882,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-17T05:44:00.524Z",
+                      "startTime": "2026-09-17T09:19:54.532Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -456,9 +189,349 @@
                   "status": "expected"
                 }
               ],
-              "id": "dbb281066fe2719e6c9e-54408a5dc075cd585aa3",
-              "file": "14_responsive_warning_background_and_contrast.spec.ts",
-              "line": 205,
+              "id": "17ebcfe8fbaa8e6433a7-6faefbd5552fe2253a25",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 94,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-03: Hydraulic Harpoon [H] launches pneumatic dart and [Shift] triggers winch",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 895,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:19:55.418Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-d77d02be71d404dcbc40",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 133,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-04: Hydrothermal Vents & Ocean Currents update in environment layers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 894,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:19:56.317Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-28f65e17108a2d74c46d",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 161,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-05: Biolapse Darkness Cycle [L] headlight, [V] high-beam, and [B] acoustic sonar ping",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 880,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:19:57.216Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-47644daf525236f11964",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 176,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-06: Modular Submersible Chassis maintains 6-axis radar profiles and selection",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 865,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:19:58.101Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-192eebe0b83cbd2daf27",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 196,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-07: Veteran Crew Synergy Deck abilities trigger on hotkeys [1], [2], [3], [4]",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 887,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:19:58.971Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-dfb77120c8488e0d4220",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 217,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-08: Hadal Bio-Horrors unit spawning and epigenetic damage telemetry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 850,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:19:59.862Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-5307b148750f29a8419a",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 239,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-09: Automaton Shield Phalanx drone linking and grid dampening",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 911,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:20:00.716Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-4b03b14a3090c0020a49",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 256,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-10: Apex Boss Kraken Prime initiates 12,000 EHP encounter with 8 tentacles",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 885,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:20:01.631Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-684b03571b2c9ee8c54a",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 296,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-11: Roguelike Endless Mode (Endless Descent) DAG generation and ballast purge",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 864,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:20:02.520Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-4ebb13fd0ee0c5ec966c",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 315,
+              "column": 7
+            },
+            {
+              "title": "FLAGSHIP-12: Sonar/Hydrophone sensory suite rotates sweep beam and generates stress fractures",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 900,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T09:20:03.388Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "17ebcfe8fbaa8e6433a7-1fe633baca9c11595a87",
+              "file": "20_flagship_12_features.spec.ts",
+              "line": 336,
               "column": 7
             }
           ]
@@ -468,9 +541,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-17T05:43:56.434Z",
-    "duration": 4459.674999999999,
-    "expected": 11,
+    "startTime": "2026-09-17T09:19:50.976Z",
+    "duration": 13351.935,
+    "expected": 13,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

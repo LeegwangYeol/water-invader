@@ -1,36 +1,25 @@
 {
-  "timestamp": "2026-09-10T11:05:47.732Z",
-  "durationMs": 60727,
-  "linearRegressionSlopeMbPerMin": 0,
+  "timestamp": "2026-09-17T09:09:53.679Z",
+  "durationMs": 60596,
+  "linearRegressionSlopeMbPerMin": -1.2737487094356821e-14,
   "memorySummary": {
-    "initialHeapMb": 9.5,
-    "peakHeapMb": 9.5,
-    "finalHeapMb": 9.5,
+    "initialHeapMb": 10.7,
+    "peakHeapMb": 10.7,
+    "finalHeapMb": 10.7,
     "growthRateMbPerMin": 0
   },
   "audioSummary": {
-    "totalAllocatedOscillators": 216,
+    "totalAllocatedOscillators": 151,
     "peakActiveNodes": 28
   },
   "performanceSummary": {
-    "avgFps": 65.1,
-    "minFps": 32.5,
-    "p1LowFps": 36.8,
-    "stutters33": 1,
-    "stutters50": 1
+    "avgFps": 67.5,
+    "minFps": 35.1,
+    "p1LowFps": 36.6,
+    "stutters33": 0,
+    "stutters50": 0
   },
   "consoleRecords": [],
-  "anomalies": [
-    {
-      "timestamp": 1789038287043,
-      "relativeTimeMs": 242,
-      "type": "FRAME_DROP",
-      "severity": "WARNING",
-      "message": "Severe frame stutter (>50ms)",
-      "details": {
-        "dt": 132.79999999999998
-      }
-    }
-  ],
+  "anomalies": [],
   "snapshotsCount": 60
 }

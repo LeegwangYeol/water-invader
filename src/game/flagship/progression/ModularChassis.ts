@@ -413,8 +413,15 @@ export class ModularChassisManager implements IChassisManager {
     player.maxHp = this.activeChassis.maxHp;
     player.hp = this.activeChassis.baseHp;
     player.speed = this.activeChassis.baseSpeed;
+    player.baseSpeed = this.activeChassis.baseSpeed;
     player.size.width = this.activeChassis.hitboxWidth;
     player.size.height = this.activeChassis.hitboxHeight;
+
+    // Immediately clamp player position within logical bounds upon hitbox switch
+    const maxX = (player.canvasWidth || 600) - player.size.width;
+    const maxY = (player.canvasHeight || 800) - player.size.height;
+    player.position.x = Math.max(0, Math.min(maxX, player.position.x));
+    player.position.y = Math.max(0, Math.min(maxY, player.position.y));
 
     // Stingray +25% fire rate bonus (0.4s interval vs 0.5s baseline)
     if (this.activeChassis.id === ChassisId.STINGRAY) {
