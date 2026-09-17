@@ -427,3 +427,41 @@ If any visual bugs, console errors, or gameplay physics desyncs are discovered d
 - [ ] Browser console is free of errors and memory leak warnings after extended gameplay sessions.
 - [ ] Any discovered bugs are fixed, committed, and pushed successfully.
 
+## 2026-09-17T03:23:31Z
+
+# Teamwork Project Prompt
+
+> Status: Ready for launch — awaiting user approval
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: Full team
+
+Fix a bug in the Water Invader game where the player submarine gets caught in an upward buoyant lift (likely from hydrothermal vents or air bubbles) and gets stuck at the top of the screen with no way to descend. The agent team should analyze the physics logic and implement the most appropriate solution to ensure the player can escape or is not permanently pinned.
+
+Working directory: /Users/user/src/water-invader
+Integrity mode: development
+
+## Requirements
+
+### R1. Resolve the Upward Drift Lock Bug
+The player submarine must not remain permanently stuck at the top boundary of the canvas when affected by upward buoyant forces (e.g., from hydrothermal vents).
+
+### R2. Preserve Existing Physics
+The solution must organically integrate with the existing `GameManager.ts` and environment physics without hardcoding arbitrary teleportation or breaking the established upward lift mechanics.
+
+## Verification Resources
+- Existing Playwright E2E test suites in `tests/` directory (e.g., `tests/playtest_stream_b_vents_currents.spec.ts`).
+
+## Acceptance Criteria
+
+### Automated Verification
+- [ ] A new Playwright test is written that specifically reproduces the upward drift scenario (player caught in a vent/current hitting the top boundary).
+- [ ] The new test asserts that the player can successfully return to a lower Y coordinate after reaching the top boundary.
+- [ ] Running `npx playwright test` passes 100% of all existing regression tests and the newly created bugfix test.
+- [ ] Running `npx tsc --noEmit` and `npm run build` exits with 0 errors.
+
+### Independent Audit (Agent-as-Judge)
+- [ ] An independent reviewing agent confirms that the upward physics still feels natural and the fix does not break the core mechanics of the hydrothermal vents.
+
+## 2026-09-17T04:49:29Z
+
+승인

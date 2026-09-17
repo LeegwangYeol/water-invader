@@ -1,7 +1,7 @@
-# BRIEFING — 2026-09-10T10:38:00Z
+# BRIEFING — 2026-09-17T03:23:31Z
 
 ## Mission
-Orchestrate General execution (teamwork_preview_orchestrator) with a very large team of agents (30+ agents) for the Next.js "Water Invader" project: Extensive manual QA playtesting and visual inspection of the newly implemented 12 Flagship Features using browser automation and troubleshooting tools, runtime error & layout verification, automated remediation, playtest reporting (`QA_REPORT.md`), and git push to `origin/master`.
+Orchestrating resolution of the Upward Buoyant Drift Bug via Project Orchestrator (bd5b0c5d-7349-4270-bc7f-be21cf043787) with full specialist swarm, monitoring progress via crons, and enforcing mandatory independent victory audit.
 
 ## 🔒 My Identity
 - Archetype: sentinel
@@ -45,8 +45,10 @@ Orchestrate General execution (teamwork_preview_orchestrator) with a very large 
 - QA Playtest Orchestrator: efe1d016-c809-41a1-b0ba-aa528a160dca
 - QA Playtest Cron 1 Task ID: d6c81654-cf53-46f3-b358-f9434a3fe851/task-30
 - QA Playtest Cron 2 Task ID: d6c81654-cf53-46f3-b358-f9434a3fe851/task-32
-- QA Playtest Victory Auditor: to be spawned on victory claim
-- Active Orchestrator: efe1d016-c809-41a1-b0ba-aa528a160dca
+- Active Orchestrator: bd5b0c5d-7349-4270-bc7f-be21cf043787
+- Upward Buoyant Drift Bug Orchestrator: bd5b0c5d-7349-4270-bc7f-be21cf043787
+- Upward Buoyant Drift Bug Cron 1 Task ID: 30a9a77b-4962-49f1-8c42-8da8e8dca8f9/task-86
+- Upward Buoyant Drift Bug Cron 2 Task ID: 30a9a77b-4962-49f1-8c42-8da8e8dca8f9/task-88
 
 ## 🔒 Key Constraints
 - No technical decisions — relay only
@@ -102,7 +104,7 @@ Orchestrate General execution (teamwork_preview_orchestrator) with a very large 
 - Flagship Features Full Implementation Constraints (Current Mission):
   - Route selected: General (teamwork_preview_orchestrator) per Routing Decision Table
   - Requested team: A very large team of agents (40+ agents)
-  - R1: Implement ALL 12 Flagship Features from IDEAS_PITCH.md into game code and UI (Cavitation Torpedo, Prism Laser, Hydraulic Harpoon, Hydrothermal Vents, Biolapse Darkness Cycle, Modular Chassis, Crew Synergy Deck, Mutating Bio-Horrors, Automaton Phalanx, Apex Bosses, Roguelike Endless Mode, Sonar/Hydrophone UI)
+  - R1: Implement ALL 12 Flagship Features from IDEAS_PITCH.md into game code and UI
   - R2: Strict Architectural Integrity: preserve logicalWidth (600/720) and logicalHeight (800/960) in GameManager.ts and Enemy.ts; responsive adjustments CSS-only
   - R3: Automated testing (unit & Playwright E2E) and build verification (npm run build); git commit and push to remote
   - Pre-approved execution: explicit user approval granted ("전부 구현해야지 새끼야", "Proceed", "승인")
@@ -114,27 +116,37 @@ Orchestrate General execution (teamwork_preview_orchestrator) with a very large 
   - R3: Automated Remediation (implement fixes in codebase if visual bugs, console errors, or gameplay physics desyncs are discovered; verify in browser, test with npm run build and npx playwright test, push to origin/master)
   - Acceptance Criteria: comprehensive playtest report generated; browser console free of errors/leaks; bugs fixed, committed, and pushed
   - Pre-approved execution: user prompt marked "Status: Launched", proceed one-stop
+- Upward Buoyant Drift Bug Constraints (Current Mission):
+  - Route selected: General (teamwork_preview_orchestrator) per Routing Decision Table
+  - Requested team: Full team
+  - R1: Resolve Upward Drift Lock Bug (player submarine must not remain permanently stuck at canvas top boundary when affected by upward buoyant forces)
+  - R2: Preserve Existing Physics (organically integrate with GameManager.ts and environment physics without arbitrary teleportation or breaking established upward lift mechanics)
+  - Acceptance Criteria:
+    1. New Playwright test written specifically reproducing upward drift scenario and asserting player can successfully return to lower Y coordinate.
+    2. Running `npx playwright test` passes 100% of all existing regression tests and newly created test.
+    3. Running `npx tsc --noEmit` and `npm run build` exits with 0 errors.
+    4. Independent reviewing agent confirms upward physics feels natural and core vent mechanics intact.
+  - User Global Rules: Update COLLABORATION.md first; ALWAYS wait for explicit user approval before proceeding with implementation. Prompt status: 'Ready for launch — awaiting user approval'.
 
 ## User Context
-- **Last user request**: Extensive manual QA playtesting and visual inspection of the newly implemented 12 Flagship Features using browser automation and troubleshooting tools with a very large team of agents (30+ agents).
-- **Pending clarifications**: none
+- **Last user request**: Fix upward buoyant lift lock bug in Water Invader game where player submarine gets stuck at top of screen from hydrothermal vents/currents.
+- **Pending clarifications**: User approval granted ("승인"). Implementation authorized and launched.
 - **Delivered results**:
-  - Creative Brainstorming & Pitch Compilation: VICTORY CONFIRMED by Independent Victory Auditor (`e8ae499f-cfa0-45d6-aceb-aeeeacf72d47`).
-  - Master Pitch Document generated: `/Users/user/src/water-invader/IDEAS_PITCH.md` (1,398 lines, 134 KB, 12 Flagship Features with 84 complete design subsections + 30 Compendium Innovations).
-  - 12 Flagship Features Implementation & Deployment: VICTORY CONFIRMED by Independent Victory Auditor (`d7631f42-44cf-4c24-8907-e70e2b362ce6`).
-  - Full codebase integration across 12 Flagship modules (`src/game/flagship/`, `GameManager.ts`, `SoundManager.ts`, `game-canvas.tsx`).
-  - Strict preservation of `logicalWidth = 600` and `logicalHeight = 800`.
-  - Comprehensive Playwright & Unit test suites (87/87 tests passed, 0 failures).
-  - Production build verified (`npm run build`, 0 errors).
-  - Git commit `4524049` cleanly pushed to remote `origin/master`.
+  - Request recorded in `/Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md` (verbatim under `## 2026-09-17T03:23:31Z` and `## 2026-09-17T04:49:29Z`).
+  - Claude collaboration guide updated in `/Users/user/src/water-invader/COLLABORATION.md`.
+  - Orchestrator `orchestrator_physics_buoyancy_1` (`bd5b0c5d-7349-4270-bc7f-be21cf043787`) spawned and dispatched.
+  - Dual monitoring crons active (Progress Reporting `task-86`, Liveness Check `task-88`).
 
 ## Project Status
-- **Phase**: in progress (spawning QA playtest orchestrator)
+- **Phase**: complete (VICTORY CONFIRMED)
 
 ## Victory Audit Status
-- **Triggered**: no
-- **Verdict**: pending
+- **Triggered**: yes
+- **Auditor**: d94deea3-d126-4710-b317-227ffe858406
+- **Verdict**: VICTORY CONFIRMED
 - **Retry count**: 0
+- **Working Directory**: /Users/user/src/water-invader/.agents/sentinel_victory_auditor_buoyancy_1
+- **Audit Report**: /Users/user/src/water-invader/.agents/sentinel_victory_auditor_buoyancy_1/audit_report.md
 
 ## Artifact Index
 - /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md — Verbatim user requests
@@ -142,12 +154,18 @@ Orchestrate General execution (teamwork_preview_orchestrator) with a very large 
 - /Users/user/src/water-invader/.agents/sentinel/handoff.md — Sentinel handoff report
 - /Users/user/src/water-invader/COLLABORATION.md — Claude collaboration guide
 - /Users/user/src/water-invader/PROJECT.md — Global project architecture
+- /Users/user/src/water-invader/.agents/orchestrator_physics_buoyancy_1/ — Bugfix Orchestrator working directory
+- /Users/user/src/water-invader/.agents/orchestrator_physics_buoyancy_1/handoff.md — Orchestrator Handoff Report
+- /Users/user/src/water-invader/.agents/sentinel_victory_auditor_buoyancy_1/audit_report.md — Independent Victory Audit Report
+- /Users/user/src/water-invader/tests/playtest_buoyancy_drift_escape.spec.ts — Official Playwright reproduction and regression test suite
+- /Users/user/src/water-invader/tests/adversarial_buoyancy_gate2_verification.spec.ts — Multi-chassis passive descent verification suite
+- /Users/user/src/water-invader/.agents/ORIGINAL_REQUEST.md — Verbatim user requests
+- /Users/user/src/water-invader/.agents/sentinel/BRIEFING.md — Sentinel working memory
+- /Users/user/src/water-invader/.agents/sentinel/handoff.md — Sentinel handoff report
+- /Users/user/src/water-invader/COLLABORATION.md — Claude collaboration guide
+- /Users/user/src/water-invader/PROJECT.md — Global project architecture
 - /Users/user/src/water-invader/IDEAS_PITCH.md — Comprehensive Pitch Document with 12 Flagship Features
-- /Users/user/src/water-invader/.agents/orchestrator_qa_playtest_1/ — Flagship QA Playtest Orchestrator working directory
-- /Users/user/src/water-invader/QA_REPORT.md — Comprehensive Playtest Report (to be produced)
-
-
-
-
-
-
+- /Users/user/src/water-invader/QA_REPORT.md — Comprehensive Playtest Report
+- /Users/user/src/water-invader/src/game/flagship/environment/HydrothermalVent.ts — Hydrothermal Vent buoyancy updraft logic
+- /Users/user/src/water-invader/src/game/Player.ts — Player submarine kinematics and controls
+- /Users/user/src/water-invader/tests/playtest_stream_b_vents_currents.spec.ts — Existing Playwright vent test suite

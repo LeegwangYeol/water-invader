@@ -48,6 +48,17 @@ export class Player extends Entity {
   public isMovingRight: boolean = false;
   public isShooting: boolean = false;
   
+  // Hydrodynamic Ballast Restoration
+  public isBallastActive: boolean = false;
+  public ballastDescentSpeed: number = 165;
+  public isInUpdraft: boolean = false;
+  public get baselineY(): number {
+    return this.canvasHeight - this.size.height - 20;
+  }
+  public enableBallast(): void {
+    this.isBallastActive = true;
+  }
+  
   private timeAlive: number = 0;
 
   constructor(canvasWidth: number, canvasHeight: number) {
@@ -85,6 +96,18 @@ export class Player extends Entity {
     if (this.isMovingRight) {
       this.position.x += this.speed * deltaTime;
     }
+
+    // Smooth hydrodynamic ballast restoration
+    if (this.isBallastActive && !this.isInUpdraft) {
+      const targetY = this.baselineY;
+      if (this.position.y < targetY) {
+        this.position.y = Math.min(targetY, this.position.y + this.ballastDescentSpeed * deltaTime);
+      } else {
+        this.position.y = targetY;
+        this.isBallastActive = false;
+      }
+    }
+    this.isInUpdraft = false;
 
     // Clamp and sanitize coordinates
     if (!Number.isFinite(this.position.x)) this.position.x = (this.canvasWidth - this.size.width) / 2;

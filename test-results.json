@@ -4,7 +4,7 @@
       "/Users/user/.nvm/versions/node/v25.8.1/bin/node",
       "/Users/user/src/water-invader/node_modules/.bin/playwright",
       "test",
-      "tests/stream_f_responsive_viewports_verification.spec.ts"
+      "tests/14_responsive_warning_background_and_contrast.spec.ts"
     ],
     "configFile": "/Users/user/src/water-invader/playwright.config.ts",
     "rootDir": "/Users/user/src/water-invader/tests",
@@ -71,917 +71,395 @@
     "updateSourceMethod": "patch",
     "version": "1.62.1",
     "workers": 1,
-    "webServer": {
-      "command": "npm run dev",
-      "url": "http://localhost:3000",
-      "reuseExistingServer": true,
-      "timeout": 120000
-    }
+    "webServer": null
   },
   "suites": [
     {
-      "title": "stream_f_responsive_viewports_verification.spec.ts",
-      "file": "stream_f_responsive_viewports_verification.spec.ts",
+      "title": "14_responsive_warning_background_and_contrast.spec.ts",
+      "file": "14_responsive_warning_background_and_contrast.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Stream F: Responsive Viewports & CSS Layout Verification Suite",
-          "file": "stream_f_responsive_viewports_verification.spec.ts",
-          "line": 70,
+          "title": "R2: Responsive Warning Backgrounds & Projectile Contrast Suite",
+          "file": "14_responsive_warning_background_and_contrast.spec.ts",
+          "line": 3,
           "column": 6,
-          "specs": [],
-          "suites": [
+          "specs": [
             {
-              "title": "Matrix Target: Mobile SE (375x667)",
-              "file": "stream_f_responsive_viewports_verification.spec.ts",
-              "line": 72,
-              "column": 10,
-              "specs": [
+              "title": "V1: Viewport [Desktop HD (1280x800)] crisis warning banner strictly matches canvas bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "F1: Architectural Invariants - 600x800 logical canvas & 600*dpr x 800*dpr bitmap buffer",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 495,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:56.647Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 261,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:34.056Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "6f9594c746c171f02b1b-bd3c647177038887168d",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 80,
-                  "column": 11
-                },
-                {
-                  "title": "F2: Aspect Ratio (0.75) and Responsive Canvas Boundary Containment",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 246,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:34.408Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-06754573eb2a26888b29",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 119,
-                  "column": 11
-                },
-                {
-                  "title": "F3: Zero Horizontal Page Overflow across MENU, PLAYING, SHOP, and GAME_OVER states",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 765,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:34.658Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-c651286bcf71789cdbe0",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 151,
-                  "column": 11
-                },
-                {
-                  "title": "F4: Touch Controls Positioning - Strictly Outside and Below Canvas, No Gameplay Area Overlap",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 752,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:35.427Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-aa404260800849d9b9ea",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 233,
-                  "column": 11
-                },
-                {
-                  "title": "F5: TopHUD, Warning Banners, and Flagship Overlays Contained within Canvas Bounding Box",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1424,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:36.184Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-3c7fc2bed758b1fb8e77",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 287,
-                  "column": 11
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "dbb281066fe2719e6c9e-c2662895991957a1f28d",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 13,
+              "column": 9
             },
             {
-              "title": "Matrix Target: iPhone 14 / Modern Phone (390x844)",
-              "file": "stream_f_responsive_viewports_verification.spec.ts",
-              "line": 72,
-              "column": 10,
-              "specs": [
+              "title": "V1-B: Viewport [Desktop HD (1280x800)] endgame crisis warning banner matches canvas bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "F1: Architectural Invariants - 600x800 logical canvas & 600*dpr x 800*dpr bitmap buffer",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 366,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:57.229Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 291,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:37.612Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "6f9594c746c171f02b1b-5ef3ae94e048ff657383",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 80,
-                  "column": 11
-                },
-                {
-                  "title": "F2: Aspect Ratio (0.75) and Responsive Canvas Boundary Containment",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 275,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:37.908Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-7f5aa54a9f4d9f57151e",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 119,
-                  "column": 11
-                },
-                {
-                  "title": "F3: Zero Horizontal Page Overflow across MENU, PLAYING, SHOP, and GAME_OVER states",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 950,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:38.186Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-834d152501bf389f09f5",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 151,
-                  "column": 11
-                },
-                {
-                  "title": "F4: Touch Controls Positioning - Strictly Outside and Below Canvas, No Gameplay Area Overlap",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1792,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:39.140Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-b6e665f3ae13c3ffe0e9",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 233,
-                  "column": 11
-                },
-                {
-                  "title": "F5: TopHUD, Warning Banners, and Flagship Overlays Contained within Canvas Bounding Box",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2580,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:40.936Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-24020a7cd0f121b2531a",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 287,
-                  "column": 11
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "dbb281066fe2719e6c9e-93eff9648290797b4e57",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 53,
+              "column": 9
             },
             {
-              "title": "Matrix Target: Tablet Portrait (768x1024)",
-              "file": "stream_f_responsive_viewports_verification.spec.ts",
-              "line": 72,
-              "column": 10,
-              "specs": [
+              "title": "V1: Viewport [Mobile iPhone 12/13/14 (390x844)] crisis warning banner strictly matches canvas bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "F1: Architectural Invariants - 600x800 logical canvas & 600*dpr x 800*dpr bitmap buffer",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 342,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:57.599Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 250,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:43.520Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "6f9594c746c171f02b1b-b4f056765926f1f0f027",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 80,
-                  "column": 11
-                },
-                {
-                  "title": "F2: Aspect Ratio (0.75) and Responsive Canvas Boundary Containment",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 242,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:43.774Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-20f794e1390813d5c390",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 119,
-                  "column": 11
-                },
-                {
-                  "title": "F3: Zero Horizontal Page Overflow across MENU, PLAYING, SHOP, and GAME_OVER states",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 824,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:44.019Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-8cbca1de11f1d1eab8a4",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 151,
-                  "column": 11
-                },
-                {
-                  "title": "F4: Touch Controls Positioning - Strictly Outside and Below Canvas, No Gameplay Area Overlap",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 819,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:44.847Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-58a11e8b27b562b978b4",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 233,
-                  "column": 11
-                },
-                {
-                  "title": "F5: TopHUD, Warning Banners, and Flagship Overlays Contained within Canvas Bounding Box",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 1367,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:45.669Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-1d548d03a1a848dce592",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 287,
-                  "column": 11
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "dbb281066fe2719e6c9e-8a1c17356f0ede72074c",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 13,
+              "column": 9
             },
             {
-              "title": "Matrix Target: Tablet Landscape (1024x1366)",
-              "file": "stream_f_responsive_viewports_verification.spec.ts",
-              "line": 72,
-              "column": 10,
-              "specs": [
+              "title": "V1-B: Viewport [Mobile iPhone 12/13/14 (390x844)] endgame crisis warning banner matches canvas bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "F1: Architectural Invariants - 600x800 logical canvas & 600*dpr x 800*dpr bitmap buffer",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 387,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:57.946Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 252,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:47.041Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "6f9594c746c171f02b1b-eab5bb247faecdbd15a0",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 80,
-                  "column": 11
-                },
-                {
-                  "title": "F2: Aspect Ratio (0.75) and Responsive Canvas Boundary Containment",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 270,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:47.296Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-37392bab54577c0ef14b",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 119,
-                  "column": 11
-                },
-                {
-                  "title": "F3: Zero Horizontal Page Overflow across MENU, PLAYING, SHOP, and GAME_OVER states",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 707,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:47.570Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-786de131093d7e8986bf",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 151,
-                  "column": 11
-                },
-                {
-                  "title": "F4: Touch Controls Positioning - Strictly Outside and Below Canvas, No Gameplay Area Overlap",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 843,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:48.280Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-386e0d8dc98801534878",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 233,
-                  "column": 11
-                },
-                {
-                  "title": "F5: TopHUD, Warning Banners, and Flagship Overlays Contained within Canvas Bounding Box",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 2303,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:49.127Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-e59f3488442174f6082b",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 287,
-                  "column": 11
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "dbb281066fe2719e6c9e-e1dd9970cea9cca1a475",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 53,
+              "column": 9
             },
             {
-              "title": "Matrix Target: Desktop Full HD (1920x1080)",
-              "file": "stream_f_responsive_viewports_verification.spec.ts",
-              "line": 72,
-              "column": 10,
-              "specs": [
+              "title": "V1: Viewport [Mobile iPhone SE (375x667)] crisis warning banner strictly matches canvas bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "F1: Architectural Invariants - 600x800 logical canvas & 600*dpr x 800*dpr bitmap buffer",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 60000,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 355,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:58.337Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 435,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:51.441Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
+                      "attachments": []
                     }
                   ],
-                  "id": "6f9594c746c171f02b1b-e9003641a69a5951c0b2",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 80,
-                  "column": 11
-                },
-                {
-                  "title": "F2: Aspect Ratio (0.75) and Responsive Canvas Boundary Containment",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 399,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:51.887Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-660291e6d432fbd40e16",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 119,
-                  "column": 11
-                },
-                {
-                  "title": "F3: Zero Horizontal Page Overflow across MENU, PLAYING, SHOP, and GAME_OVER states",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 990,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:52.292Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-3c54d63853b510b4abc0",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 151,
-                  "column": 11
-                },
-                {
-                  "title": "F4: Touch Controls Positioning - Strictly Outside and Below Canvas, No Gameplay Area Overlap",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 533,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:53.290Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-0005d4155f56f0399419",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 233,
-                  "column": 11
-                },
-                {
-                  "title": "F5: TopHUD, Warning Banners, and Flagship Overlays Contained within Canvas Bounding Box",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 60000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "chromium",
-                      "projectName": "chromium",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 601,
-                          "errors": [],
-                          "stdout": [],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-09-10T11:31:53.829Z",
-                          "annotations": [],
-                          "attachments": []
-                        }
-                      ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "6f9594c746c171f02b1b-d9dfcfe6e38b5c3fbf53",
-                  "file": "stream_f_responsive_viewports_verification.spec.ts",
-                  "line": 287,
-                  "column": 11
+                  "status": "expected"
                 }
-              ]
+              ],
+              "id": "dbb281066fe2719e6c9e-c32260b3858f2e6df31c",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 13,
+              "column": 9
+            },
+            {
+              "title": "V1-B: Viewport [Mobile iPhone SE (375x667)] endgame crisis warning banner matches canvas bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 388,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:58.696Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "dbb281066fe2719e6c9e-b7879a0673d9c8af45b1",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 53,
+              "column": 9
+            },
+            {
+              "title": "V1: Viewport [Tablet iPad Mini (Portrait) (768x1024)] crisis warning banner strictly matches canvas bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 351,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:59.088Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "dbb281066fe2719e6c9e-d412b1a68471e71f3225",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 13,
+              "column": 9
+            },
+            {
+              "title": "V1-B: Viewport [Tablet iPad Mini (Portrait) (768x1024)] endgame crisis warning banner matches canvas bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 384,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:59.443Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "dbb281066fe2719e6c9e-d461f2a74719e8a3a962",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 53,
+              "column": 9
+            },
+            {
+              "title": "V2: Canvas bitmap corner sampling verifies 100% full-viewport warning fill without gaps",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 357,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:43:59.830Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "dbb281066fe2719e6c9e-32afee70b70ace7f7d63",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "V3: Pixel contrast measurement verifies enemy projectiles maintain >= 7:1 contrast ratio against warning background",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 326,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:44:00.191Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "dbb281066fe2719e6c9e-aa2e13f8e635753c79f0",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 132,
+              "column": 7
+            },
+            {
+              "title": "V4: Player projectiles maintain high visibility with black armor rim and vibrant core",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 342,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-17T05:44:00.524Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "dbb281066fe2719e6c9e-54408a5dc075cd585aa3",
+              "file": "14_responsive_warning_background_and_contrast.spec.ts",
+              "line": 205,
+              "column": 7
             }
           ]
         }
@@ -990,9 +468,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-10T11:31:33.789Z",
-    "duration": 20682.351,
-    "expected": 25,
+    "startTime": "2026-09-17T05:43:56.434Z",
+    "duration": 4459.674999999999,
+    "expected": 11,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

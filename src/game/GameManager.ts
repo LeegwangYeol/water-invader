@@ -1250,6 +1250,10 @@ export class GameManager {
     if (this.state === GameState.PLAYING) {
       this.checkSwarmEchelons();
 
+      if (this.player.position.y < (this.player as any).baselineY) {
+        (this.player as any).isBallastActive = true;
+      }
+
       // Player
       const newBullets = this.player.update(deltaTime);
       if (newBullets && newBullets.length > 0) {

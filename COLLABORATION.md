@@ -1,56 +1,74 @@
 # Claude Collaboration Guide: Water Invader
 
-## Current Mission: Live QA Playtesting & Visual Inspection of 12 Flagship Features (30+ Agent Swarm)
+## Current Mission: Resolve Upward Buoyant Drift Lock Bug (Hydrothermal Vents Physics)
 
-### Objective & Scope
-Deploy a massive swarm of agents (30+ agents) for extensive manual QA playtesting, visual inspection, and runtime error/layout verification of the newly implemented 12 Flagship Features using browser automation and Chrome DevTools troubleshooting tools:
-1. **Cavitation Torpedo** (Weapon)
-2. **Prism Laser** (Weapon)
-3. **Hydraulic Harpoon** (Weapon)
-4. **Hydrothermal Vents** (Hazard)
-5. **Biolapse Darkness Cycle** (Hazard)
-6. **Modular Submersible Chassis** (Player Progression)
-7. **Veteran Crew Synergy Deck** (Player Progression)
-8. **Mutating Bio-Horror Faction** (Enemy Faction)
-9. **Automaton Shield Phalanx** (Enemy Faction)
-10. **Apex Bosses** (Boss Encounters)
-11. **Roguelike Endless Mode** (Game Mode)
-12. **Sonar/Hydrophone UI** (UI/UX & Audio)
-
-### Key Requirements & Constraints
-- **R1: Deep Visual & Interactive Playtesting**: Start Next.js dev server, connect via browser automation / Chrome DevTools, actively play and trigger all 12 flagship features, observe visual rendering and interactive physics.
-- **R2: Runtime Error & Layout Verification**: Monitor browser console for warnings, memory leaks, unhandled exceptions; verify CSS responsiveness and canvas integrity (logical 600x800 canvas must not be clipped or distorted).
-- **R3: Automated Remediation**: If bugs, console errors, or desyncs are detected, fix them in the codebase, verify in browser, test with `npm run build` and `npx playwright test`, then push to `origin/master`.
-- **Architectural Rules**: NEVER modify `logicalWidth` (600) or `logicalHeight` (800) in `GameManager.ts` or `Enemy.ts`. Responsive layout must remain CSS-only.
-- **Pre-Approved Execution**: User prompt status is "Launched". Pre-approved for playtesting, bug hunting, remediation, and git push.
+### 1. Objective & Background
+Fix a bug in the Water Invader game where the player submarine gets caught in an upward buoyant lift (from hydrothermal vents or bubble plumes) and gets pinned/stuck near the top of the screen with no way to descend back to the baseline operating depth.
+The agent swarm will analyze the physics logic and implement the most appropriate organic solution to ensure the player can escape or descend naturally without arbitrary teleportation or breaking established lift mechanics.
 
 ---
 
-### Execution Milestones
-- **Phase 1: Test Server Setup & DevTools Connection**:
-  - Launch Next.js dev server on available port.
-  - Connect headless/automated browser sessions with console logging enabled.
-- **Phase 2: Live Playtesting & Visual Inspection Swarm (Parallel Streams)**:
-  - Stream A: Weapon & Projectile Physics (Torpedo, Prism Laser, Harpoon).
-  - Stream B: Environmental Hazards & Darkness Cycles (Vents, Biolapse).
-  - Stream C: Fleet Customization & Synergies (Modular Chassis, Crew Deck).
-  - Stream D: Adversary Factions & Boss Mechanics (Bio-Horrors, Phalanx, Apex Bosses).
-  - Stream E: Modes, Audio & Sensory Feedback (Endless Mode, Sonar UI, WebAudio).
-  - Stream F: Layout, Viewports & Responsiveness (Desktop, Mobile, Tablet viewports).
-- **Phase 3: Automated Remediation & Regression Testing**:
-  - Fix any discovered bugs, console warnings, or memory leak sources.
-  - Run full test suite (`npm run build` and `npx playwright test`).
-- **Phase 4: Reporting & Remote Deployment**:
-  - Generate comprehensive playtest report (`QA_REPORT.md`).
-  - Git commit and push to `origin/master`.
-- **Phase 5: Independent Victory Audit**:
-  - Verification by independent auditor before sentinel declares completion.
+### 2. Root Cause Analysis
+1. **Upward Lift in Hydrothermal Vents**:
+   - In `src/game/flagship/environment/HydrothermalVent.ts` (lines 232–236):
+     ```typescript
+     // Convective updraft lifts player vessel slightly (+160 px/s)
+     if (inHalo || inCore) {
+       const lift = (this.state === VentState.ERUPTING ? 260 : 160) * deltaTime;
+       player.position.y = Math.max(this.capY + 30, player.position.y - lift);
+     }
+     ```
+   - This directly lifts `player.position.y` up to `this.capY + 30` (y=130 px, where `capY = 100`).
+2. **Missing Downward Restoration / Propulsion**:
+   - In `src/game/Player.ts`, the player vessel only processes lateral movement (`isMovingLeft`, `isMovingRight`).
+   - There is no downward ballast mechanism, gravitational settling, or vertical steering to counter the lift.
+   - Once lifted out of the baseline operating depth (y ≈ 748), `player.position.y` remains permanently elevated, even after steering horizontally away from the vent.
 
 ---
 
-### Current Status
-- Sentinel: Active
-- Orchestrator: Spawning `orchestrator_qa_playtest_1`
-- Route: General (`teamwork_preview_orchestrator`)
-- Team Size: 30+ agent swarm
+### 3. Proposed Solutions & Architecture
+- **Approach 1 (Neutral Ballast / Gravity Settling - Recommended)**:
+  - Submarines maintain a neutral/trim ballast. When outside of active upward drafts (or when active upward force ceases), the submarine naturally and smoothly settles back toward its baseline operating depth (`canvasHeight - size.height - 20`, e.g., with a smooth ballast descent velocity or gentle gravity).
+- **Approach 2 (Active Vertical Steering / Dive Thrusters)**:
+  - Add optional vertical dive controls (ArrowDown / 'S' / touch downward drag / ballast dive key) allowing the player to power dive downward against or out of currents.
+- **Approach 3 (Vent Dissipation & Lateral Ejection at Plume Cap)**:
+  - Near the plume cap (`this.capY + 30`), thermal updraft dissipates into lateral outward turbulence, preventing vertical pinning and facilitating lateral escape into descending waters.
+- **Combined Synthesis**:
+  - Combine Approach 1 and Approach 3: Ballast gravity smoothly restores baseline depth when outside the vent plume; near the cap, updraft naturally diminishes and allows lateral clearing, ensuring the player is never trapped at the ceiling.
+
+---
+
+### 4. Key Constraints & Invariants
+- **Canvas Invariants**: NEVER modify `logicalWidth` (600) or `logicalHeight` (800) in `GameManager.ts` or `Enemy.ts`. Responsive layout must remain CSS-only.
+- **Preserve Vent Mechanics**: The updraft must still lift projectiles into Steam Lances, damage enemies, and challenge the player with upward buoyancy.
+- **No Teleportation**: Changes must be smooth hydrodynamic physics calculations.
+- **Build & Quality Assurance**: `npx tsc --noEmit` and `npm run build` must exit with 0 errors.
+
+---
+
+### 5. Verification & Testing Plan
+1. **Reproduction E2E Test**:
+   - Create a dedicated Playwright test (e.g., `tests/playtest_buoyancy_drift_escape.spec.ts`) that places the player inside a hydrothermal vent updraft until reaching the top boundary/cap.
+   - Steer or wait for escape and assert that `player.position.y` returns to the lower baseline operating area (e.g. y > 700).
+2. **Regression Verification**:
+   - Execute full Playwright test suite (`npx playwright test`) ensuring 100% of existing tests pass (including `tests/playtest_stream_b_vents_currents.spec.ts`).
+3. **Independent Agent-as-Judge Audit**:
+   - Reviewing agent checks code diff and test recordings to confirm upward physics feels natural and core vent mechanics are preserved.
+
+---
+
+### 6. Execution Milestones (Swarm Lifecycle)
+- **Phase 1: Exploration & Test Setup**: Spec-miner & test-writer create reproduction test.
+- **Phase 2: Physics Implementation**: Implement ballast settling / downward escape dynamics in `Player.ts` / `HydrothermalVent.ts` / `GameManager.ts`.
+- **Phase 3: Adversarial Review & Verification**: Run tests, type-check, and build.
+- **Phase 4: Independent Victory Audit**: Mandatory blocking audit by `teamwork_preview_victory_auditor`.
+- **Phase 5: Commit & Deployment**: Commit to Git and push to `origin/master`.
+
+---
+
+### 7. Current Status
+- **Status**: Launched (User approval granted: "승인")
+- **Routing Decision**: General (`teamwork_preview_orchestrator`)
+- **Active Swarm Directory**: `.agents/orchestrator_physics_buoyancy_1`
+- **Execution Plan**: Mobilizing full team to reproduce via Playwright, implement hydrodynamic ballast settling & escape dynamics, verify with full regression suite and type-check, and complete independent victory audit.
 

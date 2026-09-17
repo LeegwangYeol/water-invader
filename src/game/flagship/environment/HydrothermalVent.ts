@@ -229,10 +229,35 @@ export class HydrothermalVent implements IHydrothermalVent {
       const inCore = this.isInCore(playerCenterX, playerCenterY);
       const inHalo = this.isInHalo(playerCenterX, playerCenterY);
 
-      // Convective updraft lifts player vessel slightly (+160 px/s)
+      // Convective updraft and plume cap dissipation
       if (inHalo || inCore) {
-        const lift = (this.state === VentState.ERUPTING ? 260 : 160) * deltaTime;
-        player.position.y = Math.max(this.capY + 30, player.position.y - lift);
+        (player as any).isBallastActive = true;
+        const capCeiling = this.capY + 30; // 130
+        const transitionZone = 90; // Plume cap dissipation band [130, 220]
+        const depthAboveCap = Math.max(0, playerCenterY - capCeiling);
+        const liftRatio = Math.min(1.0, depthAboveCap / transitionZone);
+        if (inCore || liftRatio >= 0.5) {
+          (player as any).isInUpdraft = true;
+        }
+        const baseLift = (this.state === VentState.ERUPTING ? 260 : 160) * deltaTime;
+        const lift = baseLift * liftRatio;
+        player.position.y = Math.max(capCeiling, player.position.y - lift);
+      }
+
+      // Radial lateral outward dispersion near the plume cap with prevailing ambient surface drift
+      const inPlumeCap = (inHalo || inCore) || (this.anchorX <= 200 && playerCenterY <= this.capY + 120 && playerCenterX >= this.anchorX && playerCenterX <= 420);
+      if (inPlumeCap) {
+        const capCeiling = this.capY + 30;
+        const depthAboveCap = Math.max(0, playerCenterY - capCeiling);
+        const liftRatio = Math.min(1.0, depthAboveCap / 90);
+        if (liftRatio < 1.0) {
+          const dispersionRatio = 1.0 - liftRatio;
+          const dispersionSpeed = (this.state === VentState.ERUPTING ? 120 : 80) * dispersionRatio * deltaTime;
+          const sign = playerCenterX >= this.anchorX ? 1 : -1;
+          // Prevailing ambient surface drift (+60 px/s Eastward) carries dispersing fluid out of the central stagnation zone
+          const ambientSurfaceDrift = (playerCenterX >= this.anchorX ? 60 : 0) * dispersionRatio * deltaTime;
+          player.position.x += sign * dispersionSpeed + ambientSurfaceDrift;
+        }
       }
 
       // Thermal exposure grace logic (0.5s grace, then 1 HP per 1.25s)
