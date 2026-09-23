@@ -21,8 +21,9 @@ test.describe('R1: UI & Controls Verification Suite', () => {
 
     const canvasWidth = await canvas.evaluate((el: HTMLCanvasElement) => el.width);
     const canvasHeight = await canvas.evaluate((el: HTMLCanvasElement) => el.height);
-    expect(canvasWidth).toBe(600);
-    expect(canvasHeight).toBe(800);
+    const dpr = await page.evaluate(() => window.devicePixelRatio || 1);
+    expect(canvasWidth).toBe(Math.round(600 * dpr));
+    expect(canvasHeight).toBe(Math.round(800 * dpr));
 
     // 3. Menu elements (using first() to account for layout header + canvas overlay)
     const menuTitle = page.locator('h1', { hasText: 'Water Invader' }).first();

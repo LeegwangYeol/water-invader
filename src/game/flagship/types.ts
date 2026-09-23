@@ -47,6 +47,8 @@ export interface FlagshipUpdateContext {
   level: number;
   score: number;
   currency: number;
+  state?: GameState;
+  gameState?: GameState;
   createExplosion: (x: number, y: number, color?: string, count?: number, scale?: number) => void;
   triggerScreenShake: (duration: number, amount: number) => void;
 }

@@ -21,6 +21,7 @@ import {
   ISonarRenderer,
 } from './types';
 import { Enemy } from '../Enemy';
+import { GameState } from '../types';
 
 // Genuine Subsystem Concrete Implementations
 import { CavitationTorpedoSystem } from './weapons/CavitationTorpedo';
@@ -62,6 +63,8 @@ export class FlagshipManager implements IFlagshipManager {
 
   // Custom extension subsystems registry
   private customSubsystems: Map<string, IFlagshipSubsystem> = new Map();
+  private cachedSubsystems: IFlagshipSubsystem[] = [];
+  private alreadyDrawnSet: Set<string> = new Set();
 
   constructor(logicalWidth: number = 600, logicalHeight: number = 800) {
     this.logicalWidth = logicalWidth;
@@ -80,63 +83,12 @@ export class FlagshipManager implements IFlagshipManager {
     this.apexBoss = new KrakenPrimeBoss();
     this.endlessDescent = new EndlessDescent();
     this.sonarRenderer = new SonarRenderer();
+
+    this.rebuildSubsystemCache();
   }
 
-  // Subsystem registration methods
-  public registerCavitationTorpedoSystem(system: ICavitationTorpedoSystem): void {
-    this.cavitationTorpedo = system;
-  }
-
-  public registerPrismLaserSystem(system: IPrismLaserSystem): void {
-    this.prismLaser = system;
-  }
-
-  public registerHydraulicHarpoon(system: IHydraulicHarpoon): void {
-    this.hydraulicHarpoon = system;
-  }
-
-  public registerHydrothermalVentManager(manager: IHydrothermalVentManager): void {
-    this.hydrothermalVents = manager;
-  }
-
-  public registerBiolapseManager(manager: IBiolapseManager): void {
-    this.biolapseDarkness = manager;
-  }
-
-  public registerChassisManager(manager: IChassisManager): void {
-    this.modularChassis = manager;
-  }
-
-  public registerCrewManager(manager: ICrewManager): void {
-    this.crewDeck = manager;
-  }
-
-  public registerBioHorrorManager(manager: IBioHorrorManager): void {
-    this.bioHorror = manager;
-  }
-
-  public registerAutomatonPhalanxManager(manager: IAutomatonPhalanxManager): void {
-    this.automatonPhalanx = manager;
-  }
-
-  public registerApexBossManager(manager: IApexBossManager): void {
-    this.apexBoss = manager;
-  }
-
-  public registerEndlessDescentManager(manager: IEndlessDescentManager): void {
-    this.endlessDescent = manager;
-  }
-
-  public registerSonarRenderer(renderer: ISonarRenderer): void {
-    this.sonarRenderer = renderer;
-  }
-
-  public registerCustomSubsystem(subsystem: IFlagshipSubsystem): void {
-    this.customSubsystems.set(subsystem.id, subsystem);
-  }
-
-  public getSubsystems(): IFlagshipSubsystem[] {
-    return [
+  private rebuildSubsystemCache(): void {
+    this.cachedSubsystems = [
       this.cavitationTorpedo,
       this.prismLaser,
       this.hydraulicHarpoon,
@@ -151,6 +103,88 @@ export class FlagshipManager implements IFlagshipManager {
       this.sonarRenderer,
       ...Array.from(this.customSubsystems.values()),
     ];
+    this.alreadyDrawnSet = new Set([
+      this.biolapseDarkness?.id,
+      this.bioHorror?.id,
+      this.apexBoss?.id,
+      this.sonarRenderer?.id,
+      this.crewDeck?.id,
+      this.endlessDescent?.id,
+    ]);
+  }
+
+  // Subsystem registration methods
+  public registerCavitationTorpedoSystem(system: ICavitationTorpedoSystem): void {
+    this.cavitationTorpedo = system;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerPrismLaserSystem(system: IPrismLaserSystem): void {
+    this.prismLaser = system;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerHydraulicHarpoon(system: IHydraulicHarpoon): void {
+    this.hydraulicHarpoon = system;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerHydrothermalVentManager(manager: IHydrothermalVentManager): void {
+    this.hydrothermalVents = manager;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerBiolapseManager(manager: IBiolapseManager): void {
+    this.biolapseDarkness = manager;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerChassisManager(manager: IChassisManager): void {
+    this.modularChassis = manager;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerCrewManager(manager: ICrewManager): void {
+    this.crewDeck = manager;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerBioHorrorManager(manager: IBioHorrorManager): void {
+    this.bioHorror = manager;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerAutomatonPhalanxManager(manager: IAutomatonPhalanxManager): void {
+    this.automatonPhalanx = manager;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerApexBossManager(manager: IApexBossManager): void {
+    this.apexBoss = manager;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerEndlessDescentManager(manager: IEndlessDescentManager): void {
+    this.endlessDescent = manager;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerSonarRenderer(renderer: ISonarRenderer): void {
+    this.sonarRenderer = renderer;
+    this.rebuildSubsystemCache();
+  }
+
+  public registerCustomSubsystem(subsystem: IFlagshipSubsystem): void {
+    this.customSubsystems.set(subsystem.id, subsystem);
+    this.rebuildSubsystemCache();
+  }
+
+  public registerSubsystem(subsystem: IFlagshipSubsystem): void {
+    this.registerCustomSubsystem(subsystem);
+  }
+
+  public getSubsystems(): IFlagshipSubsystem[] {
+    return this.cachedSubsystems;
   }
 
   // ==========================================================================
@@ -158,7 +192,7 @@ export class FlagshipManager implements IFlagshipManager {
   // ==========================================================================
 
   public init(): void {
-    for (const sub of this.getSubsystems()) {
+    for (const sub of this.cachedSubsystems) {
       if (typeof sub.init === 'function') {
         sub.init();
       }
@@ -166,6 +200,11 @@ export class FlagshipManager implements IFlagshipManager {
   }
 
   public update(deltaTime: number, context: FlagshipUpdateContext): void {
+    const isShop = (context as any)?.state === GameState.SHOP || (context as any)?.gameState === GameState.SHOP;
+    if (isShop) {
+      return;
+    }
+
     // Environmental convective cooling halo synergy with weapon systems (+250% heat dissipation)
     if (context.player && context.player.position && this.hydrothermalVents?.vents) {
       const playerCenterX = context.player.position.x + (context.player.size?.width ?? 32) / 2;
@@ -185,7 +224,7 @@ export class FlagshipManager implements IFlagshipManager {
       }
     }
 
-    for (const sub of this.getSubsystems()) {
+    for (const sub of this.cachedSubsystems) {
       sub.update(deltaTime, context);
     }
 
@@ -195,25 +234,25 @@ export class FlagshipManager implements IFlagshipManager {
     }
   }
 
-  public drawBackground(ctx: CanvasRenderingContext2D, time: number): void {
+  public drawBackground(ctx: CanvasRenderingContext2D, time: number = 0): void {
     if (!ctx) return;
-    for (const sub of this.getSubsystems()) {
+    for (const sub of this.cachedSubsystems) {
       if (typeof sub.drawBackground === 'function') {
         sub.drawBackground(ctx, time);
       }
     }
   }
 
-  public drawWorld(ctx: CanvasRenderingContext2D, time: number): void {
+  public drawWorld(ctx: CanvasRenderingContext2D, time: number = 0): void {
     if (!ctx) return;
-    for (const sub of this.getSubsystems()) {
+    for (const sub of this.cachedSubsystems) {
       if (typeof sub.drawWorld === 'function') {
         sub.drawWorld(ctx, time);
       }
     }
   }
 
-  public drawForeground(ctx: CanvasRenderingContext2D, time: number): void {
+  public drawForeground(ctx: CanvasRenderingContext2D, time: number = 0): void {
     if (!ctx) return;
 
     // 1. Environmental darkness composite overlay
@@ -245,16 +284,8 @@ export class FlagshipManager implements IFlagshipManager {
     }
 
     // 6. Any other custom registered subsystems
-    const alreadyDrawn = new Set([
-      this.biolapseDarkness.id,
-      this.bioHorror.id,
-      this.apexBoss.id,
-      this.sonarRenderer.id,
-      this.crewDeck.id,
-      this.endlessDescent.id,
-    ]);
-    for (const sub of this.getSubsystems()) {
-      if (!alreadyDrawn.has(sub.id) && typeof sub.drawForeground === 'function') {
+    for (const sub of this.cachedSubsystems) {
+      if (!this.alreadyDrawnSet.has(sub.id) && typeof sub.drawForeground === 'function') {
         sub.drawForeground(ctx, time);
       }
     }
@@ -491,7 +522,7 @@ export class FlagshipManager implements IFlagshipManager {
     }
 
     // 3. Forward to subsystems with onPlayerDamage
-    for (const sub of this.getSubsystems()) {
+    for (const sub of this.cachedSubsystems) {
       if (typeof (sub as any).onPlayerDamage === 'function') {
         (sub as any).onPlayerDamage(amount, context);
       }

@@ -880,10 +880,11 @@ export default function GameCanvas() {
         lastPointerXRef.current = null;
         isDraggingRef.current = false;
         game.clearKeys();
+        soundManager.suspend();
       } else {
         // Ensure AudioContext resumes if sound is active upon returning to tab
         if (!soundManager.isMuted) {
-          soundManager.init();
+          soundManager.resume();
         }
       }
     };
@@ -907,6 +908,7 @@ export default function GameCanvas() {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      soundManager.suspend();
       game.stopGame();
       gameManagerRef.current = null;
       if (typeof window !== 'undefined') {
@@ -1206,12 +1208,20 @@ export default function GameCanvas() {
     // Forward pointer down to Flagship systems (Modals, Torpedo right-click, etc.)
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) {
-      const scaleX = gameManagerRef.current.logicalWidth / (canvas.clientWidth || rect.width);
-      const scaleY = gameManagerRef.current.logicalHeight / (canvas.clientHeight || rect.height);
-      const logicalX = (e.clientX - rect.left) * scaleX;
-      const logicalY = (e.clientY - rect.top) * scaleY;
-      gameManagerRef.current.handlePointer(logicalX, logicalY, true, e.button);
+    if (rect.width > 0 && rect.height > 0 && Number.isFinite(e.clientX) && Number.isFinite(e.clientY)) {
+      const clientW = canvas.clientWidth || rect.width;
+      const clientH = canvas.clientHeight || rect.height;
+      if (clientW > 0 && clientH > 0) {
+        const scaleX = gameManagerRef.current.logicalWidth / clientW;
+        const scaleY = gameManagerRef.current.logicalHeight / clientH;
+        const logicalX = (e.clientX - rect.left) * scaleX;
+        const logicalY = (e.clientY - rect.top) * scaleY;
+        if (Number.isFinite(logicalX) && Number.isFinite(logicalY)) {
+          const clampedX = Math.max(0, Math.min(gameManagerRef.current.logicalWidth, logicalX));
+          const clampedY = Math.max(0, Math.min(gameManagerRef.current.logicalHeight, logicalY));
+          gameManagerRef.current.handlePointer(clampedX, clampedY, true, e.button);
+        }
+      }
     }
 
     // Start auto-firing on canvas touch
@@ -1244,12 +1254,20 @@ export default function GameCanvas() {
       if (canvasRef.current && gameManagerRef.current) {
         const canvas = canvasRef.current;
         const rect = canvas.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-          const scaleX = gameManagerRef.current.logicalWidth / (canvas.clientWidth || rect.width);
-          const scaleY = gameManagerRef.current.logicalHeight / (canvas.clientHeight || rect.height);
-          const logicalX = (e.clientX - rect.left) * scaleX;
-          const logicalY = (e.clientY - rect.top) * scaleY;
-          gameManagerRef.current.handlePointer(logicalX, logicalY, false, e.button);
+        if (rect.width > 0 && rect.height > 0 && Number.isFinite(e.clientX) && Number.isFinite(e.clientY)) {
+          const clientW = canvas.clientWidth || rect.width;
+          const clientH = canvas.clientHeight || rect.height;
+          if (clientW > 0 && clientH > 0) {
+            const scaleX = gameManagerRef.current.logicalWidth / clientW;
+            const scaleY = gameManagerRef.current.logicalHeight / clientH;
+            const logicalX = (e.clientX - rect.left) * scaleX;
+            const logicalY = (e.clientY - rect.top) * scaleY;
+            if (Number.isFinite(logicalX) && Number.isFinite(logicalY)) {
+              const clampedX = Math.max(0, Math.min(gameManagerRef.current.logicalWidth, logicalX));
+              const clampedY = Math.max(0, Math.min(gameManagerRef.current.logicalHeight, logicalY));
+              gameManagerRef.current.handlePointer(clampedX, clampedY, false, e.button);
+            }
+          }
         }
       }
 

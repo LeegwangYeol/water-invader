@@ -235,11 +235,23 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
     }
 
     if (deltaTime > 0) {
-      this.playerVelocity = {
-        x: (playerProw.x - this.prevPlayerPos.x) / deltaTime,
-        y: (playerProw.y - this.prevPlayerPos.y) / deltaTime,
-      };
-      this.prevPlayerPos = { x: playerProw.x, y: playerProw.y };
+      const jumpDist = Math.hypot(
+        playerProw.x - this.prevPlayerPos.x,
+        playerProw.y - this.prevPlayerPos.y
+      );
+
+      if (jumpDist > 200) {
+        this.prevPlayerPos = { x: playerProw.x, y: playerProw.y };
+        this.playerVelocity = { x: 0, y: 0 };
+      } else {
+        const rawVx = (playerProw.x - this.prevPlayerPos.x) / deltaTime;
+        const rawVy = (playerProw.y - this.prevPlayerPos.y) / deltaTime;
+        this.playerVelocity = {
+          x: Math.max(-600, Math.min(600, Number.isFinite(rawVx) ? rawVx : 0)),
+          y: Math.max(-600, Math.min(600, Number.isFinite(rawVy) ? rawVy : 0)),
+        };
+        this.prevPlayerPos = { x: playerProw.x, y: playerProw.y };
+      }
     }
 
     // Update active Slingshot Projectiles
@@ -480,8 +492,12 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
       const fElastic = this.config.springStiffness * deltaL * nonLinearTerm;
 
       // Approximate relative velocity along cable unit vector
-      const vRelDotU =
-        (0 - this.playerVelocity.x) * uHat.x + (0 - this.playerVelocity.y) * uHat.y;
+      // Factor in target relative velocity where available to prevent spring chatter
+      const targetVx = (enemy as any).velocity?.x ?? 0;
+      const targetVy = (enemy as any).velocity?.y ?? 0;
+      const vRelX = targetVx - this.playerVelocity.x;
+      const vRelY = targetVy - this.playerVelocity.y;
+      const vRelDotU = vRelX * uHat.x + vRelY * uHat.y;
       const fDamped = Math.max(0, fElastic + this.config.damping * vRelDotU);
 
       // Mass scaling: heavy enemies and bosses resist pull
@@ -702,7 +718,23 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
       }
 
       if (proj.remainingLife <= 0 || proj.entity.position.y <= -60) {
-        proj.entity.isDead = true;
+        if (!(proj.entity as any).isBoss && !(proj.entity as any).isApexBoss) {
+          proj.entity.isDead = true;
+        } else {
+          // Boss slingshot protection: do NOT instakill! Apply 180 slingshot impact damage, and bounce into active arena
+          if (typeof (proj.entity as any).takeDamage === 'function') {
+            (proj.entity as any).takeDamage(180);
+            if ((proj.entity as any).hp <= 0) {
+              proj.entity.isDead = true;
+            }
+          }
+          if (proj.entity.position.y < 120) {
+            proj.entity.position.y = 120;
+            if ((proj.entity as any).velocity) {
+              (proj.entity as any).velocity.y = Math.abs((proj.entity as any).velocity.y || 100);
+            }
+          }
+        }
         this.slingshotProjectiles.splice(i, 1);
       }
     }
@@ -914,4 +946,14 @@ export class HydraulicHarpoon implements IHydraulicHarpoon {
     this.prevPlayerPos = { x: 0, y: 0 };
     this.playerVelocity = { x: 0, y: 0 };
   }
+
+  public resetTether(): void {
+    this.reset();
+  }
+
+  public onWaveComplete(): void {
+    this.resetTether();
+  }
 }
+
+export { HydraulicHarpoon as HydraulicHarpoonSystem };

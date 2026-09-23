@@ -55,6 +55,13 @@ export class Player extends Entity {
   public get baselineY(): number {
     return this.canvasHeight - this.size.height - 20;
   }
+  public get width(): number {
+    return this.size.width;
+  }
+  public get height(): number {
+    return this.size.height;
+  }
+  public isMovingDown: boolean = false;
   public enableBallast(): void {
     this.isBallastActive = true;
   }
@@ -90,25 +97,66 @@ export class Player extends Entity {
       if (this.invincibilityTimer < 0) this.invincibilityTimer = 0;
     }
     
-    if (this.isMovingLeft) {
-      this.position.x -= this.speed * deltaTime;
+    // Lateral movement with accurate velocity synchronization and external modifier support
+    let targetVx = 0;
+    if (this.isMovingLeft && !this.isMovingRight) {
+      targetVx = -this.speed;
+    } else if (this.isMovingRight && !this.isMovingLeft) {
+      targetVx = this.speed;
     }
-    if (this.isMovingRight) {
-      this.position.x += this.speed * deltaTime;
+
+    if (targetVx !== 0) {
+      const sign = Math.sign(targetVx);
+      const incomingSpeedInDir = this.velocity.x * sign;
+      let effectiveSpeed = this.speed;
+      if (incomingSpeedInDir > 0 && incomingSpeedInDir < this.speed) {
+        effectiveSpeed = incomingSpeedInDir;
+      }
+      this.position.x += sign * effectiveSpeed * deltaTime;
+      this.velocity.x = sign * effectiveSpeed;
+    } else {
+      if (Math.abs(this.velocity.x) > this.speed) {
+        this.position.x += this.velocity.x * deltaTime;
+        this.velocity.x *= Math.max(0, 1 - 10 * deltaTime);
+        if (Math.abs(this.velocity.x) < 5) this.velocity.x = 0;
+      } else {
+        this.velocity.x = 0;
+      }
     }
 
     // Smooth hydrodynamic ballast restoration
     if (this.isBallastActive && !this.isInUpdraft) {
       const targetY = this.baselineY;
       const diff = targetY - this.position.y;
-      const step = this.ballastDescentSpeed * deltaTime;
+      
+      let descentSpeed = this.ballastDescentSpeed;
+      if (this.velocity.y > 0 && this.velocity.y < this.ballastDescentSpeed) {
+        descentSpeed = this.velocity.y;
+      }
+
+      const step = descentSpeed * deltaTime;
       if (Math.abs(diff) <= step) {
         this.position.y = targetY;
         this.isBallastActive = false;
+        this.velocity.y = 0;
       } else {
-        this.position.y += Math.sign(diff) * step;
+        const dir = Math.sign(diff);
+        this.position.y += dir * step;
+        this.velocity.y = dir * descentSpeed;
+      }
+    } else {
+      if (this.velocity.y > 0) {
+        this.position.y += this.velocity.y * deltaTime;
+        if (this.position.y >= this.baselineY) {
+          this.position.y = this.baselineY;
+          this.velocity.y = 0;
+        }
+      } else {
+        this.velocity.y = 0;
       }
     }
+    this.isMovingDown = this.velocity.y > 0;
+    (this as any).isMovingDown = this.isMovingDown;
     this.isInUpdraft = false;
 
     // Clamp and sanitize coordinates

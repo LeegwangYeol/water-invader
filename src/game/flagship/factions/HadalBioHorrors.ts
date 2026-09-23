@@ -17,7 +17,7 @@ import { Bullet } from '../../Bullet';
 import { Enemy } from '../../Enemy';
 import { Player } from '../../Player';
 import { Barricade } from '../../Barricade';
-import { Vector2D } from '../../types';
+import { Vector2D, GameState } from '../../types';
 
 export interface BioHorrorUnit {
   id: number;
@@ -400,7 +400,7 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
         }
       }
 
-      if (bp.isDead || bp.y > 850 || bp.y < -50 || bp.x < -50 || bp.x > 650) {
+      if (bp.isDead || !Number.isFinite(bp.x) || !Number.isFinite(bp.y) || bp.y > 850 || bp.y < -50 || bp.x < -50 || bp.x > 650) {
         this.bioProjectiles.splice(i, 1);
       }
     }
@@ -411,11 +411,10 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
       unit.animTimer += deltaTime;
       if (unit.hitFlashTimer > 0) unit.hitFlashTimer -= deltaTime;
 
-      if (unit.stunTimer && unit.stunTimer > 0) {
-        unit.stunTimer -= deltaTime;
-        continue; // Stunned, cannot move or act
-      }
-
+      const isStunned = Boolean(unit.stunTimer && unit.stunTimer > 0);
+      if (isStunned) {
+        unit.stunTimer = Math.max(0, (unit.stunTimer ?? 0) - deltaTime);
+      } else {
       switch (unit.type) {
         case 'CLINGER': {
           // Corkscrew dive: vx = 160 * sin(4t), vy = 180
@@ -541,18 +540,30 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
             unit.velocity.x = -Math.abs(unit.velocity.x);
           }
 
-          // Spawning cycle every 9.0s
-          unit.spawnTimer = (unit.spawnTimer || 9.0) - deltaTime;
-          if (unit.spawnTimer <= 0) {
-            unit.spawnTimer = 9.0;
-            unit.isSpawning = true;
-            // Spawn pair of parasites or spore siphoner
-            this.spawnParasiteClinger(unit.position.x - 30, unit.position.y + 40);
-            this.spawnParasiteClinger(unit.position.x + 30, unit.position.y + 40);
-            if (Math.random() < 0.5) {
-              this.spawnSporeSiphoner(unit.position.x, unit.position.y + 45);
+          // Spawning cycle every 9.0s (freeze when in SHOP or paused)
+          const isShopOrPaused =
+            Boolean((context as any)?.state === GameState.SHOP ||
+            (context as any)?.gameState === GameState.SHOP ||
+            (context as any)?.state === 'SHOP' ||
+            (context as any)?.gameState === 'SHOP' ||
+            (context as any)?.state === 'PAUSED' ||
+            (context as any)?.gameState === 'PAUSED' ||
+            (context as any)?.isPaused ||
+            (context as any)?.paused);
+
+          if (!isShopOrPaused) {
+            unit.spawnTimer = (unit.spawnTimer || 9.0) - deltaTime;
+            if (unit.spawnTimer <= 0) {
+              unit.spawnTimer = 9.0;
+              unit.isSpawning = true;
+              // Spawn pair of parasites or spore siphoner
+              this.spawnParasiteClinger(unit.position.x - 30, unit.position.y + 40);
+              this.spawnParasiteClinger(unit.position.x + 30, unit.position.y + 40);
+              if (Math.random() < 0.5) {
+                this.spawnSporeSiphoner(unit.position.x, unit.position.y + 45);
+              }
+              createExplosion(unit.position.x, unit.position.y + 40, '#84cc16', 15, 1.5);
             }
-            createExplosion(unit.position.x, unit.position.y + 40, '#84cc16', 15, 1.5);
           }
 
           // Pheromone roar cycle
@@ -575,13 +586,23 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
           break;
         }
       }
+      }
 
       // Check Bullet Collisions against Bio-Horror Units
       this.checkBulletCollisions(unit, bullets, context);
 
-      // Remove dead or off-screen units
-      if (unit.isDead || unit.position.y > 850) {
+      // Remove dead or off-screen units (4-sided rectangular bounds culling)
+      const isOutOfBounds =
+        !Number.isFinite(unit.position.x) ||
+        !Number.isFinite(unit.position.y) ||
+        unit.position.x < -150 ||
+        unit.position.x > 750 ||
+        unit.position.y < -150 ||
+        unit.position.y > 850;
+
+      if (unit.isDead || isOutOfBounds) {
         this.units.splice(i, 1);
+        continue;
       }
     }
   }
@@ -786,6 +807,7 @@ export class HadalBioHorrors implements IBioHorrorManager, IFlagshipSubsystem {
   }
 
   private drawBioUnit(ctx: CanvasRenderingContext2D, unit: BioHorrorUnit, time: number): void {
+    if (!Number.isFinite(unit.position.x) || !Number.isFinite(unit.position.y)) return;
     ctx.save();
     ctx.translate(unit.position.x, unit.position.y);
     ctx.globalAlpha = unit.alpha;

@@ -79,6 +79,79 @@ export class Enemy extends Entity {
   public slideTimer: number = 0;
   public lastBlockingAlly: Enemy | null = null;
 
+  // Gradient GC Optimization Cache (DEF-ARC-03)
+  private cachedGrad: any = null;
+  private lastGradX: number = -9999;
+  private lastGradY: number = -9999;
+  private lastGradKey: string = '';
+  private lastGradCtx: any = null;
+
+  public getCachedLinearGradient(
+    ctx: CanvasRenderingContext2D,
+    x0: number,
+    y0: number,
+    x1: number,
+    y1: number,
+    stops: [number, string][],
+    key: string = '',
+    tolerance: number = 1.5
+  ): any {
+    const cx = (x0 + x1) / 2;
+    const cy = (y0 + y1) / 2;
+    if (
+      this.cachedGrad &&
+      this.lastGradCtx === ctx &&
+      this.lastGradKey === key &&
+      Math.abs(cx - this.lastGradX) < tolerance &&
+      Math.abs(cy - this.lastGradY) < tolerance
+    ) {
+      return this.cachedGrad;
+    }
+    const grad = ctx.createLinearGradient(x0, y0, x1, y1);
+    for (let i = 0; i < stops.length; i++) {
+      grad.addColorStop(stops[i][0], stops[i][1]);
+    }
+    this.cachedGrad = grad;
+    this.lastGradX = cx;
+    this.lastGradY = cy;
+    this.lastGradKey = key;
+    this.lastGradCtx = ctx;
+    return grad;
+  }
+
+  public getCachedRadialGradient(
+    ctx: CanvasRenderingContext2D,
+    x0: number,
+    y0: number,
+    r0: number,
+    x1: number,
+    y1: number,
+    r1: number,
+    stops: [number, string][],
+    key: string = '',
+    tolerance: number = 1.5
+  ): any {
+    if (
+      this.cachedGrad &&
+      this.lastGradCtx === ctx &&
+      this.lastGradKey === key &&
+      Math.abs(x1 - this.lastGradX) < tolerance &&
+      Math.abs(y1 - this.lastGradY) < tolerance
+    ) {
+      return this.cachedGrad;
+    }
+    const grad = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+    for (let i = 0; i < stops.length; i++) {
+      grad.addColorStop(stops[i][0], stops[i][1]);
+    }
+    this.cachedGrad = grad;
+    this.lastGradX = x1;
+    this.lastGradY = y1;
+    this.lastGradKey = key;
+    this.lastGradCtx = ctx;
+    return grad;
+  }
+
   public get width(): number {
     return this.size.width;
   }
@@ -1290,11 +1363,11 @@ export class Enemy extends Entity {
       // SNIPER: Deep-Sea Anglerfish / Monocle Sniper (Lavender-Amethyst & Cyan Lure)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx, cy - h/2, cx, cy + h/2);
-        grad.addColorStop(0, '#d8b4fe'); // Light Lavender
-        grad.addColorStop(0.5, '#a855f7'); // Vivid Purple
-        grad.addColorStop(1, '#6b21a8'); // Deep Amethyst
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx, cy - h/2, cx, cy + h/2,
+          [[0, '#d8b4fe'], [0.5, '#a855f7'], [1, '#6b21a8']],
+          'SNIPER'
+        );
       }
 
       // Sleek streamlined angler teardrop hull
@@ -1372,11 +1445,11 @@ export class Enemy extends Entity {
       // NORMAL MOB: Chubby Baby Dumpling Squid (Vibrant Sky Cyan & Soft Blue)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createRadialGradient(cx, cy - 4, 3, cx, cy, w/1.5);
-        grad.addColorStop(0, '#7dd3fc'); // Sky Light Cyan
-        grad.addColorStop(0.6, '#38bdf8'); // Sky Blue
-        grad.addColorStop(1, '#0284c7'); // Ocean Blue
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedRadialGradient(
+          ctx, cx, cy - 4, 3, cx, cy, w/1.5,
+          [[0, '#7dd3fc'], [0.6, '#38bdf8'], [1, '#0284c7']],
+          'NORMAL'
+        );
       }
 
       // Chubby dome mantle
@@ -1438,11 +1511,11 @@ export class Enemy extends Entity {
       // ZIGZAG: Electric Star-Manta (Radiant Lemon Yellow & Golden Honey)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, w/1.8);
-        grad.addColorStop(0, '#fef08a'); // Bright Lemon
-        grad.addColorStop(0.5, '#eab308'); // Honey Gold
-        grad.addColorStop(1, '#ea580c'); // Warm Amber
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedRadialGradient(
+          ctx, cx, cy, 2, cx, cy, w/1.8,
+          [[0, '#fef08a'], [0.5, '#eab308'], [1, '#ea580c']],
+          'ZIGZAG'
+        );
       }
 
       // 5-Pointed Rounded Star Body
@@ -1493,11 +1566,11 @@ export class Enemy extends Entity {
       // DIVER: Rocket Torpedo Piranha (Coral Crimson & Fiery Rocket Plume)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx, cy - h/2, cx, cy + h/2);
-        grad.addColorStop(0, '#fb923c'); // Bright Tangerine
-        grad.addColorStop(0.5, '#ef4444'); // Coral Crimson
-        grad.addColorStop(1, '#991b1b'); // Dark Crimson
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx, cy - h/2, cx, cy + h/2,
+          [[0, '#fb923c'], [0.5, '#ef4444'], [1, '#991b1b']],
+          'DIVER'
+        );
       }
 
       // Streamlined Torpedo Body
@@ -1510,11 +1583,7 @@ export class Enemy extends Entity {
       if (!isFlashing) {
         // Rocket Bubble Jet Exhaust (at the top rear)
         const flameHeight = 10 + Math.random() * 8;
-        const flameGrad = ctx.createLinearGradient(cx, cy - h/2, cx, cy - h/2 - flameHeight);
-        flameGrad.addColorStop(0, '#fde047');
-        flameGrad.addColorStop(0.6, '#f97316');
-        flameGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
-        ctx.fillStyle = flameGrad;
+        ctx.fillStyle = '#f97316';
         ctx.beginPath();
         ctx.moveTo(cx - 6, cy - h/2);
         ctx.lineTo(cx, cy - h/2 - flameHeight);
@@ -1555,11 +1624,11 @@ export class Enemy extends Entity {
       // SHIELDED: Armored Bubble Turtle / Nautilus (Jade Green & Mint Carapace)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx - w/2, cy - h/2, cx + w/2, cy + h/2);
-        grad.addColorStop(0, '#2dd4bf'); // Mint Jade
-        grad.addColorStop(0.5, '#0d9488'); // Deep Teal
-        grad.addColorStop(1, '#047857'); // Emerald Green
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx - w/2, cy - h/2, cx + w/2, cy + h/2,
+          [[0, '#2dd4bf'], [0.5, '#0d9488'], [1, '#047857']],
+          'SHIELDED'
+        );
       }
 
       // Hexagonal Rounded Carapace Shell
@@ -1605,11 +1674,11 @@ export class Enemy extends Entity {
       // SPLITTER: Mitosis Slime Amoeba (Poison Emerald & Mint Green Dual-Core)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx - w/2, cy, cx + w/2, cy);
-        grad.addColorStop(0, '#86efac'); // Mint Green
-        grad.addColorStop(0.5, '#22c55e'); // Emerald
-        grad.addColorStop(1, '#15803d'); // Deep Green
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx - w/2, cy, cx + w/2, cy,
+          [[0, '#86efac'], [0.5, '#22c55e'], [1, '#15803d']],
+          'SPLITTER'
+        );
       }
 
       // Peanut / Figure-8 Conjoined Mitosis Amoeba
@@ -1662,11 +1731,11 @@ export class Enemy extends Entity {
       // BOSS: Coral Titan Leviathan (Royal Coral Crimson & Golden Coral Carapace)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx - w/2, cy - h/2, cx + w/2, cy + h/2);
-        grad.addColorStop(0, '#f43f5e'); // Rose Coral
-        grad.addColorStop(0.5, '#dc2626'); // Imperial Crimson
-        grad.addColorStop(1, '#881337'); // Deep Maroon
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx - w/2, cy - h/2, cx + w/2, cy + h/2,
+          [[0, '#f43f5e'], [0.5, '#dc2626'], [1, '#881337']],
+          'BOSS'
+        );
       }
 
       // Majestic Titan Carapace (Rounded Heavy Hull)
@@ -1749,11 +1818,11 @@ export class Enemy extends Entity {
       // ROGUE DRONE: Cyber Manta Drone (Electric Magenta & Cyan Delta)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx - w/2, cy, cx + w/2, cy);
-        grad.addColorStop(0, '#d946ef'); // Electric Magenta
-        grad.addColorStop(0.5, '#c026d3'); // Fuchsia
-        grad.addColorStop(1, '#a21caf'); // Deep Violet
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx - w/2, cy, cx + w/2, cy,
+          [[0, '#d946ef'], [0.5, '#c026d3'], [1, '#a21caf']],
+          'ROGUE_DRONE'
+        );
       }
 
       ctx.beginPath();
@@ -1790,11 +1859,11 @@ export class Enemy extends Entity {
       // ROGUE STALKER: Orchid Predator Interceptor (Vivid Fuchsia & Ultraviolet)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx, cy - h/2, cx, cy + h/2);
-        grad.addColorStop(0, '#e879f9');
-        grad.addColorStop(0.6, '#c026d3');
-        grad.addColorStop(1, '#86198f');
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx, cy - h/2, cx, cy + h/2,
+          [[0, '#e879f9'], [0.6, '#c026d3'], [1, '#86198f']],
+          'ROGUE_STALKER'
+        );
       }
 
       ctx.beginPath();
@@ -1834,11 +1903,11 @@ export class Enemy extends Entity {
       // ROGUE MECH: High-Voltage Vivid Magenta Armored Juggernaut
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx - w/2, cy - h/2, cx + w/2, cy + h/2);
-        grad.addColorStop(0, '#a21caf');
-        grad.addColorStop(0.5, '#c026d3');
-        grad.addColorStop(1, '#86198f');
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx - w/2, cy - h/2, cx + w/2, cy + h/2,
+          [[0, '#a21caf'], [0.5, '#c026d3'], [1, '#86198f']],
+          'ROGUE_MECH'
+        );
       }
 
       if (ctx.roundRect) {
@@ -1877,11 +1946,11 @@ export class Enemy extends Entity {
       // ROGUE GOLIATH: High-Voltage Armored Dreadnought (Electric Magenta & Lime)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx - w/2, cy - h/2, cx + w/2, cy + h/2);
-        grad.addColorStop(0, '#d946ef'); // Electric Magenta
-        grad.addColorStop(0.5, '#c026d3'); // Ultraviolet
-        grad.addColorStop(1, '#86198f'); // Deep Fuchsia
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx - w/2, cy - h/2, cx + w/2, cy + h/2,
+          [[0, '#d946ef'], [0.5, '#c026d3'], [1, '#86198f']],
+          'ROGUE_GOLIATH'
+        );
       }
 
       // Heavy armored dreadnought hull
@@ -1926,11 +1995,11 @@ export class Enemy extends Entity {
       // ROGUE PHANTOM: Phase Teleport Interceptor (Ultraviolet & Cyan Visor)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx, cy - h/2, cx, cy + h/2);
-        grad.addColorStop(0, '#c026d3'); // Ultraviolet
-        grad.addColorStop(0.5, '#9333ea'); // Vivid Purple
-        grad.addColorStop(1, '#581c87'); // Deep Void Purple
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx, cy - h/2, cx, cy + h/2,
+          [[0, '#c026d3'], [0.5, '#9333ea'], [1, '#581c87']],
+          'ROGUE_PHANTOM'
+        );
       }
 
       // Sleek swept-wing delta hull
@@ -1978,11 +2047,11 @@ export class Enemy extends Entity {
       // ROGUE CARRIER: Bio-Mech Mothership (Neon Lime & Electric Magenta Hangars)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx - w/2, cy, cx + w/2, cy);
-        grad.addColorStop(0, '#84cc16'); // Neon Lime
-        grad.addColorStop(0.5, '#65a30d'); // Medium Lime
-        grad.addColorStop(1, '#4d7c0f'); // Deep Bio-Lime
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx - w/2, cy, cx + w/2, cy,
+          [[0, '#84cc16'], [0.5, '#65a30d'], [1, '#4d7c0f']],
+          'ROGUE_CARRIER'
+        );
       }
 
       // Broad hexagonal carrier hull
@@ -2023,11 +2092,11 @@ export class Enemy extends Entity {
       // SABOTEUR: Sapper / Rotary Acid Borer (Hazard Orange & Chevron Stripes)
       // ----------------------------------------------------------------------
       if (!isFlashing) {
-        const grad = ctx.createLinearGradient(cx, cy - h/2, cx, cy + h/2);
-        grad.addColorStop(0, '#f97316'); // Bright Orange
-        grad.addColorStop(0.5, '#ea580c'); // Hazard Orange
-        grad.addColorStop(1, '#9a3412'); // Dark Rust Orange
-        ctx.fillStyle = grad;
+        ctx.fillStyle = this.getCachedLinearGradient(
+          ctx, cx, cy - h/2, cx, cy + h/2,
+          [[0, '#f97316'], [0.5, '#ea580c'], [1, '#9a3412']],
+          'SABOTEUR'
+        );
       }
 
       // Tapered heavy armored carapace pointing down towards barricades

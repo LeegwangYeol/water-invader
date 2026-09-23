@@ -1,76 +1,54 @@
 # Claude Collaboration Guide: Water Invader
 
-## Current Mission: Codebase-Wide Physics & Mechanical Edge-Case Audit and Remediation
+## Current Mission: Total Codebase Inspection ("총검사") & Hardening (100+ Agent Swarm)
 
 ### 1. Objective & Background
-Perform a comprehensive, codebase-wide proactive audit and remediation of all physical and mechanical edge cases in the Water Invader game engine.
-The objective is to proactively identify and resolve any UX/physics entrapment bugs, infinite loops, NaN coordinates, boundary violations, velocity blowups, or unrecoverable states across all subsystems (`GameManager.ts`, `Player.ts`, weapons, environments, factions, and boss mechanics) so past issues never reoccur.
+Execute a comprehensive, codebase-wide Total Inspection ("총검사"). Deploy a massive team of 100+ specialized agents (QA, Security, Architecture) to exhaustively inspect every file, module, and subsystem across the codebase (`GameManager.ts`, `Player.ts`, weapons, environments, factions, boss mechanics, UI, audio, rendering, and test suites).
+The objective is to identify any past physical or logical errors, architecture flaws, memory leaks, performance bottlenecks, or edge cases, and apply robust remediation to permanently harden the system against repeat mistakes.
 
 ---
 
 ### 2. Architectural Invariants & Core Constraints
 - **Canvas Invariants**: Strictly preserve `logicalWidth = 600` and `logicalHeight = 800` in `GameManager.ts`, `Player.ts`, and `Enemy.ts`. All responsive layout adjustments must remain CSS-only.
-- **Organic Physics Remediation**: All fixes must preserve existing expected gameplay behaviors and hydrodynamic physics without relying on arbitrary teleportation, hard resets, or synthetic clip snapping.
-- **Zero Regressions**: 100% of existing regression test suites (including all flagship feature suites, buoyancy escape, continue flow, and responsive viewports) must pass.
+- **Organic Remediation & Hardening**: Fixes must preserve existing expected gameplay behaviors, hydrodynamic physics, and balance without synthetic hacks or arbitrary clipping/teleportation.
+- **Permanent Regression Prevention**: For every error or vulnerability identified, an automated test MUST be created or updated to permanently prevent regressions.
+- **Zero Regressions**: 100% of existing and newly created Playwright tests (`npx playwright test`) must pass.
 - **Build Quality**: `npx tsc --noEmit` and `npm run build` must exit with 0 errors.
+- **Pre-commit / Pre-push Verification**: Always verify build before git operations.
 
 ---
 
 ### 3. Comprehensive Subsystem Audit Matrix (100+ Agent Swarm Decomposition)
-To satisfy the requested very large team (100+ agents), the audit will be decomposed across dedicated specialist streams:
-
-1. **Stream A: Player Kinematics & Ballast Subsystem** (`Player.ts`, `ModularChassis.ts`, controls):
-   - Vertical ballast settling, ceiling/floor boundary collisions, inertia/damping under multi-directional forces.
-   - Input lockouts during state transitions (death, continue, shop, pauses).
-   - Zero-coordinate safety, high-speed lateral boundary penetration, chassis hitbox switches.
-
-2. **Stream B: Environmental Dynamics & Hazard Fields** (`HydrothermalVent.ts`, `OceanCurrent.ts`, `Whirlpool.ts`, `TectonicRift.ts`):
-   - Multi-hazard superposition: what happens when player or enemy enters overlapping vents + currents + whirlpools simultaneously?
-   - Force saturation / velocity accumulation: verify Euler integration clamps acceleration and prevents infinite/NaN coordinates.
-   - Entrapment and ejection: ensure all vortexes and convective plumes have defined release vectors.
-
-3. **Stream C: Weapons, Projectiles & Collision CCD** (`Projectile.ts`, `HomingMissile.ts`, `BioLaser.ts`, `Harpoon.ts`, `CryoMine.ts`):
-   - Continuous Collision Detection (CCD) tunneling at high velocity or low framerate ($\Delta t$ spikes).
-   - Zero-distance / overlapping origin division-by-zero ($dx = 0, dy = 0$) in homing and vector normalizations.
-   - Projectile lifetime leaks, out-of-bounds cleanup, reflection angle NaNs on zero-width colliders.
-
-4. **Stream D: Factions, Swarms & Boss Mechanics** (`Enemy.ts`, `ApexPredator.ts`, `KrakenBoss.ts`, `DreadnoughtBoss.ts`, `AncientMech.ts`, `AlliedVessel.ts`):
-   - Boss phase transitions and multi-segmented entity physics locks.
-   - Flocking pincer algorithm singularity / NaN steering vectors when entities overlap identically.
-   - Barricade saboteur and ally pathfinding boundary violations.
-
-5. **Stream E: Game Loop, Time Scaling & State Transitions** (`GameManager.ts`, `ShopOverlay.tsx`, `CrisisManager.ts`):
-   - Large $\Delta t$ instability (tab unfocus, lag spikes): verify maximum time-step clamping (`dt = Math.min(dt, 0.1)`).
-   - Wave clear vs boss death race conditions, post-death resurrection coordinate integrity.
+To satisfy the requested 100+ agent swarm, the inspection is decomposed into specialized streams:
+1. **QA Stream**: Exhaustive edge cases, input transitions, state synchronization, physics entrapment, and automated Playwright coverage across all subsystems.
+2. **Security & Boundary Stream**: Boundary violation prevention, NaN/Infinity math defense, state corruption defense, resource leak prevention, and input sanitization.
+3. **Architecture & Reliability Stream**: Game loop stability, memory lifecycle (DOM/Audio/Canvas listeners), state recovery, weapon/faction modularity, and build pipeline health.
 
 ---
 
-### 4. Verification & Testing Protocol
-1. **Automated Reproduction Test Suite**:
-   - For every edge case or vulnerability identified, a dedicated Playwright test (`tests/physics_edgecase_<subsystem>.spec.ts`) MUST be written reproducing the failure scenario.
-2. **Automated Fix Verification**:
-   - Verify that the fix resolves the reproduction test without introducing collateral anomalies.
-3. **Full Regression Test Run**:
-   - Execute `npx playwright test` across the entire project test suite.
-4. **Build & Type Check**:
-   - Run `npx tsc --noEmit` and `npm run build`.
-5. **Independent Agent-as-Judge Audit**:
-   - Reviewing agent swarm simulates player edge cases and confirms natural hydrodynamic feel with zero remaining entrapment.
-6. **Mandatory Post-Victory Audit**:
-   - Sentinel spawns independent `teamwork_preview_victory_auditor` to audit timeline, test integrity, and anti-cheating compliance.
+### 4. Verification & Acceptance Protocol
+1. **Automated Reproduction & Regression Tests**:
+   - Automated tests for all discovered issues permanently preventing regressions.
+   - 100% pass rate on `npx playwright test`.
+2. **Build Verification**:
+   - `npx tsc --noEmit` and `npm run build` pass with 0 errors.
+3. **Independent Review & Audit (Agent-as-Judge)**:
+   - Independent reviewing agent confirms fixes are correct and natural.
+   - Security/architecture auditor confirms system is robust and free of repeat mistakes.
+4. **Mandatory Post-Victory Audit**:
+   - Sentinel spawns independent `teamwork_preview_victory_auditor` to audit timeline, test integrity, and anti-cheating compliance before reporting completion.
 
 ---
 
-### 5. Current Status & Approval Gate
-- **Status**: Completed & Verified (All 5 Streams Remediated, Tested, and Audited)
-- **Routing Decision**: General (`teamwork_preview_orchestrator`) with specialized multi-agent swarm
-- **Active Swarm Directory**: `.agents/orchestrator_physics_audit_1`
-- **Execution Summary**:
-  - **Survey (M0)**: Cataloged 21 physical/mechanical edge cases across Streams A-E in `SCOPE.md`.
-  - **Reproduction Suite (M1)**: Authored `tests/physics_edgecase_comprehensive.spec.ts` (16 tests, 15 pre-fix failures confirmed).
-  - **Organic Remediation (M2)**: Applied organic hydrodynamic fixes across `Player.ts`, `ModularChassis.ts`, `HydrothermalVent*.ts`, `Enemy.ts`, `HydraulicHarpoon.ts`, `KrakenPrimeBoss.ts`, `HadalBioHorrors.ts`, `Helper.ts`, `GameManager.ts`, and `EndGameCrisis.ts`.
-  - **Verification Gate (M3)**: Unanimous **PASS** in `GATE_STATUS.md` (`auditor_physics_1`: **CLEAN**, `reviewer_physics_1`: **APPROVE**, `reviewer_physics_2`: **APPROVE**, `challenger_physics_1`: **APPROVE**, `challenger_physics_2`: **APPROVE**).
-  - **Regression & Build (M4)**: 45/45 physics & adversarial tests passed (100%), `npx tsc --noEmit` exited with 0 errors, `npm run build` compiled successfully in 495ms (5/5 static pages).
-  - **Master Handoff**: Recorded in `.agents/orchestrator_physics_audit_1/handoff.md`. Ready for final victory audit by Sentinel.
-
+### 5. Current Status & Active Operations
+- **Status**: Milestone M6 (Final Verification, Build, Test Suite & Push) COMPLETE — Total Codebase Inspection ("총검사") 100% SUCCESS
+- **Trigger**: "총검사" (Total Codebase Inspection & Hardening Swarm)
+- **Active Orchestrator**: `.agents/orchestrator_total_inspection_1`
+- **Milestone Verification Summary**:
+  1. **M1 (Core Physics & Kinematics)**: REMEDIATED & VERIFIED (Player velocity synchronization, dormant vent lift removal, boss slingshot damage, boundary containment clamp).
+  2. **M2 (Security, CCD & Math Defense)**: REMEDIATED & VERIFIED (NaN/Infinity guards, Liang-Barsky swept AABB and torpedo CCD, 4-sided bounds culling, pointer sanitization).
+  3. **M3 (Architecture, State & Memory)**: REMEDIATED & VERIFIED (rAF loop halt on menus, crisis duration persistence, subsystem array caching, Web Audio lifecycle hooks).
+  4. **M4 (Regression Test Expansion)**: IMPLEMENTED & VERIFIED (DPR assertion fix, live browser tests for Hadal clinger wiggles, Automaton shield backlash, Bridge Crew shop promotion).
+  5. **M5 (Adversarial Review & Audit)**: UNANIMOUS PASS (Reviewer 1 APPROVE, Reviewer 2 APPROVE, Challenger 2 APPROVE, Challenger 1 findings remediated and verified APPROVE, Forensic Auditor CLEAN).
+  6. **M6 (Final Build, Test Suite & Git Push)**: 100% PASSED (`npx tsc --noEmit` 0 errors, `npm run build` Next.js 16.3.1 clean build, 105 Playwright tests passed across 8 test suites, Git commit & push verified).
 

@@ -236,23 +236,38 @@ export class HydrothermalVent implements IHydrothermalVent {
         const transitionZone = 90; // Plume cap dissipation band [130, 220]
         const depthAboveCap = Math.max(0, playerCenterY - capCeiling);
         const liftRatio = Math.min(1.0, depthAboveCap / transitionZone);
-        if (inCore || liftRatio >= 0.5) {
+
+        // Only set isInUpdraft when active upward lift is actually being applied
+        const isLiftActive = this.state === VentState.ERUPTING || (this.state === VentState.CHARGING && liftRatio >= 0.5);
+        if (isLiftActive && (inCore || liftRatio >= 0.5)) {
           (player as any).isInUpdraft = true;
         }
-        const baseLift = (this.state === VentState.ERUPTING ? 260 : 160) * deltaTime;
-        const lift = baseLift * liftRatio;
-        player.position.y = Math.max(capCeiling, player.position.y - lift);
+
+        let baseLift = 0;
+        if (this.state === VentState.ERUPTING) {
+          baseLift = 260 * deltaTime;
+        } else if (this.state === VentState.CHARGING) {
+          baseLift = 80 * deltaTime;
+        } else {
+          baseLift = 0; // Dormant vent produces zero lift
+        }
+
+        if (baseLift > 0) {
+          const lift = baseLift * liftRatio;
+          player.position.y = Math.min(player.position.y, Math.max(capCeiling, player.position.y - lift));
+        }
       }
 
       // Radial lateral outward dispersion near the plume cap
       const inPlumeCap = inHalo || inCore;
-      if (inPlumeCap) {
+      if (inPlumeCap && this.state !== VentState.DORMANT) {
         const capCeiling = this.capY + 30;
         const depthAboveCap = Math.max(0, playerCenterY - capCeiling);
         const liftRatio = Math.min(1.0, depthAboveCap / 90);
         if (liftRatio < 1.0) {
           const dispersionRatio = 1.0 - liftRatio;
-          const dispersionSpeed = (this.state === VentState.ERUPTING ? 120 : 80) * dispersionRatio * deltaTime;
+          const maxDispersion = this.state === VentState.ERUPTING ? 120 : (this.state === VentState.CHARGING ? 60 : 0);
+          const dispersionSpeed = maxDispersion * dispersionRatio * deltaTime;
           const sign = playerCenterX >= this.anchorX ? 1 : -1;
           player.position.x += sign * dispersionSpeed;
 

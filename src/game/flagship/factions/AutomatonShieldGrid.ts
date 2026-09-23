@@ -208,15 +208,23 @@ export class AutomatonShieldGrid implements ShieldPhalanxGrid {
     // Calculate impact angle relative to shield normal
     // Shield normal points downward/forward (e.g. {0, 1})
     // Bullet moving upward has negative vy
-    const bulletSpeed = Math.hypot(bulletVel.x, bulletVel.y) || 1;
-    const bulletDirX = bulletVel.x / bulletSpeed;
-    const bulletDirY = bulletVel.y / bulletSpeed;
+    const bvx = Number.isFinite(bulletVel.x) ? bulletVel.x : 0;
+    const bvy = Number.isFinite(bulletVel.y) ? bulletVel.y : -1;
+    const rawSpeed = Math.hypot(bvx, bvy);
+    const bulletSpeed = (Number.isFinite(rawSpeed) && rawSpeed > 0.0001) ? rawSpeed : 1;
+    const bulletDirX = bvx / bulletSpeed;
+    const bulletDirY = bvy / bulletSpeed;
+
+    const safeDirX = Number.isFinite(bulletDirX) ? bulletDirX : 0;
+    const safeDirY = Number.isFinite(bulletDirY) ? bulletDirY : -1;
+    const normX = Number.isFinite(drone.shieldNormal.x) ? drone.shieldNormal.x : 0;
+    const normY = Number.isFinite(drone.shieldNormal.y) ? drone.shieldNormal.y : 1;
 
     // Dot product between -bulletDir and shieldNormal
-    const impactCos = -(bulletDirX * drone.shieldNormal.x + bulletDirY * drone.shieldNormal.y);
+    const impactCos = -(safeDirX * normX + safeDirY * normY);
 
     // Frontal arc: impactCos >= 0.5 (within 60 degree arc)
-    const isFrontal = impactCos >= AutomatonShieldGrid.SHIELD_ARC_COS;
+    const isFrontal = Number.isFinite(impactCos) && impactCos >= AutomatonShieldGrid.SHIELD_ARC_COS;
 
     if (isFrontal) {
       // 100% frontal deflection: hull takes 0 damage, damage is routed into shield grid

@@ -288,20 +288,47 @@ export class HomingMissile extends Bullet {
       const myX = this.position.x + this.size.width / 2;
       const myY = this.position.y + this.size.height / 2;
 
-      const targetAngle = Math.atan2(targetY - myY, targetX - myX);
-      const deltaTheta = Math.atan2(Math.sin(targetAngle - this.angle), Math.cos(targetAngle - this.angle));
-      const maxTurn = this.turnRate * deltaTime;
-      this.angle += Math.max(-maxTurn, Math.min(maxTurn, deltaTheta));
+      const dx = targetX - myX;
+      const dy = targetY - myY;
+      const distSq = dx * dx + dy * dy;
+
+      if (Number.isFinite(dx) && Number.isFinite(dy) && distSq > 0.0001) {
+        const targetAngle = Math.atan2(dy, dx);
+        if (Number.isFinite(targetAngle)) {
+          const currentAngle = Number.isFinite(this.angle) ? this.angle : -Math.PI / 2;
+          const deltaTheta = Math.atan2(Math.sin(targetAngle - currentAngle), Math.cos(targetAngle - currentAngle));
+          if (Number.isFinite(deltaTheta)) {
+            const maxTurn = this.turnRate * deltaTime;
+            this.angle = currentAngle + Math.max(-maxTurn, Math.min(maxTurn, deltaTheta));
+          }
+        }
+      }
+    }
+
+    if (!Number.isFinite(this.angle)) {
+      this.angle = -Math.PI / 2;
     }
 
     // Accelerate along current heading toward terminal velocity
     this.currentSpeed = Math.min(this.maxSpeed, this.currentSpeed + this.acceleration * deltaTime);
-    this.velocity.x = Math.cos(this.angle) * this.currentSpeed;
-    this.velocity.y = Math.sin(this.angle) * this.currentSpeed;
+    if (!Number.isFinite(this.currentSpeed) || this.currentSpeed < 0) {
+      this.currentSpeed = this.maxSpeed;
+    }
+    const vx = Math.cos(this.angle) * this.currentSpeed;
+    const vy = Math.sin(this.angle) * this.currentSpeed;
+    this.velocity.x = Number.isFinite(vx) ? vx : 0;
+    this.velocity.y = Number.isFinite(vy) ? vy : -this.currentSpeed;
 
     // 5. Integrate position
-    this.position.x += this.velocity.x * deltaTime;
-    this.position.y += this.velocity.y * deltaTime;
+    if (Number.isFinite(this.velocity.x) && Number.isFinite(deltaTime)) {
+      this.position.x += this.velocity.x * deltaTime;
+    }
+    if (Number.isFinite(this.velocity.y) && Number.isFinite(deltaTime)) {
+      this.position.y += this.velocity.y * deltaTime;
+    }
+
+    if (!Number.isFinite(this.position.x)) this.position.x = 300;
+    if (!Number.isFinite(this.position.y)) this.position.y = 400;
 
     // 6. Exhaust smoke trail simulation
     this.smokeEmitTimer -= deltaTime;
@@ -309,7 +336,9 @@ export class HomingMissile extends Bullet {
       this.smokeEmitTimer = 0.035;
       const tailX = this.position.x + this.size.width / 2 - Math.cos(this.angle) * 10;
       const tailY = this.position.y + this.size.height / 2 - Math.sin(this.angle) * 10;
-      this.smokeTrail.push({ x: tailX, y: tailY, r: 2.5, alpha: 0.75 });
+      if (Number.isFinite(tailX) && Number.isFinite(tailY)) {
+        this.smokeTrail.push({ x: tailX, y: tailY, r: 2.5, alpha: 0.75 });
+      }
     }
 
     // Decay smoke trail
@@ -324,12 +353,13 @@ export class HomingMissile extends Bullet {
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
-    const cx = this.position.x + this.size.width / 2;
-    const cy = this.position.y + this.size.height / 2;
+    const cx = Number.isFinite(this.position.x) ? this.position.x + this.size.width / 2 : 300;
+    const cy = Number.isFinite(this.position.y) ? this.position.y + this.size.height / 2 : 400;
 
     // 1. Render World-Space Smoke Trail
     for (let i = 0; i < this.smokeTrail.length; i++) {
       const s = this.smokeTrail[i];
+      if (!Number.isFinite(s.x) || !Number.isFinite(s.y) || !Number.isFinite(s.r) || s.r <= 0) continue;
       ctx.save();
       ctx.globalAlpha = Math.max(0, Math.min(1, s.alpha * 0.45));
       ctx.fillStyle = '#94a3b8';
@@ -342,7 +372,7 @@ export class HomingMissile extends Bullet {
     // 2. Render Rotating Missile Fuselage
     ctx.save();
     ctx.translate(cx, cy);
-    ctx.rotate(this.angle + Math.PI / 2); // Rotate so 0 points upwards along heading
+    ctx.rotate(Number.isFinite(this.angle) ? this.angle + Math.PI / 2 : 0); // Rotate so 0 points upwards along heading
 
     // Exhaust Jet Flame (Behind tail at y = 10)
     const flameH = 7 + Math.random() * 6;

@@ -213,7 +213,17 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
     // Track player with central eye / targeting optic
     if (playerPosition) {
       const core = this.getCoreCenter();
-      this.eyeAngle = Math.atan2(playerPosition.y - core.y, playerPosition.x - core.x);
+      const dx = playerPosition.x - core.x;
+      const dy = playerPosition.y - core.y;
+      if (Number.isFinite(dx) && Number.isFinite(dy) && (dx * dx + dy * dy) > 0.0001) {
+        const computed = Math.atan2(dy, dx);
+        if (Number.isFinite(computed)) {
+          this.eyeAngle = computed;
+        }
+      }
+    }
+    if (!Number.isFinite(this.eyeAngle)) {
+      this.eyeAngle = Math.PI / 2;
     }
 
     // Phase 3 Enrage Countdown
@@ -232,6 +242,7 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
 
     if (!Number.isFinite(this.position.x)) this.position.x = Number.isFinite(this.initialX) ? this.initialX : 170;
     if (!Number.isFinite(this.position.y)) this.position.y = Number.isFinite(this.initialY) ? this.initialY : 65;
+    if (!Number.isFinite(this.eyeAngle)) this.eyeAngle = Math.PI / 2;
 
     ctx.save();
 
@@ -595,18 +606,21 @@ export class CrisisSovereign extends Entity implements ICrisisEntity {
 
     // Pupil looking toward target / player
     const lookDist = 5;
-    const pupilX = cx + Math.cos(this.eyeAngle) * lookDist;
-    const pupilY = cy + Math.sin(this.eyeAngle) * lookDist;
+    const safeAngle = Number.isFinite(this.eyeAngle) ? this.eyeAngle : Math.PI / 2;
+    const pupilX = cx + Math.cos(safeAngle) * lookDist;
+    const pupilY = cy + Math.sin(safeAngle) * lookDist;
 
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(pupilX, pupilY, 4.5, 0, Math.PI * 2);
-    ctx.fill();
+    if (Number.isFinite(pupilX) && Number.isFinite(pupilY)) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(pupilX, pupilY, 4.5, 0, Math.PI * 2);
+      ctx.fill();
 
-    ctx.fillStyle = glowColor;
-    ctx.beginPath();
-    ctx.arc(pupilX, pupilY, 2.5, 0, Math.PI * 2);
-    ctx.fill();
+      ctx.fillStyle = glowColor;
+      ctx.beginPath();
+      ctx.arc(pupilX, pupilY, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   /**

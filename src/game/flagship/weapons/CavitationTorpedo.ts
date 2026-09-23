@@ -105,7 +105,8 @@ export class CavitationTorpedo extends Bullet implements ICavitationTorpedo {
   public override update(
     deltaTime: number,
     hostiles: Entity[] = [],
-    hostileBullets: Bullet[] = []
+    hostileBullets: Bullet[] = [],
+    barricades: Barricade[] = []
   ): void {
     this.pulsePhase += deltaTime * 8;
 
@@ -123,7 +124,7 @@ export class CavitationTorpedo extends Bullet implements ICavitationTorpedo {
     switch (this.state) {
       case TorpedoState.INERT:
       case TorpedoState.ARMED:
-        this.updateCruise(deltaTime, hostiles);
+        this.updateCruise(deltaTime, hostiles, barricades);
         break;
       case TorpedoState.SINGULARITY:
         this.updateSingularity(deltaTime, hostiles, hostileBullets);
@@ -140,7 +141,11 @@ export class CavitationTorpedo extends Bullet implements ICavitationTorpedo {
   /**
    * Phase 0: Cruising with supercavitating acceleration.
    */
-  private updateCruise(deltaTime: number, hostiles: Entity[]): void {
+  private updateCruise(
+    deltaTime: number,
+    hostiles: Entity[],
+    barricades: Barricade[] = []
+  ): void {
     // Constant supercavitation acceleration: v(t) = min(vMax, v0 + aCav * t)
     const currentSpeed = Math.min(
       this.config.vMax,
@@ -181,17 +186,53 @@ export class CavitationTorpedo extends Bullet implements ICavitationTorpedo {
       return;
     }
 
-    // Check collision with hostiles
-    const centerX = this.position.x + this.size.width / 2;
-    const centerY = this.position.y + this.size.height / 2;
+    // Continuous Collision Detection (CCD): Swept segment collision check
+    const p0x = this.prevPosition.x + this.size.width / 2;
+    const p0y = this.prevPosition.y + this.size.height / 2;
+    const p1x = this.position.x + this.size.width / 2;
+    const p1y = this.position.y + this.size.height / 2;
     const hitRadius = Math.max(this.size.width, this.size.height) / 2;
 
+    const vx = p1x - p0x;
+    const vy = p1y - p0y;
+    const segLenSq = vx * vx + vy * vy;
+
+    // 1. Check swept collision against barricades
+    for (const b of barricades) {
+      if (b.isDead) continue;
+      const bMinX = b.position.x - hitRadius;
+      const bMaxX = b.position.x + b.size.width + hitRadius;
+      const bMinY = b.position.y - hitRadius;
+      const bMaxY = b.position.y + b.size.height + hitRadius;
+
+      if (Entity.lineSegmentIntersectsAABB(p0x, p0y, p1x, p1y, bMinX, bMaxX, bMinY, bMaxY)) {
+        if (this.state === TorpedoState.ARMED) {
+          this.triggerRemoteDetonation();
+          return;
+        } else if (this.state === TorpedoState.INERT) {
+          b.takeDamage(15);
+          this.position.y += 8;
+          break;
+        }
+      }
+    }
+
+    // 2. Check swept collision against hostiles
     for (const hostile of hostiles) {
       if (hostile.isDead) continue;
       const hx = hostile.position.x + hostile.size.width / 2;
       const hy = hostile.position.y + hostile.size.height / 2;
-      const distSq = (centerX - hx) ** 2 + (centerY - hy) ** 2;
       const combinedRadius = hitRadius + Math.min(hostile.size.width, hostile.size.height) / 2;
+
+      let distSq: number;
+      if (segLenSq < 1e-4) {
+        distSq = (p1x - hx) ** 2 + (p1y - hy) ** 2;
+      } else {
+        const t = Math.max(0, Math.min(1, ((hx - p0x) * vx + (hy - p0y) * vy) / segLenSq));
+        const cx = p0x + t * vx;
+        const cy = p0y + t * vy;
+        distSq = (cx - hx) ** 2 + (cy - hy) ** 2;
+      }
 
       if (distSq <= combinedRadius * combinedRadius) {
         if (this.state === TorpedoState.INERT) {
@@ -612,13 +653,14 @@ export class CavitationTorpedoSystem implements ICavitationTorpedoSystem {
     // Update active torpedoes
     for (let i = this.torpedoes.length - 1; i >= 0; i--) {
       const t = this.torpedoes[i];
-      t.update(deltaTime, context.enemies, context.bullets);
-
       if (t instanceof CavitationTorpedo) {
+        t.update(deltaTime, context.enemies, context.bullets, context.barricades);
         t.checkBarricadeFractures(context.barricades);
         if (t.state === TorpedoState.SHOCKWAVE && t.blastTimer <= deltaTime * 1.5) {
           context.triggerScreenShake(0.25, 8);
         }
+      } else {
+        t.update(deltaTime, context.enemies, context.bullets);
       }
 
       if (t.isDead || t.state === TorpedoState.EXPIRED) {

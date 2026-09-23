@@ -213,10 +213,23 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
     this.grid.update(deltaTime);
 
     // 2. Synchronize Shield Grid Drone state back to Aegis units
-    for (const unit of this.units) {
+    for (let i = this.units.length - 1; i >= 0; i--) {
+      const unit = this.units[i];
       if (unit.type === 'AEGIS') {
+        // Cull any non-finite coordinates immediately
+        if (!Number.isFinite(unit.position.x) || !Number.isFinite(unit.position.y)) {
+          this.grid.unregisterDrone(unit.id, false);
+          this.units.splice(i, 1);
+          continue;
+        }
+
         const droneNode = this.grid.drones.get(unit.id);
         if (droneNode) {
+          if (!Number.isFinite(droneNode.x) || !Number.isFinite(droneNode.y)) {
+            this.grid.unregisterDrone(unit.id, false);
+            this.units.splice(i, 1);
+            continue;
+          }
           droneNode.x = unit.position.x;
           droneNode.y = unit.position.y;
           droneNode.maxHp = unit.maxHp;
@@ -239,11 +252,23 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
       }
     }
 
+    // Clean any orphaned drones with non-finite coordinates from shield grid
+    for (const [droneId, drone] of this.grid.drones.entries()) {
+      if (!Number.isFinite(drone.x) || !Number.isFinite(drone.y)) {
+        this.grid.unregisterDrone(droneId, false);
+      }
+    }
+
     // 3. Update Rail Slugs (punching through player barricades)
     for (let i = this.railSlugs.length - 1; i >= 0; i--) {
       const slug = this.railSlugs[i];
       slug.x += slug.vx * deltaTime;
       slug.y += slug.vy * deltaTime;
+
+      if (!Number.isFinite(slug.x) || !Number.isFinite(slug.y)) {
+        this.railSlugs.splice(i, 1);
+        continue;
+      }
 
       // Barricade penetration
       for (const b of barricades) {
@@ -279,6 +304,9 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
           dps: 12,
         });
         createExplosion(slug.x, 780, '#00f0ff', 25, 1.8);
+        this.railSlugs.splice(i, 1);
+      } else if (!Number.isFinite(slug.x) || !Number.isFinite(slug.y) || slug.y < -100 || slug.x < -100 || slug.x > 700 || slug.y > 850) {
+        // Cull railSlugs that exit playfield in any other direction or have non-finite coordinates
         this.railSlugs.splice(i, 1);
       }
     }
@@ -321,14 +349,13 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
       if (unit.hitFlashTimer > 0) unit.hitFlashTimer -= deltaTime;
 
       // Check Backlash Stun
-      if (unit.isStunned && unit.stunTimer && unit.stunTimer > 0) {
-        unit.stunTimer -= deltaTime;
+      const isStunned = Boolean(unit.isStunned && unit.stunTimer && unit.stunTimer > 0);
+      if (isStunned) {
+        unit.stunTimer = Math.max(0, (unit.stunTimer ?? 0) - deltaTime);
         if (unit.stunTimer <= 0) {
           unit.isStunned = false;
         }
-        continue; // Stunned, cannot act
-      }
-
+      } else {
       switch (unit.type) {
         case 'AEGIS': {
           // Slow coordinated phalanx drift
@@ -435,16 +462,26 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
           break;
         }
       }
+      }
 
       // Check Bullet Collisions against Automaton Units
       this.checkBulletCollisions(unit, bullets, context);
 
-      // Remove dead or off-screen units
-      if (unit.isDead || unit.position.y > 850) {
+      // Remove dead or off-screen units (4-sided rectangular bounds culling)
+      const isOutOfBounds =
+        !Number.isFinite(unit.position.x) ||
+        !Number.isFinite(unit.position.y) ||
+        unit.position.x < -150 ||
+        unit.position.x > 750 ||
+        unit.position.y < -150 ||
+        unit.position.y > 850;
+
+      if (unit.isDead || isOutOfBounds) {
         if (unit.type === 'AEGIS') {
           this.grid.unregisterDrone(unit.id, unit.isDead);
         }
         this.units.splice(i, 1);
+        continue;
       }
     }
   }
@@ -545,6 +582,7 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
 
     // 2. Draw Induction Shock Puddles
     for (const puddle of this.shockPuddles) {
+      if (!Number.isFinite(puddle.x) || !Number.isFinite(puddle.y)) continue;
       const alpha = Math.max(0, puddle.remainingLife / puddle.duration) * 0.55;
       ctx.save();
       ctx.fillStyle = `rgba(0, 240, 255, ${alpha})`;
@@ -559,6 +597,7 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
 
     // 3. Draw Rail Slugs
     for (const slug of this.railSlugs) {
+      if (!Number.isFinite(slug.x) || !Number.isFinite(slug.y)) continue;
       ctx.save();
       ctx.fillStyle = '#f59e0b';
       ctx.shadowColor = '#f59e0b';
@@ -571,6 +610,7 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
 
     // 4. Draw EMP Shock Rings
     for (const ring of this.empShockRings) {
+      if (!Number.isFinite(ring.x) || !Number.isFinite(ring.y)) continue;
       ctx.save();
       ctx.strokeStyle = `rgba(0, 240, 255, ${ring.alpha})`;
       ctx.lineWidth = 3;
@@ -587,6 +627,7 @@ export class AutomatonPhalanx implements IAutomatonPhalanxManager, IFlagshipSubs
   }
 
   private drawAutomatonUnit(ctx: CanvasRenderingContext2D, unit: AutomatonUnit, time: number): void {
+    if (!Number.isFinite(unit.position.x) || !Number.isFinite(unit.position.y)) return;
     ctx.save();
     ctx.translate(unit.position.x, unit.position.y);
 

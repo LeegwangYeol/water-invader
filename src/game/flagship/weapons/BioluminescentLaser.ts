@@ -418,21 +418,23 @@ export class BioluminescentLaserSystem implements IPrismLaserSystem {
     const dx = x2 - x1;
     const dy = y2 - y1;
     const lenSq = dx * dx + dy * dy;
-    if (lenSq === 0) return;
+    if (!Number.isFinite(lenSq) || lenSq < 0.0001) return;
 
     for (const enemy of enemies) {
       if (enemy.isDead) continue;
+      if (!Number.isFinite(enemy.position.x) || !Number.isFinite(enemy.position.y)) continue;
       const ex = enemy.position.x + enemy.size.width / 2;
       const ey = enemy.position.y + enemy.size.height / 2;
       const hitRadius = Math.max(enemy.size.width, enemy.size.height) / 2 + 6;
 
       // Project point onto segment
       const t = Math.max(0, Math.min(1, ((ex - x1) * dx + (ey - y1) * dy) / lenSq));
+      if (!Number.isFinite(t)) continue;
       const projX = x1 + t * dx;
       const projY = y1 + t * dy;
 
       const distSq = (ex - projX) ** 2 + (ey - projY) ** 2;
-      if (distSq <= hitRadius * hitRadius) {
+      if (Number.isFinite(distSq) && distSq <= hitRadius * hitRadius) {
         if (typeof (enemy as any).takeDamage === 'function') {
           (enemy as any).takeDamage(damage);
         }

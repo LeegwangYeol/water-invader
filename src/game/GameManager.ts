@@ -36,9 +36,11 @@ export class GameManager {
   public flagshipManager!: FlagshipManager;
   
   private lastTime: number = 0;
-  private animationFrameId: number = 0;
+  public animationFrameId: number = 0;
   private accumulator: number = 0;
   private readonly FIXED_STEP: number = 1 / 60;
+  private cachedBiomeGrad: CanvasGradient | null = null;
+  private cachedBiomeName: string = '';
   
   // Progression
   public score: number = 0;
@@ -225,7 +227,7 @@ export class GameManager {
     if (this.state === GameState.PLAYING || this.state === GameState.SHOP || this.state === GameState.GAME_OVER) {
       this.isPaused = true;
       this.accumulator = 0;
-      if (this.animationFrameId) {
+      if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
         this.animationFrameId = 0;
       }
@@ -239,10 +241,13 @@ export class GameManager {
       this.syncInputState();
       this.accumulator = 0;
       this.lastTime = performance.now();
-      if (this.animationFrameId) {
+      if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = 0;
       }
-      this.animationFrameId = requestAnimationFrame(this.loop);
+      if (typeof requestAnimationFrame !== 'undefined' && this.state === GameState.PLAYING && !this.isPaused && !this.animationFrameId) {
+        this.animationFrameId = requestAnimationFrame(this.loop);
+      }
     }
   }
 
@@ -341,6 +346,10 @@ export class GameManager {
     }
     this.clearKeys();
     this.enemies = [];
+    if (this.flagshipManager && this.flagshipManager.hydraulicHarpoon) {
+      (this.flagshipManager.hydraulicHarpoon as any).resetTether?.() ??
+      (this.flagshipManager.hydraulicHarpoon as any).reset?.();
+    }
     this.bullets = [];
     this.helpers = [];
     for (const p of this.particles) {
@@ -492,6 +501,10 @@ export class GameManager {
     this.level++;
     if (this.flagshipManager) {
       this.flagshipManager.onWaveComplete(this.level, this.getFlagshipContext());
+      if (this.flagshipManager.hydraulicHarpoon) {
+        (this.flagshipManager.hydraulicHarpoon as any).resetTether?.() ??
+        (this.flagshipManager.hydraulicHarpoon as any).reset?.();
+      }
     }
     this.restoreBarricades();
     this.swarmEchelonsRemaining = (this.level >= 10 && this.level % 5 !== 0) ? (this.level >= 15 ? 2 : 1) : 0;
@@ -505,8 +518,9 @@ export class GameManager {
     this.lastTime = performance.now();
     if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = 0;
     }
-    if (typeof requestAnimationFrame !== 'undefined') {
+    if (typeof requestAnimationFrame !== 'undefined' && this.state === GameState.PLAYING && !this.isPaused && !this.animationFrameId) {
       this.animationFrameId = requestAnimationFrame(this.loop);
     }
   }
@@ -516,7 +530,7 @@ export class GameManager {
   }
 
   public startGame() {
-    if (this.animationFrameId) {
+    if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = 0;
     }
@@ -530,7 +544,11 @@ export class GameManager {
     this.accumulator = 0;
     if (this.onStateChange) this.onStateChange(this.state);
     this.lastTime = performance.now();
-    this.loop(this.lastTime);
+    if (typeof requestAnimationFrame !== 'undefined' && this.state === GameState.PLAYING && !this.isPaused && !this.animationFrameId) {
+      this.animationFrameId = requestAnimationFrame(this.loop);
+    } else if (typeof requestAnimationFrame === 'undefined') {
+      this.loop(this.lastTime);
+    }
   }
 
   public stopGame() {
@@ -558,6 +576,10 @@ export class GameManager {
     this.clearKeys();
     this.bullets = [];
     this.enemies = [];
+    if (this.flagshipManager && this.flagshipManager.hydraulicHarpoon) {
+      (this.flagshipManager.hydraulicHarpoon as any).resetTether?.() ??
+      (this.flagshipManager.hydraulicHarpoon as any).reset?.();
+    }
     this.helpers = [];
     for (const p of this.particles) {
       if (this.particlePool.length < 500) {
@@ -640,6 +662,10 @@ export class GameManager {
     this.clearKeys();
     this.bullets = [];
     this.enemies = [];
+    if (this.flagshipManager && this.flagshipManager.hydraulicHarpoon) {
+      (this.flagshipManager.hydraulicHarpoon as any).resetTether?.() ??
+      (this.flagshipManager.hydraulicHarpoon as any).reset?.();
+    }
     this.helpers = [];
     for (const p of this.particles) {
       if (this.particlePool.length < 500) {
@@ -709,7 +735,7 @@ export class GameManager {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = 0;
     }
-    if (typeof requestAnimationFrame !== 'undefined') {
+    if (typeof requestAnimationFrame !== 'undefined' && this.state === GameState.PLAYING && !this.isPaused && !this.animationFrameId) {
       this.animationFrameId = requestAnimationFrame(this.loop);
     }
   }
@@ -729,6 +755,10 @@ export class GameManager {
     }
     this.hasEndGameCrisisOccurred = true;
     this.enemies = []; // Clear standard hostiles for existential crisis encounter
+    if (this.flagshipManager && this.flagshipManager.hydraulicHarpoon) {
+      (this.flagshipManager.hydraulicHarpoon as any).resetTether?.() ??
+      (this.flagshipManager.hydraulicHarpoon as any).reset?.();
+    }
     this.endGameCrisis = new EndGameCrisis(this.logicalWidth, this.logicalHeight);
     this.endGameCrisisDefeatedHandled = false;
 
@@ -1224,7 +1254,10 @@ export class GameManager {
   }
 
   private loop = (timestamp: number) => {
-    if (this.state === GameState.MENU) return;
+    if (this.state !== GameState.PLAYING || this.isPaused) {
+      this.animationFrameId = 0;
+      return;
+    }
 
     let frameTime = (timestamp - this.lastTime) / 1000;
     if (!Number.isFinite(frameTime) || frameTime < 0) {
@@ -1253,14 +1286,20 @@ export class GameManager {
     while (this.accumulator >= this.FIXED_STEP) {
       this.update(this.FIXED_STEP);
       this.accumulator -= this.FIXED_STEP;
-      if (this.state !== GameState.PLAYING) {
+      if (this.state !== GameState.PLAYING || this.isPaused) {
         this.accumulator = 0;
         break;
       }
     }
     this.draw();
 
-    this.animationFrameId = requestAnimationFrame(this.loop);
+    if (this.state === GameState.PLAYING && !this.isPaused) {
+      if (typeof requestAnimationFrame !== 'undefined') {
+        this.animationFrameId = requestAnimationFrame(this.loop);
+      }
+    } else {
+      this.animationFrameId = 0;
+    }
   };
 
   public update(deltaTime: number) {
@@ -1502,6 +1541,7 @@ export class GameManager {
 
         if (this.crisisState.timer <= 0) {
           this.crisisState.activeCrisis = null;
+          this.crisisState.timer = 0;
           this.crisisState.bannerText = null;
           this.crisisState.empSuppressionActive = false;
           if (this.onCrisisEvent) this.onCrisisEvent(null);
@@ -1723,6 +1763,14 @@ export class GameManager {
       if (this.flagshipManager) {
         this.flagshipManager.update(deltaTime, this.getFlagshipContext());
       }
+
+      // Post-subsystem boundary clamp (DEF-PHY-08)
+      if (this.player && this.player.position) {
+        if (!Number.isFinite(this.player.position.x)) this.player.position.x = (this.logicalWidth - this.player.width) / 2;
+        if (!Number.isFinite(this.player.position.y)) this.player.position.y = this.player.baselineY;
+        this.player.position.x = Math.max(0, Math.min(this.logicalWidth - this.player.width, this.player.position.x));
+        this.player.position.y = Math.max(0, Math.min(this.logicalHeight - this.player.height, this.player.position.y));
+      }
     } else if (this.state === GameState.SHOP) {
       if (this.flagshipManager) {
         // When in GameState.SHOP, environmental hazard forces must not displace or harm the player
@@ -1753,6 +1801,8 @@ export class GameManager {
         const shopContext = {
           ...this.getFlagshipContext(),
           player: isolatedPlayer,
+          state: GameState.SHOP,
+          gameState: GameState.SHOP,
         };
 
         this.flagshipManager.update(deltaTime, shopContext);
@@ -1871,7 +1921,7 @@ export class GameManager {
       this.warningTimer <= 0 &&
       this.pendingReinforcement === null &&
       this.crisisState.warningTimer <= 0 &&
-      (this.crisisState.activeCrisis === null || (this.crisisState.activeCrisis !== 'ACID_STORM' || this.crisisState.timer <= 0))
+      (this.crisisState.activeCrisis === null || this.crisisState.timer <= 0)
     ) {
       this.state = GameState.SHOP;
       if (this.flagshipManager) {
@@ -1881,6 +1931,7 @@ export class GameManager {
       this.warningMessage = "";
       this.warningText = "";
       this.crisisState.activeCrisis = null;
+      this.crisisState.timer = 0;
       this.crisisState.warningTimer = 0;
       this.crisisState.bannerText = null;
       this.crisisState.empSuppressionActive = false;
@@ -2475,7 +2526,7 @@ export class GameManager {
 
   public gameOverReason: string = "";
 
-  private gameOver(reason: string) {
+  public gameOver(reason: string = "Game Over") {
     if (this.flagshipManager && this.flagshipManager.checkRevive(this.getFlagshipContext())) {
       if (this.player) {
         this.player.hp = this.player.maxHp;
@@ -2486,6 +2537,10 @@ export class GameManager {
     }
     this.gameOverReason = reason;
     this.state = GameState.GAME_OVER;
+    if (typeof cancelAnimationFrame !== 'undefined' && this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = 0;
+    }
     if (this.player) {
       this.player.isDead = true;
     }
@@ -2583,10 +2638,14 @@ export class GameManager {
     const threat = this.getThreatState();
 
     // 1.1 Base Dynamic Biome Vertical Gradient
-    const bgGrad = this.ctx.createLinearGradient(0, 0, 0, this.logicalHeight);
-    bgGrad.addColorStop(0, biome.gradientTop);
-    bgGrad.addColorStop(1, biome.gradientBottom);
-    this.ctx.fillStyle = bgGrad;
+    if (!this.cachedBiomeGrad || this.cachedBiomeName !== biome.id) {
+      const bgGrad = this.ctx.createLinearGradient(0, 0, 0, this.logicalHeight);
+      bgGrad.addColorStop(0, biome.gradientTop);
+      bgGrad.addColorStop(1, biome.gradientBottom);
+      this.cachedBiomeGrad = bgGrad;
+      this.cachedBiomeName = biome.id;
+    }
+    this.ctx.fillStyle = this.cachedBiomeGrad;
     this.ctx.fillRect(0, 0, this.logicalWidth, this.logicalHeight);
 
     // 1.2 Dynamic Threat Signifier Radial Vignette (Boss / Elite / Crisis Shift)

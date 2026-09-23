@@ -1,6 +1,7 @@
 export class SoundManager {
   private audioCtx: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
+  private masterGain: GainNode | null = null;
   private enabled: boolean = false;
   public isMuted: boolean = false;
 
@@ -16,9 +17,12 @@ export class SoundManager {
         try {
           this.analyser = this.audioCtx.createAnalyser();
           this.analyser.fftSize = 64;
-          this.analyser.connect(this.audioCtx.destination);
+          this.masterGain = this.audioCtx.createGain();
+          this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : 1, this.audioCtx.currentTime);
+          this.analyser.connect(this.masterGain);
+          this.masterGain.connect(this.audioCtx.destination);
         } catch (e) {
-          console.warn('Failed to initialize master AnalyserNode:', e);
+          console.warn('Failed to initialize master AnalyserNode / GainNode:', e);
         }
         this.enabled = true;
       }
@@ -30,6 +34,7 @@ export class SoundManager {
 
   public get destinationNode(): AudioNode {
     if (this.analyser) return this.analyser;
+    if (this.masterGain) return this.masterGain;
     if (this.audioCtx) return this.audioCtx.destination;
     throw new Error('AudioContext not initialized');
   }
@@ -38,9 +43,73 @@ export class SoundManager {
     return this.analyser;
   }
 
-  public toggleMute(): boolean {
-    this.isMuted = !this.isMuted;
+  public getMasterGain(): GainNode | null {
+    return this.masterGain;
+  }
+
+  public getAudioContext(): AudioContext | null {
+    return this.audioCtx;
+  }
+
+  public setMuted(muted: boolean): boolean {
+    this.isMuted = muted;
+    if (this.masterGain && this.audioCtx) {
+      try {
+        this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : 1, this.audioCtx.currentTime);
+      } catch (e) {
+        // Ignore audio parameter errors
+      }
+    }
     return this.isMuted;
+  }
+
+  public toggleMute(): boolean {
+    return this.setMuted(!this.isMuted);
+  }
+
+  public async suspend(): Promise<void> {
+    if (this.audioCtx && this.audioCtx.state === 'running') {
+      try {
+        await this.audioCtx.suspend();
+      } catch (e) {
+        console.warn('Failed to suspend AudioContext:', e);
+      }
+    }
+  }
+
+  public async resume(): Promise<void> {
+    if (!this.audioCtx) {
+      this.init();
+      return;
+    }
+    if (this.audioCtx.state === 'suspended') {
+      try {
+        await this.audioCtx.resume();
+      } catch (e) {
+        console.warn('Failed to resume AudioContext:', e);
+      }
+    }
+  }
+
+  public async close(): Promise<void> {
+    if (this.audioCtx) {
+      try {
+        if (this.audioCtx.state !== 'closed') {
+          await this.audioCtx.close();
+        }
+      } catch (e) {
+        console.warn('Failed to close AudioContext:', e);
+      } finally {
+        this.audioCtx = null;
+        this.analyser = null;
+        this.masterGain = null;
+        this.enabled = false;
+      }
+    }
+  }
+
+  public async destroy(): Promise<void> {
+    await this.close();
   }
 
   public playShoot() {
