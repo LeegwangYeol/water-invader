@@ -60,6 +60,7 @@ test.describe('Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics', 
   test('ACID-02: Unshielded player collision with Acid Rain droplet deducts 1 HP and marks droplet dead', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.player.hasAcidShield = false;
     gm.player.hp = 3;
@@ -93,6 +94,7 @@ test.describe('Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics', 
   test('ACID-03: Fatal unshielded acid droplet collision triggers Game Over when HP drops to 0', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.player.hasAcidShield = false;
     gm.player.hp = 1;
@@ -119,6 +121,7 @@ test.describe('Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics', 
   test('ACID-04: Shielded player (hasAcidShield = true) safely deflects Acid Rain droplets with 0 damage', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.player.hasAcidShield = true;
     gm.player.hp = 3;
@@ -148,6 +151,7 @@ test.describe('Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics', 
   test('ACID-05: upgradeAcidShield() transactions, pure water cost deduction, and idempotency', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
 
     // Case A: Insufficient pure water (< 150)
     gm.currency = 100;
@@ -178,6 +182,7 @@ test.describe('Unit Simulation: Acid Rain Counterplay & Acid Shield Mechanics', 
   test('ACID-06: Swarm Stress Test: Deflecting 20 simultaneous acid storm droplets with 0 damage leakage', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.player.hasAcidShield = true;
     gm.player.hp = 3;

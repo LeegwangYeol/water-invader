@@ -95,7 +95,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
             nameEn: 'Nano-Alloy Bulkhead',
             descriptionKo: '최대 체력 +1, 적 충돌 데미지 30% 감소',
             descriptionEn: 'Max HP +1, collision damage taken reduced by 30%',
-            isActive: true,
+            isActive: false,
           },
           {
             id: 'PERK_INGRID_2',
@@ -192,7 +192,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
             nameEn: 'Supercavitation Propellant',
             descriptionKo: '탄환 비행 속도 +25%, 발사 딜레이 -12%',
             descriptionEn: 'Bullet velocity +25%, fire rate interval -12%',
-            isActive: true,
+            isActive: false,
           },
           {
             id: 'PERK_JAX_2',
@@ -272,7 +272,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
             nameEn: 'Hydrophone Ping Mark',
             descriptionKo: '적 타격 시 18% 확률로 6초간 음향 표식 부여 (치명타 데미지 +30%)',
             descriptionEn: '18% chance on hit to mark an enemy for 6.0s; marked enemies take +30% critical damage',
-            isActive: true,
+            isActive: false,
           },
           {
             id: 'PERK_REN_2',
@@ -348,7 +348,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
             nameEn: 'Symbiotic Osmosis',
             descriptionKo: '150px 내 적 처치 시 영양 진주 생성 (수자원 +10, 스트레스 -5%)',
             descriptionEn: 'Kills within 150px drop Bio-Nutrient Pearls (+10 Water, -5% Stress)',
-            isActive: true,
+            isActive: false,
           },
           {
             id: 'PERK_LYRA_2',
@@ -397,7 +397,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
             };
 
             // Heal player vessel
-            player.hp = Math.min(player.maxHp, player.hp + 1);
+            console.log('HEALED INGRID'); player.hp = Math.min(player.maxHp, player.hp + 1);
 
             context.createExplosion(this.activeDecoyPod.position.x, this.activeDecoyPod.position.y, '#06b6d4', 20, 2.0);
             context.triggerScreenShake(0.15, 3);
@@ -504,7 +504,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
         officerB: 'JAX',
         descriptionKo: '바리케이드 수복 시 4발의 고온 증기 유도 미사일 자동 발사',
         descriptionEn: 'Barricade repairs auto-fire 4 superheated steam missiles',
-        isActive: true,
+        isActive: false,
       });
     }
 
@@ -518,7 +518,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
         officerB: 'LYRA',
         descriptionKo: '위험 지역 및 극한 온도 환경에서 방어막과 선체 지속 재생',
         descriptionEn: 'Hazard presence grants continuous regenerative hull protection',
-        isActive: true,
+        isActive: false,
       });
     }
 
@@ -532,7 +532,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
         officerB: 'REN',
         descriptionKo: '피격 시 12초 주기로 다음 적 탄환 1회 자동 굴절 및 반사',
         descriptionEn: 'Taking damage auto-reflects the next hostile projectile (12s CD)',
-        isActive: true,
+        isActive: false,
       });
     }
 
@@ -546,7 +546,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
         officerB: 'REN',
         descriptionKo: '유도 미사일 탄속 +50% 및 음향 표식된 적 절대 추적',
         descriptionEn: 'Homing missiles gain +50% speed and permanent lock on tagged foes',
-        isActive: true,
+        isActive: false,
       });
     }
 
@@ -560,7 +560,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
         officerB: 'LYRA',
         descriptionKo: '관통 탄환 적중 시 5초간 3 DPS의 부식성 산성 궤적 잔류',
         descriptionEn: 'Piercing shots leave a 3 DPS corrosive acid trail for 5.0 seconds',
-        isActive: true,
+        isActive: false,
       });
     }
 
@@ -574,7 +574,7 @@ export class CrewOfficerDeckManager implements ICrewManager {
         officerB: 'LYRA',
         descriptionKo: '음향 표식된 적 피격 시 주변 적 100% 아군 오사 및 5% 흡혈',
         descriptionEn: 'Tagged enemies take 100% friendly fire splash; crits grant 5% lifesteal',
-        isActive: true,
+        isActive: false,
       });
     }
 

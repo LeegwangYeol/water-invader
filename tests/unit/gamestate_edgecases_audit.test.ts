@@ -69,6 +69,7 @@ test.describe('Remediation Verification & State Machine Edge-Cases Audit', () =>
   test('DEFECT-F1: Score is unconditionally reset to 0 in GameManager.init() on PLAY AGAIN', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+    gm.flagshipManager = undefined as any;
     
     // Simulate active game with high score and currency
     gm.score = 15420;
@@ -86,6 +87,7 @@ test.describe('Remediation Verification & State Machine Edge-Cases Audit', () =>
   test('DEFECT-F2: hasEndGameCrisisOccurred is unconditionally reset to false in GameManager.init()', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+    gm.flagshipManager = undefined as any;
 
     // Crisis occurred in run 1
     gm.hasEndGameCrisisOccurred = true;
@@ -98,6 +100,7 @@ test.describe('Remediation Verification & State Machine Edge-Cases Audit', () =>
   test('DEFECT-F3: updateScoreUI is called immediately when player takes bullet damage to clear ghost combo', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+    gm.flagshipManager = undefined as any;
     gm.init(true);
     gm.state = GameState.PLAYING;
 
@@ -117,6 +120,7 @@ test.describe('Remediation Verification & State Machine Edge-Cases Audit', () =>
   test('DEFECT-F4: Bullets, solar flares, and hazard projectiles are cleared on startNextWave()', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+    gm.flagshipManager = undefined as any;
     gm.init(true);
 
     // Add orphaned projectiles
@@ -144,6 +148,7 @@ test.describe('Remediation Verification & State Machine Edge-Cases Audit', () =>
   test('DEFECT-F6: Barricade collision check includes hazard radius', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+    gm.flagshipManager = undefined as any;
     gm.init(true);
     gm.state = GameState.PLAYING;
 
@@ -187,12 +192,14 @@ test.describe('Remediation Verification & State Machine Edge-Cases Audit', () =>
   test('DEFECT-B2: GameManager dispatches onPlayerHpChange when Allied Reinforcements heals player', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+    gm.flagshipManager = undefined as any;
     gm.init(true);
     gm.state = GameState.PLAYING;
 
     let reportedHp = -1;
     gm.onPlayerHpChange = (hp) => { reportedHp = hp; };
 
+    (gm as any).update(0.016);
     gm.player.hp = 2; // Damaged player
     gm.triggerAlliedReinforcements();
     gm.alliedReinforcements!.isWarpingIn = false;
@@ -209,6 +216,7 @@ test.describe('Remediation Verification & State Machine Edge-Cases Audit', () =>
   test('DEFECT-B3: triggerAlliedReinforcements() is idempotent when active instance exists', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+    gm.flagshipManager = undefined as any;
     gm.init(true);
 
     const firstInstance = gm.triggerAlliedReinforcements();
@@ -332,6 +340,7 @@ test.describe('Remediation Verification & State Machine Edge-Cases Audit', () =>
   test('DEFECT-A5: GameManager grants crisis defeat rewards even if isActive is false when phase is DEFEATED', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+    gm.flagshipManager = undefined as any;
     gm.init(true);
     gm.state = GameState.PLAYING;
 

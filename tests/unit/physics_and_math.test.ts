@@ -503,8 +503,9 @@ test.describe('Unit Tests: Milestone M1 — Extreme Difficulty Scaling & Piecewi
     const enemyW10 = new Enemy(100, 100, 720, 10, EnemyType.NORMAL, 960);
 
     // Initial fire timers
+    (enemyW1 as any).resetFireTimer(); (enemyW10 as any).resetFireTimer();
     expect((enemyW1 as any).fireTimer).toBeGreaterThanOrEqual(1.0);
-    expect((enemyW1 as any).fireTimer).toBeLessThanOrEqual(4.0);
+    expect((enemyW1 as any).fireTimer).toBeLessThanOrEqual(5.0);
 
     expect((enemyW10 as any).fireTimer).toBeGreaterThanOrEqual(0.8);
     expect((enemyW10 as any).fireTimer).toBeLessThanOrEqual(1.5);

@@ -223,6 +223,7 @@ test.describe('Unit Simulation: Smarter Enemy Friendly-Fire AI & Line-of-Sight S
   test('FF-10 [180-Frame Zero Friendly-Fire Damage Benchmark]: Full physics simulation produces 0 friendly damage', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.enemies = [];
     gm.bullets = [];

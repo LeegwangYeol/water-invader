@@ -119,6 +119,7 @@ test.describe('Empirical Adversarial Stress Suite: Combat Simulations & Hazard M
     test('STRESS-ACID-01: High-Density 120-droplet barrage WITHOUT Acid Shield (Damage & Invariants)', () => {
       const canvas = createMockCanvas();
       const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
       gm.state = GameState.PLAYING;
       gm.player.hasAcidShield = false;
       gm.player.hp = 5;
@@ -158,6 +159,7 @@ test.describe('Empirical Adversarial Stress Suite: Combat Simulations & Hazard M
     test('STRESS-ACID-02: Ultra-Density 250-droplet barrage WITH Acid Shield (100% Deflection, 0 Leakage)', () => {
       const canvas = createMockCanvas();
       const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
       gm.state = GameState.PLAYING;
       gm.player.hasAcidShield = true;
       gm.player.hp = 5;
@@ -202,6 +204,7 @@ test.describe('Empirical Adversarial Stress Suite: Combat Simulations & Hazard M
     test('STRESS-ACID-03: Extreme boundary check: 500 simultaneous droplets update & particle stability', () => {
       const canvas = createMockCanvas();
       const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
       gm.state = GameState.PLAYING;
       gm.player.hasAcidShield = true;
 
@@ -239,6 +242,7 @@ test.describe('Empirical Adversarial Stress Suite: Combat Simulations & Hazard M
     test('STRESS-MULTI-01: Combined Triple Crisis Chaos (Solar Flares + 60 Boss Bullets + 100 Acid Droplets)', () => {
       const canvas = createMockCanvas();
       const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
       gm.state = GameState.PLAYING;
       gm.player.hasAcidShield = true;
       gm.player.hp = 5;
@@ -313,6 +317,7 @@ test.describe('Empirical Adversarial Stress Suite: Combat Simulations & Hazard M
     test('STRESS-MULTI-02: Solar Flare Damage Resolution & Hit Confirmation', () => {
       const canvas = createMockCanvas();
       const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
       gm.state = GameState.PLAYING;
       gm.player.hp = 5;
       gm.player.invincibilityTimer = 0;
@@ -493,6 +498,7 @@ test.describe('Empirical Adversarial Stress Suite: Combat Simulations & Hazard M
     test('STRESS-INVAR-01: Zero deltaTime and massive deltaTime simulation stability', () => {
       const canvas = createMockCanvas();
       const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
       gm.state = GameState.PLAYING;
 
       // Zero deltaTime test

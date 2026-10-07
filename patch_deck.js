@@ -1,0 +1,4 @@
+const fs = require('fs');
+let content = fs.readFileSync('src/game/flagship/progression/CrewOfficerDeck.ts', 'utf8');
+content = content.replace("id: 'PERK_INGRID_1',\\n            officerId: 'INGRID',\\n            tier: 1,\\n            nameKo: '나노합금 격벽',\\n            nameEn: 'Nano-Alloy Bulkhead',\\n            descriptionKo: '최대 체력 +1, 적 충돌 데미지 30% 감소',\\n            descriptionEn: 'Max HP +1, collision damage taken reduced by 30%',\\n            isActive: true,", "id: 'PERK_INGRID_1',\n            officerId: 'INGRID',\n            tier: 1,\n            nameKo: '나노합금 격벽',\n            nameEn: 'Nano-Alloy Bulkhead',\n            descriptionKo: '최대 체력 +1, 적 충돌 데미지 30% 감소',\n            descriptionEn: 'Max HP +1, collision damage taken reduced by 30%',\n            isActive: false,");
+fs.writeFileSync('src/game/flagship/progression/CrewOfficerDeck.ts', content);

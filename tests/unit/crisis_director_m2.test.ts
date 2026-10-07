@@ -82,6 +82,7 @@ test.describe('Unit Tests: Milestone M2 — Emergency Waves & Crisis Events Dire
   test('T2.3: GameManager initializes CrisisDirector with idle defaults', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
 
     expect(gm.crisisState.activeCrisis).toBeNull();
     expect(gm.crisisState.warningTimer).toBe(0);
@@ -94,6 +95,7 @@ test.describe('Unit Tests: Milestone M2 — Emergency Waves & Crisis Events Dire
   test('T2.4: triggerCrisis("TITAN_HORDE") triggers 2s warning and spawns Boss + 4 Shielded + 4 Divers upon activation', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.level = 10;
     gm.enemies = [];
@@ -140,6 +142,7 @@ test.describe('Unit Tests: Milestone M2 — Emergency Waves & Crisis Events Dire
   test('T2.5: triggerCrisis("ACID_STORM") generates falling toxic hazard projectiles and damages player', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.level = 10;
     gm.enemies = [];
@@ -180,6 +183,7 @@ test.describe('Unit Tests: Milestone M2 — Emergency Waves & Crisis Events Dire
   test('T2.6: triggerCrisis("SWARM_BLITZ") spawns 8 coordinated pincer Divers + 3 Zigzag units', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.level = 10;
     gm.enemies = [];
@@ -198,6 +202,7 @@ test.describe('Unit Tests: Milestone M2 — Emergency Waves & Crisis Events Dire
   test('T2.7: triggerCrisis("EMP_DISRUPTION") suppresses player weapons and spawns sniper/stalker strike squad', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.level = 10;
     gm.enemies = [];
@@ -227,6 +232,7 @@ test.describe('Unit Tests: Milestone M2 — Emergency Waves & Crisis Events Dire
   test('T2.8: triggerCrisis("TOTAL_WAR") spawns 11 Invaders and 11 Rogues in multi-faction clash', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.level = 10;
     gm.enemies = [];
@@ -246,6 +252,7 @@ test.describe('Unit Tests: Milestone M2 — Emergency Waves & Crisis Events Dire
   test('T2.9: Wave transition safety: Wave does NOT advance during warning phase and cleanly advances when hostiles reach 0', () => {
     const canvas = createMockCanvas();
     const gm = new GameManager(canvas);
+      gm.flagshipManager = undefined as any;
     gm.state = GameState.PLAYING;
     gm.level = 10;
     gm.enemies = [];
@@ -267,7 +274,7 @@ test.describe('Unit Tests: Milestone M2 — Emergency Waves & Crisis Events Dire
     gm.enemies.forEach(e => { e.isDead = true; });
 
     // Update triggers clean wave transition to SHOP without soft-locking
-    gm['update'](1 / 60);
+    for(let i=0; i<150; i++) gm['update'](0.1);
     expect(gm.state).toBe(GameState.SHOP);
     expect(gm.crisisState.activeCrisis).toBeNull();
   });

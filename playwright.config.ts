@@ -16,7 +16,7 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }]
   ],
   use: {
-    baseURL: process.env.TARGET_URL || 'http://localhost:3000',
+    baseURL: process.env.TARGET_URL || 'http://localhost:3009',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     viewport: { width: 1280, height: 900 },
@@ -28,8 +28,8 @@ export default defineConfig({
     },
   ],
   webServer: process.env.SKIP_WEBSERVER ? undefined : {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
+    command: 'npm run start -- -p 3009',
+    url: 'http://localhost:3009',
     reuseExistingServer: true,
     timeout: 120000,
   },
