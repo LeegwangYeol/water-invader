@@ -3,7 +3,7 @@ name: Jules Daily Check
 on:
   schedule:
     # INFO : GitHub evaluates cron in UTC, not KST
-    - cron: '27 20 * * *'
+    - cron: '27'
   workflow_dispatch:
 
 permissions:
@@ -31,7 +31,22 @@ jobs:
               answer you chose under "Assumptions" in the pull request body, then continue.
             - When several candidates qualify, any one is fine. Pick one and go;
               the next daily run picks up the others.
+            - Earlier daily runs may already be fixing something. Run `git fetch origin` and
+              `git branch -r` first; skip any issue that an existing fix branch already addresses.
             - If you cannot settle on a safe fix, finish without changes and without a pull request.
+
+            ## This repository
+            Browser shooter game on Next.js: the engine in `src/game/`, the shell in `src/app`. The only tests are Playwright specs in `tests/` (`npm test`), so verification needs a browser. The many `patch_*.js`, `track_*.js`, `fix_*.js` files at the root are one-off scratch scripts from earlier sessions.
+
+            Setup and checks:
+            - `npm ci`, `npm run lint`, `npm run build`
+            - `npx playwright install --with-deps chromium && npm run test:ci` (ignores snapshots). If the browser install fails, say so under "How it was verified" and limit the fix to logic you can check with a small node script.
+
+            Focus:
+            - `src/game/` physics (buoyancy, ballast, kinematics), economy and shop persistence, the crisis director and wave progression, faction combat. The spec file names in `tests/` name the invariants.
+
+            Leave alone:
+            - The scratch `patch_*.js` / `track_*.js` / `fix_*.js` files, `playwright-report/`, `test-results*`, `dev.log`, `out.json`, the report `.md` files.
 
             ## Goal
             Find ONE real defect and fix it in a small, safe pull request.
@@ -67,6 +82,8 @@ jobs:
             - How it was verified (build/test command and result)
             - Not fixed (problems that need a decision), or "none"
             - Assumptions (questions you would have asked, with the answer you chose), or "none"
+            - Prompt feedback (instructions above that were wrong, missing or unclear for this
+              repository, e.g. a build command that does not exist), or "none"
 
             Reminder: do not ask questions. Decide, finish, and open the pull request or stop.
         run: |
