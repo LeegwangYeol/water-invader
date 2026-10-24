@@ -830,10 +830,6 @@ export default function GameCanvas() {
       if (state === GameState.GAME_OVER) {
         setHighScore(getSafeStoredHighScore());
         setGameOverReason(game.gameOverReason);
-        if (game.player && game.player.hp <= 0) {
-          game.player.hp = 3;
-          setHp(3);
-        }
       }
     };
     game.onScoreChange = (newScore, newCurrency, newCombo, newWave, newUltimate, newInvaderCount, newRogueCount) => {
