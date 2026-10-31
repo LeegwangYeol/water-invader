@@ -24,10 +24,10 @@ test.describe('R1: Canvas Rendering & Vector Graphics Verification Suite', () =>
       };
     });
 
-    expect(playerData.width).toBe(50);
-    expect(playerData.height).toBe(40);
-    expect(playerData.hp).toBe(3);
-    expect(playerData.maxHp).toBe(5);
+    expect(playerData.width).toBe(64);
+    expect(playerData.height).toBe(46);
+    expect(playerData.hp).toBe(7);
+    expect(playerData.maxHp).toBe(9);
 
     // Test player draw under different visual states without runtime exceptions
     const renderTestResults = await page.evaluate(() => {
