@@ -2067,6 +2067,7 @@ export class GameManager {
         if (enemy.isDead) continue;
         if (bullet.hitEntities.has(enemy)) continue;
         if (bullet.shooter === enemy) continue;
+        if (bullet.faction && bullet.faction === enemy.faction) continue;
 
         if (bullet.checkCollision(enemy)) {
           bullet.hitEntities.add(enemy);
