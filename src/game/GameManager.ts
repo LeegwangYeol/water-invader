@@ -1329,7 +1329,7 @@ export class GameManager {
       }
       
       // End-Game Crisis Incursion & Combat Update
-      if (this.endGameCrisis && this.endGameCrisis.isActive) {
+      if (this.endGameCrisis && (this.endGameCrisis.isActive || this.endGameCrisis.isDefeated())) {
         this.endGameCrisis.update(deltaTime, this.player, this.bullets, this.particles, soundManager);
 
         // Auto-summon Allied Reinforcements when EndGameCrisis reaches Phase 2
